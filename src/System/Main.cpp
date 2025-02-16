@@ -97,16 +97,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		Input::Update();
 		//アップデート
 		SceneManager::PreUpdate();
-		if (Input::PushHitKey(KEY_INPUT_1))
-			SceneManager::Load<SceneSample>();
-		if (Input::PushHitKey(KEY_INPUT_2))
-			SceneManager::Load<SceneSample2>();
-		if (Input::PushHitKey(KEY_INPUT_3))
-			SceneManager::Load<Game02::Game02::Game02::Game02::SceneSample3>();
-		if (Input::PushHitKey(KEY_INPUT_4))
-			SceneManager::Load<SceneSample4>();
-		if (Input::PushHitKey(KEY_INPUT_5))
-			SceneManager::Load<Game01::SceneSample2>();
 		SceneManager::Update();
 		SceneManager::LateUpdate();
 		SceneManager::PostUpdate();

@@ -21,6 +21,9 @@
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Component.cpp" />
+    <ClCompile Include="src\System\Components\Transform.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
@@ -47,10 +50,19 @@
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Component.h" />
+    <ClInclude Include="src\System\Components\Transform.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
       <UniqueIdentifier>{53df3da8-cc69-45bf-932d-e1a936ddd2ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Compnents">
+      <UniqueIdentifier>{cc4430c4-ef78-48cf-a93a-2312d026983d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Objects">
+      <UniqueIdentifier>{7afccf8f-4129-4764-91c0-54c2ad6a030b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

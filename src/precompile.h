@@ -19,14 +19,15 @@
 
 #include "System/typedef.h"
 #include <DxLib.h>
+#include "float2.h"
+#include "float3.h"
 #include "System/Input.h"
 #include "System/Time.h"
 #include "System/Component.h"
+#include "System/Components/Transform.h"
 #include "System/ObjBase.h"
 #include "System/Scene.h"
 #include "System/SceneManager.h"
-#include "float2.h"
-#include "float3.h"
 
 
 

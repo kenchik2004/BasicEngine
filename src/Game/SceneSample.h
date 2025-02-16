@@ -8,7 +8,9 @@ public:
 	void Load() override;
 	int Init() override;
 	void Update() override;
+	void Draw() override;
 	void LateDraw() override;
 	void DebugDraw() override;
 	void UnLoad() override;
+	ObjectP obj=nullptr;
 };

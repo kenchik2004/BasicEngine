@@ -11,7 +11,7 @@ namespace Time {
 	double delta_time; //!<前フレームとの時間差 (Δ)
 	double time_scale = 1; //<!タイムスケール(ゲーム内時間の進行スピード)
 
-	double fps_max = 1000;
+	double fps_max = 100000;
 	double fps;
 	int Init()
 	{

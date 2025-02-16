@@ -6,9 +6,15 @@
 
 ScenePVec SceneManager::scenes = ScenePVec(0);
 SceneP SceneManager::current_scene = nullptr;
+int SceneManager::debug_box = -1;
 
 int SceneManager::Init()
 {
+
+	//===============================//
+	//デバッグ用ボックス(SooS提供)のロード
+	debug_box = MV1LoadModel("data/DebugBox/DebugMode/Box.mv1");
+	//===============================//
 	return 0;
 }
 
@@ -209,6 +215,14 @@ void SceneManager::LateDraw()
 
 void SceneManager::DebugDraw()
 {
+
+	//===============================//
+	//デバッグ用ボックス(SooS提供)の描画
+	MV1SetPosition(debug_box, VGet(0, 0, 0));
+	//MV1SetScale(debug_box, VGet(10, 10, 10));
+	MV1DrawModel(debug_box);
+
+	//===============================//
 	if (!current_scene)
 		return;
 	current_scene->DebugDraw();
@@ -255,6 +269,11 @@ void SceneManager::Exit()
 	for (auto& scene : scenes) {
 		scene->UnLoad();
 	}
+
+	//===============================//
+	//デバッグ用ボックス(SooS提供)の解放
+	MV1DeleteModel(debug_box);
+	//===============================//
 	scenes.clear();
 }
 

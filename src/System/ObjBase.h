@@ -26,6 +26,8 @@ private:
 };
 
 USING_PTR(Component);
+USING_PTR(Transform);
+USING_PTR(ObjBase);
 class ObjBase :public std::enable_shared_from_this<ObjBase>
 {
 	friend class Scene;
@@ -43,6 +45,7 @@ public:
 	};
 	TAG tag = Untaged;
 	std::string name = "EmptyObject";
+	TransformP transform = nullptr;
 private:
 
 
@@ -53,6 +56,7 @@ private:
 		this_class->status.status_bit.on(ObjStat::STATUS::ACTIVE);
 		this_class->status.status_bit.on(ObjStat::STATUS::DRAW);
 		this_class->status.class_name = typeid(T).name();
+		this_class->transform = this_class->AddComponent<Transform>();
 	};
 
 	static bool changed_priority;
@@ -152,15 +156,19 @@ public:
 	inline virtual void Exit() {}
 };
 
-
+USING_PTR(Object);
 class Object :public ObjBase {
 public:
 	USING_SUPER(Object);
+	Object();
 
-	Object() { status.obj_type = ObjStat::NORMAL; }
+
 };
+
+
+USING_PTR(UIObject);
 class UIObject :public ObjBase {
 public:
 	USING_SUPER(UIObject);
-	UIObject() { status.obj_type = ObjStat::UI; tag = UI; SetPriority(2000); }
+	UIObject();
 };
