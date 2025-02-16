@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Float2.cpp" />
+    <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\System\Main.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input.cpp" />
+    <ClCompile Include="src\System\SceneManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Time.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SceneSample.cpp" />
+    <ClCompile Include="src\System\ObjBase.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Scene.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Component.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Float2.h" />
+    <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\System\Main.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input.h" />
+    <ClInclude Include="src\System\SceneManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Time.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\SceneSample.h" />
+    <ClInclude Include="src\System\typedef.h" />
+    <ClInclude Include="src\precompile.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\ObjBase.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Scene.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Component.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="System">
+      <UniqueIdentifier>{53df3da8-cc69-45bf-932d-e1a936ddd2ea}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
