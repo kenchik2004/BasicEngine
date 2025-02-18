@@ -60,6 +60,9 @@ public:
 		return scene_pick;
 
 	}
+	static inline SceneP GetCurrentScene() {
+		return current_scene;
+	}
 
 	template<class T> static inline void Change(std::shared_ptr<T> scene)
 	{
@@ -74,6 +77,26 @@ public:
 		current_scene = scene;
 		scene->Init();
 
+	}
+	template <class T> static inline void Destroy(std::shared_ptr<T> destroy_scene) {
+
+		for (auto scene = scenes.begin(); scene != scenes.end();) {
+			if ((*scene) == destroy_scene) {
+				scene->Exit();
+				scene->UnLoad();
+				scene->Destroy();
+				scene = scenes.erase(scene);
+				break;
+			}
+		}
+
+		if (destroy_scene == current_scene) {
+			current_scene->Exit();
+			current_scene->UnLoad();
+			current_scene->Destroy();
+			current_scene.reset();
+		}
+		destroy_scene.reset();
 	}
 	template<class T> static inline std::shared_ptr<T> Load()
 	{

@@ -181,8 +181,10 @@ void SceneManager::PreDraw()
 
 void SceneManager::Draw()
 {
-	if (!current_scene)
+	if (!current_scene) {
+		DrawString(0,0, "カレントシーンが存在しません", GetColor(255, 0, 0));
 		return;
+	}
 	current_scene->Draw();
 	for (auto& obj : Object::GetArray<ObjBase>()) {
 		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
@@ -223,8 +225,10 @@ void SceneManager::DebugDraw()
 	MV1DrawModel(debug_box);
 
 	//===============================//
-	if (!current_scene)
+	if (!current_scene) {
+		DrawString(0,0, "カレントシーンが存在しません", GetColor(255, 0, 0));
 		return;
+	}
 	current_scene->DebugDraw();
 	for (auto& obj : Object::GetArray<ObjBase>()) {
 		obj->DebugDraw();

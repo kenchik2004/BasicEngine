@@ -61,7 +61,8 @@ public:
 	inline virtual void PostDraw() {}
 
 	inline virtual void Exit() {}
-	virtual void UnLoad();
+	virtual void UnLoad(){}
+	void Destory();
 private:
 	ObjBasePVec objects;
 

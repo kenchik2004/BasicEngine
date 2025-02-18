@@ -4,9 +4,14 @@
 
 
 
-void Scene::UnLoad()
+
+void Scene::Destory()
 {
 	for (auto& obj : objects) {
+		while (auto comp = obj->GetComponent<Component>()) {
+			comp->RemoveThisComponent();
+		}
 		obj->Exit();
+		obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
 	}
 }
