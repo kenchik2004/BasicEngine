@@ -13,7 +13,7 @@ namespace Time
 	//更新
 	void Update();
 	void UpdateFPS();
-	void FixFPS();
+	int FixFPS();
 	const double GetTimeFromStart(); //アプリケーション開始後のゲーム内時間の取得
 	const double TimeScale();	//タイムスケールの取得
 	void SetTimeScale(const double scale);//タイムスケールの変更

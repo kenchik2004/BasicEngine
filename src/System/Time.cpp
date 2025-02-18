@@ -11,7 +11,7 @@ namespace Time {
 	double delta_time; //!<前フレームとの時間差 (Δ)
 	double time_scale = 1; //<!タイムスケール(ゲーム内時間の進行スピード)
 
-	double fps_max = 100000;
+	double fps_max = 166;
 	double fps;
 	int Init()
 	{
@@ -34,17 +34,21 @@ namespace Time {
 	{
 		fps = 1.0 / UnscaledDeltaTime();
 	}
-	void FixFPS()
+	int FixFPS()
 	{
 		double now_time = Time::GetOSTime();
 		double system_time = Time::SystemTime();
+		if (fps_max < 1)
+		{
+			throw(Exception("FPSMAX_LOWER_ZERO", DEFAULT_EXCEPTION_PARAM));
+		}
 		double delta = (1.0 / fps_max);
 		double sleep_time = delta - (now_time - system_time);
 		int a = int(SEC2MILLI(sleep_time));
 		a = a > 0 ? a : 0;
 		Sleep(a);
 		while (now_time - system_time < delta) { now_time = Time::GetOSTime(); }
-
+		return 0;
 	}
 	const double GetTimeFromStart()
 
