@@ -1,5 +1,6 @@
 #pragma once
 #include "System/Scene.h"
+USING_PTR(SampleObject);
 class SceneSample :
 	public Scene
 {
@@ -12,5 +13,5 @@ public:
 	void LateDraw() override;
 	void DebugDraw() override;
 	void UnLoad() override;
-	ObjectP obj=nullptr;
+	SampleObjectP obj=nullptr;
 };
