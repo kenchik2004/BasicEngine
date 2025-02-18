@@ -21,23 +21,28 @@
   <ItemGroup>
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\SampleObject.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
     <ClCompile Include="src\System\Components\Transform.cpp" />
+    <ClCompile Include="src\System\Exception.cpp" />
     <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
     <ClCompile Include="src\System\ObjBase.cpp" />
     <ClCompile Include="src\System\Scene.cpp" />
     <ClCompile Include="src\System\SceneManager.cpp" />
     <ClCompile Include="src\System\Time.cpp" />
+    <ClCompile Include="src\System\typedef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\SampleObject.h" />
     <ClInclude Include="src\Game\SceneSample.h" />
     <ClInclude Include="src\precompile.h" />
     <ClInclude Include="src\System\Component.h" />
     <ClInclude Include="src\System\Components\Transform.h" />
+    <ClInclude Include="src\System\Exception.h" />
     <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\Main.h" />
     <ClInclude Include="src\System\ObjBase.h" />

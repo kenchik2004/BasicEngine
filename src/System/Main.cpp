@@ -9,7 +9,7 @@ std::string window_classname[1] =
 {
 	"デバッグウィンドウ1",
 };
-int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, WNDCLASS& window_parameter, int nCmdShow);
+int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
 
 
@@ -35,19 +35,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 {
 
 	//==================================//
+#if 1
 	MSG msg;
 	HWND window[1];
 	WNDCLASS param;
-	if (CreateDebugWindow(hInstance, window[0], param, nCmdShow) == -1) return -1;
-
+#endif
 
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
-	SetWindowPosition(0, 0);
-	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
+	SetWindowPosition(0, 100);
+	SetGraphMode(1920 * 0.99f, 1080 * 0.99f, 32, 240);
 	SetMainWindowText("メインウィンドウ");
 	SetBackgroundColor(100, 100, 100);
-
+	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
 
 	SetDoubleStartValidFlag(TRUE);
 	SetAlwaysRunFlag(TRUE);
@@ -55,6 +55,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	if (DxLib_Init() == -1)	return -1;
+
+	RECT rect;
+	SetWindowSizeChangeEnableFlag(true, false);
+	GetWindowRect(GetMainWindowHandle(), &rect);
+	if (CreateDebugWindow(hInstance, window[0], rect.right - rect.left, rect.bottom - rect.top, param, nCmdShow) == -1) return -1;
+
 
 	timeBeginPeriod(1);
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -73,7 +79,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetWriteZBuffer3D(TRUE);
 	ChangeLightTypeDir(VGet(0.8f, -1.2f, 1.0f));
 
+	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 0, 0));
 	SceneManager::Load<SceneSample>();
+	SceneManager::Destroy(SceneManager::GetScene<SceneSample>());
+
+
 
 
 	//初期化
@@ -81,68 +91,82 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	while (TRUE)
 	{
+		try {
+#if 1
+			//=======================//
+			//片方のウィンドウが消されたら、もう片方も終了する
+			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+#endif
 
-		//=======================//
-		//片方のウィンドウが消されたら、もう片方も終了する
-		if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			//=======================//
+
+
+			Time::Update();
+			Input::Update();
+			//アップデート
+			SceneManager::PreUpdate();
+			SceneManager::Update();
+			SceneManager::LateUpdate();
+			SceneManager::PostUpdate();
+			//GameUpdate();
+
+			//物理
+			SceneManager::PrePhysics();
+			SceneManager::Physics();
+			SceneManager::PostPhysics();
+
+			//描画
+			ClearDrawScreen();
+			SceneManager::PreDraw();
+			SceneManager::Draw();
+			SceneManager::LateDraw();
+
+			//GameRender();
+			SceneWP scene = SceneManager::GetScene<SceneSample>();
+			if (!SceneManager::GetCurrentScene())
+				SceneManager::Load<SceneSample>();
+			if (Input::PushHitKey(KEY_INPUT_RETURN))
+				SceneManager::Destroy(SceneManager::GetScene<SceneSample>());
+#if 1
+			//======================//
+			SetScreenFlipTargetWindow(NULL);
+			//======================//
+			ScreenFlip();
+			//============//
+			// メインウィンドウの映り込みがある場合は、直下の行を有効化
+			//WaitTimer(2);
+			ClearDrawScreen();
+#endif
+			SceneManager::DebugDraw();
+#if 1
+			SetScreenFlipTargetWindow(window[0]);
+#endif
+			ScreenFlip();
+			//============//
+			//PostDrawする
+			SceneManager::PostDraw();
+
+			Time::FixFPS();
+			Time::UpdateFPS();
+			if (ProcessMessage())	break;
+			if (CheckHitKey(KEY_INPUT_ESCAPE))	break;
+		}
+		catch (Exception& ex) {
+			ex.Show();
+			break;
 		}
 
-		//=======================//
-
-
-		Time::Update();
-		Input::Update();
-		//アップデート
-		SceneManager::PreUpdate();
-		SceneManager::Update();
-		SceneManager::LateUpdate();
-		SceneManager::PostUpdate();
-		//GameUpdate();
-
-		//物理
-		SceneManager::PrePhysics();
-		SceneManager::Physics();
-		SceneManager::PostPhysics();
-
-		//描画
-		ClearDrawScreen();
-		SceneManager::PreDraw();
-		SceneManager::Draw();
-		SceneManager::LateDraw();
-
-		//GameRender();
-
-		//======================//
-		SetScreenFlipTargetWindow(NULL);
-		//======================//
-		ScreenFlip();
-		//============//
-		// メインウィンドウの映り込みがある場合は、直下の行を有効化
-		//WaitTimer(2);
-		ClearDrawScreen();
-		SceneManager::DebugDraw();
-		SetScreenFlipTargetWindow(window[0]);
-		ScreenFlip();
-		//============//
-
-		//PostDrawする
-		SceneManager::PostDraw();
-
-		Time::FixFPS();
-		Time::UpdateFPS();
-		if (ProcessMessage())	break;
-		if (CheckHitKey(KEY_INPUT_ESCAPE))	break;
 	}
-
 	//終了
 	SceneManager::Exit();
 	//GameExit();
 
 	timeEndPeriod(1);
-	DxLib_End();
+	DxLib::DxLib_End();
 	return 0;
 }
 
@@ -177,7 +201,7 @@ void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 		pos2.z = center.z + radius * cosf(TO_RADIAN((i + 1) * 10.0f));
 
 		if (fill) {
-			DrawTriangle3D(center.VGet(), pos1, pos2, color, TRUE);
+			DrawTriangle3D(center, pos1, pos2, color, TRUE);
 		}
 		else {
 			DrawLine3D(pos1, pos2, color);
@@ -237,7 +261,7 @@ const TypeInfo* TypeInfo::Parent() const
 	return parent;
 }
 
-int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, WNDCLASS& window_parameter, int nCmdShow)
+int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow)
 {
 	//==================================//
 
@@ -262,9 +286,9 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, WNDCLASS& window_param
 	window = CreateWindow(
 		window_classname[0].c_str(),
 		"デバッグウィンドウ",
-		WS_OVERLAPPED | WS_SYSMENU,
-		800, 450, SCREEN_W*1.27f, SCREEN_H*1.35f,
-		NULL, NULL, hInstance, NULL
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		800, 450, window_x, window_y,
+		GetMainWindowHandle(), NULL, hInstance, NULL
 	);
 	ShowWindow(window, nCmdShow);
 	UpdateWindow(window);

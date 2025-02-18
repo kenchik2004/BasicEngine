@@ -1,45 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Float2.cpp" />
-    <ClCompile Include="src\Float3.cpp" />
     <ClCompile Include="src\System\Main.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\SceneManager.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Time.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\System\ObjBase.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Scene.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Component.cpp" />
     <ClCompile Include="src\System\Components\Transform.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\Component.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Float2.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Float3.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SceneSample.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SampleObject.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Exception.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\typedef.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Float2.h" />
-    <ClInclude Include="src\Float3.h" />
     <ClInclude Include="src\System\Main.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\SceneManager.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Time.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\SceneSample.h" />
-    <ClInclude Include="src\System\typedef.h" />
     <ClInclude Include="src\precompile.h">
       <Filter>System</Filter>
     </ClInclude>
@@ -49,9 +61,32 @@
     <ClInclude Include="src\System\Scene.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Component.h" />
     <ClInclude Include="src\System\Components\Transform.h">
       <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Component.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Float3.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Float2.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\SceneSample.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\typedef.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\SampleObject.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Exception.h">
+      <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +98,9 @@
     </Filter>
     <Filter Include="System\Objects">
       <UniqueIdentifier>{7afccf8f-4129-4764-91c0-54c2ad6a030b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{4a67c7c6-df48-4812-8203-4b8003926a6e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
