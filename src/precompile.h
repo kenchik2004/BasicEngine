@@ -14,6 +14,7 @@
 #pragma warning (disable : 4819)
 #pragma comment(lib, "winmm.lib")
 
+#pragma warning (disable : 26495)
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 #include "PxPhysicsAPI.h"
 #pragma comment(lib, "PhysX_64.lib")
@@ -25,6 +26,7 @@
 #pragma comment(lib, "PhysXTask_static_64.lib")
 #pragma comment(lib, "SceneQuery_static_64.lib")
 #pragma comment(lib, "SimulationController_static_64.lib")
+#pragma warning (restore : 26495)
 
 #include <d3d9.h>
 //#include <d3dx9.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-
+#define PI 3.1415926535f
 #define DEG2RAD(deg) deg*PI
 #define RAD2DEG(rad) deg/PI
 

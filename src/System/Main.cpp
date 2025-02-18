@@ -71,6 +71,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Input::Init();
 	SceneManager::Init();
 
+	//描画のFPSを設定
+	Time::SetDrawFPSMAX(60);
+	//内部処理のFPSを設定
+	Time::SetFPSMAX(100000);
+	Time::SetTimeScale(1);
+
 
 	SetCameraNearFar(0.1f, 3000.0f);
 	SetupCamera_Perspective(TO_RADIAN(45.0f));
@@ -140,35 +146,38 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
+	for(int i=0;i<200;i++)
+	{
+		physx::PxRigidDynamic* rigid_dynamic
+			= m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
+		// 形状(Box)を作成
+		physx::PxShape* box_shape
+			= m_pPhysics->createShape(
+				// Boxの大きさ
+				physx::PxBoxGeometry(1.f, 1.f, 1.f),
+				// 摩擦係数と反発係数の設定
+				*m_pPhysics->createMaterial(0.5f, 0.5f, 0.1f)
+			);
+		// 形状のローカル座標を設定
+		box_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
+		rigid_dynamic->setGlobalPose(physx::PxTransform(physx::PxVec3((GetRand(200) - 100) , 5, (GetRand(200) - 100))));
+		// 形状を紐づけ
+		rigid_dynamic->attachShape(*box_shape);
+		// 剛体を空間に追加
+		m_pScene->addActor(*rigid_dynamic);
+		rigid_dynamic->addForce(physx::PxVec3(0, GetRand(15), 0), physx::PxForceMode::eIMPULSE);
 
-	physx::PxRigidDynamic* rigid_dynamic
-		= m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
-	// 形状(Box)を作成
-	physx::PxShape* box_shape
-		= m_pPhysics->createShape(
-			// Boxの大きさ
-			physx::PxBoxGeometry(1.f, 1.f, 1.f),
-			// 摩擦係数と反発係数の設定
-			*m_pPhysics->createMaterial(0.5f, 0.5f, 0.9f)
+
+		physx::PxRigidStatic* plane
+			= m_pPhysics->createRigidStatic(physx::PxTransform(physx::PxIdentity));
+
+
+		// 剛体を空間に追加
+		m_pScene->addActor(*physx::PxCreatePlane(
+			*m_pPhysics, physx::PxPlane(0, 1, 0, 0),
+			*m_pPhysics->createMaterial(0.5f, 0.5f, 0.1f))
 		);
-	// 形状のローカル座標を設定
-	box_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
-	// 形状を紐づけ
-	rigid_dynamic->attachShape(*box_shape);
-	// 剛体を空間に追加
-	m_pScene->addActor(*rigid_dynamic);
-	rigid_dynamic->addForce(physx::PxVec3(0, 10, 0), physx::PxForceMode::eIMPULSE);
-
-
-	physx::PxRigidStatic* plane
-		= m_pPhysics->createRigidStatic(physx::PxTransform(physx::PxIdentity));
-
-
-	// 剛体を空間に追加
-	m_pScene->addActor(*physx::PxCreatePlane(
-		*m_pPhysics, physx::PxPlane(0, 1, 0, 0),
-		*m_pPhysics->createMaterial(0.5f, 0.5f, 0.9f))
-	);
+	}
 
 	//===============================================//
 
@@ -197,6 +206,31 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//アップデート
 			SceneManager::PreUpdate();
 			SceneManager::Update();
+
+
+			physx::PxRigidStatic* sphere = nullptr;
+			{
+				if (Input::CheckHitKey(KEY_INPUT_0)) {
+					sphere = m_pPhysics->createRigidStatic(physx::PxTransform(physx::PxIdentity));
+					// 形状(Box)を作成
+					physx::PxShape* sphere_shape
+						= m_pPhysics->createShape(
+							// Boxの大きさ
+							physx::PxSphereGeometry(10),
+							// 摩擦係数と反発係数の設定
+							*m_pPhysics->createMaterial(0.5f, 0.5f, 0.9f)
+						);
+					// 形状のローカル座標を設定
+					sphere_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
+					// 形状を紐づけ
+					sphere->attachShape(*sphere_shape);
+					// 剛体を空間に追加
+					m_pScene->addActor(*sphere);
+				}
+
+
+			}
+
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
 			//GameUpdate();
@@ -206,42 +240,51 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//PhysXコピペソース
 			//=========================//
 			 // シミュレーション速度を指定する
-			m_pScene->simulate(1.0 / 60.0);
+			m_pScene->simulate(Time::UnscaledDeltaTime());
 			// PhysXの処理が終わるまで待つ
 			m_pScene->fetchResults(true);
+
+			if (sphere)
+				sphere->release();
 
 			//=========================//
 			SceneManager::Physics();
 			SceneManager::PostPhysics();
 
 			//描画
-			ClearDrawScreen();
-			SceneManager::PreDraw();
-			SceneManager::Draw();
-			SceneManager::LateDraw();
+			if (Time::DrawDeltaTime() >= Time::GetDrawDeltaTimeMAX())
+			{
 
-			//GameRender();
-			SceneWP scene = SceneManager::GetScene<SceneSample>();
-			if (!SceneManager::GetCurrentScene())
-				SceneManager::Load<SceneSample>();
-			if (Input::PushHitKey(KEY_INPUT_RETURN))
-				SceneManager::Destroy(SceneManager::GetScene<SceneSample>());
+
+				ClearDrawScreen();
+				SceneManager::PreDraw();
+				SceneManager::Draw();
+				SceneManager::LateDraw();
+
+				//GameRender();
+				SceneWP scene = SceneManager::GetScene<SceneSample>();
+				if (!SceneManager::GetCurrentScene())
+					SceneManager::Load<SceneSample>();
+				if (Input::PushHitKey(KEY_INPUT_RETURN))
+					SceneManager::Destroy(SceneManager::GetScene<SceneSample>());
 #if 1
-			//======================//
-			SetScreenFlipTargetWindow(NULL);
-			//======================//
-			ScreenFlip();
-			//============//
-			// メインウィンドウの映り込みがある場合は、直下の行を有効化
-			//WaitTimer(2);
-			ClearDrawScreen();
+				//======================//
+				SetScreenFlipTargetWindow(NULL);
+				//======================//
+				ScreenFlip();
+				//============//
+				// メインウィンドウの映り込みがある場合は、直下の行を有効化
+				//WaitTimer(2);
+				ClearDrawScreen();
 #endif
-			SceneManager::DebugDraw();
+				SceneManager::DebugDraw();
 #if 1
-			SetScreenFlipTargetWindow(window[0]);
+				SetScreenFlipTargetWindow(window[0]);
 #endif
-			ScreenFlip();
-			//============//
+				ScreenFlip();
+				Time::FixDrawFPS();
+				//============//
+			}
 			//PostDrawする
 			SceneManager::PostDraw();
 
@@ -262,8 +305,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	//PhysXコピペソース
 	//============================================//
-	rigid_dynamic->release();
-	box_shape->release();
 	PxCloseExtensions();
 	m_pScene->release();
 	m_pDispatcher->release();
@@ -398,9 +439,9 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 	window = CreateWindow(
 		window_classname[0].c_str(),
 		"デバッグウィンドウ",
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		WS_MINIMIZEBOX | WS_SYSMENU,
 		800, 450, window_x, window_y,
-		GetMainWindowHandle(), NULL, hInstance, NULL
+		NULL, NULL, hInstance, NULL
 	);
 	ShowWindow(window, nCmdShow);
 	UpdateWindow(window);

@@ -14,32 +14,32 @@ void SampleObject::Update()
 	if (Input::CheckHitKey(KEY_INPUT_LSHIFT))
 		speed *= 2;
 	if (Input::CheckHitKey(KEY_INPUT_W))
-		transform->position += transform->AxisZ() * speed * Time::DeltaTime();
+		transform->position += transform->AxisZ() * speed * Time::UnscaledDeltaTime();
 
 	if (Input::CheckHitKey(KEY_INPUT_S))
-		transform->position -= transform->AxisZ() * speed * Time::DeltaTime();
+		transform->position -= transform->AxisZ() * speed * Time::UnscaledDeltaTime();
 
 	if (Input::CheckHitKey(KEY_INPUT_A))
-		transform->position -= transform->AxisX() * speed * Time::DeltaTime();
+		transform->position -= transform->AxisX() * speed * Time::UnscaledDeltaTime();
 
 	if (Input::CheckHitKey(KEY_INPUT_D))
-		transform->position += transform->AxisX() * speed * Time::DeltaTime();
+		transform->position += transform->AxisX() * speed * Time::UnscaledDeltaTime();
 
 	if (Input::CheckHitKey(KEY_INPUT_SPACE))
-		transform->position += transform->AxisY() * speed * Time::DeltaTime();
+		transform->position += transform->AxisY() * speed * Time::UnscaledDeltaTime();
 
 	if (Input::CheckHitKey(KEY_INPUT_LCONTROL))
-		transform->position -= transform->AxisY() * speed * Time::DeltaTime();
+		transform->position -= transform->AxisY() * speed * Time::UnscaledDeltaTime();
 
 
 	if (Input::CheckHitKey(KEY_INPUT_UP))
-		transform->rotation.x -= 3 * Time::DeltaTime();
+		transform->rotation.x -= 3 * Time::UnscaledDeltaTime();
 	if (Input::CheckHitKey(KEY_INPUT_DOWN))
-		transform->rotation.x += 3 * Time::DeltaTime();
+		transform->rotation.x += 3 * Time::UnscaledDeltaTime();
 	if (Input::CheckHitKey(KEY_INPUT_LEFT))
-		transform->rotation.y -= 3 * Time::DeltaTime();
+		transform->rotation.y -= 3 * Time::UnscaledDeltaTime();
 	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
-		transform->rotation.y += 3 * Time::DeltaTime();
+		transform->rotation.y += 3 * Time::UnscaledDeltaTime();
 }
 
 void SampleObject::Draw()
@@ -59,6 +59,7 @@ void SampleObject::DebugDraw()
 int SampleMovingObject::Init()
 {
 	transform->position = float3(0, 0, 0);
+	elapsed = GetRand(DEG2RAD(360));
 	return 0;
 }
 
