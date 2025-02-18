@@ -62,7 +62,7 @@ public:
 
 	inline virtual void Exit() {}
 	virtual void UnLoad(){}
-	void Destory();
+	void Destroy();
 private:
 	ObjBasePVec objects;
 
