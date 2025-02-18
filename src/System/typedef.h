@@ -115,3 +115,6 @@ private:
 	V status_bit_ = 0;
 };
 
+std::wstring Str2Wstr(std::string in);
+std::string WStr2Str(std::wstring in);
+

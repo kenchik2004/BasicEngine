@@ -18,6 +18,7 @@
 //#include <d3dx9.h>
 
 #include "System/typedef.h"
+#include "System/Exception.h"
 #include <DxLib.h>
 #include "float2.h"
 #include "float3.h"
