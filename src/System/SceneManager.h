@@ -82,9 +82,9 @@ public:
 
 		for (auto scene = scenes.begin(); scene != scenes.end();) {
 			if ((*scene) == destroy_scene) {
-				scene->Exit();
-				scene->UnLoad();
-				scene->Destroy();
+				(*scene)->Exit();
+				(*scene)->UnLoad();
+				(*scene)->Destroy();
 				scene = scenes.erase(scene);
 				break;
 			}
