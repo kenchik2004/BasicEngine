@@ -14,6 +14,18 @@
 #pragma warning (disable : 4819)
 #pragma comment(lib, "winmm.lib")
 
+#define _SILENCE_CXX20_CISO646_REMOVED_WARNING
+#include "PxPhysicsAPI.h"
+#pragma comment(lib, "PhysX_64.lib")
+#pragma comment(lib, "PhysXCommon_64.lib")
+#pragma comment(lib, "PhysXCooking_64.lib")
+#pragma comment(lib, "PhysXExtensions_static_64.lib")
+#pragma comment(lib, "PhysXFoundation_64.lib")
+#pragma comment(lib, "PhysXPvdSDK_static_64.lib")
+#pragma comment(lib, "PhysXTask_static_64.lib")
+#pragma comment(lib, "SceneQuery_static_64.lib")
+#pragma comment(lib, "SimulationController_static_64.lib")
+
 #include <d3d9.h>
 //#include <d3dx9.h>
 

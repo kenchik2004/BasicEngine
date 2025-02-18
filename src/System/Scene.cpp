@@ -7,6 +7,7 @@
 
 void Scene::Destroy()
 {
+	
 	for (auto& obj : objects) {
 		while (auto comp = obj->GetComponent<Component>()) {
 			comp->RemoveThisComponent();
