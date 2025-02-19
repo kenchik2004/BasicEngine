@@ -1,41 +1,38 @@
 #include "precompile.h"
 #include "Transform.h"
 
-float3 Transform::AxisX()
+void Transform::AddRotation(Vector3 euler_angles)
 {
-	float3 vec(1, 0, 0);
-	MATRIX mat = MGetRotX(rotation.x);
-	mat = MMult(mat, MGetRotY(rotation.y));
-	mat = MMult(mat, MGetRotZ(rotation.z));
-	vec = VTransform(vec, mat);
+	Quaternion qx(euler_angles.x, Vector3(1, 0, 0));
+	Quaternion qy(euler_angles.y, Vector3(0, 1, 0));
+	Quaternion qz(euler_angles.z, Vector3(0, 0, 1));
+	rotation *= qx * qy * qz;
+
+}
+
+void Transform::SetRotation(Vector3 euler_angles)
+{
+	Quaternion qx(euler_angles.x, Vector3(1, 0, 0));
+	Quaternion qy(euler_angles.y, Vector3(0, 1, 0));
+	Quaternion qz(euler_angles.z, Vector3(0, 0, 1));
+	rotation = qx * qy * qz;
+}
+
+Vector3 Transform::AxisX()
+{
+	float3 vec = rotation.getBasisVector0();
 	return vec;
 }
 
-float3 Transform::AxisY()
+Vector3 Transform::AxisY()
 {
-	float3 vec(0, 1, 0);
-	MATRIX mat = MGetRotX(rotation.x);
-	mat = MMult(mat, MGetRotY(rotation.y));
-	mat = MMult(mat, MGetRotZ(rotation.z));
-	vec = VTransform(vec, mat);
+	float3 vec = rotation.getBasisVector1();
 	return vec;
 }
 
-float3 Transform::AxisZ()
+Vector3 Transform::AxisZ()
 {
-	float3 x = AxisX();
-	float3 y = AxisY();
-	return GetFloat3Cross(x, y);
+	float3 vec = rotation.getBasisVector2();
+	return vec;
 }
 
-void Transform::SetAxisX(float3 v_x)
-{
-}
-
-void Transform::SetAxisY(float3 v_y)
-{
-}
-
-void Transform::SetAxisZ(float3 v_z)
-{
-}
