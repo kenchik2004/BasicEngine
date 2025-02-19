@@ -4,7 +4,7 @@
 int SampleObject::Init()
 {
 	transform->SetPosition(float3(0, 5, -5));
-	SetCameraPositionAndAngle(transform->position, transform->rotation.x, transform->rotation.y, transform->rotation.z);
+	SetCameraPositionAndTargetAndUpVec(float3(transform->position), float3(transform->position + transform->AxisZ()), float3(transform->AxisY()));
 	return 0;
 }
 
@@ -33,13 +33,17 @@ void SampleObject::Update()
 
 
 	if (Input::CheckHitKey(KEY_INPUT_UP))
-		transform->rotation.x -= 3 * Time::UnscaledDeltaTime();
+		transform->AddRotation(float3(-3 * Time::UnscaledDeltaTime(), 0, 0));
 	if (Input::CheckHitKey(KEY_INPUT_DOWN))
-		transform->rotation.x += 3 * Time::UnscaledDeltaTime();
+		transform->AddRotation(float3(3 * Time::UnscaledDeltaTime(), 0, 0));
 	if (Input::CheckHitKey(KEY_INPUT_LEFT))
-		transform->rotation.y -= 3 * Time::UnscaledDeltaTime();
+		transform->AddRotation(float3(0, -3 * Time::UnscaledDeltaTime(), 0));
 	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
-		transform->rotation.y += 3 * Time::UnscaledDeltaTime();
+		transform->AddRotation(float3(0, 3 * Time::UnscaledDeltaTime(), 0));
+	if (Input::CheckHitKey(KEY_INPUT_Q))
+		transform->AddRotation(float3(0, 0, 3 * Time::UnscaledDeltaTime()));
+	if (Input::CheckHitKey(KEY_INPUT_E))
+		transform->AddRotation(float3(0, 0, -3 * Time::UnscaledDeltaTime()));
 }
 
 void SampleObject::Draw()
@@ -49,7 +53,7 @@ void SampleObject::Draw()
 
 void SampleObject::PreDraw()
 {
-	SetCameraPositionAndAngle(transform->position, transform->rotation.x, transform->rotation.y, transform->rotation.z);
+	SetCameraPositionAndTargetAndUpVec(float3(transform->position), float3(transform->position + transform->AxisZ()), float3(transform->AxisY()));
 }
 
 void SampleObject::DebugDraw()
@@ -68,12 +72,12 @@ void SampleMovingObject::Update()
 	elapsed += Time::DeltaTime();
 	transform->position.x = sinf(elapsed) * 5;
 	transform->position.z = cosf(elapsed) * 5;
-	transform->rotation.y += Time::DeltaTime() * 3;
+	transform->rotation *= (Quaternion(Time::DeltaTime() * 3, Vector3(0, 1, 0)));
 }
 
 void SampleMovingObject::Draw()
 {
-	DrawSphere3D(transform->position, 1, 32, GetColor(0, 255, 0), GetColor(0, 0, 0), true);
+	DrawSphere3D(float3(transform->position), 1, 32, GetColor(0, 255, 0), GetColor(0, 0, 0), true);
 }
 
 void SampleMovingObject::DebugDraw()
@@ -81,7 +85,7 @@ void SampleMovingObject::DebugDraw()
 	float3 pos = transform->position;
 	float3 scale = transform->scale;
 
-	DrawSphere3D(transform->position, 1, 12, GetColor(0, 255, 0), GetColor(0, 0, 0), false);
+	DrawSphere3D(pos, 1, 12, GetColor(0, 255, 0), GetColor(0, 0, 0), false);
 	DrawLine3D(pos, (pos + transform->AxisX()), GetColor(0, 255, 0));
 	DrawLine3D(pos, (pos + transform->AxisY()), GetColor(255, 0, 0));
 	DrawLine3D(pos, (pos + transform->AxisZ()), GetColor(0, 0, 255));

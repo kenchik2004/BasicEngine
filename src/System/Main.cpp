@@ -146,21 +146,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	for(int i=0;i<200;i++)
+	physx::PxRigidDynamic* rigid_dynamic = nullptr;
+	for(int i=0;i<1;i++)
 	{
-		physx::PxRigidDynamic* rigid_dynamic
-			= m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
+			rigid_dynamic= m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
 		// Œ`ó(Box)‚ðì¬
 		physx::PxShape* box_shape
 			= m_pPhysics->createShape(
 				// Box‚Ì‘å‚«‚³
-				physx::PxBoxGeometry(1.f, 1.f, 1.f),
+				physx::PxSphereGeometry(2),
 				// –€ŽCŒW”‚Æ”½”­ŒW”‚ÌÝ’è
-				*m_pPhysics->createMaterial(0.5f, 0.5f, 0.1f)
+				*m_pPhysics->createMaterial(0.5f, 0.5f, 0.99f)
 			);
 		// Œ`ó‚Ìƒ[ƒJƒ‹À•W‚ðÝ’è
 		box_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
-		rigid_dynamic->setGlobalPose(physx::PxTransform(physx::PxVec3((GetRand(200) - 100) , 5, (GetRand(200) - 100))));
+		rigid_dynamic->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 5,0)));
 		// Œ`ó‚ð•R‚Ã‚¯
 		rigid_dynamic->attachShape(*box_shape);
 		// „‘Ì‚ð‹óŠÔ‚É’Ç‰Á
@@ -182,7 +182,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//===============================================//
 
 
-
+	
 	//‰Šú‰»
 	//GameInit();
 
@@ -216,18 +216,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					physx::PxShape* sphere_shape
 						= m_pPhysics->createShape(
 							// Box‚Ì‘å‚«‚³
-							physx::PxSphereGeometry(10),
+							physx::PxSphereGeometry(3),
 							// –€ŽCŒW”‚Æ”½”­ŒW”‚ÌÝ’è
-							*m_pPhysics->createMaterial(0.5f, 0.5f, 0.9f)
+							*m_pPhysics->createMaterial(0.5f, 0.5f, 0.1f)
 						);
 					// Œ`ó‚Ìƒ[ƒJƒ‹À•W‚ðÝ’è
 					sphere_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
+					sphere->setGlobalPose(physx::PxTransform(Vector3(-1, 1.5, -1)));
 					// Œ`ó‚ð•R‚Ã‚¯
 					sphere->attachShape(*sphere_shape);
 					// „‘Ì‚ð‹óŠÔ‚É’Ç‰Á
 					m_pScene->addActor(*sphere);
 				}
 
+				if (Input::CheckHitKey(KEY_INPUT_1)) {
+					if (rigid_dynamic) {
+						rigid_dynamic->addForce(-0.5f*rigid_dynamic->getGlobalPose().p,physx::PxForceMode::eFORCE);
+					}
+				}
 
 			}
 
@@ -261,6 +267,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				SceneManager::Draw();
 				SceneManager::LateDraw();
 
+
 				//GameRender();
 				SceneWP scene = SceneManager::GetScene<SceneSample>();
 				if (!SceneManager::GetCurrentScene())
@@ -278,6 +285,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				ClearDrawScreen();
 #endif
 				SceneManager::DebugDraw();
+				if (rigid_dynamic) {
+					auto trns = rigid_dynamic->getGlobalPose();
+					trns.p.z *= -1;
+					Quaternion quat = CastPhysXQuat(trns.q);
+
+					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector0()*5), GetColor(0, 255, 0));
+					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector1()*5), GetColor(255, 0, 0));
+					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector2()*5), GetColor(0, 0, 255));
+					DrawSphere3D(float3(trns.p), 2, 16, GetColor(255, 0, 0), GetColor(255, 255, 255), true);
+					
+				}
+
 #if 1
 				SetScreenFlipTargetWindow(window[0]);
 #endif
@@ -305,6 +324,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	//PhysXƒRƒsƒyƒ\[ƒX
 	//============================================//
+	if (rigid_dynamic)
+		rigid_dynamic->release();
 	PxCloseExtensions();
 	m_pScene->release();
 	m_pDispatcher->release();

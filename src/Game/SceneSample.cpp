@@ -53,14 +53,13 @@ void SceneSample::DebugDraw()
 
 
 	float3 vec = obj->transform->AxisX();
-	float3 vec2 = obj->transform->AxisZ();
-	float3 N(0, 1, 0);
-	float3 proj = ProjectOnPlane(vec, N);
+	float3 vec2 = obj->transform->AxisY();
+	float3 vec3 = obj->transform->AxisZ();
 
 
-	DrawLine3D(float3(0, 0, 0), proj * 5, GetColor(255, 255, 0));
-	proj = ProjectOnPlane(vec2, N);
-	DrawLine3D(float3(0, 0, 0), proj * 5, GetColor(255, 255, 0));
+	DrawLine3D(float3(0, 0, 0), vec * 5, GetColor(255, 255, 0));
+	DrawLine3D(float3(0, 0, 0), vec2 * 5, GetColor(255, 255, 0));
+	DrawLine3D(float3(0, 0, 0), vec3 * 5, GetColor(255, 255, 0));
 
 
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "FPS : %f / %f", Time::GetFPSMAX(), Time::GetFPS());
