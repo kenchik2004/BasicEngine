@@ -15,22 +15,42 @@ namespace Time
 	void UpdateFPS();
 	int FixFPS();
 	void FixDrawFPS();
-	const double GetTimeFromStart(); //アプリケーション開始後のゲーム内時間の取得
-	const double TimeScale();	//タイムスケールの取得
+	void FixFixedFPS();
+	const double GetTimeFromStart();
+	//アプリケーション開始後のゲーム内時間の取得
+	const float TimeScale();	//タイムスケールの取得
+	const double TimeScaleD();
 	void SetTimeScale(const double scale);//タイムスケールの変更
-	const double DeltaTime();
-	const double DrawDeltaTime();
+	const float DeltaTime();
+	const double DeltaTimeD();
+	const float DrawDeltaTime();
+	const double DrawDeltaTimeD();
+	const float FixedDeltaTime();
 	//前フレームとのゲーム内時間差の取得
-	const double UnscaledDeltaTime(); //前フレームとの実際の時間差の取得
-	const double SystemTimeFromStart(); //アプリケーション開始後の物理的時間の取得
-	const double SystemTime();
-	const double GetOSTime();
-	const double GetFPSMAX();
-	const double GetDrawFPSMAX();
+	const float UnscaledDeltaTime();
+	const double FixedDeltaTimeD();
+	//前フレームとの実際の時間差の取得
+	const double UnscaledDeltaTimeD(); 
+	const float SystemTimeFromStart(); //アプリケーション開始後の物理的時間の取得
+	const double SystemTimeFromStartD(); 
+	const float SystemTime();
+	const double SystemTimeD();
+	const float GetOSTime();
+	const double GetOSTimeD();
+	const float GetFPSMAX();
+	const double GetFPSMAXD();
+	const float GetDrawFPSMAX();
+	const double GetDrawFPSMAXD();
 	void SetFPSMAX(const double& max);
+	void SetFixedFPSMAX(const double& max);
 	void SetDrawFPSMAX(const double& max);
-	const double GetDrawDeltaTimeMAX();
-	const double GetDeltaTimeMAX();
-	const double GetFPS();
+	const float GetFixedDeltaTimeMAX();
+	const double GetFixedDeltaTimeMAXD();
+	const float GetDrawDeltaTimeMAX();
+	const double GetDrawDeltaTimeMAXD();
+	const float GetDeltaTimeMAX();
+	const double GetDeltaTimeMAXD();
+	const float GetFPS();
+	const double GetFPSD();
 };
 

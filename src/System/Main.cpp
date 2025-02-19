@@ -74,7 +74,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//描画のFPSを設定
 	Time::SetDrawFPSMAX(60);
 	//内部処理のFPSを設定
-	Time::SetFPSMAX(100000);
+	Time::SetFPSMAX(165);
+	Time::SetFixedFPSMAX(50);
 	Time::SetTimeScale(1);
 
 
@@ -147,9 +148,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 	physx::PxRigidDynamic* rigid_dynamic = nullptr;
-	for(int i=0;i<1;i++)
+	for (int i = 0; i < 1; i++)
 	{
-			rigid_dynamic= m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
+		rigid_dynamic = m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
 		// 形状(Box)を作成
 		physx::PxShape* box_shape
 			= m_pPhysics->createShape(
@@ -160,7 +161,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			);
 		// 形状のローカル座標を設定
 		box_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
-		rigid_dynamic->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 5,0)));
+		rigid_dynamic->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 5, 0)));
 		// 形状を紐づけ
 		rigid_dynamic->attachShape(*box_shape);
 		// 剛体を空間に追加
@@ -182,7 +183,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//===============================================//
 
 
-	
+
 	//初期化
 	//GameInit();
 
@@ -231,7 +232,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 				if (Input::CheckHitKey(KEY_INPUT_1)) {
 					if (rigid_dynamic) {
-						rigid_dynamic->addForce(-0.5f*rigid_dynamic->getGlobalPose().p,physx::PxForceMode::eFORCE);
+						rigid_dynamic->addForce(-0.5f * rigid_dynamic->getGlobalPose().p,physx::PxForceMode::eFORCE);
 					}
 				}
 
@@ -240,25 +241,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
 			//GameUpdate();
+			if(Time::FixedDeltaTimeD()>=Time::GetFixedDeltaTimeMAXD())
+			{
+				//物理
+				SceneManager::PrePhysics();
+				//PhysXコピペソース
+				//=========================//
+				 // シミュレーション速度を指定する
+				m_pScene->simulate(Time::FixedDeltaTimeD());
+				// PhysXの処理が終わるまで待つ
+				m_pScene->fetchResults(true);
 
-			//物理
-			SceneManager::PrePhysics();
-			//PhysXコピペソース
-			//=========================//
-			 // シミュレーション速度を指定する
-			m_pScene->simulate(Time::UnscaledDeltaTime());
-			// PhysXの処理が終わるまで待つ
-			m_pScene->fetchResults(true);
 
-			if (sphere)
-				sphere->release();
-
-			//=========================//
-			SceneManager::Physics();
-			SceneManager::PostPhysics();
-
+				//=========================//
+				SceneManager::Physics();
+				SceneManager::PostPhysics();
+				Time::FixFixedFPS();
+			}
+				if (sphere)
+					sphere->release();
 			//描画
-			if (Time::DrawDeltaTime() >= Time::GetDrawDeltaTimeMAX())
+			if (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
 			{
 
 
@@ -290,11 +293,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					trns.p.z *= -1;
 					Quaternion quat = CastPhysXQuat(trns.q);
 
-					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector0()*5), GetColor(0, 255, 0));
-					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector1()*5), GetColor(255, 0, 0));
-					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector2()*5), GetColor(0, 0, 255));
+					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector0() * 5), GetColor(0, 255, 0));
+					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector1() * 5), GetColor(255, 0, 0));
+					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector2() * 5), GetColor(0, 0, 255));
 					DrawSphere3D(float3(trns.p), 2, 16, GetColor(255, 0, 0), GetColor(255, 255, 255), true);
-					
+
 				}
 
 #if 1
