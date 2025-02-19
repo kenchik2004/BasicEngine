@@ -60,33 +60,5 @@ void SampleObject::DebugDraw()
 {
 }
 
-int SampleMovingObject::Init()
-{
-	transform->position = float3(0, 0, 0);
-	elapsed = GetRand(DEG2RAD(360));
-	return 0;
-}
 
-void SampleMovingObject::Update()
-{
-	elapsed += Time::DeltaTime();
-	transform->position.x = sinf(elapsed) * 5;
-	transform->position.z = cosf(elapsed) * 5;
-	transform->rotation *= (Quaternion(Time::DeltaTime() * 3, Vector3(0, 1, 0)));
-}
 
-void SampleMovingObject::Draw()
-{
-	DrawSphere3D(float3(transform->position), 1, 32, GetColor(0, 255, 0), GetColor(0, 0, 0), true);
-}
-
-void SampleMovingObject::DebugDraw()
-{
-	float3 pos = transform->position;
-	float3 scale = transform->scale;
-
-	DrawSphere3D(pos, 1, 12, GetColor(0, 255, 0), GetColor(0, 0, 0), false);
-	DrawLine3D(pos, (pos + transform->AxisX()), GetColor(0, 255, 0));
-	DrawLine3D(pos, (pos + transform->AxisY()), GetColor(255, 0, 0));
-	DrawLine3D(pos, (pos + transform->AxisZ()), GetColor(0, 0, 255));
-}

@@ -107,6 +107,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	physx::PxScene* m_pScene = nullptr;
 	// PVDと通信する際に必要
 	physx::PxPvd* m_pPvd = nullptr;
+
 	if (m_pFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator, m_defaultErrorCallback); !m_pFoundation) {
 		return false;
 	}
@@ -147,39 +148,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	physx::PxRigidDynamic* rigid_dynamic = nullptr;
-	for (int i = 0; i < 1; i++)
-	{
-		rigid_dynamic = m_pPhysics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
-		// 形状(Box)を作成
-		physx::PxShape* box_shape
-			= m_pPhysics->createShape(
-				// Boxの大きさ
-				physx::PxSphereGeometry(2),
-				// 摩擦係数と反発係数の設定
-				*m_pPhysics->createMaterial(0.5f, 0.5f, 0.99f)
-			);
-		// 形状のローカル座標を設定
-		box_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
-		rigid_dynamic->setGlobalPose(physx::PxTransform(physx::PxVec3(0, 5, 0)));
-		// 形状を紐づけ
-		rigid_dynamic->attachShape(*box_shape);
-		// 剛体を空間に追加
-		m_pScene->addActor(*rigid_dynamic);
-		rigid_dynamic->addForce(physx::PxVec3(0, GetRand(15), 0), physx::PxForceMode::eIMPULSE);
-
-
-		physx::PxRigidStatic* plane
-			= m_pPhysics->createRigidStatic(physx::PxTransform(physx::PxIdentity));
-
-
-		// 剛体を空間に追加
-		m_pScene->addActor(*physx::PxCreatePlane(
-			*m_pPhysics, physx::PxPlane(0, 1, 0, 0),
-			*m_pPhysics->createMaterial(0.5f, 0.5f, 0.1f))
-		);
-	}
-
+	
 	//===============================================//
 
 
@@ -209,35 +178,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::Update();
 
 
-			physx::PxRigidStatic* sphere = nullptr;
-			{
-				if (Input::CheckHitKey(KEY_INPUT_0)) {
-					sphere = m_pPhysics->createRigidStatic(physx::PxTransform(physx::PxIdentity));
-					// 形状(Box)を作成
-					physx::PxShape* sphere_shape
-						= m_pPhysics->createShape(
-							// Boxの大きさ
-							physx::PxSphereGeometry(3),
-							// 摩擦係数と反発係数の設定
-							*m_pPhysics->createMaterial(0.5f, 0.5f, 0.1f)
-						);
-					// 形状のローカル座標を設定
-					sphere_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
-					sphere->setGlobalPose(physx::PxTransform(Vector3(-1, 1.5, -1)));
-					// 形状を紐づけ
-					sphere->attachShape(*sphere_shape);
-					// 剛体を空間に追加
-					m_pScene->addActor(*sphere);
-				}
-
-				if (Input::CheckHitKey(KEY_INPUT_1)) {
-					if (rigid_dynamic) {
-						rigid_dynamic->addForce(-0.5f * rigid_dynamic->getGlobalPose().p,physx::PxForceMode::eFORCE);
-					}
-				}
-
-			}
-
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
 			//GameUpdate();
@@ -258,8 +198,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				SceneManager::PostPhysics();
 				Time::FixFixedFPS();
 			}
-				if (sphere)
-					sphere->release();
 			//描画
 			if (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
 			{
@@ -288,19 +226,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				ClearDrawScreen();
 #endif
 				SceneManager::DebugDraw();
-				if (rigid_dynamic) {
-					auto trns = rigid_dynamic->getGlobalPose();
-					trns.p.z *= -1;
-					Quaternion quat = CastPhysXQuat(trns.q);
-
-					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector0() * 5), GetColor(0, 255, 0));
-					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector1() * 5), GetColor(255, 0, 0));
-					DrawLine3D(float3(trns.p), float3(trns.p + quat.getBasisVector2() * 5), GetColor(0, 0, 255));
-					DrawSphere3D(float3(trns.p), 2, 16, GetColor(255, 0, 0), GetColor(255, 255, 255), true);
-
-				}
-
-#if 1
+				#if 1
 				SetScreenFlipTargetWindow(window[0]);
 #endif
 				ScreenFlip();
@@ -327,8 +253,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	//PhysXコピペソース
 	//============================================//
-	if (rigid_dynamic)
-		rigid_dynamic->release();
+
 	PxCloseExtensions();
 	m_pScene->release();
 	m_pDispatcher->release();

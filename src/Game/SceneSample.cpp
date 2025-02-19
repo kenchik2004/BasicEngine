@@ -9,12 +9,6 @@ void SceneSample::Load()
 int SceneSample::Init()
 {
 	obj = SceneManager::Object::Create<SampleObject>();
-	SceneManager::Object::Create<SampleMovingObject>();
-	for (int i = 0; i < 0; i++) {
-		auto obj_ = SceneManager::Object::Create<SampleMovingObject>();
-		for (int j = 0; j < 1; j++)
-			obj_->AddComponent<Component>();
-	}
 	return 0;
 }
 
