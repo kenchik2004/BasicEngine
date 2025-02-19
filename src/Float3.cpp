@@ -21,6 +21,12 @@ float3::float3(VECTOR v)
 	y = v.y;
 	z = v.z;
 }
+float3::float3(Vector3 v)
+{
+	x = v.x;
+	y = v.y;
+	z = v.z;
+}
 //---------------------------------------------------------------------------------
 //	ƒ[ƒ‰Šú‰»i‚w‚x‚y‚Ì’l‚ğ‚O‚É‚µ‚Ü‚·j
 //---------------------------------------------------------------------------------
@@ -103,6 +109,14 @@ float3& float3::operator = (const float3& v)
 	return *this;
 }
 float3& float3::operator=(const VECTOR& v)
+{
+
+	x = v.x;
+	y = v.y;
+	z = v.z;
+	return *this;
+}
+float3& float3::operator=(const Vector3& v)
 {
 
 	x = v.x;

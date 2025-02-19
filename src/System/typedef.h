@@ -30,6 +30,12 @@
 
 
 
+using Vector2 = physx::PxVec2;
+using Vector3 = physx::PxVec3;
+using Vector4 = physx::PxVec4;
+using Quaternion = physx::PxQuat;
+using mat3x3 = physx::PxMat33;
+using mat4x4 = physx::PxMat44;
 
 class TypeInfo {
 public:
