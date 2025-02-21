@@ -55,6 +55,32 @@ float3 GetFloat3Cross(float3& v1, float3& v2);
 float3 GetFloat3VTransform(float3& v, MATRIX& mat);
 //	float3‚ÌƒxƒNƒgƒ‹‚ğ•½–Êã‚É“Š‰e
 float3 ProjectOnPlane(float3 vec, float3 plane_normal);
+inline float3 cast(const Vector3& vec) {
+	float3 vec_ = vec;
+	return vec_;
+}
+inline float3 cast(const VECTOR& vec) {
+	float3 vec_ = vec;
+	return vec_;
+}
+inline MATRIX cast(const mat4x4& mat)
+{
+	return {
+		mat.column0.x, mat.column1.x, mat.column2.x, mat.column0.w,
+		mat.column0.y, mat.column1.y, mat.column2.y, mat.column1.w,
+		mat.column0.z, mat.column1.z, mat.column2.z, mat.column2.w,
+		mat.column3.x, mat.column3.y, mat.column3.z, mat.column3.w
+	};
+}
+inline mat4x4 cast(const MATRIX& mat)
+{
+	return mat4x4(
+		Vector4(mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[0][3]),
+		Vector4(mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[1][3]),
+		Vector4(mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[2][3]),
+		Vector4(mat.m[3][0], mat.m[3][1], mat.m[3][2], mat.m[3][3])
+	);
+}
 // PhysX‚Ö‚Ìó‚¯“n‚µ—p•ÏŠ·
 inline Vector3 CastPhysXVec(const float3& v) {
 	return Vector3(v.x, v.y, -v.z);
@@ -62,7 +88,7 @@ inline Vector3 CastPhysXVec(const float3& v) {
 
 // PhysX‚Ö‚Ìó‚¯“n‚µ—p•ÏŠ·
 inline Quaternion CastPhysXQuat(const Quaternion& q) {
-	return Quaternion(q.x, q.y, -q.z, -q.w);
+	return Quaternion(-q.x, -q.y, -q.z, q.w);
 }
 
 inline Vector3 QuaternionToEuler(const Quaternion& q) {
