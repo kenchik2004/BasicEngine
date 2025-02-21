@@ -21,7 +21,9 @@ void Exception::Show()
 
 #ifndef NDEBUG
 	_wassert(wstr.c_str(), __FILEW__, __LINE__);
-#endif // NDEBUG
+#else
+	_ASSERT(false, "ERROR!!");
+#endif
 
 
 }
