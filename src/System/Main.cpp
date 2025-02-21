@@ -2,6 +2,7 @@
 #include "System/SceneManager.h"
 #include "Game/SceneSample.h"
 
+#define DEBUG_WINDOW
 
 class SceneSample;
 
@@ -35,7 +36,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 {
 
 	//==================================//
-#if 1
+#ifdef DEBUG_WINDOW
 	MSG msg;
 	HWND window[1];
 	WNDCLASS param;
@@ -43,7 +44,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
-	SetWindowPosition(0, 100);
 	SetGraphMode(800, 450, 32, 240);
 	SetMainWindowText("メインウィンドウ");
 	SetBackgroundColor(100, 100, 100);
@@ -56,25 +56,32 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	if (DxLib_Init() == -1)	return -1;
 
-	RECT rect;
 	SetWindowSizeChangeEnableFlag(true, false);
+
+#ifdef DEBUG_WINDOW
+
+
+	RECT rect;
 	GetWindowRect(GetMainWindowHandle(), &rect);
 	if (CreateDebugWindow(hInstance, window[0], rect.right - rect.left, rect.bottom - rect.top, param, nCmdShow) == -1) return -1;
+#endif // DEBUG_WINDOW
 
 
 	timeBeginPeriod(1);
 	SetDrawScreen(DX_SCREEN_BACK);
 	SetTransColor(255, 0, 255);
 	srand(GetNowCount() % RAND_MAX);
+	SetWindowPosition(0, 0);
 
 	Time::Init();
 	Input::Init();
+	PhysicsManager::Init();
 	SceneManager::Init();
 
 	//描画のFPSを設定
 	Time::SetDrawFPSMAX(60);
 	//内部処理のFPSを設定
-	Time::SetFPSMAX(165);
+	Time::SetFPSMAX(166);
 	Time::SetFixedFPSMAX(50);
 	Time::SetTimeScale(1);
 
@@ -86,69 +93,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetWriteZBuffer3D(TRUE);
 	ChangeLightTypeDir(VGet(0.8f, -1.2f, 1.0f));
 
-	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 0, 0));
+	SetCameraPositionAndTarget_UpVecY(float3(0, 0, 0), float3(0, 0, 1));
 	SceneManager::Load<SceneSample>();
-	SceneManager::Destroy(SceneManager::GetScene<SceneSample>());
 
 
 
-	//PhysX　コピペソース
-	//===============================================//
-	physx::PxDefaultAllocator m_defaultAllocator;
-	// エラー時用のコールバックでエラー内容が入ってる
-	physx::PxDefaultErrorCallback m_defaultErrorCallback;
-	// 上位レベルのSDK(PxPhysicsなど)をインスタンス化する際に必要
-	physx::PxFoundation* m_pFoundation = nullptr;
-	// 実際に物理演算を行う
-	physx::PxPhysics* m_pPhysics = nullptr;
-	// シミュレーションをどう処理するかの設定でマルチスレッドの設定もできる
-	physx::PxDefaultCpuDispatcher* m_pDispatcher = nullptr;
-	// シミュレーションする空間の単位でActorの追加などもここで行う
-	physx::PxScene* m_pScene = nullptr;
-	// PVDと通信する際に必要
-	physx::PxPvd* m_pPvd = nullptr;
-
-	if (m_pFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator, m_defaultErrorCallback); !m_pFoundation) {
-		return false;
-	}
-	// PVDと接続する設定
-	if (m_pPvd = physx::PxCreatePvd(*m_pFoundation); m_pPvd) {
-		// PVD側のデフォルトポートは5425
-		physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-		int try_num = 0;
-		while (try_num < 10) {
-			bool success = m_pPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-			if (success)
-				break;
-			Sleep(20);
-			try_num++;
-		}
-	}
-	// Physicsのインスタンス化
-	if (m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, physx::PxTolerancesScale(), true, m_pPvd); !m_pPhysics) {
-		return false;
-	}
-	// 拡張機能用
-	if (!PxInitExtensions(*m_pPhysics, m_pPvd)) {
-		return false;
-	}
-	// 処理に使うスレッドを指定する
-	m_pDispatcher = physx::PxDefaultCpuDispatcherCreate(8);
-	// 空間の設定
-	physx::PxSceneDesc scene_desc(m_pPhysics->getTolerancesScale());
-	scene_desc.gravity = physx::PxVec3(0, -9, 0);
-	scene_desc.filterShader = physx::PxDefaultSimulationFilterShader;
-	scene_desc.cpuDispatcher = m_pDispatcher;
-	// 空間のインスタンス化
-	m_pScene = m_pPhysics->createScene(scene_desc);
-	// PVDの表示設定
-	physx::PxPvdSceneClient* pvd_client;
-	if (pvd_client = m_pScene->getScenePvdClient(); pvd_client) {
-		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
-	
 	//===============================================//
 
 
@@ -159,7 +108,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	while (TRUE)
 	{
 		try {
-#if 1
+#ifdef DEBUG_WINDOW
 			//=======================//
 			//片方のウィンドウが消されたら、もう片方も終了する
 			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
@@ -173,33 +122,25 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 			Time::Update();
 			Input::Update();
+			while (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD())
+			{
+				//物理
+				SceneManager::PrePhysics();
+				SceneManager::Physics();
+				SceneManager::PostPhysics();
+				Time::FixFixedFPS();
+			}
+
 			//アップデート
+			//GameUpdate();
 			SceneManager::PreUpdate();
 			SceneManager::Update();
 
 
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
-			//GameUpdate();
-			if(Time::FixedDeltaTimeD()>=Time::GetFixedDeltaTimeMAXD())
-			{
-				//物理
-				SceneManager::PrePhysics();
-				//PhysXコピペソース
-				//=========================//
-				 // シミュレーション速度を指定する
-				m_pScene->simulate(Time::FixedDeltaTimeD());
-				// PhysXの処理が終わるまで待つ
-				m_pScene->fetchResults(true);
-
-
-				//=========================//
-				SceneManager::Physics();
-				SceneManager::PostPhysics();
-				Time::FixFixedFPS();
-			}
 			//描画
-			if (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
+			while (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
 			{
 
 
@@ -210,23 +151,20 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 				//GameRender();
-				SceneWP scene = SceneManager::GetScene<SceneSample>();
 				if (!SceneManager::GetCurrentScene())
 					SceneManager::Load<SceneSample>();
-				if (Input::PushHitKey(KEY_INPUT_RETURN))
-					SceneManager::Destroy(SceneManager::GetScene<SceneSample>());
-#if 1
-				//======================//
+#ifdef DEBUG_WINDOW
+				//書き込みを行うウィンドウを、メインウィンドウに設定
 				SetScreenFlipTargetWindow(NULL);
-				//======================//
 				ScreenFlip();
 				//============//
 				// メインウィンドウの映り込みがある場合は、直下の行を有効化
 				//WaitTimer(2);
 				ClearDrawScreen();
-#endif
+				//デバッグウィンドウへの描画
 				SceneManager::DebugDraw();
-				#if 1
+				SceneManager::LateDebugDraw();
+				//書き込みを行うウィンドウを、デバッグウィンドウに設定
 				SetScreenFlipTargetWindow(window[0]);
 #endif
 				ScreenFlip();
@@ -255,16 +193,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//============================================//
 
 	PxCloseExtensions();
-	m_pScene->release();
-	m_pDispatcher->release();
-	m_pPhysics->release();
-	if (m_pPvd) {
-		m_pPvd->disconnect();
-		physx::PxPvdTransport* transport = m_pPvd->getTransport();
-		m_pPvd->release();
-		transport->release();
-	}
-	m_pFoundation->release();
+	PhysicsManager::Exit();
 
 	//============================================//
 	timeEndPeriod(1);
@@ -389,7 +318,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 		window_classname[0].c_str(),
 		"デバッグウィンドウ",
 		WS_MINIMIZEBOX | WS_SYSMENU,
-		800, 450, window_x, window_y,
+		window_x, window_y, window_x, window_y,
 		NULL, NULL, hInstance, NULL
 	);
 	ShowWindow(window, nCmdShow);

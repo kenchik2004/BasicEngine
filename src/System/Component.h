@@ -66,6 +66,7 @@ public:
 	inline virtual void Draw() {}
 	inline virtual void LateDraw() {}
 	inline virtual void DebugDraw() {}
+	inline virtual void LateDebugDraw() {}
 
 	//‚±‚±‚Ìˆ—‚Í•`‰æ‚ÉŸƒtƒŒ[ƒ€‚Ü‚Å”½‰f‚³‚ê‚È‚¢
 	inline virtual void PostDraw() {}

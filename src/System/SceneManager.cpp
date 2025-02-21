@@ -132,7 +132,6 @@ void SceneManager::Physics()
 {
 	if (!current_scene)
 		return;
-	current_scene->Physics();
 	for (auto& obj : Object::GetArray<ObjBase>()) {
 		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj->Physics();
@@ -143,6 +142,9 @@ void SceneManager::Physics()
 			}
 		}
 	}
+
+	//Physicsだけ、シーンのシミュレーションを最後に行う
+	current_scene->Physics();
 }
 
 void SceneManager::PostPhysics()
@@ -182,7 +184,7 @@ void SceneManager::PreDraw()
 void SceneManager::Draw()
 {
 	if (!current_scene) {
-		DrawString(0,0, "カレントシーンが存在しません", GetColor(255, 0, 0));
+		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
 		return;
 	}
 	current_scene->Draw();
@@ -217,7 +219,10 @@ void SceneManager::LateDraw()
 
 void SceneManager::DebugDraw()
 {
-
+	if (!current_scene) {
+		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
+		return;
+	}
 	//===============================//
 	//デバッグ用ボックス(SooS提供)の描画
 	MV1SetPosition(debug_box, VGet(0, 0, 0));
@@ -225,16 +230,25 @@ void SceneManager::DebugDraw()
 	MV1DrawModel(debug_box);
 
 	//===============================//
-	if (!current_scene) {
-		DrawString(0,0, "カレントシーンが存在しません", GetColor(255, 0, 0));
-		return;
-	}
 	current_scene->DebugDraw();
 	for (auto& obj : Object::GetArray<ObjBase>()) {
 		obj->DebugDraw();
 
 		for (auto& comp : obj->components) {
 			comp->DebugDraw();
+		}
+	}
+}
+
+void SceneManager::LateDebugDraw()
+{
+	if (!current_scene) return;	
+	current_scene->LateDebugDraw();
+	for (auto& obj : Object::GetArray<ObjBase>()) {
+		obj->LateDebugDraw();
+
+		for (auto& comp : obj->components) {
+			comp->LateDebugDraw();
 		}
 	}
 }

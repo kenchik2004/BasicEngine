@@ -18,6 +18,14 @@ public:
 	//-----------------------------
 
 	//-----------------------------
+	// Physicsブロック(物理前後処理)
+	//-----------------------------
+	static void PrePhysics();
+	static void Physics();
+	static void PostPhysics();
+	//-----------------------------
+
+	//-----------------------------
 	// Updateブロック(更新前後処理)
 	//-----------------------------
 	static void PreUpdate();
@@ -27,22 +35,15 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// Physicsブロック(物理前後処理)
-	//-----------------------------
-	static void PrePhysics();
-	static void Physics();
-	static void PostPhysics();
-	//-----------------------------
-
-	//-----------------------------
 	// Drawブロック(描画前後処理)
 	//-----------------------------
 	static void PreDraw();
 	static void Draw();
 	static void LateDraw();
 	static void DebugDraw();
+	static void LateDebugDraw();
 
-	//ここの処理は描画に次フレームまで反映されない
+	//ここの処理は次フレームまで反映されない
 	static void PostDraw();
 
 	static void Exit();
@@ -80,23 +81,28 @@ public:
 	}
 	template <class T> static inline void Destroy(std::shared_ptr<T> destroy_scene) {
 
+
 		for (auto scene = scenes.begin(); scene != scenes.end();) {
 			if ((*scene) == destroy_scene) {
 				(*scene)->Exit();
 				(*scene)->UnLoad();
-				(*scene)->Destroy();
+				try {
+					(*scene)->Destroy();
+				}
+				catch (Exception& ex) {
+					ex.Show();
+					break;
+				}
 				scene = scenes.erase(scene);
+				if(destroy_scene != current_scene)
+					destroy_scene.reset();
 				break;
 			}
 		}
-
 		if (destroy_scene == current_scene) {
-			current_scene->Exit();
-			current_scene->UnLoad();
-			current_scene->Destroy();
 			current_scene.reset();
 		}
-		destroy_scene.reset();
+
 	}
 	template<class T> static inline std::shared_ptr<T> Load()
 	{

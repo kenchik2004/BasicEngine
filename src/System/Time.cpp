@@ -60,7 +60,10 @@ namespace Time {
 		while (now_time - system_time < delta_time_max) { now_time = Time::GetOSTimeD(); }
 		return 0;
 	}
-
+	void ResetTime() {
+		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));
+		sys_time_prev = sys_time;
+	}
 
 	void FixDrawFPS() {
 		draw_fps = 1.0 / draw_delta_time;

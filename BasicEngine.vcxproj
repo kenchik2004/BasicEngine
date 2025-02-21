@@ -29,6 +29,7 @@
     <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
     <ClCompile Include="src\System\ObjBase.cpp" />
+    <ClCompile Include="src\System\PhysicsManager.cpp" />
     <ClCompile Include="src\System\Scene.cpp" />
     <ClCompile Include="src\System\SceneManager.cpp" />
     <ClCompile Include="src\System\Time.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\Main.h" />
     <ClInclude Include="src\System\ObjBase.h" />
+    <ClInclude Include="src\System\PhysicsManager.h" />
     <ClInclude Include="src\System\Scene.h" />
     <ClInclude Include="src\System\SceneManager.h" />
     <ClInclude Include="src\System\Time.h" />

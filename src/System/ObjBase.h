@@ -141,6 +141,14 @@ public:
 	//-----------------------------
 
 	//-----------------------------
+	// Hit時コールバック
+	//-----------------------------
+	inline virtual void OnCollisionEnter(const HitInfo& hit_info) {}
+	inline virtual void OnCollisionStay(const HitInfo& hit_info) {}
+	inline virtual void OnCollisionExit(const HitInfo& hit_info) {}
+	//-----------------------------
+
+	//-----------------------------
 	// Drawブロック(描画前後処理)
 	//-----------------------------
 	inline virtual void PreDraw() {}
@@ -148,6 +156,7 @@ public:
 	inline virtual void LateDraw() {}
 	//デバッグ用描画(デバッグウィンドウに描画される)
 	inline virtual void DebugDraw() {}
+	inline virtual void LateDebugDraw() {}
 
 	//ここの処理は描画に次フレームまで反映されない
 	inline virtual void PostDraw() {}

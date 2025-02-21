@@ -14,6 +14,7 @@ namespace Time
 	void Update();
 	void UpdateFPS();
 	int FixFPS();
+	void ResetTime();
 	void FixDrawFPS();
 	void FixFixedFPS();
 	const double GetTimeFromStart();

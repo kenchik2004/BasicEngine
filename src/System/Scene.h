@@ -10,9 +10,11 @@ private:
 
 class Scene :public std::enable_shared_from_this<Scene>
 {
+private:
+	physx::PxScene* physics_scene = nullptr;
 public:
 
-
+	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
 
 	//TODO Objectから所属シーンへのポインタにアクセスできる機構の作成
 
@@ -22,6 +24,7 @@ public:
 	template <class T> void Construct() {
 		auto class_ = std::static_pointer_cast<T>(shared_from_this());
 		class_->status.class_name = typeid(T).name();
+		physics_scene = PhysicsManager::AddScene();
 	}
 	inline virtual void Load() {}
 
@@ -29,6 +32,16 @@ public:
 	// Initブロック(初期化処理)
 	//-----------------------------
 	inline virtual int Init() { return 0; }
+	//-----------------------------
+
+
+	//-----------------------------
+	// Physicsブロック(物理前後処理)
+	//-----------------------------
+	inline virtual void PrePhysics() {}
+	void Physics();
+	inline virtual void PostPhysics() {}
+	void DeleteActor(physx::PxRigidActor* actor);
 	//-----------------------------
 
 	//-----------------------------
@@ -41,14 +54,6 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// Physicsブロック(物理前後処理)
-	//-----------------------------
-	inline virtual void PrePhysics() {}
-	inline virtual void Physics() {}
-	inline virtual void PostPhysics() {}
-	//-----------------------------
-
-	//-----------------------------
 	// Drawブロック(描画前後処理)
 	//-----------------------------
 	inline virtual void PreDraw() {}
@@ -56,15 +61,17 @@ public:
 	inline virtual void LateDraw() {}
 	//デバッグ用描画(デバッグウィンドウに描画される)
 	inline virtual void DebugDraw() {}
+	inline virtual void LateDebugDraw() {}
 
 	//ここの処理は描画に次フレームまで反映されない
 	inline virtual void PostDraw() {}
 
 	inline virtual void Exit() {}
-	virtual void UnLoad(){}
+	virtual void UnLoad() {}
 	void Destroy();
 private:
-	ObjBasePVec objects;
+	ObjBasePVec objects; 
+	std::vector<physx::PxActor*> waiting_remove_actors;
 
 	//template <class T> std::shared_ptr<T> CreateObject();
 
