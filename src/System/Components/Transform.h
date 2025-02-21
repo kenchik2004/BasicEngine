@@ -17,5 +17,8 @@ public:
 	Vector3 AxisX();
 	Vector3 AxisY();
 	Vector3 AxisZ();
+	void SetAxisX(Vector3 target);
+	void SetAxisY(Vector3 target);
+	void SetAxisZ(Vector3 target);
 };
 
