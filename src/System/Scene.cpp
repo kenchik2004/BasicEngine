@@ -9,13 +9,15 @@ void Scene::Physics()
 {
 	if (!physics_scene)
 		throw Exception("PhysXシーンがないンゴ!!ヤバいンゴ!", DEFAULT_EXCEPTION_PARAM);
+
 	//シミュレーション
 	physics_scene->simulate(Time::FixedDeltaTimeD());
 	//シミュレーションを待つ
 	physics_scene->fetchResults(true);
-	
+
 	//シミュレーション終了後、安全にアクターを削除する
 	for (auto actor : waiting_remove_actors) {
+
 		physics_scene->removeActor(*actor);
 		actor->release();
 		//二度と参照することがないよう、きっちりnullptrを入れておく
@@ -51,6 +53,7 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 
 	physics_scene->unlockWrite();// PhysX のスレッドをアンロック
 }
+
 
 void Scene::Destroy()
 {

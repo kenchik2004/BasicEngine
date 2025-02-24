@@ -30,7 +30,7 @@ int SceneSample::Init()
 	);
 	obj = SceneManager::Object::Create<SampleObject>();
 
-	SetCameraPositionAndTarget_UpVecY(float3(14, 20, -14), float3(0, 1, 0));
+	SetCameraPositionAndTarget_UpVecY(float3(5, 5, -5), float3(0, 1, 0));
 
 	return 0;
 }
@@ -46,14 +46,19 @@ void SceneSample::Update()
 
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
 		obj->camera = !obj->camera;
-	if (Input::PushHitKey(KEY_INPUT_RSHIFT))
-		SceneManager::Object::Create<SampleObject2>()->AddComponent<Component>();
+	if (Input::PushHitKey(KEY_INPUT_RSHIFT)) {
+		auto obj_ = SceneManager::Object::Create<SampleObject3>();
+		obj_->transform->AddRotation(float3(0, 0, 90));
+		obj_->velocity = float3(0, -1000, 0);
+		obj_->transform->SetPosition(float3(0, 100, 0));
+
+	}
 }
 
 void SceneSample::Draw()
 {
 	if (!obj->camera)
-		SetCameraPositionAndTarget_UpVecY(float3(14, 14, -14), float3(0, 7, 0));
+		SetCameraPositionAndTarget_UpVecY(float3(0, 3, -3), float3(0, 1, 0));
 	for (int x = -7; x <= 7; x++)
 	{
 		DrawLine3D(float3(x, 0, -7), float3(x, 0, 7), GetColor(255, 255, 255));
