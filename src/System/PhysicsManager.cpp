@@ -27,9 +27,7 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	PxPairFlags& pairFlags,
 	const void* constantBlock,
 	PxU32 constantBlockSize) {
-	if (filterData0.word0 == 0 || filterData1.word0 == 0) {
-		//return PxFilterFlag::eKILL;
-	}
+
 	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 	// 衝突時のイベントを有効化
 	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;

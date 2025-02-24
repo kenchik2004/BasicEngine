@@ -4,19 +4,27 @@
 
 void Transform::AddRotation(Vector3 euler_angles)
 {
-	Quaternion qx(euler_angles.x, Vector3(1, 0, 0));
-	Quaternion qy(euler_angles.y, Vector3(0, 1, 0));
-	Quaternion qz(euler_angles.z, Vector3(0, 0, 1));
+	Quaternion qx(DEG2RAD(euler_angles.x), Vector3(1, 0, 0));
+	Quaternion qy(DEG2RAD(euler_angles.y), Vector3(0, 1, 0));
+	Quaternion qz(DEG2RAD(euler_angles.z), Vector3(0, 0, 1));
 	rotation *= qx * qy * qz;
 
+}
+void Transform::AddRotation(Quaternion q)
+{
+	rotation *= q;
 }
 
 void Transform::SetRotation(Vector3 euler_angles)
 {
-	Quaternion qx(euler_angles.x, Vector3(1, 0, 0));
-	Quaternion qy(euler_angles.y, Vector3(0, 1, 0));
-	Quaternion qz(euler_angles.z, Vector3(0, 0, 1));
+	Quaternion qx(DEG2RAD(euler_angles.x), Vector3(1, 0, 0));
+	Quaternion qy(DEG2RAD(euler_angles.y), Vector3(0, 1, 0));
+	Quaternion qz(DEG2RAD(euler_angles.z), Vector3(0, 0, 1));
 	rotation = qx * qy * qz;
+}
+void Transform::SetRotation(Quaternion q)
+{
+	rotation = q;
 }
 
 Vector3 Transform::AxisX()

@@ -13,7 +13,9 @@ public:
 	inline void MovePosition(const Vector3& dir) { position += dir * Time::DeltaTime(); }
 	inline void SetPosition(const Vector3& pos) { position = pos; }
 	void AddRotation(Vector3 euler_angles);
+	void AddRotation(Quaternion q);
 	void SetRotation(Vector3 euler_angles);
+	void SetRotation(Quaternion q);
 	Vector3 AxisX();
 	Vector3 AxisY();
 	Vector3 AxisZ();

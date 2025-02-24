@@ -42,6 +42,7 @@
     </ClCompile>
     <ClCompile Include="src\System\typedef.cpp" />
     <ClCompile Include="src\System\PhysicsManager.cpp" />
+    <ClCompile Include="src\System\Components\RigidBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -90,6 +91,7 @@
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\PhysicsManager.h" />
+    <ClInclude Include="src\System\Components\RigidBody.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
