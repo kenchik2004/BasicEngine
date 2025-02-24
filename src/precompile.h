@@ -28,7 +28,7 @@
 #pragma comment(lib, "SimulationController_static_64.lib")
 #pragma warning (restore : 26495)
 
-#include <d3d9.h>
+#include <d3d11.h>
 //#include <d3dx9.h>
 
 #include "System/typedef.h"

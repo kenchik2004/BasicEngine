@@ -6,9 +6,11 @@ namespace Time {
 	unsigned long long sys_time; //<!システム上の時間(
 	unsigned long long sys_time_start; //<!システム上のアプリケーション開始時間
 	unsigned long long sys_time_prev; //<!システム上の前フレームの時間
+	unsigned long long real_sys_time_prev; //<!システム上の前フレームの時間
 	//外部で使用するための時間管理用変数(float[秒]管理)
 	double time;//<!アプリケーション開始後の経過時間(ゲーム内時間)
 	double delta_time; //!<前フレームとの時間差 (Δ)
+	double real_delta_time; //!<前フレームとの時間差 (Δ)
 	double delta_time_max; //!<前フレームとの時間差の最大値
 	double draw_delta_time; //!<前描画フレームとの時間差 (Δ)
 	double draw_delta_time_max; //!<前描画フレームとの時間差の最大値
@@ -31,6 +33,7 @@ namespace Time {
 		fixed_delta_time_max = 1.0 / fixed_fps_max;
 		sys_time_start = sys_time;
 		sys_time_prev = sys_time;
+		real_sys_time_prev = sys_time;
 		delta_time = 0;
 		return 0;
 	}
@@ -39,14 +42,16 @@ namespace Time {
 
 		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));
 		delta_time = (double)(MICRO2SEC((sys_time - sys_time_prev)));
+		real_delta_time = (double)(MICRO2SEC((sys_time - real_sys_time_prev)));
 		draw_delta_time += delta_time;
 		fixed_delta_time += delta_time;
 		time += delta_time * time_scale;
 		sys_time_prev = sys_time;
+		real_sys_time_prev = sys_time;
 	}
 	void UpdateFPS()
 	{
-		fps = 1.0 / UnscaledDeltaTime();
+		fps = 1.0 / real_delta_time;
 
 	}
 	int FixFPS()

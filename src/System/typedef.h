@@ -1,8 +1,8 @@
 #pragma once
 
 #define PI 3.1415926535f
-#define DEG2RAD(deg) deg*PI
-#define RAD2DEG(rad) rad/PI
+#define DEG2RAD(deg) deg*PI/180
+#define RAD2DEG(rad) rad*180/PI
 
 #define NON_COPYABLE(CLASS)										\
 					CLASS(const CLASS& that)=delete;			\
@@ -123,4 +123,22 @@ private:
 
 std::wstring Str2Wstr(std::string in);
 std::string WStr2Str(std::wstring in);
+
+
+#define BLACK     0x000000
+#define WHITE     0xFFFFFF
+#define RED       0xFF0000
+#define GREEN     0x00FF00
+#define BLUE      0x0000FF
+#define YELLOW    0xFFFF00
+#define CYAN      0x00FFFF
+#define MAGENTA   0xFF00FF
+#define GRAY      0x808080
+#define DARK_RED  0x800000
+#define DARK_GREEN 0x006400
+#define DARK_BLUE 0x00008B
+#define ORANGE    0xFFA500
+#define PINK      0xFFC0CB
+#define BROWN     0xA52A2A
+#define PURPLE    0x800080
 

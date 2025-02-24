@@ -75,9 +75,9 @@ inline MATRIX cast(const mat4x4& mat)
 inline mat4x4 cast(const MATRIX& mat)
 {
 	return mat4x4(
-		Vector4(mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[0][3]),
-		Vector4(mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[1][3]),
-		Vector4(mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[2][3]),
+		Vector4(mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[0][3]).getNormalized(),
+		Vector4(mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[1][3]).getNormalized(),
+		Vector4(mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[2][3]).getNormalized(),
 		Vector4(mat.m[3][0], mat.m[3][1], mat.m[3][2], mat.m[3][3])
 	);
 }
@@ -89,6 +89,14 @@ inline Vector3 CastPhysXVec(const float3& v) {
 // PhysXへの受け渡し用変換
 inline Quaternion CastPhysXQuat(const Quaternion& q) {
 	return Quaternion(-q.x, -q.y, -q.z, q.w);
+}
+inline mat4x4 CastPhysXMat(const mat4x4& mat) {
+	return mat4x4(
+		Vector4(mat.column0.x, mat.column1.x, mat.column2.x, mat.column0.w),
+		Vector4(mat.column0.y, mat.column1.y, mat.column2.y, mat.column1.w),
+		Vector4(mat.column0.z, mat.column1.z, mat.column2.z, mat.column2.w),
+		Vector4(mat.column3.x, mat.column3.y, mat.column3.z, mat.column3.w)
+	);
 }
 
 inline Vector3 QuaternionToEuler(const Quaternion& q) {
@@ -102,4 +110,12 @@ inline Vector3 QuaternionToEuler(const Quaternion& q) {
 	float yaw = atan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z));
 
 	return Vector3(roll, pitch, yaw);  // X, Y, Z に対応するオイラー角を返す
+}
+inline Quaternion Inverse(Quaternion q) {
+	if (fabsf(q.magnitudeSquared()) < FLT_EPSILON)
+		return Quaternion(0, 0, 0, 1);
+
+	float invnorm = 1.0f / q.magnitudeSquared();
+	return Quaternion(-q.x * invnorm, -q.y * invnorm, -q.z * invnorm, q.w * invnorm);
+
 }

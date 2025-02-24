@@ -22,6 +22,9 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WM_MOVING:
+		//ウィンドウ移動中は時飛ばしを行う(Physicsやアップデート処理の暴走を防ぐため)
+		Time::ResetTime();
 	default:
 		return(DefWindowProc(window, msg, wParam, lParam));
 	}
@@ -95,7 +98,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	SetCameraPositionAndTarget_UpVecY(float3(0, 0, 0), float3(0, 0, 1));
 	SceneManager::Load<SceneSample>();
-
+	Time::ResetTime();
 
 
 	//===============================================//
@@ -122,14 +125,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 			Time::Update();
 			Input::Update();
-			while (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD())
-			{
-				//物理
-				SceneManager::PrePhysics();
-				SceneManager::Physics();
-				SceneManager::PostPhysics();
-				Time::FixFixedFPS();
-			}
 
 			//アップデート
 			//GameUpdate();
@@ -139,6 +134,25 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
+			bool phys = false;
+			while (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD())
+			{
+				//物理
+				SceneManager::PrePhysics();
+				SceneManager::Physics();
+				SceneManager::PostPhysics();
+
+				if (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD() * 2) {
+					phys = true;
+					
+				}
+				Time::FixFixedFPS();
+			}
+			//あまりよろしくはないが、FPS低下時にはPhysicsが暴走する可能性があるので、
+			// fixed_deltatimeが2ループ分以上溜まったら時飛ばしを行う
+			if (phys)
+				Time::ResetTime();
+
 			//描画
 			while (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
 			{

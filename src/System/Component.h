@@ -32,7 +32,6 @@ public:
 		this_class->status.status_bit.on(CompStat::STATUS::ACTIVE);
 		this_class->status.class_name = typeid(T).name();
 	};
-
 	void SetPriority(int prio);
 	inline int GetPriority() { return status.priority; }
 	void RemoveThisComponent();
