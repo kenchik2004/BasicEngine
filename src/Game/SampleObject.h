@@ -6,6 +6,7 @@ public:
 	USING_SUPER(SampleObject);
 	int Init() override;
 	void Update() override;
+	void LateUpdate() override;
 	void Draw() override;
 	void PreDraw() override;
 	void PrePhysics() override;
@@ -14,7 +15,7 @@ public:
 	void Exit()override;
 	physx::PxRigidDynamic* rigid_dynamic = nullptr;
 	physx::PxShape* my_shape = nullptr;
-	Vector3 velocity;
+
 	bool camera = false;
 	int model = -1;
 };

@@ -70,7 +70,7 @@ public:
 	virtual void UnLoad() {}
 	void Destroy();
 private:
-	ObjBasePVec objects; 
+	ObjBasePVec objects;
 	std::vector<physx::PxActor*> waiting_remove_actors;
 
 	//template <class T> std::shared_ptr<T> CreateObject();
