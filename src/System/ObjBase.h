@@ -65,7 +65,7 @@ private:
 
 
 public:
-	template <class T,class...Args> std::shared_ptr<T> AddComponent(Args...args) {
+	template <class T> std::shared_ptr<T> AddComponent() {
 
 		auto comp = std::make_shared<T>();
 		comp->owner = shared_from_this();
