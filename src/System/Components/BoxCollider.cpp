@@ -16,6 +16,8 @@ int BoxCollider::Init()
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
 		*Material::Metal_Default);
+	shape->userData = new std::weak_ptr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+
 	rigidbody.lock()->GetBody()->attachShape(*shape);
 	return 0;
 }

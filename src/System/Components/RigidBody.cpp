@@ -23,8 +23,15 @@ void RigidBody::PrePhysics()
 	auto& owner_trns = owner->transform;
 	body->setGlobalPose(PxTransform(owner_trns->position + owner_trns->rotation.rotate(pos), owner_trns->rotation * rot));
 	if (body->is<PxRigidDynamic>()) {
-		static_cast<PxRigidDynamic*>(body)->setLinearVelocity(velocity);
-		static_cast<PxRigidDynamic*>(body)->setMass(mass);
+		auto rig_body = static_cast<PxRigidDynamic*>(body);
+		rig_body->setLinearVelocity(velocity);
+		rig_body->setMass(mass);
+		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_X, freeze_position.x);
+		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Y, freeze_position.y);
+		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Z, freeze_position.z);
+		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, freeze_rotation.x);
+		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, freeze_rotation.y);
+		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, freeze_rotation.z);
 
 	}
 }
