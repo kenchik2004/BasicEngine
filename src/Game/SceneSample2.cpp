@@ -9,13 +9,17 @@ int SceneSample2::Init()
 {
 	obj = SceneManager::Object::Create<Object>();
 	auto rb = obj->AddComponent<RigidBody>();
-	obj->AddComponent<CapsuleCollider>()->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
+	auto col = obj->AddComponent<CapsuleCollider>();
+	col->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
+	col->position = Vector3(0, 1.0f, 0);
 	obj->transform->position = Vector3(0, 5, 0);
 	rb->freeze_rotation = { 1,1,1 };
 	auto model = obj->AddComponent<ModelRenderer>();
 	model->scale = { 0.01f,0.01f,0.01f };
 	model->rot = Quaternion(DEG2RAD(180), Vector3(0, 1, 0));
 	model->Load("data/model.mv1");
+	model->SetAnimation("data/anim_walk.mv1", "walk", 1);
+	model->PlayAnimationNoSame("walk", true);
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
@@ -57,7 +61,7 @@ void SceneSample2::PreDraw()
 {
 	float3 cam_pos = obj->transform->position;
 	cam_pos -= obj->transform->AxisZ() * 3.0f;
-	cam_pos += obj->transform->AxisY()*3.0f;
+	cam_pos += obj->transform->AxisY() * 3.0f;
 
-	SetCameraPositionAndTargetAndUpVec(cam_pos, cast(obj->transform->position+ obj->transform->AxisY()),cast(obj->transform->AxisY()));
+	SetCameraPositionAndTargetAndUpVec(cam_pos, cast(obj->transform->position + obj->transform->AxisY()), cast(obj->transform->AxisY()));
 }
