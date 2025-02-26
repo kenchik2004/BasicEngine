@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <functional>
 #include "chrono"
 
 #pragma warning (disable : 4819)
