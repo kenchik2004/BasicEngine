@@ -5,5 +5,7 @@ class SceneSample2 :
 {
     int Init() override;
     void Update() override;
+    void PreDraw() override;
+    ObjBaseP obj;
 };
 

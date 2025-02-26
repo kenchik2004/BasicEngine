@@ -6,11 +6,11 @@
 
 int SceneSample2::Init()
 {
-	auto obj = SceneManager::Object::Create<Object>();
-	obj->AddComponent<RigidBody>();
-	obj->AddComponent<CapsuleCollider>()->rotation=Quaternion(DEG2RAD(90),Vector3(1,0,0));
+	obj = SceneManager::Object::Create<Object>();
+	auto rb = obj->AddComponent<RigidBody>();
+	obj->AddComponent<CapsuleCollider>()->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
 	obj->transform->position = Vector3(0, 5, 0);
-
+	rb->freeze_rotation = { 1,1,1 };
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
@@ -20,6 +20,39 @@ int SceneSample2::Init()
 
 void SceneSample2::Update()
 {
+	auto rb = obj->GetComponent<RigidBody>();
+	float3 velocity_factor = float3(0, 0, 0);
+
+
+	if (Input::CheckHitKey(KEY_INPUT_LEFT))
+		obj->transform->AddRotation(float3(0, -90 * Time::UnscaledDeltaTime(), 0));
+	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
+		obj->transform->AddRotation(float3(0, 90 * Time::UnscaledDeltaTime(), 0));
+
+	if (Input::CheckHitKey(KEY_INPUT_W))
+		velocity_factor += obj->transform->AxisZ();
+	if (Input::CheckHitKey(KEY_INPUT_S))
+		velocity_factor -= obj->transform->AxisZ();
+	if (Input::CheckHitKey(KEY_INPUT_D))
+		velocity_factor += obj->transform->AxisX();
+	if (Input::CheckHitKey(KEY_INPUT_A))
+		velocity_factor -= obj->transform->AxisX();
+
+	velocity_factor = ProjectOnPlane(velocity_factor, float3(0, 1, 0)).normalized() * 3.5f;
+	velocity_factor.y = rb->velocity.y;
+	rb->velocity = velocity_factor;
+
+	if (Input::PushHitKey(KEY_INPUT_SPACE))
+		rb->AddForce(Vector3(0, 10.0f, 0), physx::PxForceMode::eIMPULSE);
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
 		SceneManager::Change(SceneManager::GetScene<SceneSample>());
+}
+
+void SceneSample2::PreDraw()
+{
+	float3 cam_pos = obj->transform->position;
+	cam_pos -= obj->transform->AxisZ() * 3.0f;
+	cam_pos += obj->transform->AxisY()*3.0f;
+
+	SetCameraPositionAndTargetAndUpVec(cam_pos, cast(obj->transform->position+ obj->transform->AxisY()),cast(obj->transform->AxisY()));
 }
