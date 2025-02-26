@@ -1,5 +1,10 @@
 #pragma once
 #include <System/Component.h>
+struct LockFlag {
+	bool x = false;
+	bool y = false;
+	bool z = false;
+};
 class RigidBody :public Component
 {
 public:
@@ -15,6 +20,8 @@ public:
 	Vector3 velocity = { 0,0,0 };
 	float mass = 1.0f;
 	physx::PxRigidActor* GetBody() { return body; }
+	LockFlag freeze_position = { 0,0,0 };
+	LockFlag freeze_rotation = { 0,0,0 };
 
 private:
 	physx::PxRigidActor* body = nullptr;

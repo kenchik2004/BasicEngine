@@ -15,6 +15,8 @@ int CapsuleCollider::Init()
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxCapsuleGeometry(radius, height * 0.5f),
 		*Material::Metal_Default);
+	shape->userData = new std::weak_ptr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+
 	rigidbody.lock()->GetBody()->attachShape(*shape);
 	return 0;
 }

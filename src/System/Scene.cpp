@@ -49,7 +49,8 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 	//以降、Hit処理などに入らないようuserDataを解放して、nullptrにしておく
 	auto wp = static_cast<std::weak_ptr<ObjBase>*>(actor->userData);
 	actor->userData = nullptr;
-	delete wp;
+	if (wp->lock())
+		delete wp;
 	////アクターが持っているシェイプ情報を全部取得
 	//physx::PxU32 num_shapes = actor->getNbShapes();
 	//std::vector<physx::PxShape*> shapes(num_shapes);
@@ -69,7 +70,14 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 
 void Scene::DeleteShape(physx::PxShape* shape)
 {
-	auto body=shape->getActor();
+	if (!shape)
+		return;
+	auto wp = static_cast<std::weak_ptr<Collider>*>(shape->userData);
+	shape->userData = nullptr;
+	if (wp->lock())
+		delete wp;
+
+	auto body = shape->getActor();
 	if (body)
 		body->detachShape(*shape);
 	waiting_remove_shapes.push_back(shape);
