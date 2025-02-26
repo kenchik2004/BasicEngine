@@ -1,6 +1,9 @@
 #include "precompile.h"
 #include "SceneSample.h"
 #include "SampleObject.h"
+#include <System/Components/RigidBody.h>
+#include <System/Components/BoxCollider.h>
+
 
 void SceneSample::Load()
 {
@@ -29,6 +32,14 @@ int SceneSample::Init()
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f))
 	);
 	obj = SceneManager::Object::Create<SampleObject>();
+	for (int j = 0; j < 100; j++)
+		for (int i = 0; i < 10; i++) {
+			auto a = SceneManager::Object::Create<Object>();
+			a->transform->position = Vector3(i - 5, j+0.5f, 0);
+			a->AddComponent<RigidBody>();
+			a->AddComponent<BoxCollider>();
+
+		}
 
 	SetCameraPositionAndTarget_UpVecY(float3(5, 5, -5), float3(0, 1, 0));
 
@@ -46,19 +57,13 @@ void SceneSample::Update()
 
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
 		obj->camera = !obj->camera;
-	if (Input::PushHitKey(KEY_INPUT_RSHIFT)) {
-		auto obj_ = SceneManager::Object::Create<SampleObject3>();
-		obj_->transform->AddRotation(float3(0, 0, 90));
-		obj_->velocity = float3(0, -1000, 0);
-		obj_->transform->SetPosition(float3(0, 100, 0));
 
-	}
 }
 
 void SceneSample::Draw()
 {
 	if (!obj->camera)
-		SetCameraPositionAndTarget_UpVecY(float3(0, 3, -3), float3(0, 1, 0));
+		SetCameraPositionAndTarget_UpVecY(float3(3, 3, -3), float3(0, 1, 0));
 	for (int x = -7; x <= 7; x++)
 	{
 		DrawLine3D(float3(x, 0, -7), float3(x, 0, 7), GetColor(255, 255, 255));

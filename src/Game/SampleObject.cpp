@@ -13,11 +13,11 @@ float anim_time_max = 0;
 int anim = -1;
 int SampleObject::Init()
 {
-	transform->SetPosition(float3(0, 0, 0));
+	transform->SetPosition(float3(0, 0, 5));
 
 	model = MV1LoadModel("data/Player.mv1");
 	anim = MV1LoadModel("data/Die.mv1");
-	int a = MV1AttachAnim(model, 0, anim, false);
+	//int a = MV1AttachAnim(model, 0, anim, false);
 	anim_time_max = MV1GetAttachAnimTotalTime(model, 0);
 	//AddComponent<RigidBody>()->is_a = true;
 	{
@@ -30,13 +30,16 @@ int SampleObject::Init()
 		my_shape
 			= PhysicsManager::GetPhysicsInstance()->createShape(
 				// Sphere‚Ì”¼Œa
-				physx::PxCapsuleGeometry(0.25f, 0.3f),
+				physx::PxCapsuleGeometry(0.5f, 1.0f),
 				// –€ŽCŒW”‚Æ”½”­ŒW”‚ÌÝ’è
 				*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f)
 			);
 		// Œ`ó‚ð•R‚Ã‚¯
 		my_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
 		my_shape->setSimulationFilterData(physx::PxFilterData(1, 1, 0, 0));
+		//my_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		//my_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+		
 		rigid_dynamic->attachShape(*my_shape);
 		//rigid_dynamic->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 		p_scene->addActor(*rigid_dynamic);
@@ -60,9 +63,9 @@ void SampleObject::Update()
 		velocity_factor += float3(1, 0, 0);
 	if (Input::CheckHitKey(KEY_INPUT_LEFT))
 		velocity_factor -= float3(1, 0, 0);
-	if (Input::CheckHitKey(KEY_INPUT_SPACE))
-		SceneManager::Object::Create<SampleObject3>();
-
+	velocity_factor = velocity_factor.normalized() * 2.5f;
+	velocity_factor.y = velocity.y;
+	velocity = velocity_factor;
 
 	if (Input::CheckHitKey(KEY_INPUT_W))
 		transform->AddRotation(float3(-30 * Time::UnscaledDeltaTime(), 0, 0));
@@ -93,9 +96,6 @@ void SampleObject::LateUpdate()
 
 void SampleObject::Draw()
 {
-	if (!camera) {
-		//	DrawSphere3D(cast(transform->position), 1.0f, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
-	}
 
 
 	MV1DrawModel(model);
@@ -122,6 +122,7 @@ void SampleObject::PrePhysics()
 	rigid_dynamic->setGlobalPose(physx::PxTransform(transform->position, transform->rotation));
 
 	rigid_dynamic->attachShape(*my_shape);
+	rigid_dynamic->setLinearVelocity(velocity);
 }
 
 void SampleObject::PostPhysics()
@@ -129,6 +130,7 @@ void SampleObject::PostPhysics()
 	auto trns = rigid_dynamic->getGlobalPose();
 	transform->position = trns.p;
 	transform->rotation = trns.q;
+	velocity = rigid_dynamic->getLinearVelocity();
 }
 
 
@@ -139,11 +141,10 @@ void SampleObject::DebugDraw()
 	float3 capsule_start;
 	float3 capsule_vec;
 	mat4x4 mat(trns * trns2);
-	capsule_start = mat.getPosition();
-	capsule_vec = mat.getBasis(0)*0.35f;
-	DrawCapsule3D(capsule_start, capsule_start + capsule_vec, 0.125f, 8, MAGENTA, MAGENTA, false);
-	//	DrawSphere3D(pos, 0.25f, 8, MAGENTA, MAGENTA, false);
-	//MV1DrawModel(model);
+	capsule_start = mat.getPosition() - mat.getBasis(0) * 1.0f;
+	capsule_vec = mat.getBasis(0) * 2.0f;
+	DrawCapsule3D(capsule_start, capsule_start + capsule_vec, 0.5f, 8, color, color, false);
+
 
 }
 
@@ -158,148 +159,16 @@ void SampleObject::Exit()
 		MV1DeleteModel(model);
 }
 
-
-int SampleObject2::Init()
+void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
 {
-	transform->SetPosition(float3((GetRand(140) - 70) * 0.1f, GetRand(50), (GetRand(140) - 70) * 0.1f));
-	//SetCameraPositionAndTargetAndUpVec(float3(transform->position), float3(transform->position + transform->AxisZ()), float3(transform->AxisY()));
-	color = GetColor(0, 0, 255);
-
-	return 0;
+	color = CYAN;
+	SceneManager::Object::Destory(hit_info.hit_collision);
 }
 
-
-void SampleObject2::Draw()
+void SampleObject::OnTriggerEnter(const HitInfo& hit_info)
 {
-	DrawSphere3D(cast(transform->position), 0.5f, 8, color, color, true);
+	color = YELLOW;
 }
 
-void SampleObject2::Update()
-{
-
-}
-
-
-void SampleObject2::PrePhysics()
-{
-
-}
-
-void SampleObject2::PostPhysics()
-{
-
-}
-
-void SampleObject2::OnCollisionEnter(const HitInfo& hit_info)
-{
-	color = GetColor(255, 0, 0);
-}
-
-void SampleObject2::OnCollisionStay(const HitInfo& hit_info)
-{
-	color = GetColor(0, 255, 0);
-}
-
-void SampleObject2::OnCollisionExit(const HitInfo& hit_info)
-{
-	color = GetColor(0, 0, 255);
-}
-
-void SampleObject2::DebugDraw()
-{
-	SetUseLighting(false);
-	SetLightEnable(false);
-	DrawSphere3D(cast(transform->position), 0.5f, 8, color, color, false);
-	SetUseLighting(true);
-	SetLightEnable(true);
-}
-
-void SampleObject2::Exit()
-{
-}
-
-
-int SampleObject3::Init()
-{
-	//SetCameraPositionAndTargetAndUpVec(float3(transform->position), float3(transform->position + transform->AxisZ()), float3(transform->AxisY()));
-	color = GetColor(255, 0, 255);
-	transform->SetPosition(float3(GetRand(14) - 7, GetRand(14), GetRand(14) - 7));
-	tag = Player;
-	obj = SceneManager::Object::Get<SampleObject>();
-	{
-		auto scene = SceneManager::GetCurrentScene();
-		auto p_scene = scene->GetPhysicsScene();
-		rigid_dynamic
-			= PhysicsManager::GetPhysicsInstance()->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
-		rigid_dynamic->userData = new std::weak_ptr<ObjBase>(shared_from_this());
-		// Œ`ó(Sphere)‚ðì¬
-		my_shape
-			= PhysicsManager::GetPhysicsInstance()->createShape(
-				// Sphere‚Ì”¼Œa
-				physx::PxCapsuleGeometry(0.5f, 2),
-				// –€ŽCŒW”‚Æ”½”­ŒW”‚ÌÝ’è
-				*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f)
-			);
-		// Œ`ó‚ð•R‚Ã‚¯
-		my_shape->setLocalPose(physx::PxTransform(physx::PxIdentity));
-		my_shape->setSimulationFilterData(physx::PxFilterData(1, 1, 0, 0));
-		rigid_dynamic->attachShape(*my_shape);
-		p_scene->addActor(*rigid_dynamic);
-	}
-	return 0;
-}
-
-
-void SampleObject3::Draw()
-{
-	DrawCapsule3D(cast(transform->position - transform->AxisX() * 2), cast(transform->position + transform->AxisX() * 2), 0.5f, 8, color, color, true);
-}
-
-
-void SampleObject3::PrePhysics()
-{
-	rigid_dynamic->setGlobalPose(physx::PxTransform(transform->position, transform->rotation));
-	rigid_dynamic->setLinearVelocity(velocity);
-}
-
-void SampleObject3::PostPhysics()
-{
-	auto trns = rigid_dynamic->getGlobalPose();
-	transform->position = trns.p;
-	transform->rotation = trns.q;
-	velocity = rigid_dynamic->getLinearVelocity();
-}
-
-void SampleObject3::OnCollisionEnter(const HitInfo& hit_info)
-{
-	color = GetColor(255, 0, 0);
-	if (hit_info.hit_collision != obj && hit_info.hit_collision->tag != tag)
-		SceneManager::Object::Destory(hit_info.hit_collision);
-}
-
-void SampleObject3::OnCollisionStay(const HitInfo& hit_info)
-{
-	color = GetColor(0, 255, 0);
-}
-
-void SampleObject3::OnCollisionExit(const HitInfo& hit_info)
-{
-	color = GetColor(0, 0, 255);
-}
-
-void SampleObject3::DebugDraw()
-{
-	SetUseLighting(false);
-	SetLightEnable(false);
-	DrawCapsule3D(cast(transform->position - transform->AxisX() * 2), cast(transform->position + transform->AxisX() * 2), 0.5f, 8, color, color, false);
-	SetUseLighting(true);
-	SetLightEnable(true);
-}
-
-void SampleObject3::Exit()
-{
-
-
-}
 
 
