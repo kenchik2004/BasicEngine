@@ -2,6 +2,7 @@
 #include "System/SceneManager.h"
 #include "System/Scene.h"
 #include "System/ObjBase.h"
+#include "System/Components/ModelRenderer.h"
 
 
 ScenePVec SceneManager::scenes = ScenePVec(0);
@@ -308,6 +309,7 @@ void SceneManager::Exit()
 	//デバッグ用ボックス(SooS提供)の解放
 	MV1DeleteModel(debug_box);
 	//===============================//
+	ModelRenderer::UnLoad();
 	scenes.clear();
 }
 
