@@ -1,6 +1,7 @@
 #include "precompile.h"
 #include "PhysicsManager.h"
 #include "System/ObjBase.h"
+#include <System/Components/Collider.h>
 
 using namespace physx;
 
@@ -18,6 +19,17 @@ PxPvd* PhysicsManager::m_pPvd = nullptr;
 
 std::vector<physx::PxScene*> PhysicsManager::scenes(0);
 
+
+physx::PxMaterial* Material::Metal_Default = nullptr;
+physx::PxMaterial* Material::Rubber_Default = nullptr;
+physx::PxMaterial* Material::Wood_Default = nullptr;
+physx::PxMaterial* Material::Plastic_Default = nullptr;
+physx::PxMaterial* Material::Glass_Default = nullptr;
+physx::PxMaterial* Material::Concrete_Default = nullptr;
+physx::PxMaterial* Material::Asphalt_Default = nullptr;
+physx::PxMaterial* Material::Wool_Default = nullptr;
+physx::PxMaterial* Material::Paper_Default = nullptr;
+
 HitCallBack hit_callback;
 
 PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
@@ -27,15 +39,15 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	PxPairFlags& pairFlags,
 	const void* constantBlock,
 	PxU32 constantBlockSize) {
-		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1)) {
-			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
-		}
-		else {
-			pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-		}
-		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1)) {
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+	}
+	else {
+		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+	}
+	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 
 
 	return PxFilterFlag::eDEFAULT;
@@ -75,6 +87,16 @@ void PhysicsManager::Init()
 	physx::PxSceneDesc scene_desc(m_pPhysics->getTolerancesScale());
 	scene_desc.simulationEventCallback = &hit_callback;
 
+	Material::Metal_Default = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
+	Material::Rubber_Default = m_pPhysics->createMaterial(1.1f, 0.8f, 0.7f);
+	Material::Wood_Default = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
+	Material::Plastic_Default = m_pPhysics->createMaterial(0.4f, 0.2f, 0.3f);
+	Material::Glass_Default = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
+	Material::Concrete_Default = m_pPhysics->createMaterial(1.0f, 0.8f, 0.2f);
+	Material::Asphalt_Default = m_pPhysics->createMaterial(0.8f, 0.6f, 0.3f);
+	Material::Wool_Default = m_pPhysics->createMaterial(0.7f, 0.5f, 0.05f);
+	Material::Paper_Default = m_pPhysics->createMaterial(0.5f, 0.4f, 0.1f);
+
 }
 
 void PhysicsManager::Exit()
@@ -82,10 +104,18 @@ void PhysicsManager::Exit()
 	//拡張機能を使わなくする
 	PxCloseExtensions();
 	for (auto& ite : scenes) {
-		if (!ite)
-			ite->release();
+		ite->release();
 	}
 
+	Material::Metal_Default->release();
+	Material::Rubber_Default->release();
+	Material::Wood_Default->release();
+	Material::Plastic_Default->release();
+	Material::Glass_Default->release();
+	Material::Concrete_Default->release();
+	Material::Asphalt_Default->release();
+	Material::Wool_Default->release();
+	Material::Paper_Default->release();
 	m_pDispatcher->release();
 	m_pPhysics->release();
 	if (m_pPvd) {
@@ -137,13 +167,13 @@ void PhysicsManager::ReleaseScene(physx::PxScene* scene_)
 		if (*ite == scene_) {
 			(*ite)->release();
 			ite = scenes.erase(ite);
+			break;
 		}
 	}
 }
 
 void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 {
-	SceneManager::GetCurrentScene()->GetPhysicsScene()->lockRead(); // PhysX のスレッドをロック
 	for (physx::PxU32 i = 0; i < nbPairs; i++)
 	{
 		PxContactPair contact = pairs[i];
@@ -159,10 +189,12 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
-					hit_info0.hit_collision = sp_b;
+					hit_info0.collision = sp_a->GetComponent<Collider>();
+					hit_info0.hit_collision = sp_b->GetComponent<Collider>();
 					sp_a->OnCollisionEnter(hit_info0); // オブジェクトAのヒット発生関数を呼ぶ
 					HitInfo hit_info1;
-					hit_info1.hit_collision = sp_a;
+					hit_info1.collision = sp_b->GetComponent<Collider>();
+					hit_info1.hit_collision = sp_a->GetComponent<Collider>();
 					sp_b->OnCollisionEnter(hit_info1); // オブジェクトBのヒット発生関数を呼ぶ
 				}
 
@@ -179,10 +211,12 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
-					hit_info0.hit_collision = sp_b;
+					hit_info0.collision = sp_a->GetComponent<Collider>();
+					hit_info0.hit_collision = sp_b->GetComponent<Collider>();
 					sp_a->OnCollisionStay(hit_info0); // オブジェクトAのヒット継続関数を呼ぶ
 					HitInfo hit_info1;
-					hit_info1.hit_collision = sp_a;
+					hit_info1.collision = sp_b->GetComponent<Collider>();
+					hit_info1.hit_collision = sp_a->GetComponent<Collider>();
 					sp_b->OnCollisionStay(hit_info1); // オブジェクトBのヒット継続関数を呼ぶ
 				}
 			}
@@ -197,22 +231,22 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
-					hit_info0.hit_collision = sp_b;
+					hit_info0.collision = sp_a->GetComponent<Collider>();
+					hit_info0.hit_collision = sp_b->GetComponent<Collider>();
 					sp_a->OnCollisionExit(hit_info0); // オブジェクトAのヒット終了関数を呼ぶ
 					HitInfo hit_info1;
-					hit_info1.hit_collision = sp_a;
+					hit_info1.collision = sp_b->GetComponent<Collider>();
+					hit_info1.hit_collision = sp_a->GetComponent<Collider>();
 					sp_b->OnCollisionExit(hit_info1); // オブジェクトBのヒット終了関数を呼ぶ
 				}
 			}
 		}
 	}
-	SceneManager::GetCurrentScene()->GetPhysicsScene()->unlockRead(); // PhysX のスレッドをアンロック
 
 }
 
 void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 {
-	SceneManager::GetCurrentScene()->GetPhysicsScene()->lockRead(); // PhysX のスレッドをロック
 	for (physx::PxU32 i = 0; i < count; i++)
 	{
 		PxTriggerPair contact = pairs[i];
@@ -227,10 +261,12 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
-					hit_info0.hit_collision = sp_b;
+					hit_info0.collision = sp_a->GetComponent<Collider>();
+					hit_info0.hit_collision = sp_b->GetComponent<Collider>();
 					sp_a->OnTriggerEnter(hit_info0); // オブジェクトAのトリガー発生関数を呼ぶ
 					HitInfo hit_info1;
-					hit_info1.hit_collision = sp_a;
+					hit_info1.collision = sp_b->GetComponent<Collider>();
+					hit_info1.hit_collision = sp_a->GetComponent<Collider>();
 					sp_b->OnTriggerEnter(hit_info1); // オブジェクトBのトリガー発生関数を呼ぶ
 				}
 
@@ -247,10 +283,12 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
-					hit_info0.hit_collision = sp_b;
+					hit_info0.collision = sp_a->GetComponent<Collider>();
+					hit_info0.hit_collision = sp_b->GetComponent<Collider>();
 					sp_a->OnTriggerStay(hit_info0); // オブジェクトAのトリガー継続関数を呼ぶ
 					HitInfo hit_info1;
-					hit_info1.hit_collision = sp_a;
+					hit_info1.collision = sp_b->GetComponent<Collider>();
+					hit_info1.hit_collision = sp_a->GetComponent<Collider>();
 					sp_b->OnTriggerStay(hit_info1); // オブジェクトBのトリガー継続関数を呼ぶ
 				}
 			}
@@ -265,14 +303,15 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
-					hit_info0.hit_collision = sp_b;
+					hit_info0.collision = sp_a->GetComponent<Collider>();
+					hit_info0.hit_collision = sp_b->GetComponent<Collider>();
 					sp_a->OnTriggerExit(hit_info0); // オブジェクトAのトリガー終了関数を呼ぶ
 					HitInfo hit_info1;
-					hit_info1.hit_collision = sp_a;
+					hit_info1.collision = sp_b->GetComponent<Collider>();
+					hit_info1.hit_collision = sp_a->GetComponent<Collider>();
 					sp_b->OnTriggerExit(hit_info1); // オブジェクトBのトリガー終了関数を呼ぶ
 				}
 			}
 		}
 	}
-	SceneManager::GetCurrentScene()->GetPhysicsScene()->unlockRead(); // PhysX のスレッドをアンロック
 }
