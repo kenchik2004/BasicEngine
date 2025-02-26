@@ -14,7 +14,7 @@ int Collider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxSphereGeometry(),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f));
+		*Material::Metal_Default);
 
 	return 0;
 }
@@ -26,7 +26,8 @@ void Collider::Update()
 void Collider::Exit()
 {
 	if (rigidbody.lock()) {
-		rigidbody.lock()->GetBody()->detachShape(*shape);
+		if (auto body = rigidbody.lock()->GetBody())
+			body->detachShape(*shape);
 	}
 	SceneManager::GetCurrentScene()->DeleteShape(shape);
 	shape = nullptr;
