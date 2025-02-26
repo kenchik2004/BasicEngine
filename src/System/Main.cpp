@@ -3,6 +3,7 @@
 #include "Game/SceneSample.h"
 
 #define DEBUG_WINDOW
+#define USE_DEBUG_DRAW
 
 class SceneSample;
 
@@ -175,8 +176,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				//WaitTimer(2);
 				ClearDrawScreen();
 				//デバッグウィンドウへの描画
+#endif
+#ifdef USE_DEBUG_DRAW
 				SceneManager::DebugDraw();
 				SceneManager::LateDebugDraw();
+#endif
+#ifdef DEBUG_WINDOW
 				//書き込みを行うウィンドウを、デバッグウィンドウに設定
 				SetScreenFlipTargetWindow(window[0]);
 #endif
