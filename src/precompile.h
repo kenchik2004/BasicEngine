@@ -26,7 +26,8 @@
 #pragma comment(lib, "PhysXTask_static_64.lib")
 #pragma comment(lib, "SceneQuery_static_64.lib")
 #pragma comment(lib, "SimulationController_static_64.lib")
-#pragma warning (restore : 26495)
+#pragma warning (default : 26495)
+
 
 #include <d3d11.h>
 //#include <d3dx9.h>
