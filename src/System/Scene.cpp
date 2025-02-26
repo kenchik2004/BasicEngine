@@ -9,20 +9,28 @@ void Scene::Physics()
 {
 	if (!physics_scene)
 		throw Exception("PhysXシーンがないンゴ!!ヤバいンゴ!", DEFAULT_EXCEPTION_PARAM);
+
 	//シミュレーション
-	physics_scene->simulate(Time::FixedDeltaTimeD());
+	physics_scene->simulate(Time::FixedDeltaTime());
 	//シミュレーションを待つ
 	physics_scene->fetchResults(true);
-	
+
 	//シミュレーション終了後、安全にアクターを削除する
 	for (auto actor : waiting_remove_actors) {
+
 		physics_scene->removeActor(*actor);
 		actor->release();
 		//二度と参照することがないよう、きっちりnullptrを入れておく
 		actor = nullptr;
 	}
+	for (auto shape : waiting_remove_shapes) {
+		shape->release();
+		//二度と参照することがないよう、きっちりnullptrを入れておく
+		shape = nullptr;
+	}
 	//全部消えたのですっきりさせる
 	waiting_remove_actors.clear();
+	waiting_remove_shapes.clear();
 }
 
 void Scene::DeleteActor(physx::PxRigidActor* actor)
@@ -51,6 +59,15 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 
 	physics_scene->unlockWrite();// PhysX のスレッドをアンロック
 }
+
+void Scene::DeleteShape(physx::PxShape* shape)
+{
+	auto body=shape->getActor();
+	if (body)
+		body->detachShape(*shape);
+	waiting_remove_shapes.push_back(shape);
+}
+
 
 void Scene::Destroy()
 {

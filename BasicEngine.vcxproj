@@ -24,7 +24,11 @@
     <ClCompile Include="src\Game\SampleObject.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
+    <ClCompile Include="src\System\Components\BoxCollider.cpp" />
+    <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
+    <ClCompile Include="src\System\Components\Collider.cpp" />
     <ClCompile Include="src\System\Components\RigidBody.cpp" />
+    <ClCompile Include="src\System\Components\SphereCollider.cpp" />
     <ClCompile Include="src\System\Components\Transform.cpp" />
     <ClCompile Include="src\System\Exception.cpp" />
     <ClCompile Include="src\System\Input.cpp" />
@@ -43,7 +47,11 @@
     <ClInclude Include="src\Game\SceneSample.h" />
     <ClInclude Include="src\precompile.h" />
     <ClInclude Include="src\System\Component.h" />
+    <ClInclude Include="src\System\Components\BoxCollider.h" />
+    <ClInclude Include="src\System\Components\CapsuleCollider.h" />
+    <ClInclude Include="src\System\Components\Collider.h" />
     <ClInclude Include="src\System\Components\RigidBody.h" />
+    <ClInclude Include="src\System\Components\SphereCollider.h" />
     <ClInclude Include="src\System\Components\Transform.h" />
     <ClInclude Include="src\System\Exception.h" />
     <ClInclude Include="src\System\Input.h" />

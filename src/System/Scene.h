@@ -42,6 +42,7 @@ public:
 	void Physics();
 	inline virtual void PostPhysics() {}
 	void DeleteActor(physx::PxRigidActor* actor);
+	void DeleteShape(physx::PxShape* shape);
 	//-----------------------------
 
 	//-----------------------------
@@ -70,8 +71,9 @@ public:
 	virtual void UnLoad() {}
 	void Destroy();
 private:
-	ObjBasePVec objects; 
+	ObjBasePVec objects;
 	std::vector<physx::PxActor*> waiting_remove_actors;
+	std::vector<physx::PxShape*> waiting_remove_shapes;
 
 	//template <class T> std::shared_ptr<T> CreateObject();
 
@@ -163,6 +165,9 @@ private:
 			return;
 		for (auto obj = objects.begin(); obj != objects.end();) {
 			if ((*obj) == destroy_obj) {
+				while ((*obj)->GetComponent<Component>()) {
+					(*obj)->RemoveComponent((*obj)->GetComponent<Component>());
+				}
 				(*obj)->Exit();
 				obj = objects.erase(obj);
 				destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);

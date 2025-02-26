@@ -1,0 +1,42 @@
+#include "precompile.h"
+#include <System/Components/RigidBody.h>
+#include "System/Components/CapsuleCollider.h"
+
+using namespace physx;
+int CapsuleCollider::Init()
+{
+	rigidbody = owner->GetComponent<RigidBody>();
+	if (!rigidbody.lock()) {
+		RemoveThisComponent();
+		return -1;
+	}
+	auto p_scene = SceneManager::GetCurrentScene()->GetPhysicsScene();
+
+	shape = PhysicsManager::GetPhysicsInstance()->createShape(
+		PxCapsuleGeometry(radius, height * 0.5f),
+		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f));
+	return 0;
+}
+
+void CapsuleCollider::PrePhysics()
+{
+	auto body = rigidbody.lock()->GetBody();
+	body->detachShape(*shape);
+
+	shape->setGeometry(PxCapsuleGeometry(radius, height * 0.5f));
+
+	body->attachShape(*shape);
+}
+
+void CapsuleCollider::DebugDraw()
+{
+	auto body = rigidbody.lock()->GetBody();
+	physx::PxTransform trns = body->getGlobalPose();
+	physx::PxTransform trns2 = shape->getLocalPose();
+	float3 capsule_start;
+	float3 capsule_vec;
+	mat4x4 mat(trns * trns2);
+	capsule_start = mat.getPosition() - mat.getBasis(0) * height*0.5f;
+	capsule_vec = mat.getBasis(0) * height;
+	DrawCapsule3D(capsule_start, capsule_start + capsule_vec, radius, 8, GREEN, GREEN, false);
+}

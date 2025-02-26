@@ -40,9 +40,27 @@
     <ClCompile Include="src\System\Exception.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\typedef.cpp" />
-    <ClCompile Include="src\System\PhysicsManager.cpp" />
-    <ClCompile Include="src\System\Components\RigidBody.cpp" />
+    <ClCompile Include="src\System\Components\Collider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\BoxCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\CapsuleCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\SphereCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\RigidBody.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\PhysicsManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\typedef.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -90,8 +108,24 @@
     <ClInclude Include="src\System\Exception.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\PhysicsManager.h" />
-    <ClInclude Include="src\System\Components\RigidBody.h" />
+    <ClInclude Include="src\System\Components\Collider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\BoxCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\SphereCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\CapsuleCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\RigidBody.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\PhysicsManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

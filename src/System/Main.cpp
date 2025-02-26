@@ -44,7 +44,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	HWND window[1];
 	WNDCLASS param;
 #endif
-
+	SRand((unsigned int)time(nullptr));
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
 	SetGraphMode(800, 450, 32, 240);
@@ -144,7 +144,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 				if (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD() * 2) {
 					phys = true;
-					
+
 				}
 				Time::FixFixedFPS();
 			}

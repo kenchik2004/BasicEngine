@@ -65,8 +65,8 @@ private:
 
 
 public:
+	template <class T> std::shared_ptr<T> AddComponent() {
 
-	template <class T> std::shared_ptr<T> AddComponent(...) {
 		auto comp = std::make_shared<T>();
 		comp->owner = shared_from_this();
 		comp->Construct<T>();
@@ -146,6 +146,13 @@ public:
 	inline virtual void OnCollisionEnter(const HitInfo& hit_info) {}
 	inline virtual void OnCollisionStay(const HitInfo& hit_info) {}
 	inline virtual void OnCollisionExit(const HitInfo& hit_info) {}
+
+	//-----------------------------
+	// Hit時コールバック(トリガー)
+	//-----------------------------
+	inline virtual void OnTriggerEnter(const HitInfo& hit_info) {}
+	inline virtual void OnTriggerStay(const HitInfo& hit_info) {}
+	inline virtual void OnTriggerExit(const HitInfo& hit_info) {}
 	//-----------------------------
 
 	//-----------------------------

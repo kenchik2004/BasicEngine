@@ -223,12 +223,15 @@ void SceneManager::DebugDraw()
 		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
 		return;
 	}
+
 	//===============================//
 	//デバッグ用ボックス(SooS提供)の描画
 	MV1SetPosition(debug_box, VGet(0, 0, 0));
 	//MV1SetScale(debug_box, VGet(10, 10, 10));
 	MV1DrawModel(debug_box);
 
+	SetUseLighting(false);
+	SetLightEnable(false);
 	//===============================//
 	current_scene->DebugDraw();
 	for (auto& obj : Object::GetArray<ObjBase>()) {
@@ -238,6 +241,8 @@ void SceneManager::DebugDraw()
 			comp->DebugDraw();
 		}
 	}
+	SetUseLighting(true);
+	SetLightEnable(true);
 }
 
 void SceneManager::LateDebugDraw()
