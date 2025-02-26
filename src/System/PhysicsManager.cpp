@@ -27,12 +27,16 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	PxPairFlags& pairFlags,
 	const void* constantBlock,
 	PxU32 constantBlockSize) {
+		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1)) {
+			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		}
+		else {
+			pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+		}
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 
-	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-	// 衝突時のイベントを有効化
-	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 
 	return PxFilterFlag::eDEFAULT;
 }
@@ -106,6 +110,7 @@ physx::PxScene* PhysicsManager::AddScene()
 	scene_desc.flags |= PxSceneFlag::eENABLE_CCD;
 	scene_desc.flags |= PxSceneFlag::eENABLE_PCM;
 	scene_desc.flags |= PxSceneFlag::eENABLE_STABILIZATION;
+
 
 
 	physx::PxScene* scene = nullptr;
@@ -207,4 +212,67 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 
 void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 {
+	SceneManager::GetCurrentScene()->GetPhysicsScene()->lockRead(); // PhysX のスレッドをロック
+	for (physx::PxU32 i = 0; i < count; i++)
+	{
+		PxTriggerPair contact = pairs[i];
+		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
+		{
+			auto wp_a = static_cast<std::weak_ptr<ObjBase>*>((contact.triggerActor->userData));
+			auto wp_b = static_cast<std::weak_ptr<ObjBase>*>((contact.otherActor->userData));
+			//std::weak_ptrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
+			if (wp_a && wp_b) {
+
+				auto sp_a = wp_a->lock();
+				auto sp_b = wp_b->lock();
+				if (sp_a && sp_b) {
+					HitInfo hit_info0;
+					hit_info0.hit_collision = sp_b;
+					sp_a->OnTriggerEnter(hit_info0); // オブジェクトAのトリガー発生関数を呼ぶ
+					HitInfo hit_info1;
+					hit_info1.hit_collision = sp_a;
+					sp_b->OnTriggerEnter(hit_info1); // オブジェクトBのトリガー発生関数を呼ぶ
+				}
+
+			}
+		}
+
+		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // 衝突が続けて発生したとき
+		{
+
+			auto wp_a = static_cast<std::weak_ptr<ObjBase>*>((contact.triggerActor->userData));
+			auto wp_b = static_cast<std::weak_ptr<ObjBase>*>((contact.otherActor->userData));
+			if (wp_a && wp_b) {
+				auto sp_a = wp_a->lock();
+				auto sp_b = wp_b->lock();
+				if (sp_a && sp_b) {
+					HitInfo hit_info0;
+					hit_info0.hit_collision = sp_b;
+					sp_a->OnTriggerStay(hit_info0); // オブジェクトAのトリガー継続関数を呼ぶ
+					HitInfo hit_info1;
+					hit_info1.hit_collision = sp_a;
+					sp_b->OnTriggerStay(hit_info1); // オブジェクトBのトリガー継続関数を呼ぶ
+				}
+			}
+		}
+
+		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_LOST) // 衝突が終了したとき
+		{
+			auto wp_a = static_cast<std::weak_ptr<ObjBase>*>((contact.triggerActor->userData));
+			auto wp_b = static_cast<std::weak_ptr<ObjBase>*>((contact.otherActor->userData));
+			if (wp_a && wp_b) {
+				auto sp_a = wp_a->lock();
+				auto sp_b = wp_b->lock();
+				if (sp_a && sp_b) {
+					HitInfo hit_info0;
+					hit_info0.hit_collision = sp_b;
+					sp_a->OnTriggerExit(hit_info0); // オブジェクトAのトリガー終了関数を呼ぶ
+					HitInfo hit_info1;
+					hit_info1.hit_collision = sp_a;
+					sp_b->OnTriggerExit(hit_info1); // オブジェクトBのトリガー終了関数を呼ぶ
+				}
+			}
+		}
+	}
+	SceneManager::GetCurrentScene()->GetPhysicsScene()->unlockRead(); // PhysX のスレッドをアンロック
 }
