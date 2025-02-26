@@ -146,6 +146,13 @@ public:
 	inline virtual void OnCollisionEnter(const HitInfo& hit_info) {}
 	inline virtual void OnCollisionStay(const HitInfo& hit_info) {}
 	inline virtual void OnCollisionExit(const HitInfo& hit_info) {}
+
+	//-----------------------------
+	// Hit時コールバック(トリガー)
+	//-----------------------------
+	inline virtual void OnTriggerEnter(const HitInfo& hit_info) {}
+	inline virtual void OnTriggerStay(const HitInfo& hit_info) {}
+	inline virtual void OnTriggerExit(const HitInfo& hit_info) {}
 	//-----------------------------
 
 	//-----------------------------
