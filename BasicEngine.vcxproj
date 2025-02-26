@@ -23,6 +23,7 @@
     <ClCompile Include="src\Float3.cpp" />
     <ClCompile Include="src\Game\SampleObject.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
+    <ClCompile Include="src\Game\SceneSample2.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
     <ClCompile Include="src\System\Components\BoxCollider.cpp" />
     <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="src\Float3.h" />
     <ClInclude Include="src\Game\SampleObject.h" />
     <ClInclude Include="src\Game\SceneSample.h" />
+    <ClInclude Include="src\Game\SceneSample2.h" />
     <ClInclude Include="src\precompile.h" />
     <ClInclude Include="src\System\Component.h" />
     <ClInclude Include="src\System\Components\BoxCollider.h" />

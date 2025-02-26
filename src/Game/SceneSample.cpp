@@ -65,7 +65,6 @@ void SceneSample::Update()
 
 void SceneSample::Draw()
 {
-	if (!obj->camera)
 		SetCameraPositionAndTarget_UpVecY(float3(3, 3, -3), float3(0, 1, 0));
 	for (int x = -7; x <= 7; x++)
 	{

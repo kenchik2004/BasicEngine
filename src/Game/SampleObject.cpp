@@ -1,6 +1,7 @@
 #include "precompile.h"
 #include "SampleObject.h"
 #include "System/Components/RigidBody.h"
+#include <System/Components/Collider.h>
 
 mat4x4 MV1GetFrameLocalWorldMatrix(int MHandle, int FrameIndex, bool is_physx) {
 	mat4x4 mat = cast(MV1GetFrameLocalWorldMatrix(MHandle, FrameIndex));
@@ -39,7 +40,7 @@ int SampleObject::Init()
 		my_shape->setSimulationFilterData(physx::PxFilterData(1, 1, 0, 0));
 		//my_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		//my_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-		
+
 		rigid_dynamic->attachShape(*my_shape);
 		//rigid_dynamic->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 		p_scene->addActor(*rigid_dynamic);
@@ -162,7 +163,7 @@ void SampleObject::Exit()
 void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
 {
 	color = CYAN;
-	SceneManager::Object::Destory(hit_info.hit_collision);
+	SceneManager::Object::Destory(hit_info.hit_collision->owner);
 }
 
 void SampleObject::OnTriggerEnter(const HitInfo& hit_info)
