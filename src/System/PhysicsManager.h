@@ -22,10 +22,12 @@ public:
 	static void ReleaseScene(physx::PxScene* scene_);
 	inline static physx::PxPhysics* GetPhysicsInstance() { return m_pPhysics; }
 };
-USING_PTR(ObjBase);
+
+USING_PTR(Collider);
 class HitInfo {
 public:
-	ObjBaseP hit_collision = nullptr;
+	ColliderP collision = nullptr;
+	ColliderP hit_collision = nullptr;
 };
 class HitCallBack : public physx::PxSimulationEventCallback {
 
@@ -37,5 +39,16 @@ class HitCallBack : public physx::PxSimulationEventCallback {
 	void onWake(physx::PxActor**, physx::PxU32) override {}
 	void onSleep(physx::PxActor**, physx::PxU32) override {}
 	void onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, physx::PxU32) override {}
+};
+struct Material {
+	static physx::PxMaterial* Metal_Default;
+	static physx::PxMaterial* Rubber_Default;
+	static physx::PxMaterial* Wood_Default;
+	static physx::PxMaterial* Plastic_Default;
+	static physx::PxMaterial* Glass_Default;
+	static physx::PxMaterial* Concrete_Default;
+	static physx::PxMaterial* Asphalt_Default;
+	static physx::PxMaterial* Wool_Default;
+	static physx::PxMaterial* Paper_Default;
 };
 

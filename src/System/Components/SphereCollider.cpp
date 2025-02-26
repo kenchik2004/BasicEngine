@@ -14,7 +14,7 @@ int SphereCollider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxSphereGeometry(radius),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f));
+		*Material::Metal_Default);
 
 
 	rigidbody.lock()->GetBody()->attachShape(*shape);
@@ -25,6 +25,7 @@ void SphereCollider::PrePhysics()
 {
 	rigidbody.lock()->GetBody()->detachShape(*shape);
 	shape->setGeometry(PxSphereGeometry(radius));
+	shape->setLocalPose(PxTransform(position, rotation));
 
 
 

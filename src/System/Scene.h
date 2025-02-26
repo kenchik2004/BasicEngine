@@ -70,8 +70,13 @@ public:
 	inline virtual void Exit() {}
 	virtual void UnLoad() {}
 	void Destroy();
+	void DestroyPhysics();
+	inline const bool& IsInSimulation() { return in_simulation; }
+	inline void AddFunctionAfterSimulation(const std::function<void()> function) { waiting_functions.push_back(function); }
 private:
+	bool in_simulation = false;
 	ObjBasePVec objects;
+	std::vector<std::function<void()>> waiting_functions;
 	std::vector<physx::PxActor*> waiting_remove_actors;
 	std::vector<physx::PxShape*> waiting_remove_shapes;
 

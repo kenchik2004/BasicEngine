@@ -10,9 +10,12 @@ public:
 	void Update() override;
 	void DebugDraw() override;
 	void Exit() override;
+	void AddForce(Vector3 force, physx::PxForceMode::Enum force_mode = physx::PxForceMode::eFORCE);
+	void SetVelocity(Vector3 velocity_);
 	Vector3 velocity = { 0,0,0 };
-	bool is_a = false;
+	float mass = 1.0f;
 	physx::PxRigidActor* GetBody() { return body; }
+
 private:
 	physx::PxRigidActor* body = nullptr;
 	Vector3 pos = { 0,0,0 };

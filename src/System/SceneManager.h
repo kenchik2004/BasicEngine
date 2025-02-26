@@ -71,12 +71,17 @@ public:
 		if (!current_scene) {
 			current_scene = scene;
 			scene->Init();
+			//ロード中にdeltatimeが蓄積し、物理がぶっ壊れることがあるため時飛ばし
+			Time::ResetTime();
 			return;
 		}
 
 		current_scene->Exit();
+		current_scene->Destroy();
 		current_scene = scene;
 		scene->Init();
+			//ロード中にdeltatimeが蓄積し、物理がぶっ壊れることがあるため時飛ばし
+		Time::ResetTime();
 
 	}
 	template <class T> static inline void Destroy(std::shared_ptr<T> destroy_scene) {
@@ -88,13 +93,14 @@ public:
 				(*scene)->UnLoad();
 				try {
 					(*scene)->Destroy();
+					(*scene)->DestroyPhysics();
 				}
 				catch (Exception& ex) {
 					ex.Show();
 					break;
 				}
 				scene = scenes.erase(scene);
-				if(destroy_scene != current_scene)
+				if (destroy_scene != current_scene)
 					destroy_scene.reset();
 				break;
 			}

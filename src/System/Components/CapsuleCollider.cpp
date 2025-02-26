@@ -14,7 +14,8 @@ int CapsuleCollider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxCapsuleGeometry(radius, height * 0.5f),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f));
+		*Material::Metal_Default);
+	rigidbody.lock()->GetBody()->attachShape(*shape);
 	return 0;
 }
 
@@ -24,6 +25,7 @@ void CapsuleCollider::PrePhysics()
 	body->detachShape(*shape);
 
 	shape->setGeometry(PxCapsuleGeometry(radius, height * 0.5f));
+	shape->setLocalPose(PxTransform(position, rotation));
 
 	body->attachShape(*shape);
 }
@@ -36,7 +38,7 @@ void CapsuleCollider::DebugDraw()
 	float3 capsule_start;
 	float3 capsule_vec;
 	mat4x4 mat(trns * trns2);
-	capsule_start = mat.getPosition() - mat.getBasis(0) * height*0.5f;
+	capsule_start = mat.getPosition() - mat.getBasis(0) * height * 0.5f;
 	capsule_vec = mat.getBasis(0) * height;
 	DrawCapsule3D(capsule_start, capsule_start + capsule_vec, radius, 8, GREEN, GREEN, false);
 }

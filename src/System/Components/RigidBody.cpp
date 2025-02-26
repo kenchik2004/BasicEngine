@@ -22,8 +22,11 @@ void RigidBody::PrePhysics()
 {
 	auto& owner_trns = owner->transform;
 	body->setGlobalPose(PxTransform(owner_trns->position + owner_trns->rotation.rotate(pos), owner_trns->rotation * rot));
-	if (body->is<PxRigidDynamic>())
+	if (body->is<PxRigidDynamic>()) {
 		static_cast<PxRigidDynamic*>(body)->setLinearVelocity(velocity);
+		static_cast<PxRigidDynamic*>(body)->setMass(mass);
+
+	}
 }
 
 void RigidBody::PostPhysics()
@@ -52,4 +55,40 @@ void RigidBody::Exit()
 
 	SceneManager::GetCurrentScene()->DeleteActor(body);
 	body = nullptr;
+}
+
+void RigidBody::AddForce(Vector3 force, physx::PxForceMode::Enum force_mode)
+{
+	if (!body->is<PxRigidDynamic>())
+		return;
+	bool in_simulation = SceneManager::GetCurrentScene()->IsInSimulation();
+	if (!in_simulation) {
+		static_cast<PxRigidDynamic*>(body)->addForce(force, force_mode);
+		return;
+	}
+	auto lambda = [wp = std::weak_ptr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), force, force_mode]() {
+		if (!wp.lock())
+			return;
+		if (static_cast<std::weak_ptr<ObjBase>*>(wp.lock()->body->userData)->lock())
+			static_cast<PxRigidDynamic*>(wp.lock()->body)->addForce(force, force_mode);
+		};
+	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
+
+}
+
+void RigidBody::SetVelocity(Vector3 velocity_)
+{
+	velocity = velocity_;
+	bool in_simulation = SceneManager::GetCurrentScene()->IsInSimulation();
+	if (!in_simulation) {
+		static_cast<PxRigidDynamic*>(body)->setLinearVelocity(velocity_);
+		return;
+	}
+	auto lambda = [wp = std::weak_ptr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), velocity_]() {
+		if (!wp.lock())
+			return;
+		if (static_cast<std::weak_ptr<ObjBase>*>(wp.lock()->body->userData)->lock())
+			static_cast<PxRigidDynamic*>(wp.lock()->body)->setLinearVelocity(velocity_);
+		};
+	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
 }

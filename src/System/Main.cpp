@@ -97,8 +97,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	ChangeLightTypeDir(VGet(0.8f, -1.2f, 1.0f));
 
 	SetCameraPositionAndTarget_UpVecY(float3(0, 0, 0), float3(0, 0, 1));
-	SceneManager::Load<SceneSample>();
-	Time::ResetTime();
 
 
 	//===============================================//
@@ -165,7 +163,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 				//GameRender();
-				if (!SceneManager::GetCurrentScene())
+				if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN))
 					SceneManager::Load<SceneSample>();
 #ifdef DEBUG_WINDOW
 				//書き込みを行うウィンドウを、メインウィンドウに設定
@@ -206,7 +204,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//PhysXコピペソース
 	//============================================//
 
-	PxCloseExtensions();
 	PhysicsManager::Exit();
 
 	//============================================//

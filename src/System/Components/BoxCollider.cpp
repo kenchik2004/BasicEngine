@@ -15,7 +15,8 @@ int BoxCollider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f));
+		*Material::Metal_Default);
+	rigidbody.lock()->GetBody()->attachShape(*shape);
 	return 0;
 }
 
@@ -23,6 +24,7 @@ void BoxCollider::PrePhysics()
 {
 	rigidbody.lock()->GetBody()->detachShape(*shape);
 	shape->setGeometry(PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f));
+	shape->setLocalPose(PxTransform(position, rotation));
 
 
 
@@ -51,13 +53,13 @@ void BoxCollider::DebugDraw()
 	for (int i = 0; i < 4; i++) {
 		DrawLine3D(cast(points[i]), i != 3 ? cast(points[i + 1]) : cast(points[0]), GREEN);
 		DrawLine3D(cast(points[i]), cast(points[i + 4]), GREEN);
-		if (i % 2 == 0&&i!=0) {
+		if (i % 2 == 0 && i != 0) {
 			DrawLine3D(cast(points[i]), cast(points[i - 2]), GREEN);
 		}
 	}
 	for (int i = 4; i < 8; i++) {
 		DrawLine3D(cast(points[i]), i != 7 ? cast(points[i + 1]) : cast(points[4]), GREEN);
-		if (i % 2 == 0&&i!=4) {
+		if (i % 2 == 0 && i != 4) {
 			DrawLine3D(cast(points[i]), cast(points[i - 2]), GREEN);
 		}
 	}
