@@ -1,5 +1,6 @@
 #include "precompile.h"
 #include "SceneSample.h"
+#include "SceneSample2.h"
 #include "SampleObject.h"
 #include <System/Components/RigidBody.h>
 #include <System/Components/BoxCollider.h>
@@ -13,31 +14,33 @@ int SceneSample::Init()
 {
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f))
+		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(1, 0, 0, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f))
+		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(-1, 0, 0, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f))
+		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, 1, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f))
+		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, -1, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.1f))
+		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
 	obj = SceneManager::Object::Create<SampleObject>();
-	for (int j = 0; j < 100; j++)
+	for (int j = 0; j < 10; j++)
 		for (int i = 0; i < 10; i++) {
 			auto a = SceneManager::Object::Create<Object>();
-			a->transform->position = Vector3(i - 5, j+0.5f, 0);
-			a->AddComponent<RigidBody>();
-			a->AddComponent<BoxCollider>();
+			a->transform->position = Vector3(i - 6.0f, j + 0.5f, 6.0f-i);
+			auto rb=a->AddComponent<RigidBody>();
+			rb->mass = 1.0f;
+			auto col = a->AddComponent<BoxCollider>();
+			col->rotation = Quaternion(DEG2RAD(45), Vector3(0, 1, 0));
 
 		}
 
@@ -56,7 +59,7 @@ void SceneSample::Update()
 		Time::SetFPSMAX(Time::GetFPSMAX() - 2);
 
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
-		obj->camera = !obj->camera;
+		SceneManager::Load<SceneSample2>();
 
 }
 
