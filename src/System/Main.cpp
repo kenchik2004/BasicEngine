@@ -25,6 +25,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 	case WM_MOVING:
 		//ウィンドウ移動中は時飛ばしを行う(Physicsやアップデート処理の暴走を防ぐため)
 		Time::ResetTime();
+		break;
 	default:
 		return(DefWindowProc(window, msg, wParam, lParam));
 	}
@@ -129,6 +130,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::PreUpdate();
 			SceneManager::Update();
 
+			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN))
+				SceneManager::Load<SceneSample>();
 
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
@@ -163,8 +166,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 				//GameRender();
-				if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN))
-					SceneManager::Load<SceneSample>();
 #ifdef DEBUG_WINDOW
 				//書き込みを行うウィンドウを、メインウィンドウに設定
 				SetScreenFlipTargetWindow(NULL);

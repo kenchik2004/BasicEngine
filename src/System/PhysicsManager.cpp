@@ -169,6 +169,7 @@ void PhysicsManager::ReleaseScene(physx::PxScene* scene_)
 			ite = scenes.erase(ite);
 			break;
 		}
+		ite++;
 	}
 }
 
