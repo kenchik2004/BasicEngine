@@ -3,6 +3,7 @@
 #include "SceneSample2.h"
 #include "System/Components/RigidBody.h" 
 #include "System/Components/CapsuleCollider.h" 
+#include "System/Components/ModelRenderer.h" 
 
 int SceneSample2::Init()
 {
@@ -11,6 +12,10 @@ int SceneSample2::Init()
 	obj->AddComponent<CapsuleCollider>()->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
 	obj->transform->position = Vector3(0, 5, 0);
 	rb->freeze_rotation = { 1,1,1 };
+	auto model = obj->AddComponent<ModelRenderer>();
+	model->scale = { 0.01f,0.01f,0.01f };
+	model->rot = Quaternion(DEG2RAD(180), Vector3(0, 1, 0));
+	model->Load("data/model.mv1");
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))

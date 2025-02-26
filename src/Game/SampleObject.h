@@ -22,5 +22,4 @@ public:
 
 	unsigned int color = MAGENTA;
 	bool camera = false;
-	int model = -1;
 };
