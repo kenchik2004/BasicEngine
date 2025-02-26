@@ -247,7 +247,7 @@ void SceneManager::DebugDraw()
 
 void SceneManager::LateDebugDraw()
 {
-	if (!current_scene) return;	
+	if (!current_scene) return;
 	current_scene->LateDebugDraw();
 	for (auto& obj : Object::GetArray<ObjBase>()) {
 		obj->LateDebugDraw();
@@ -287,10 +287,21 @@ void SceneManager::Exit()
 			obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
 		}
 		current_scene->Exit();
+		current_scene->Destroy();
+		current_scene->DestroyPhysics();
+		for (auto ite = scenes.begin(); ite != scenes.end(); ite++) {
+			if ((*ite) == current_scene)
+			{
+				scenes.erase(ite);
+				current_scene = nullptr;
+				break;
+			}
+		}
 	}
-	current_scene = nullptr;
 	for (auto& scene : scenes) {
 		scene->UnLoad();
+		scene->Destroy();
+		scene->DestroyPhysics();
 	}
 
 	//===============================//
