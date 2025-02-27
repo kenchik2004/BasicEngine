@@ -27,7 +27,7 @@ public:
 	void PostPhysics() override;
 	void Exit() override;
 	void Draw() override;
-	void PlayAnimation(std::string_view name, bool loop = false,float start_time=0.0f);
+	void PlayAnimation(std::string_view name, bool loop = false, float start_time = 0.0f);
 	void PlayAnimationNoSame(std::string_view name, bool loop = false, float start_time = 0.0f);
 	void DebugDraw() override;
 	static void UnLoad();
@@ -49,3 +49,9 @@ public:
 	static std::vector<ModelData> model_pool;
 };
 
+//DXLib::MATRIXでは、PhysXの行列と互換性がないので、スケール情報を破棄した上で行と列を入れ替えて取得
+inline mat4x4 MV1GetFrameLocalWorldMatrix(int MHandle, int FrameIndex, bool is_physx) {
+	mat4x4 mat = cast(MV1GetFrameLocalWorldMatrix(MHandle, FrameIndex));
+	mat = CastPhysXMat(mat);
+	return mat;
+}
