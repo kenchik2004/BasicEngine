@@ -20,6 +20,7 @@ int SampleObject::Init()
 	model->Load("data/model.mv1", "model_1");
 	model->scale = { 0.01f,0.01f,0.01f };
 	model->SetAnimation("data/anim_walk.mv1", "walk", 1);
+	model->SetAnimation("data/anim_stand.mv1", "stand", 1);
 	model->PlayAnimationNoSame("walk", true);
 	//int a = MV1AttachAnim(model, 0, anim, false);
 	//anim_time_max = MV1GetAttachAnimTotalTime(model, 0);
