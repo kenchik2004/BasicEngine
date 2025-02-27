@@ -1,6 +1,7 @@
 #include "precompile.h"
 #include "RigidBody.h"
 #include "SphereCollider.h"
+#include <System/Components/ModelRenderer.h>
 
 using namespace physx;
 int SphereCollider::Init()
@@ -25,8 +26,10 @@ int SphereCollider::Init()
 void SphereCollider::PrePhysics()
 {
 	rigidbody.lock()->GetBody()->detachShape(*shape);
+
+	PxTransform trns = MakeCollisionTransform();
 	shape->setGeometry(PxSphereGeometry(radius));
-	shape->setLocalPose(PxTransform(position, rotation));
+	shape->setLocalPose(trns);
 
 
 

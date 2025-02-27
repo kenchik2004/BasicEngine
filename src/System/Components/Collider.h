@@ -14,8 +14,14 @@ public:
 	Vector3 position = { 0,0,0 };
 	Quaternion rotation = { 0,0,0,1 };
 	RigidBodyP GetRigidBody() { return rigidbody.lock(); }
+	void AttachToModel(int attach_index);
 protected:
+	bool attach_to_model = false;
+	int model_attach_index = -1;
 	RigidBodyWP rigidbody;
 	physx::PxShape* shape;
+
+	physx::PxTransform MakeCollisionTransform();
+
 };
 

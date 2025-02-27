@@ -1,6 +1,7 @@
 #include "precompile.h"
 #include <System/Components/RigidBody.h>
 #include "BoxCollider.h"
+#include <System/Components/ModelRenderer.h>
 
 using namespace physx;
 
@@ -25,8 +26,12 @@ int BoxCollider::Init()
 void BoxCollider::PrePhysics()
 {
 	rigidbody.lock()->GetBody()->detachShape(*shape);
+
+
+	PxTransform trns = MakeCollisionTransform();
+
 	shape->setGeometry(PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f));
-	shape->setLocalPose(PxTransform(position, rotation));
+	shape->setLocalPose(trns);
 
 
 

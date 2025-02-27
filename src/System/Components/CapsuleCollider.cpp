@@ -1,6 +1,7 @@
 #include "precompile.h"
 #include <System/Components/RigidBody.h>
 #include "System/Components/CapsuleCollider.h"
+#include "System/Components/ModelRenderer.h"
 
 using namespace physx;
 int CapsuleCollider::Init()
@@ -26,8 +27,9 @@ void CapsuleCollider::PrePhysics()
 	auto body = rigidbody.lock()->GetBody();
 	body->detachShape(*shape);
 
+	PxTransform trns = MakeCollisionTransform();
 	shape->setGeometry(PxCapsuleGeometry(radius, height * 0.5f));
-	shape->setLocalPose(PxTransform(position, rotation));
+	shape->setLocalPose(trns);
 
 	body->attachShape(*shape);
 }
