@@ -90,38 +90,45 @@ void ModelRenderer::Draw()
 	MV1DrawModel(model.handle);
 }
 
-void ModelRenderer::PlayAnimation(std::string_view name, bool loop)
+void ModelRenderer::PlayAnimation(std::string_view name, bool loop, float start_time)
 {
 	AnimationData* select = nullptr;
 	for (auto& ite : animation) {
-		if (ite.name == name)
+		if (ite.name == name) {
 			select = &ite;
+			break;
+		}
 	}
 	if (!select)
 		return;
 	if (current_anim) {
 		MV1DetachAnim(model.handle, current_index);
 		current_index = -1;
-		MV1AttachAnim(model.handle, select->animation_index, select->handle, false);
-		current_anim = select;
-		anim_loop = loop;
+		current_index = MV1AttachAnim(model.handle, select->animation_index, select->handle, false);
+		if (current_index >= 0) {
+			current_anim = select;
+			anim_loop = loop;
+			anim_time = start_time * 60;
+		}
 		return;
 	}
 	current_index = MV1AttachAnim(model.handle, select->animation_index, select->handle, false);
 	anim_loop = loop;
-	if (current_index >= 0)
+	if (current_index >= 0) {
 		current_anim = select;
+		anim_time = start_time * 60;
+	}
 }
 
-void ModelRenderer::PlayAnimationNoSame(std::string_view name, bool loop)
+void ModelRenderer::PlayAnimationNoSame(std::string_view name, bool loop, float start_time)
 {
 	if (!current_anim) {
-		PlayAnimation(name, loop);
+		PlayAnimation(name, loop, start_time);
 		return;
 	}
 
 	if (current_anim->name != name) {
-		PlayAnimation(name, loop);
+		PlayAnimation(name, loop, start_time);
 	}
 
 }
