@@ -72,7 +72,7 @@ namespace Time {
 
 	void FixDrawFPS() {
 		draw_fps = 1.0 / draw_delta_time;
-		draw_delta_time -= draw_delta_time_max;
+		draw_delta_time = 0;
 	}
 
 	void FixFixedFPS() {
