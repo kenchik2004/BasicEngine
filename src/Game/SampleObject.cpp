@@ -2,13 +2,11 @@
 #include "SampleObject.h"
 #include "System/Components/RigidBody.h"
 #include <System/Components/Collider.h>
+#include <System/Components/CapsuleCollider.h>
+#include <System/Components/BoxCollider.h>
 #include <System/Components/ModelRenderer.h>
 
-mat4x4 MV1GetFrameLocalWorldMatrix(int MHandle, int FrameIndex, bool is_physx) {
-	mat4x4 mat = cast(MV1GetFrameLocalWorldMatrix(MHandle, FrameIndex));
-	mat = CastPhysXMat(mat);
-	return mat;
-}
+
 
 float anim_time = 0;
 float anim_time_max = 0;
@@ -21,10 +19,18 @@ int SampleObject::Init()
 	model->scale = { 0.01f,0.01f,0.01f };
 	model->SetAnimation("data/anim_walk.mv1", "walk", 1);
 	model->SetAnimation("data/anim_stand.mv1", "stand", 1);
-	model->PlayAnimationNoSame("walk", true);
+	//model->PlayAnimationNoSame("walk", true);
+	AddComponent<RigidBody>()->freeze_rotation = { 0, 0, 0 };
+	auto col = AddComponent<BoxCollider>();
+	col->extension = { 0.1f,0.1f,0.1f };
+	col->AttachToModel(10);
+	col->rotation = Quaternion(DEG2RAD(0), Vector3(0, 1, 0));
+	col->position = Vector3(0, 0, 0);
+
 	//int a = MV1AttachAnim(model, 0, anim, false);
 	//anim_time_max = MV1GetAttachAnimTotalTime(model, 0);
 	//AddComponent<RigidBody>()->is_a = true;
+#if 0
 	{
 		auto scene = SceneManager::GetCurrentScene();
 		auto p_scene = scene->GetPhysicsScene();
@@ -48,7 +54,8 @@ int SampleObject::Init()
 		rigid_dynamic->attachShape(*my_shape);
 		//rigid_dynamic->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 		p_scene->addActor(*rigid_dynamic);
-	}
+}
+#endif
 
 	return 0;
 }
@@ -69,8 +76,8 @@ void SampleObject::Update()
 	if (Input::CheckHitKey(KEY_INPUT_LEFT))
 		velocity_factor -= float3(1, 0, 0);
 	velocity_factor = velocity_factor.normalized() * 2.5f;
-	velocity_factor.y = velocity.y;
-	velocity = velocity_factor;
+	velocity_factor.y = GetComponent<RigidBody>()->velocity.y;
+	GetComponent<RigidBody>()->velocity = velocity_factor;
 
 	if (Input::CheckHitKey(KEY_INPUT_W))
 		transform->AddRotation(float3(-30 * Time::UnscaledDeltaTime(), 0, 0));
@@ -110,6 +117,7 @@ void SampleObject::PreDraw()
 }
 void SampleObject::PrePhysics()
 {
+#if 0
 	auto model = GetComponent<ModelRenderer>();
 	float3 frame_pos = MV1GetFramePosition(model->model.handle, 5);
 	mat4x4 frame_mat = MV1GetFrameLocalWorldMatrix(model->model.handle, 5, true);
@@ -126,19 +134,23 @@ void SampleObject::PrePhysics()
 
 	rigid_dynamic->attachShape(*my_shape);
 	rigid_dynamic->setLinearVelocity(velocity);
+#endif
 }
 
 void SampleObject::PostPhysics()
 {
+#if 0
 	auto trns = rigid_dynamic->getGlobalPose();
 	transform->position = trns.p;
 	transform->rotation = trns.q;
 	velocity = rigid_dynamic->getLinearVelocity();
+#endif
 }
 
 
 void SampleObject::DebugDraw()
 {
+#if 0
 	physx::PxTransform trns = rigid_dynamic->getGlobalPose();
 	physx::PxTransform trns2 = my_shape->getLocalPose();
 	float3 capsule_start;
@@ -147,12 +159,13 @@ void SampleObject::DebugDraw()
 	capsule_start = mat.getPosition() - mat.getBasis(0) * 1.0f;
 	capsule_vec = mat.getBasis(0) * 2.0f;
 	DrawCapsule3D(capsule_start, capsule_start + capsule_vec, 0.5f, 8, color, color, false);
-
+#endif
 
 }
 
 void SampleObject::Exit()
 {
+#if 0
 	SceneManager::GetCurrentScene()->DeleteActor(rigid_dynamic);
 	rigid_dynamic = nullptr;
 	//MV1DetachAnim(model, 0);
@@ -160,12 +173,13 @@ void SampleObject::Exit()
 	//	MV1DeleteModel(anim);
 	//if (model > 0)
 	//	MV1DeleteModel(model);
+#endif
 }
 
 void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
 {
 	color = CYAN;
-	SceneManager::Object::Destory(hit_info.hit_collision->owner);
+	//SceneManager::Object::Destory(hit_info.hit_collision->owner);
 }
 
 void SampleObject::OnTriggerEnter(const HitInfo& hit_info)
