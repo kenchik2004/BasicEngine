@@ -9,18 +9,11 @@ mat4x4 MV1GetFrameLocalWorldMatrix(int MHandle, int FrameIndex, bool is_physx) {
 	return mat;
 }
 
-float anim_time = 0;
-float anim_time_max = 0;
-int anim = -1;
+
 int SampleObject::Init()
 {
 	transform->SetPosition(float3(0, 0, 5));
 
-	model = MV1LoadModel("data/Player.mv1");
-	anim = MV1LoadModel("data/Die.mv1");
-	//int a = MV1AttachAnim(model, 0, anim, false);
-	anim_time_max = MV1GetAttachAnimTotalTime(model, 0);
-	//AddComponent<RigidBody>()->is_a = true;
 	{
 		auto scene = SceneManager::GetCurrentScene();
 		auto p_scene = scene->GetPhysicsScene();
@@ -51,10 +44,6 @@ int SampleObject::Init()
 
 void SampleObject::Update()
 {
-	anim_time += Time::DeltaTime() * 10;
-	//if (anim_time >= anim_time_max)
-	//	anim_time = 0;
-	MV1SetAttachAnimTime(model, 0, anim_time);
 	float3 velocity_factor = float3(0, 0, 0);
 	if (Input::CheckHitKey(KEY_INPUT_UP))
 		velocity_factor += float3(0, 0, 1);
@@ -89,40 +78,24 @@ void SampleObject::Update()
 
 void SampleObject::LateUpdate()
 {
-	mat4x4 mat(CastPhysXQuat(transform->rotation));
-	mat.scale(Vector4(transform->scale * 0.01f, 1));
-	mat.setPosition(transform->position);
-	MV1SetMatrix(model, cast(mat));
+
 }
 
 void SampleObject::Draw()
 {
 
 
-	MV1DrawModel(model);
 }
 
 void SampleObject::PreDraw()
 {
-	if (camera)
-		SetCameraPositionAndTargetAndUpVec(float3(transform->position), float3(transform->position + transform->AxisZ()), float3(transform->AxisY()));
 }
 void SampleObject::PrePhysics()
 {
-	float3 frame_pos = MV1GetFramePosition(model, 5);
-	mat4x4 frame_mat = MV1GetFrameLocalWorldMatrix(model, 5, true);
-	physx::PxTransform t(frame_mat);
-	frame_pos += t.q.rotate(float3(0, 0, 0)) - transform->position;
-	Quaternion q = Inverse(transform->rotation);
-	frame_pos = q.rotate(frame_pos);
-	rigid_dynamic->detachShape(*my_shape);
-
-	my_shape->setLocalPose(physx::PxTransform(frame_pos, q * t.q * Quaternion(DEG2RAD(90), Vector3(1, 0, 0))));
 
 
 	rigid_dynamic->setGlobalPose(physx::PxTransform(transform->position, transform->rotation));
 
-	rigid_dynamic->attachShape(*my_shape);
 	rigid_dynamic->setLinearVelocity(velocity);
 }
 
@@ -153,11 +126,6 @@ void SampleObject::Exit()
 {
 	SceneManager::GetCurrentScene()->DeleteActor(rigid_dynamic);
 	rigid_dynamic = nullptr;
-	MV1DetachAnim(model, 0);
-	if (anim > 0)
-		MV1DeleteModel(anim);
-	if (model > 0)
-		MV1DeleteModel(model);
 }
 
 void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
