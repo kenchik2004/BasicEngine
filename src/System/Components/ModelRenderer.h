@@ -27,8 +27,8 @@ public:
 	void PostPhysics() override;
 	void Exit() override;
 	void Draw() override;
-	void PlayAnimation(std::string_view name, bool loop = false);
-	void PlayAnimationNoSame(std::string_view name, bool loop = false);
+	void PlayAnimation(std::string_view name, bool loop = false,float start_time=0.0f);
+	void PlayAnimationNoSame(std::string_view name, bool loop = false, float start_time = 0.0f);
 	void DebugDraw() override;
 	static void UnLoad();
 
