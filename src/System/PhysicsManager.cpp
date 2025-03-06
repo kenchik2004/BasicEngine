@@ -39,15 +39,24 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	PxPairFlags& pairFlags,
 	const void* constantBlock,
 	PxU32 constantBlockSize) {
+	//if (!(filterData0.word0 & filterData1.word1) || !(filterData1.word0 & filterData0.word1))
+	//	return PxFilterFlag::eSUPPRESS;
+
 	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1)) {
+
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+
+
 	}
 	else {
 		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 	}
-	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 
 
 	return PxFilterFlag::eDEFAULT;

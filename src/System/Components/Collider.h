@@ -15,6 +15,10 @@ public:
 	Quaternion rotation = { 0,0,0,1 };
 	RigidBodyP GetRigidBody() { return rigidbody.lock(); }
 	void AttachToModel(int attach_index);
+
+
+	physx::PxU32 hit_group = UINT32_MAX;
+	physx::PxU32 collision_group = 1;
 protected:
 	bool attach_to_model = false;
 	int model_attach_index = -1;

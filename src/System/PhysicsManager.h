@@ -51,4 +51,3 @@ struct Material {
 	static physx::PxMaterial* Wool_Default;
 	static physx::PxMaterial* Paper_Default;
 };
-

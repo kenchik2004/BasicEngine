@@ -32,6 +32,8 @@ void RigidBody::PrePhysics()
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, freeze_rotation.x);
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, freeze_rotation.y);
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, freeze_rotation.z);
+		rig_body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !use_gravity);
+		rig_body->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, is_kinematic);
 
 	}
 }
@@ -54,7 +56,7 @@ void RigidBody::Update()
 
 void RigidBody::DebugDraw()
 {
-	DrawSphere3D(cast(body->getGlobalPose().p), 0.1f, 8, RED, RED, true);
+	DrawSphere3D(cast(body->getGlobalPose().p), 0.1f, 8, YELLOW, YELLOW, true);
 }
 
 void RigidBody::Exit()
