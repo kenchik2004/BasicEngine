@@ -9,6 +9,7 @@
 void SceneSample::Load()
 {
 }
+physx::PxShape* shape = nullptr;
 
 int SceneSample::Init()
 {
@@ -16,6 +17,7 @@ int SceneSample::Init()
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
+
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(1, 0, 0, 7),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
@@ -32,19 +34,29 @@ int SceneSample::Init()
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, -1, 7),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
+#if 0
+	auto box = SceneManager::Object::Create<Object>();
+	box->transform->position = Vector3(0, 0, 0);
+	box->AddComponent<RigidBody>()->use_gravity = false;
+	auto box_col = box->AddComponent<BoxCollider>();
+	box_col->extension = { 200,0.1f,200 };
+	box_col->GetRigidBody()->is_kinematic = true;
+#endif
+
+
 	obj = SceneManager::Object::Create<SampleObject>();
 	for (int j = 0; j < 10; j++)
 		for (int i = 0; i < 10; i++) {
 			auto a = SceneManager::Object::Create<Object>();
-			a->transform->position = Vector3(i - 6.0f, j + 0.5f, 6.0f-i);
-			auto rb=a->AddComponent<RigidBody>();
+			a->transform->position = Vector3(i - 6.0f, j + 0.5f, 6.0f - i);
+			auto rb = a->AddComponent<RigidBody>();
 			rb->mass = 1.0f;
 			auto col = a->AddComponent<BoxCollider>();
 			col->rotation = Quaternion(DEG2RAD(45), Vector3(0, 1, 0));
 
 		}
 
-	SetCameraPositionAndTarget_UpVecY(float3(5, 5, -5), float3(0, 1, 0));
+	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 1, 0));
 
 	return 0;
 }

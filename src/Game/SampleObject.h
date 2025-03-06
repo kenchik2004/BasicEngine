@@ -1,5 +1,6 @@
 #pragma once
 USING_PTR(SampleObject);
+USING_PTR(CapsuleCollider);
 class SampleObject :public Object
 {
 public:
@@ -19,6 +20,7 @@ public:
 	physx::PxRigidDynamic* rigid_dynamic = nullptr;
 	physx::PxShape* my_shape = nullptr;
 	Vector3 velocity = { 0,0,0 };
+	CapsuleColliderWP fist;
 
 	unsigned int color = MAGENTA;
 	bool camera = false;
