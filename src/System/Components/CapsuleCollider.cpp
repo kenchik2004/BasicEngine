@@ -29,8 +29,8 @@ void CapsuleCollider::PrePhysics()
 
 	PxTransform trns = MakeCollisionTransform();
 	shape->setGeometry(PxCapsuleGeometry(radius, height * 0.5f));
-	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setLocalPose(trns);
 
 	body->attachShape(*shape);

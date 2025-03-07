@@ -30,8 +30,8 @@ void SphereCollider::PrePhysics()
 
 	PxTransform trns = MakeCollisionTransform();
 	shape->setGeometry(PxSphereGeometry(radius));
-	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setLocalPose(trns);
 
 

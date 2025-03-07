@@ -47,6 +47,14 @@ void Collider::AttachToModel(int attach_index)
 	model_attach_index = attach_index;
 }
 
+void Collider::SetLayer(Layer layer)
+{
+	PxRigidActor* body = rigidbody.lock()->GetBody();
+	body->detachShape(*shape);
+	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
+	body->attachShape(*shape);
+}
+
 PxTransform Collider::MakeCollisionTransform()
 {
 	Vector3 pos = { 0,0,0 };

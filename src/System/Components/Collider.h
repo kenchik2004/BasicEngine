@@ -16,9 +16,15 @@ public:
 	RigidBodyP GetRigidBody() { return rigidbody.lock(); }
 	void AttachToModel(int attach_index);
 
-
-	physx::PxU32 hit_group = UINT32_MAX;
-	physx::PxU32 collision_group = 1;
+	enum Layer :physx::PxU32 {
+		Default = 1,
+		Wepon = 1 << 1,
+		Enemy = 1 << 2,
+		All = UINT32_MAX,
+	};
+	Layer hit_group = All;
+	Layer collision_group = Default;
+	void SetLayer(Layer layer);
 protected:
 	bool attach_to_model = false;
 	int model_attach_index = -1;

@@ -32,8 +32,8 @@ void BoxCollider::PrePhysics()
 	PxTransform trns = MakeCollisionTransform();
 
 	shape->setGeometry(PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f));
-	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setLocalPose(trns);
 
 

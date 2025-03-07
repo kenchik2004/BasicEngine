@@ -39,8 +39,9 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	PxPairFlags& pairFlags,
 	const void* constantBlock,
 	PxU32 constantBlockSize) {
-	//if (!(filterData0.word0 & filterData1.word1) || !(filterData1.word0 & filterData0.word1))
-	//	return PxFilterFlag::eSUPPRESS;
+	if (!(filterData0.word0 & filterData1.word1) || !(filterData1.word0 & filterData0.word1))
+		if (filterData0.word1 != 0 && filterData1.word1 != 0)
+			return PxFilterFlag::eSUPPRESS;
 
 	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1)) {
 
