@@ -66,7 +66,7 @@ void ModelRenderer::LateUpdate()
 	MV1SetMatrix(model.handle, cast(mat * local_mat));
 }
 
-void ModelRenderer::PostPhysics()
+void ModelRenderer::PreDraw()
 {
 
 	mat4x4 mat(CastPhysXQuat(owner->transform->rotation));
@@ -127,7 +127,7 @@ void ModelRenderer::PlayAnimationNoSame(std::string_view name, bool loop, float 
 		return;
 	}
 
-	if (current_anim->name != name) {
+	if (current_anim->name != name || current_anim->anim_total_time < anim_time) {
 		PlayAnimation(name, loop, start_time);
 	}
 
@@ -138,6 +138,13 @@ void ModelRenderer::DebugDraw()
 	MV1SetWireFrameDrawFlag(model.handle, true);
 	MV1DrawModel(model.handle);
 	MV1SetWireFrameDrawFlag(model.handle, false);
+}
+
+bool ModelRenderer::IsPlaying()
+{
+	if (!current_anim)
+		return false;
+	return anim_time < current_anim->anim_total_time && !anim_loop;
 }
 
 void ModelRenderer::UnLoad()

@@ -24,12 +24,13 @@ public:
 	void SetAnimation(std::string_view name, std::string_view path, int index);
 	void Update() override;
 	void LateUpdate() override;
-	void PostPhysics() override;
+	void PreDraw() override;
 	void Exit() override;
 	void Draw() override;
 	void PlayAnimation(std::string_view name, bool loop = false, float start_time = 0.0f);
 	void PlayAnimationNoSame(std::string_view name, bool loop = false, float start_time = 0.0f);
 	void DebugDraw() override;
+	bool IsPlaying();
 	static void UnLoad();
 
 	Vector3 pos = { 0,0,0 };

@@ -18,7 +18,7 @@ int Collider::Init()
 		*Material::Metal_Default);
 
 	shape->userData = new std::weak_ptr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
-
+	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 	rigidbody.lock()->GetBody()->attachShape(*shape);
 
 	return 0;
@@ -45,6 +45,14 @@ void Collider::AttachToModel(int attach_index)
 		return;
 	attach_to_model = true;
 	model_attach_index = attach_index;
+}
+
+void Collider::SetLayer(Layer layer)
+{
+	PxRigidActor* body = rigidbody.lock()->GetBody();
+	body->detachShape(*shape);
+	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
+	body->attachShape(*shape);
 }
 
 PxTransform Collider::MakeCollisionTransform()

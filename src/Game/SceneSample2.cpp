@@ -11,7 +11,7 @@ int SceneSample2::Init()
 	auto rb = obj->AddComponent<RigidBody>();
 	auto col = obj->AddComponent<CapsuleCollider>();
 	col->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
-	col->position = Vector3(0, 1.0f, 0);
+	col->position = Vector3(1.0f, 0, 0);
 	obj->transform->position = Vector3(0, 5, 0);
 	rb->freeze_rotation = { 1,1,1 };
 	auto model = obj->AddComponent<ModelRenderer>();

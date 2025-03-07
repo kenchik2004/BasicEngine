@@ -32,7 +32,17 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 	}
 	return (0L);
 }
-
+constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_MOVING:
+		//ウィンドウ移動中は時飛ばしを行う(Physicsやアップデート処理の暴走を防ぐため)
+		Time::ResetTime();
+		break;
+	}
+	return (0L);
+}
 //=====================================//
 //---------------------------------------------------------------------------------
 //	WinMain
@@ -53,7 +63,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetMainWindowText("メインウィンドウ");
 	SetBackgroundColor(100, 100, 100);
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
-
+	SetHookWinProc(DxWndProc);
 	SetDoubleStartValidFlag(TRUE);
 	SetAlwaysRunFlag(TRUE);
 	SetWaitVSyncFlag(false);
@@ -67,7 +77,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	RECT rect;
-	GetWindowRect(GetMainWindowHandle(), &rect);
+	GetWindowCRect(&rect);
 	if (CreateDebugWindow(hInstance, window[0], rect.right - rect.left, rect.bottom - rect.top, param, nCmdShow) == -1) return -1;
 #endif // DEBUG_WINDOW
 
@@ -115,6 +125,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//=======================//
 			//片方のウィンドウが消されたら、もう片方も終了する
 			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			if (PeekMessage(&msg, GetMainWindowHandle(), 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);

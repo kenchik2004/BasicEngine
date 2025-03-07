@@ -22,6 +22,8 @@ public:
 	physx::PxRigidActor* GetBody() { return body; }
 	LockFlag freeze_position = { 0,0,0 };
 	LockFlag freeze_rotation = { 0,0,0 };
+	bool use_gravity = true;
+	bool is_kinematic = false;
 
 private:
 	physx::PxRigidActor* body = nullptr;

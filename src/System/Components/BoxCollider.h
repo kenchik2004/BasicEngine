@@ -9,5 +9,6 @@ public:
 	void PrePhysics() override;
 	void DebugDraw() override;
 	Vector3 extension = { 1.0f,1.0f,1.0f };
+	bool is_trigger = false;
 };
 

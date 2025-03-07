@@ -177,6 +177,7 @@ class Object :public ObjBase {
 public:
 	USING_SUPER(Object);
 	Object();
+	void DebugDraw() override;
 
 
 };

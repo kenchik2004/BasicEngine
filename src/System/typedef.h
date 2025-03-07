@@ -114,6 +114,7 @@ template <class T, class V = u32> struct SBit {
 		return status_bit_;
 	}
 	inline V  set(T b, bool _on) { return _on ? on(b) : off(b); }
+	inline V  set(T b) { status_bit_ = b; return status_bit_; }
 	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<int>(b)); }
 	inline V& get() { return status_bit_; }
 
