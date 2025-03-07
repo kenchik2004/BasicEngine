@@ -47,7 +47,7 @@ int SceneSample::Init()
 	obj = SceneManager::Object::Create<SampleObject>();
 	for (int j = 0; j < 10; j++)
 		for (int i = 0; i < 10; i++) {
-			auto a = SceneManager::Object::Create<Object>();
+			auto a = SceneManager::Object::Create<Object>("Box");
 			a->transform->position = Vector3(i - 6.0f, j + 0.5f, 6.0f - i);
 			auto rb = a->AddComponent<RigidBody>();
 			rb->mass = 1.0f;
@@ -71,7 +71,7 @@ void SceneSample::Update()
 		Time::SetFPSMAX(Time::GetFPSMAX() - 2);
 
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
-		SceneManager::Load<SceneSample2>();
+		SceneManager::Load<SceneSample>();
 
 }
 

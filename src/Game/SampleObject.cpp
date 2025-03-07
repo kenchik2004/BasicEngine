@@ -5,6 +5,7 @@
 #include <System/Components/CapsuleCollider.h>
 #include <System/Components/BoxCollider.h>
 #include <System/Components/ModelRenderer.h>
+#include <Game/SampleAttack.h>
 
 
 
@@ -54,18 +55,8 @@ void SampleObject::Update()
 	velocity_factor.y = GetComponent<RigidBody>()->velocity.y;
 	GetComponent<RigidBody>()->velocity = velocity_factor;
 
-	if (!GetComponent<ModelRenderer>()->IsPlaying())
-		if (fist.lock())
-			fist.lock()->RemoveThisComponent();
-	if (Input::PushHitKey(KEY_INPUT_SPACE) && !fist.lock()) {
-		GetComponent<ModelRenderer>()->PlayAnimationNoSame("punch");
-		fist = AddComponent<CapsuleCollider>();
-		fist.lock()->is_trigger = true;
-		fist.lock()->height = 0.3f;
-		fist.lock()->radius = 0.1f;
-		fist.lock()->AttachToModel(10);
-		fist.lock()->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
-		fist.lock()->position = Vector3(0, 0, 0);
+	if (Input::PushHitKey(KEY_INPUT_SPACE) && !GetComponent<SampleAttack>()) {
+		AddComponent<SampleAttack>();
 	}
 
 }
@@ -82,7 +73,7 @@ void SampleObject::Draw()
 
 void SampleObject::PreDraw()
 {
-		SetCameraPositionAndTargetAndUpVec(float3(transform->position+Vector3(0,1.6f,0)-transform->AxisZ()*0.05f), float3(transform->position + Vector3(0, 1.6f, 0) + transform->AxisZ()), float3(transform->AxisY()));
+	SetCameraPositionAndTargetAndUpVec(float3(transform->position + Vector3(0, 1.6f, 0) - transform->AxisZ() * 0.05f), float3(transform->position + Vector3(0, 1.6f, 0) + transform->AxisZ()), float3(transform->AxisY()));
 }
 void SampleObject::PrePhysics()
 {
@@ -104,6 +95,8 @@ void SampleObject::DebugDraw()
 
 void SampleObject::Exit()
 {
+	ObjectWP obj = SceneManager::Object::Get<Object>("Box");
+	SceneManager::Object::Destory(obj.lock());
 
 }
 
@@ -114,8 +107,8 @@ void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
 void SampleObject::OnTriggerEnter(const HitInfo& hit_info)
 {
 	color = YELLOW;
-	if (hit_info.hit_collision->owner)
-		hit_info.hit_collision->GetRigidBody()->SetVelocity(transform->AxisZ() * 10);
+	if (auto atk = GetComponent<SampleAttack>())
+		atk->OnTriggerEnter(hit_info);
 }
 
 

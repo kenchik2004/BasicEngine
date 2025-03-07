@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\SampleAttack.cpp" />
     <ClCompile Include="src\Game\SampleObject.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\Game\SceneSample2.cpp" />
@@ -45,6 +46,7 @@
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\SampleAttack.h" />
     <ClInclude Include="src\Game\SampleObject.h" />
     <ClInclude Include="src\Game\SceneSample.h" />
     <ClInclude Include="src\Game\SceneSample2.h" />
@@ -127,9 +129,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -177,6 +181,7 @@
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
