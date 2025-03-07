@@ -51,17 +51,7 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 	actor->userData = nullptr;
 	if (wp->lock())
 		delete wp;
-	////アクターが持っているシェイプ情報を全部取得
-	//physx::PxU32 num_shapes = actor->getNbShapes();
-	//std::vector<physx::PxShape*> shapes(num_shapes);
-	//actor->getShapes(shapes.data(), num_shapes);
 
-	////全てのシェイプに対し、削除予定のフラグを立てておく
-	//for (auto shape : shapes) {
-	//	physx::PxFilterData filter_data;
-	//	filter_data = { 0,0,0,0 }; // 削除対象マーク(フィルターで全ビット0は、当たり判定無効化)
-	//	shape->setSimulationFilterData(filter_data);
-	//}
 	//削除予定アクターに追加登録
 	waiting_remove_actors.push_back(actor);
 
@@ -86,8 +76,9 @@ void Scene::DeleteShape(physx::PxShape* shape)
 
 void Scene::Destroy()
 {
-
 	for (auto& obj : objects) {
+		if (!obj)
+			continue;
 		while (auto comp = obj->GetComponent<Component>()) {
 			comp->RemoveThisComponent();
 		}
