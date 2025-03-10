@@ -71,7 +71,7 @@ void SceneSample::Update()
 		Time::SetFPSMAX(Time::GetFPSMAX() - 2);
 
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
-		SceneManager::Load<SceneSample>();
+		SceneManager::Load<SceneSample2>();
 
 }
 

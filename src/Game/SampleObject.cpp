@@ -58,6 +58,10 @@ void SampleObject::Update()
 	if (Input::PushHitKey(KEY_INPUT_SPACE) && !GetComponent<SampleAttack>()) {
 		AddComponent<SampleAttack>();
 	}
+	if (auto model = GetComponent<ModelRenderer>()) {
+		if (!model->IsPlaying())
+			model->PlayAnimationNoSame("stand", true);
+	}
 
 }
 
