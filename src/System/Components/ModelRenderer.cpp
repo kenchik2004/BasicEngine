@@ -45,13 +45,13 @@ void ModelRenderer::SetAnimation(std::string_view path, std::string_view name, i
 
 void ModelRenderer::Update()
 {
-	anim_time += Time::DeltaTime() * 60;
+	anim_time += Time::DeltaTime() * 60 * anim_speed;
 	if (current_index == -1)
 		current_anim = nullptr;
 	if (current_anim) {
 		MV1SetAttachAnimTime(model.handle, current_index, anim_time);
-		if (anim_loop && anim_time > current_anim->anim_total_time)
-			anim_time = 0;
+		if (anim_loop && !IsPlaying())
+			anim_time = anim_time > current_anim->anim_total_time ? 0 : current_anim->anim_total_time;
 	}
 }
 
@@ -108,6 +108,8 @@ void ModelRenderer::PlayAnimation(std::string_view name, bool loop, float start_
 		if (current_index >= 0) {
 			current_anim = select;
 			anim_loop = loop;
+			if (start_time == CUR_ANIMTIME_MAX)
+				start_time = select->anim_total_time / 60.0f;
 			anim_time = start_time * 60;
 		}
 		return;
@@ -116,6 +118,8 @@ void ModelRenderer::PlayAnimation(std::string_view name, bool loop, float start_
 	anim_loop = loop;
 	if (current_index >= 0) {
 		current_anim = select;
+		if (start_time == CUR_ANIMTIME_MAX)
+			start_time = select->anim_total_time / 60.0f;
 		anim_time = start_time * 60;
 	}
 }
@@ -127,10 +131,17 @@ void ModelRenderer::PlayAnimationNoSame(std::string_view name, bool loop, float 
 		return;
 	}
 
-	if (current_anim->name != name || current_anim->anim_total_time < anim_time) {
+	if (current_anim->name != name) {
 		PlayAnimation(name, loop, start_time);
 	}
 
+}
+
+std::string_view ModelRenderer::GetCurrentAnimName()
+{
+	if (current_anim && IsPlaying())
+		return current_anim->name;
+	return "";
 }
 
 void ModelRenderer::DebugDraw()
@@ -144,7 +155,7 @@ bool ModelRenderer::IsPlaying()
 {
 	if (!current_anim)
 		return false;
-	return anim_time < current_anim->anim_total_time && !anim_loop;
+	return (anim_time < current_anim->anim_total_time && anim_time >= 0);
 }
 
 void ModelRenderer::UnLoad()
