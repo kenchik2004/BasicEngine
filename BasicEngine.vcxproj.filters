@@ -61,6 +61,7 @@
     <ClCompile Include="src\System\typedef.cpp">
       <Filter>System</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -126,6 +127,7 @@
     <ClInclude Include="src\System\PhysicsManager.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="src\System\Components\ModelRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

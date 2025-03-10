@@ -1,6 +1,7 @@
 #pragma once
 #include "System/Component.h"
 
+#define CUR_ANIMTIME_MAX FLT_MAX
 
 struct AnimationData {
 	std::string name;
@@ -29,6 +30,7 @@ public:
 	void Draw() override;
 	void PlayAnimation(std::string_view name, bool loop = false, float start_time = 0.0f);
 	void PlayAnimationNoSame(std::string_view name, bool loop = false, float start_time = 0.0f);
+	std::string_view GetCurrentAnimName();
 	void DebugDraw() override;
 	bool IsPlaying();
 	static void UnLoad();
@@ -38,6 +40,7 @@ public:
 	Vector3 scale = { 1,1,1 };
 
 	float anim_time = 0;
+	float anim_speed = 1.0f;
 	bool anim_loop = false;
 
 	ModelData model;
