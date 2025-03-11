@@ -3,6 +3,7 @@
 #include "System/Scene.h"
 #include "System/ObjBase.h"
 #include "System/Components/ModelRenderer.h"
+#include "algorithm"
 
 
 ScenePVec SceneManager::scenes = ScenePVec(0);
@@ -51,21 +52,22 @@ void SceneManager::PreUpdate()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->PreUpdate();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->PreUpdate();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::Update()
@@ -76,6 +78,23 @@ void SceneManager::Update()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		if (!obj.lock())
+			return;
+		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
+			obj.lock()->Update();
+			ComponentWPVec comps;
+			for (auto& comp : obj.lock()->components) {
+				comps.push_back(comp);
+			}
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
+				if (comp.lock())
+					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
+						comp.lock()->Update();
+				});
+		}
+		});
+#if 0
 	for (auto& obj : objs) {
 		if (!obj.lock())
 			continue;
@@ -90,7 +109,8 @@ void SceneManager::Update()
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->Update();
 		}
-	}
+		}
+#endif
 }
 
 void SceneManager::LateUpdate()
@@ -101,21 +121,22 @@ void SceneManager::LateUpdate()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->LateUpdate();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->LateUpdate();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::PostUpdate()
@@ -126,21 +147,22 @@ void SceneManager::PostUpdate()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->PostUpdate();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->PostUpdate();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::PrePhysics()
@@ -151,21 +173,22 @@ void SceneManager::PrePhysics()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->PrePhysics();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->PrePhysics();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::Physics()
@@ -175,21 +198,22 @@ void SceneManager::Physics()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->Physics();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->Physics();
+				});
 		}
-	}
+		});
 
 	//Physicsだけ、シーンのシミュレーションを最後に行う
 	current_scene->Physics();
@@ -203,21 +227,22 @@ void SceneManager::PostPhysics()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->PostPhysics();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->PostPhysics();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::PreDraw()
@@ -228,21 +253,22 @@ void SceneManager::PreDraw()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->PreDraw();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->PreDraw();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::Draw()
@@ -255,21 +281,22 @@ void SceneManager::Draw()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
-		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::DRAW)) {
+			return;
+		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->Draw();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->Draw();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::LateDraw()
@@ -280,21 +307,22 @@ void SceneManager::LateDraw()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
-		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::DRAW)) {
+			return;
+		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			obj.lock()->LateDraw();
 			ComponentWPVec comps;
 			for (auto& comp : obj.lock()->components) {
 				comps.push_back(comp);
 			}
-			for (auto& comp : comps)
+			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
 						comp.lock()->LateDraw();
+				});
 		}
-	}
+		});
 }
 
 void SceneManager::DebugDraw()
@@ -317,19 +345,20 @@ void SceneManager::DebugDraw()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		obj.lock()->DebugDraw();
 		ComponentWPVec comps;
 		for (auto& comp : obj.lock()->components) {
 			comps.push_back(comp);
 		}
-		for (auto& comp : comps)
+		std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 			if (comp.lock())
 				comp.lock()->DebugDraw();
+			});
+		});
 
-	}
 	SetUseLighting(true);
 	SetLightEnable(true);
 }
@@ -341,19 +370,19 @@ void SceneManager::LateDebugDraw()
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
-	for (auto& obj : objs) {
+	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 		if (!obj.lock())
-			continue;
+			return;
 		obj.lock()->LateDebugDraw();
 		ComponentWPVec comps;
 		for (auto& comp : obj.lock()->components) {
 			comps.push_back(comp);
 		}
-		for (auto& comp : comps)
+		std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 			if (comp.lock())
 				comp.lock()->LateDebugDraw();
-
-	}
+			});
+		});
 }
 
 void SceneManager::PostDraw()

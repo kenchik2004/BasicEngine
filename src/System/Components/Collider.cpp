@@ -24,9 +24,6 @@ int Collider::Init()
 	return 0;
 }
 
-void Collider::Update()
-{
-}
 
 void Collider::Exit()
 {

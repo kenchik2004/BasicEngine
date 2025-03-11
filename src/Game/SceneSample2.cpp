@@ -20,6 +20,7 @@ int SceneSample2::Init()
 	model->Load("data/model.mv1");
 	model->SetAnimation("data/anim_walk.mv1", "walk", 1);
 	model->PlayAnimationNoSame("walk", true);
+	model->anim_speed = 2.0f;
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))

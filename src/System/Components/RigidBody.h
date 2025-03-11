@@ -16,6 +16,7 @@ public:
 	void DebugDraw() override;
 	void Exit() override;
 	void AddForce(Vector3 force, physx::PxForceMode::Enum force_mode = physx::PxForceMode::eFORCE);
+	void SetMassCenter(Vector3 center);
 	void SetVelocity(Vector3 velocity_);
 	Vector3 velocity = { 0,0,0 };
 	float mass = 1.0f;
@@ -24,6 +25,7 @@ public:
 	LockFlag freeze_rotation = { 0,0,0 };
 	bool use_gravity = true;
 	bool is_kinematic = false;
+	void ChangeToStatic();
 
 private:
 	physx::PxRigidActor* body = nullptr;
