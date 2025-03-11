@@ -15,4 +15,5 @@ public:
 	void LateDebugDraw() override;
 	void UnLoad() override;
 	SampleObjectP obj=nullptr;
+	ObjectP obj2=nullptr;
 };

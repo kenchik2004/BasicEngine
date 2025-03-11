@@ -4,6 +4,8 @@
 #include "SampleObject.h"
 #include <System/Components/RigidBody.h>
 #include <System/Components/BoxCollider.h>
+#include <System/Components/ModelRenderer.h>
+#include <System/Components/MeshCollider.h>
 
 
 void SceneSample::Load()
@@ -13,27 +15,7 @@ physx::PxShape* shape = nullptr;
 
 int SceneSample::Init()
 {
-	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
-	);
 
-	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(1, 0, 0, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
-	);
-	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(-1, 0, 0, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
-	);
-	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, 1, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
-	);
-	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, -1, 7),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
-	);
 #if 0
 	auto box = SceneManager::Object::Create<Object>();
 	box->transform->position = Vector3(0, 0, 0);
@@ -45,17 +27,31 @@ int SceneSample::Init()
 
 
 	obj = SceneManager::Object::Create<SampleObject>();
+	obj->transform->rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
 	for (int j = 0; j < 10; j++)
 		for (int i = 0; i < 10; i++) {
 			auto a = SceneManager::Object::Create<Object>("Box");
+			auto mod = a->AddComponent<ModelRenderer>();
+			mod->Load("data/cube.mv1", "cube");
+			mod->scale = { 0.005f,0.005f,0.005f };
+			mod->pos = { 0,-1000.5f,0 };
 			a->transform->position = Vector3(i - 6.0f, j + 0.5f, 6.0f - i);
+			a->transform->rotation = Quaternion(DEG2RAD(45), Vector3(0, 1, 0));
 			auto rb = a->AddComponent<RigidBody>();
-			rb->mass = 1.0f;
+			rb->mass = 0.01f;
+			//rb->SetMassCenter({ 0,0.5f,0 });
 			auto col = a->AddComponent<BoxCollider>();
-			col->rotation = Quaternion(DEG2RAD(45), Vector3(0, 1, 0));
+			//col->position = { 0,0.5f,0 };
 
 		}
 
+	obj2 = SceneManager::Object::Create<Object>();
+	obj2->tag = ObjBase::TAG::Stage;
+	obj2->transform->position = { 0,-1,0 };
+	obj2->transform->scale = { 0.01f,0.01f,0.01f };
+	obj2->AddComponent<RigidBody>();
+	obj2->AddComponent<ModelRenderer>()->Load("data/Stage/stage00.mv1");
+	auto mod_col = obj2->AddComponent<MeshCollider>();
 	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 1, 0));
 
 	return 0;

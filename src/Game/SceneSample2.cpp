@@ -3,8 +3,11 @@
 #include "SceneSample2.h"
 #include "System/Components/RigidBody.h" 
 #include "System/Components/CapsuleCollider.h" 
+#include "System/Components/MeshCollider.h"
 #include "System/Components/ModelRenderer.h" 
 
+
+bool is_jump = false;
 int SceneSample2::Init()
 {
 	obj = SceneManager::Object::Create<Object>();
@@ -28,6 +31,15 @@ int SceneSample2::Init()
 		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
 		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
 	);
+	obj2 = SceneManager::Object::Create<Object>();
+	obj2->tag = ObjBase::TAG::Stage;
+	obj2->transform->position = { 0,0,0 };
+	obj2->transform->scale = { 0.01f,0.01f,0.01f };
+	obj2->AddComponent<RigidBody>();
+	obj2->AddComponent<ModelRenderer>()->Load("data/Stage/stage00.mv1");
+	auto mod_col = obj2->AddComponent<MeshCollider>();
+	mod_col->AttachToModel();
+
 	return 0;
 }
 
@@ -41,6 +53,11 @@ void SceneSample2::Update()
 		obj->transform->AddRotation(float3(0, -90 * Time::UnscaledDeltaTime(), 0));
 	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
 		obj->transform->AddRotation(float3(0, 90 * Time::UnscaledDeltaTime(), 0));
+
+	if (Input::CheckHitKey(KEY_INPUT_UP))
+		obj->transform->AddRotation(float3(-90 * Time::UnscaledDeltaTime(), 0, 0));
+	if (Input::CheckHitKey(KEY_INPUT_DOWN))
+		obj->transform->AddRotation(float3(90 * Time::UnscaledDeltaTime(), 0, 0));
 
 	if (Input::CheckHitKey(KEY_INPUT_W)) {
 		velocity_factor += obj->transform->AxisZ();
@@ -63,7 +80,6 @@ void SceneSample2::Update()
 	velocity_factor = ProjectOnPlane(velocity_factor, float3(0, 1, 0)).normalized() * 3.5f;
 	if (Input::CheckHitKey(KEY_INPUT_LSHIFT))
 		velocity_factor *= 1.5f;
-	bool is_jump = obj->transform->position.y > 0.1f;
 	if (velocity_factor.GetLength() < FLT_EPSILON && !is_jump)
 		model->PlayAnimationNoSame("stand", true);
 	else if (velocity_factor.GetLength() <= 4.0f && !is_jump)
@@ -71,11 +87,10 @@ void SceneSample2::Update()
 	else if (!is_jump)
 		model->PlayAnimationNoSame("run", true);
 	else
-		model->PlayAnimationNoSame("jump", false,0.5f);
+		model->PlayAnimationNoSame("jump", false, 0.5f);
 
 	velocity_factor.y = rb->velocity.y;
 	rb->velocity = velocity_factor;
-
 
 	if (Input::PushHitKey(KEY_INPUT_SPACE))
 		rb->AddForce(Vector3(0, 10.0f, 0), physx::PxForceMode::eIMPULSE);
@@ -87,7 +102,15 @@ void SceneSample2::PreDraw()
 {
 	float3 cam_pos = obj->transform->position;
 	cam_pos -= obj->transform->AxisZ() * 3.0f;
-	cam_pos += obj->transform->AxisY() * 3.0f;
+	cam_pos += obj->transform->AxisY() * 2.0f;
 
 	SetCameraPositionAndTargetAndUpVec(cam_pos, cast(obj->transform->position + obj->transform->AxisY()), cast(obj->transform->AxisY()));
+}
+
+void SceneSample2::LateDebugDraw()
+{
+
+	DrawBox(0, 0, 300, 50, GetColor(128, 0, 0), true);
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "FPS : %.2f / %.2f", Time::GetFPSMAX(), Time::GetFPS());
+	DrawFormatString(0, 24, GetColor(255, 255, 255), "Objects : %d", SceneManager::Object::GetArray<ObjBase>().size());
 }

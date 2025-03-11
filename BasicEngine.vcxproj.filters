@@ -61,9 +61,18 @@
     <ClCompile Include="src\System\typedef.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\SceneSample2.cpp" />
-    <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
-    <ClCompile Include="src\Game\SampleAttack.cpp" />
+    <ClCompile Include="src\System\Components\MeshCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SampleAttack.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SceneSample2.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\ModelRenderer.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -129,9 +138,18 @@
     <ClInclude Include="src\System\PhysicsManager.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\SceneSample2.h" />
-    <ClInclude Include="src\System\Components\ModelRenderer.h" />
-    <ClInclude Include="src\Game\SampleAttack.h" />
+    <ClInclude Include="src\System\Components\MeshCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\SceneSample2.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\SampleAttack.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\ModelRenderer.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

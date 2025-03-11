@@ -29,6 +29,7 @@
     <ClCompile Include="src\System\Components\BoxCollider.cpp" />
     <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
     <ClCompile Include="src\System\Components\Collider.cpp" />
+    <ClCompile Include="src\System\Components\MeshCollider.cpp" />
     <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
     <ClCompile Include="src\System\Components\RigidBody.cpp" />
     <ClCompile Include="src\System\Components\SphereCollider.cpp" />
@@ -55,6 +56,7 @@
     <ClInclude Include="src\System\Components\BoxCollider.h" />
     <ClInclude Include="src\System\Components\CapsuleCollider.h" />
     <ClInclude Include="src\System\Components\Collider.h" />
+    <ClInclude Include="src\System\Components\MeshCollider.h" />
     <ClInclude Include="src\System\Components\ModelRenderer.h" />
     <ClInclude Include="src\System\Components\RigidBody.h" />
     <ClInclude Include="src\System\Components\SphereCollider.h" />
