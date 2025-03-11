@@ -1,5 +1,6 @@
 #include "precompile.h"
 #include "ModelRenderer.h"
+#include "System/Components/MeshCollider.h"
 
 
 std::vector<AnimationData> ModelRenderer::anim_pool(0);
@@ -146,6 +147,8 @@ std::string_view ModelRenderer::GetCurrentAnimName()
 
 void ModelRenderer::DebugDraw()
 {
+	if (owner->GetComponent<MeshCollider>())
+		return;
 	MV1SetWireFrameDrawFlag(model.handle, true);
 	MV1DrawModel(model.handle);
 	MV1SetWireFrameDrawFlag(model.handle, false);

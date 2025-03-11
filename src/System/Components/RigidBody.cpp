@@ -85,6 +85,12 @@ void RigidBody::AddForce(Vector3 force, physx::PxForceMode::Enum force_mode)
 
 }
 
+void RigidBody::SetMassCenter(Vector3 center)
+{
+	if (body->is<PxRigidDynamic>())
+		static_cast<PxRigidDynamic*>(body)->setCMassLocalPose(PxTransform(center));
+}
+
 void RigidBody::SetVelocity(Vector3 velocity_)
 {
 	velocity = velocity_;
@@ -100,4 +106,16 @@ void RigidBody::SetVelocity(Vector3 velocity_)
 			static_cast<PxRigidDynamic*>(wp.lock()->body)->setLinearVelocity(velocity_);
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
+}
+
+void RigidBody::ChangeToStatic()
+{
+	SceneManager::GetCurrentScene()->DeleteActor(body);
+	auto scene = SceneManager::GetCurrentScene();
+	auto p_scene = scene->GetPhysicsScene();
+	body
+		= PhysicsManager::GetPhysicsInstance()->createRigidStatic(physx::PxTransform(physx::PxIdentity));
+	body->userData = new std::weak_ptr<ObjBase>(owner->shared_from_this());
+
+	p_scene->addActor(*body);
 }
