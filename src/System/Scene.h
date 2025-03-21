@@ -79,6 +79,7 @@ private:
 	std::vector<std::function<void()>> waiting_functions;
 	std::vector<physx::PxActor*> waiting_remove_actors;
 	std::vector<physx::PxShape*> waiting_remove_shapes;
+	ObjBaseWPVec leak_objects;
 
 	//template <class T> std::shared_ptr<T> CreateObject();
 
@@ -165,24 +166,7 @@ private:
 		return vec;
 	}
 
-	inline void DestroyObject(ObjBaseP destroy_obj) {
-		if (objects.size() <= 0)
-			return;
-		for (auto obj = objects.begin(); obj != objects.end();) {
-			if ((*obj) == destroy_obj) {
-				while ((*obj)->GetComponent<Component>()) {
-					(*obj)->RemoveComponent((*obj)->GetComponent<Component>());
-				}
-				(*obj)->Exit();
-				obj = objects.erase(obj);
-				destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
-				destroy_obj.reset();
-				return;
-			}
-			obj++;
-		}
-
-	}
+	void DestroyObject(ObjBaseP destroy_obj);
 
 };
 

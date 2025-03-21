@@ -98,13 +98,16 @@ public:
 	}
 
 	void RemoveComponent(ComponentP remove_comp) {
+		ComponentWP comp_wp;
 		for (auto comp = components.begin(); comp != components.end();) {
-			if ((*comp) == remove_comp) {
-				(*comp)->Exit();
-				(*comp)->status.status_bit.on(CompStat::STATUS::REMOVED);
+			comp_wp = (*comp);
+			if (comp_wp.lock() == remove_comp) {
+				comp_wp.lock()->Exit();
+				comp_wp.lock()->status.status_bit.on(CompStat::STATUS::REMOVED);
 				comp = components.erase(comp);
 				remove_comp.reset();
-				return;
+				break;
+
 			}
 			comp++;
 		}

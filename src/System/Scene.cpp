@@ -76,16 +76,31 @@ void Scene::DeleteShape(physx::PxShape* shape)
 
 void Scene::Destroy()
 {
-	for (auto& obj : objects) {
-		if (!obj)
+	ObjBaseWPVec w_vec;
+	for (auto& ite : objects)
+		w_vec.push_back(ite);
+	for (auto& obj : w_vec) {
+		if (!obj.lock())
 			continue;
-		while (auto comp = obj->GetComponent<Component>()) {
+		while (auto comp = obj.lock()->GetComponent<Component>()) {
 			comp->RemoveThisComponent();
 		}
-		obj->Exit();
-		obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
+		obj.lock()->Exit();
+		obj.lock()->status.status_bit.on(ObjStat::STATUS::REMOVED);
+		SceneManager::Object::Destory(obj.lock());
 	}
 	objects.clear();
+	for (auto& ite : leak_objects) {
+		try {
+			if (ite.lock())
+				;//throw(MemoryLeakException(ite.lock()->name.c_str(), DEFAULT_EXCEPTION_PARAM));
+		}
+		catch (Exception& ex)
+		{
+			ex.Show();
+		}
+	}
+	leak_objects.clear();
 	if (!physics_scene)
 		throw (Exception("PhysXシーンがないンゴ!!ヤバいンゴ!", DEFAULT_EXCEPTION_PARAM));
 	Physics();
@@ -99,4 +114,45 @@ void Scene::DestroyPhysics()
 	//PhysXシーンを削除(relese)
 	PhysicsManager::ReleaseScene(physics_scene);
 	physics_scene = nullptr;
+}
+
+void Scene::DestroyObject(ObjBaseP destroy_obj) {
+	if (objects.size() <= 0)
+		return;
+	if (SceneManager::GetCurrentScene()->IsInSimulation()) {
+		SceneManager::GetCurrentScene()->AddFunctionAfterSimulation([this_ = static_cast<SceneWP>(shared_from_this()), obj = static_cast<ObjBaseWP>(destroy_obj)]()
+			{if (this_.lock() && obj.lock())
+			this_.lock()->DestroyObject(obj.lock());
+			});
+		return;
+	}
+	ObjBaseWP obj_w;
+	for (auto obj = objects.begin(); obj != objects.end();) {
+		obj_w = (*obj);
+		if (obj_w.lock() == destroy_obj) {
+			obj_w.lock()->transform = nullptr;
+			while (obj_w.lock()->GetComponent<Component>()) {
+				ComponentWP comp_wp = obj_w.lock()->GetComponent<Component>();
+				obj_w.lock()->RemoveComponent(comp_wp.lock());
+				try {
+					if (comp_wp.lock())
+						throw(MemoryLeakException(typeid(*comp_wp.lock().get()).name(), DEFAULT_EXCEPTION_PARAM));
+				}
+				catch (Exception& ex) {
+					ex.Show();
+				}
+			}
+			obj_w.lock()->Exit();
+			obj = objects.erase(obj);
+			destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
+			destroy_obj.reset();
+
+			if (obj_w.lock())
+				leak_objects.push_back(obj_w);
+			return;
+
+		}
+		obj++;
+	}
+
 }
