@@ -46,7 +46,7 @@ void ModelRenderer::SetAnimation(std::string_view path, std::string_view name, i
 
 void ModelRenderer::Update()
 {
-	anim_time += Time::DeltaTime() * 60 * anim_speed;
+	anim_time += Time::UnscaledDeltaTime() * 60 * anim_speed;
 	if (current_index == -1)
 		current_anim = nullptr;
 	if (current_anim) {
@@ -58,25 +58,26 @@ void ModelRenderer::Update()
 
 void ModelRenderer::LateUpdate()
 {
-	mat4x4 mat(CastPhysXQuat(owner->transform->rotation));
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation*rot));
 	mat.scale(Vector4(owner->transform->scale, 1));
-	mat.setPosition(owner->transform->position);
-	mat4x4 local_mat(CastPhysXQuat(rot));
-	local_mat.scale(Vector4(scale, 1));
-	local_mat.setPosition(pos);
-	MV1SetMatrix(model.handle, cast(mat * local_mat));
+	mat.scale(Vector4(scale, 1));
+	mat.setPosition(owner->transform->position+rot.rotate(pos));
+	//mat4x4 local_mat(CastPhysXQuat(rot));
+	//local_mat.scale(Vector4(scale, 1));
+	//local_mat.setPosition(pos);
+	MV1SetMatrix(model.handle, cast(mat));
 }
 
 void ModelRenderer::PreDraw()
 {
-
-	mat4x4 mat(CastPhysXQuat(owner->transform->rotation));
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation * rot));
 	mat.scale(Vector4(owner->transform->scale, 1));
-	mat.setPosition(owner->transform->position);
-	mat4x4 local_mat(CastPhysXQuat(rot));
-	local_mat.scale(Vector4(scale, 1));
-	local_mat.setPosition(pos);
-	MV1SetMatrix(model.handle, cast(mat * local_mat));
+	mat.scale(Vector4(scale, 1));
+	mat.setPosition(owner->transform->position + rot.rotate(pos));
+	//mat4x4 local_mat(CastPhysXQuat(rot));
+	//local_mat.scale(Vector4(scale, 1));
+	//local_mat.setPosition(pos);
+	MV1SetMatrix(model.handle, cast(mat));
 
 }
 

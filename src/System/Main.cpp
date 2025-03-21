@@ -1,11 +1,11 @@
 #include "Main.h"
 #include "System/SceneManager.h"
+#include "Game/SceneSample3.h"
 #include "Game/SceneSample.h"
 
-#define DEBUG_WINDOW
-#define USE_DEBUG_DRAW
-
-class SceneSample;
+//#define DEBUG_WINDOW
+//#define USE_DEBUG_DRAW
+//#define FULL_SCREEN
 
 std::string window_classname[1] =
 {
@@ -59,7 +59,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SRand((unsigned int)time(nullptr));
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
-	SetGraphMode(800, 450, 32, 240);
+#ifdef FULL_SCREEN
+	//ChangeWindowMode(false);
+#endif
+	SetGraphMode(1920, 1080, 32, 240);
 	SetMainWindowText("メインウィンドウ");
 	SetBackgroundColor(100, 100, 100);
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
@@ -147,7 +150,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::Update();
 
 			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN))
-				SceneManager::Load<SceneSample>();
+				SceneManager::Load<SceneSample3>();
 
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
