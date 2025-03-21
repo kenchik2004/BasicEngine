@@ -200,6 +200,7 @@ public:
 			if (!current_scene)
 				return;
 			current_scene->DestroyObject(destroy_obj);
+			destroy_obj.reset();
 		}
 	};
 #endif
