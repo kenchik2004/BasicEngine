@@ -66,20 +66,20 @@ void RigidBody::Exit()
 	body = nullptr;
 }
 
-void RigidBody::AddForce(Vector3 force, physx::PxForceMode::Enum force_mode)
+void RigidBody::AddForce(Vector3 force, ForceMode force_mode)
 {
 	if (!body->is<PxRigidDynamic>())
 		return;
 	bool in_simulation = SceneManager::GetCurrentScene()->IsInSimulation();
 	if (!in_simulation) {
-		static_cast<PxRigidDynamic*>(body)->addForce(force, force_mode);
+		static_cast<PxRigidDynamic*>(body)->addForce(force, static_cast<PxForceMode::Enum>(force_mode));
 		return;
 	}
 	auto lambda = [wp = std::weak_ptr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), force, force_mode]() {
 		if (!wp.lock())
 			return;
 		if (static_cast<std::weak_ptr<ObjBase>*>(wp.lock()->body->userData)->lock())
-			static_cast<PxRigidDynamic*>(wp.lock()->body)->addForce(force, force_mode);
+			static_cast<PxRigidDynamic*>(wp.lock()->body)->addForce(force, static_cast<PxForceMode::Enum>(force_mode));
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
 

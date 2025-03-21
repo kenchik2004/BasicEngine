@@ -5,6 +5,12 @@ struct LockFlag {
 	bool y = false;
 	bool z = false;
 };
+enum ForceMode  {		//力を加えるモード
+	Force = physx::PxForceMode::eFORCE,						//重さを加味した単発的な力の変化(N/s^2)
+	Impulse = physx::PxForceMode::eIMPULSE,					//重さを加味した継続的な運動量の変化(N/s)
+	VelocityCange = physx::PxForceMode::eVELOCITY_CHANGE,	//重さを無視した速度の変化(m/s)
+	Acceleration = physx::PxForceMode::eACCELERATION,		//重さを無視した加速度の変化(m/s^2)
+};
 class RigidBody :public Component
 {
 public:
@@ -15,7 +21,7 @@ public:
 	void Update() override;
 	void DebugDraw() override;
 	void Exit() override;
-	void AddForce(Vector3 force, physx::PxForceMode::Enum force_mode = physx::PxForceMode::eFORCE);
+	void AddForce(Vector3 force, ForceMode force_mode = ForceMode::Force);
 	void SetMassCenter(Vector3 center);
 	void SetVelocity(Vector3 velocity_);
 	Vector3 velocity = { 0,0,0 };
