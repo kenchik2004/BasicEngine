@@ -2,6 +2,7 @@
 #include "System/Component.h"
 USING_PTR(ModelRenderer);
 USING_PTR(CapsuleCollider);
+USING_PTR(SampleCutIn);
 class SampleAttack :
 	public Component
 {
@@ -14,5 +15,6 @@ public:
 
 	ModelRendererWP model;
 	CapsuleColliderWP fist;
+	SampleCutInWP cut_in;
 };
 

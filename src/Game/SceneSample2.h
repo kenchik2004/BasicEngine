@@ -7,7 +7,8 @@ class SceneSample2 :
     void Update() override;
     void PreDraw() override;
     void LateDebugDraw() override;
-    ObjBaseP obj;
-    ObjBaseP obj2;
+    void Exit() override;
+    ObjBaseWP obj;
+    ObjBaseWP obj2;
 };
 

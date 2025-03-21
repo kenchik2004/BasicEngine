@@ -3,18 +3,22 @@
 #include"System/Components/ModelRenderer.h"
 #include "System/Components/RigidBody.h"
 #include"System/Components/CapsuleCollider.h"
+#include "Game/SampleCutIn.h"
 
 int SampleAttack::Init()
 {
 	model = owner->GetComponent<ModelRenderer>();
 	model.lock()->PlayAnimationNoSame("punch");
+	cut_in = owner->AddComponent<SampleCutIn>();
+	cut_in.lock()->cam_pos = owner->transform->AxisX() * -2 + owner->transform->AxisZ() * 2 + owner->transform->AxisY() * 1.5f;
+	cut_in.lock()->cam_lookat = owner->transform->AxisY() * 1.5f + owner->transform->AxisZ() * 1.5f;
 	return 0;
 }
 
 void SampleAttack::Update()
 {
 	timer += Time::DeltaTime();
-	if (timer > 0.3f&& timer < 0.5f && !fist.lock()) {
+	if (timer > 0.3f && timer < 0.5f && !fist.lock()) {
 		fist = owner->AddComponent<CapsuleCollider>();
 		fist.lock()->is_trigger = true;
 		fist.lock()->height = 0.3f;
@@ -26,7 +30,7 @@ void SampleAttack::Update()
 	if (timer > 0.5f && fist.lock())
 		fist.lock()->RemoveThisComponent();
 
-	if (!model.lock()->IsPlaying())
+	if (model.lock()->GetCurrentAnimName() != "punch")
 		RemoveThisComponent();
 }
 

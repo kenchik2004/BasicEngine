@@ -21,8 +21,11 @@
   <ItemGroup>
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\PlaneObject.cpp" />
     <ClCompile Include="src\Game\SampleAttack.cpp" />
+    <ClCompile Include="src\Game\SampleCutIn.cpp" />
     <ClCompile Include="src\Game\SampleObject.cpp" />
+    <ClCompile Include="src\Game\SceneSample3.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\Game\SceneSample2.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
@@ -47,8 +50,11 @@
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\PlaneObject.h" />
     <ClInclude Include="src\Game\SampleAttack.h" />
+    <ClInclude Include="src\Game\SampleCutIn.h" />
     <ClInclude Include="src\Game\SampleObject.h" />
+    <ClInclude Include="src\Game\SceneSample3.h" />
     <ClInclude Include="src\Game\SceneSample.h" />
     <ClInclude Include="src\Game\SceneSample2.h" />
     <ClInclude Include="src\precompile.h" />

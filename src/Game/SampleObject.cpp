@@ -56,7 +56,7 @@ void SampleObject::Update()
 	GetComponent<RigidBody>()->velocity = velocity_factor;
 
 	if (Input::PushHitKey(KEY_INPUT_SPACE) && !GetComponent<SampleAttack>()) {
-		AddComponent<SampleAttack>();
+ 		AddComponent<SampleAttack>();
 	}
 	if (auto model = GetComponent<ModelRenderer>()) {
 		if (!model->IsPlaying())
@@ -77,6 +77,8 @@ void SampleObject::Draw()
 
 void SampleObject::PreDraw()
 {
+	SetCameraNearFar(0.1f, 3000.0f);
+	SetupCamera_Perspective(TO_RADIAN(45.0f));
 	SetCameraPositionAndTargetAndUpVec(float3(transform->position + Vector3(0, 1.6f, 0) - transform->AxisZ() * 0.05f), float3(transform->position + Vector3(0, 1.6f, 0) + transform->AxisZ()), float3(transform->AxisY()));
 }
 void SampleObject::PrePhysics()
@@ -99,8 +101,7 @@ void SampleObject::DebugDraw()
 
 void SampleObject::Exit()
 {
-	ObjectWP obj = SceneManager::Object::Get<Object>("Box");
-	SceneManager::Object::Destory(obj.lock());
+
 
 }
 

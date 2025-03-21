@@ -27,8 +27,8 @@ int SceneSample::Init()
 
 
 	obj = SceneManager::Object::Create<SampleObject>();
-	obj->transform->rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
-	for (int j = 0; j < 10; j++)
+	obj.lock()->transform->rotation = Quaternion(DEG2RAD(180), {0,1,0});
+	for (int j = 0; j < 0; j++)
 		for (int i = 0; i < 10; i++) {
 			auto a = SceneManager::Object::Create<Object>("Box");
 			auto mod = a->AddComponent<ModelRenderer>();
@@ -46,13 +46,12 @@ int SceneSample::Init()
 		}
 
 	obj2 = SceneManager::Object::Create<Object>();
-	obj2->tag = ObjBase::TAG::Stage;
-	obj2->transform->position = { 0,-1,0 };
-	obj2->transform->scale = { 0.01f,0.01f,0.01f };
-	obj2->AddComponent<RigidBody>();
-	obj2->AddComponent<ModelRenderer>()->Load("data/Stage/stage00.mv1");
-	auto mod_col = obj2->AddComponent<MeshCollider>();
-	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 1, 0));
+	obj2.lock()->tag = ObjBase::TAG::Stage;
+	obj2.lock()->transform->position = { 0,-1,0 };
+	obj2.lock()->transform->scale = { 0.01f,0.01f,0.01f };
+	obj2.lock()->AddComponent<RigidBody>();
+	obj2.lock()->AddComponent<ModelRenderer>()->Load("data/Stage/stage00.mv1");
+	auto mod_col = obj2.lock()->AddComponent<MeshCollider>();
 
 	return 0;
 }
@@ -69,6 +68,11 @@ void SceneSample::Update()
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
 		SceneManager::Load<SceneSample2>();
 
+}
+
+void SceneSample::PreDraw()
+{
+	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 1, 0));
 }
 
 void SceneSample::Draw()
