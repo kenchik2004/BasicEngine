@@ -6,12 +6,12 @@
 using namespace physx;
 int CapsuleCollider::Init()
 {
-	rigidbody = owner->GetComponent<RigidBody>();
+	rigidbody = owner.lock()->GetComponent<RigidBody>();
 	if (!rigidbody.lock()) {
 		RemoveThisComponent();
 		return -1;
 	}
-	auto p_scene = SceneManager::GetCurrentScene()->GetPhysicsScene();
+	auto p_scene = owner.lock()->GetScene()->GetPhysicsScene();
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxCapsuleGeometry(radius, height * 0.5f),

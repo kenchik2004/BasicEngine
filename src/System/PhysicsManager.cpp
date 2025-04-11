@@ -203,11 +203,11 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnCollisionEnter(hit_info0); // オブジェクトAのヒット発生関数を呼ぶ
+					sp_a->owner.lock()->OnCollisionEnter(hit_info0); // オブジェクトAのヒット発生関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnCollisionEnter(hit_info1); // オブジェクトBのヒット発生関数を呼ぶ
+					sp_b->owner.lock()->OnCollisionEnter(hit_info1); // オブジェクトBのヒット発生関数を呼ぶ
 				}
 
 			}
@@ -225,11 +225,11 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnCollisionStay(hit_info0); // オブジェクトAのヒット継続関数を呼ぶ
+					sp_a->owner.lock()->OnCollisionStay(hit_info0); // オブジェクトAのヒット継続関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnCollisionStay(hit_info1); // オブジェクトBのヒット継続関数を呼ぶ
+					sp_b->owner.lock()->OnCollisionStay(hit_info1); // オブジェクトBのヒット継続関数を呼ぶ
 				}
 			}
 		}
@@ -245,11 +245,11 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnCollisionExit(hit_info0); // オブジェクトAのヒット終了関数を呼ぶ
+					sp_a->owner.lock()->OnCollisionExit(hit_info0); // オブジェクトAのヒット終了関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnCollisionExit(hit_info1); // オブジェクトBのヒット終了関数を呼ぶ
+					sp_b->owner.lock()->OnCollisionExit(hit_info1); // オブジェクトBのヒット終了関数を呼ぶ
 				}
 			}
 		}
@@ -275,11 +275,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnTriggerEnter(hit_info0); // オブジェクトAのトリガー発生関数を呼ぶ
+					sp_a->owner.lock()->OnTriggerEnter(hit_info0); // オブジェクトAのトリガー発生関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnTriggerEnter(hit_info1); // オブジェクトBのトリガー発生関数を呼ぶ
+					sp_b->owner.lock()->OnTriggerEnter(hit_info1); // オブジェクトBのトリガー発生関数を呼ぶ
 				}
 
 			}
@@ -297,11 +297,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnTriggerStay(hit_info0); // オブジェクトAのトリガー継続関数を呼ぶ
+					sp_a->owner.lock()->OnTriggerStay(hit_info0); // オブジェクトAのトリガー継続関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnTriggerStay(hit_info1); // オブジェクトBのトリガー継続関数を呼ぶ
+					sp_b->owner.lock()->OnTriggerStay(hit_info1); // オブジェクトBのトリガー継続関数を呼ぶ
 				}
 			}
 		}
@@ -317,11 +317,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnTriggerExit(hit_info0); // オブジェクトAのトリガー終了関数を呼ぶ
+					sp_a->owner.lock()->OnTriggerExit(hit_info0); // オブジェクトAのトリガー終了関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnTriggerExit(hit_info1); // オブジェクトBのトリガー終了関数を呼ぶ
+					sp_b->owner.lock()->OnTriggerExit(hit_info1); // オブジェクトBのトリガー終了関数を呼ぶ
 				}
 			}
 		}

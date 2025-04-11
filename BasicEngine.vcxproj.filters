@@ -73,6 +73,7 @@
     <ClCompile Include="src\System\Components\ModelRenderer.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -150,6 +151,7 @@
     <ClInclude Include="src\System\Components\ModelRenderer.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
+    <ClInclude Include="src\System\DontDestroyOnLoadScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
