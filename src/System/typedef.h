@@ -1,8 +1,8 @@
 #pragma once
 
-#define PI 3.1415926535f
-#define DEG2RAD(deg) deg*PI/180
-#define RAD2DEG(rad) rad*180/PI
+#define PI 3.1415926535f			//円周率
+#define DEG2RAD(deg) deg*PI/180		//オイラー角->ラジアン角の変換
+#define RAD2DEG(rad) rad*180/PI		//ラジアン角->オイラー角の変換
 
 #define NON_COPYABLE(CLASS)										\
 					CLASS(const CLASS& that)=delete;			\
@@ -17,7 +17,7 @@
 					NON_COPYABLE;													\
 					static CLASS* instance(){static CLASS class_; return &class_;}	\
 
-
+//スマートポインタを使用するためのマクロ
 #define USING_PTR(CLASS)                                        \
     class CLASS;                                                \
     using CLASS##P          = std::shared_ptr<CLASS>;           \
@@ -98,48 +98,52 @@ using u64 = uint64_t;    //!< 64bit 符号なし整数
 using f32 = float;       //!< 単精度浮動小数点数
 using f64 = double;      //!< 倍精度浮動小数点数
 
+
+//ステータス管理用ビット演算テンプレート
 template <class T, class V = u32> struct SBit {
 	enum struct Bits : V
 	{
 	};
 
-	inline V on(T b)
+	inline V on(T b)																	//ビットのオン
 	{
 		status_bit_ |= 1ui64 << static_cast<V>(b);
 		return status_bit_;
 	}
-	inline V off(T b)
+	inline V off(T b)																	//ビットのオフ
 	{
 		status_bit_ &= ~(1ui64 << static_cast<V>(b));
 		return status_bit_;
 	}
-	inline V  set(T b, bool _on) { return _on ? on(b) : off(b); }
-	inline V  set(T b) { status_bit_ = b; return status_bit_; }
-	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<int>(b)); }
-	inline V& get() { return status_bit_; }
+	inline V  set(T b, bool _on) { return _on ? on(b) : off(b); }						//1ビットのみのセット
+	inline V  set(T b) { status_bit_ = b; return status_bit_; }							//全ビットのセット
+	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<int>(b)); }	//ビットの正否を返す
+	inline V& get() { return status_bit_; }												//全ビットの情報を返す
 
 private:
 	V status_bit_ = 0;
 };
 
-std::wstring Str2Wstr(std::string in);
-std::string WStr2Str(std::wstring in);
+std::wstring Str2Wstr(std::string in);			//通常stringをワイドstringに変換
+std::string WStr2Str(std::wstring in);			//ワイドstringを通常stringに変換
 
 
-#define BLACK     0x000000
-#define WHITE     0xFFFFFF
-#define RED       0xFF0000
-#define GREEN     0x00FF00
-#define BLUE      0x0000FF
-#define YELLOW    0xFFFF00
-#define CYAN      0x00FFFF
-#define MAGENTA   0xFF00FF
-#define GRAY      0x808080
-#define DARK_RED  0x800000
-#define DARK_GREEN 0x006400
-#define DARK_BLUE 0x00008B
-#define ORANGE    0xFFA500
-#define PINK      0xFFC0CB
-#define BROWN     0xA52A2A
-#define PURPLE    0x800080
+
+//各色のGetColorを使用せずに扱うための定数(16進数 unsigned int)
+#define BLACK     0x000000		//黒
+#define WHITE     0xFFFFFF		//白
+#define RED       0xFF0000		//赤
+#define GREEN     0x00FF00		//緑
+#define BLUE      0x0000FF		//青
+#define YELLOW    0xFFFF00		//黄
+#define CYAN      0x00FFFF		//シアン
+#define MAGENTA   0xFF00FF		//マゼンタ
+#define GRAY      0x808080		//灰
+#define DARK_RED  0x800000		//ダークレッド
+#define DARK_GREEN 0x006400		//ダークグリーン
+#define DARK_BLUE 0x00008B		//ダークブルー
+#define ORANGE    0xFFA500		//オレンジ
+#define PINK      0xFFC0CB		//ピンク
+#define BROWN     0xA52A2A		//茶
+#define PURPLE    0x800080		//紫
 

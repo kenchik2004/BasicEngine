@@ -1,5 +1,7 @@
 #include "precompile.h"
 
+
+//通常stringをワイドstringに変換
 std::wstring Str2Wstr(std::string in)
 {
 	// 変換に必要なサイズを取得
@@ -11,6 +13,7 @@ std::wstring Str2Wstr(std::string in)
 	return out;
 }
 
+//ワイドstringを通常stringに変換
 std::string WStr2Str(std::wstring in)
 {
 

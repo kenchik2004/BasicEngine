@@ -7,6 +7,7 @@ struct CompStat {
 	enum class STATUS :u32 {
 		INITIALIZED = 0,
 		ACTIVE = 1 << 1,
+		DRAW = 1 << 2,
 		REMOVED = 1 << 3,
 	};
 	SBit<STATUS> status_bit;
@@ -30,6 +31,7 @@ public:
 		auto this_class = std::static_pointer_cast<T>(shared_from_this());
 		this_class->status.status_bit.on(CompStat::STATUS::INITIALIZED);
 		this_class->status.status_bit.on(CompStat::STATUS::ACTIVE);
+		this_class->status.status_bit.on(CompStat::STATUS::DRAW);
 		this_class->status.class_name = typeid(T).name();
 	};
 	void SetPriority(int prio);
