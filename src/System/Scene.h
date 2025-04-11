@@ -1,6 +1,7 @@
 #pragma once
 
 USING_PTR(ObjBase);
+USING_PTR(Scene);
 struct SceneStat {
 	friend class Scene;
 	std::string ClassName() { return class_name; }
@@ -14,6 +15,7 @@ private:
 	physx::PxScene* physics_scene = nullptr;
 public:
 
+	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
 
 	//TODO Objectから所属シーンへのポインタにアクセスできる機構の作成
@@ -73,6 +75,7 @@ public:
 	void DestroyPhysics();
 	inline const bool& IsInSimulation() { return in_simulation; }
 	inline void AddFunctionAfterSimulation(const std::function<void()> function) { waiting_functions.push_back(function); }
+	void MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where);
 private:
 	bool in_simulation = false;
 	ObjBasePVec objects;
@@ -80,13 +83,13 @@ private:
 	std::vector<physx::PxActor*> waiting_remove_actors;
 	std::vector<physx::PxShape*> waiting_remove_shapes;
 
-	//template <class T> std::shared_ptr<T> CreateObject();
+protected:
 
 	template<class T>
 	inline std::shared_ptr<T> CreateObject(std::string_view name_)
 	{
 		auto obj = std::make_shared<T>();
-		obj->Construct<T>();
+		obj->Construct<T>(shared_from_this());
 		objects.push_back(obj);
 		ObjBase::changed_priority = true;
 
@@ -168,13 +171,18 @@ private:
 	inline void DestroyObject(ObjBaseP destroy_obj) {
 		if (objects.size() <= 0)
 			return;
+
 		for (auto obj = objects.begin(); obj != objects.end();) {
 			if ((*obj) == destroy_obj) {
+
 				while ((*obj)->GetComponent<Component>()) {
 					(*obj)->RemoveComponent((*obj)->GetComponent<Component>());
 				}
+
 				(*obj)->Exit();
+
 				obj = objects.erase(obj);
+
 				destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
 				destroy_obj.reset();
 				return;

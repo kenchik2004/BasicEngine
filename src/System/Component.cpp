@@ -5,10 +5,10 @@
 void Component::SetPriority(int prio)
 {
 	status.priority = prio;
-	owner->ChangedCompPriority(true);
+	owner.lock()->ChangedCompPriority(true);
 }
 
 void Component::RemoveThisComponent()
 {
-	owner->RemoveComponent(shared_from_this());
+	owner.lock()->RemoveComponent(shared_from_this());
 }

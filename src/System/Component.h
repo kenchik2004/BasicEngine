@@ -23,7 +23,7 @@ public:
 	USING_SUPER(Component);
 	CompStat status;
 
-	ObjBaseP owner = nullptr;
+	ObjBaseWP owner;
 
 	template <class T>
 	inline void Construct() {

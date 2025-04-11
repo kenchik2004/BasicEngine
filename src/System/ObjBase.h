@@ -28,6 +28,7 @@ private:
 USING_PTR(Component);
 USING_PTR(Transform);
 USING_PTR(ObjBase);
+USING_PTR(Scene);
 class ObjBase :public std::enable_shared_from_this<ObjBase>
 {
 	friend class Scene;
@@ -50,18 +51,20 @@ private:
 
 
 	template <class T>
-	inline void Construct() {
+	inline void Construct(SceneP owner_scene) {
 		auto this_class = std::static_pointer_cast<T>(shared_from_this());
 		this_class->status.status_bit.on(ObjStat::STATUS::INITIALIZED);
 		this_class->status.status_bit.on(ObjStat::STATUS::ACTIVE);
 		this_class->status.status_bit.on(ObjStat::STATUS::DRAW);
 		this_class->status.class_name = typeid(T).name();
 		this_class->transform = this_class->AddComponent<Transform>();
+		this_class->scene = owner_scene;
 	};
 
 	static bool changed_priority;
 	bool changed_comp_priority = true;
 	ComponentPVec components;
+	SceneP scene;
 
 
 public:
@@ -113,6 +116,7 @@ public:
 	static inline const bool ChangedPriority() { return changed_priority; }
 	inline void SetPriority(int prio) { status.priority = prio; changed_priority = true; }
 	inline int GetPriority() { return status.priority; }
+	inline SceneP GetScene() { return scene; }
 
 	inline void ChangedCompPriority(bool is_changed = true) { changed_comp_priority = is_changed; }
 	inline const bool IsChangedCompPriority() { return changed_comp_priority; }
