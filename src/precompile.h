@@ -45,6 +45,7 @@
 #include "System/Components/Transform.h"
 #include "System/ObjBase.h"
 #include "System/Scene.h"
+#include "System/DontDestroyOnLoadScene.h"
 #include "System/SceneManager.h"
 
 

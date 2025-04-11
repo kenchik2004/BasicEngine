@@ -8,13 +8,13 @@ using namespace physx;
 
 int MeshCollider::Init()
 {
-	rigidbody = owner->GetComponent<RigidBody>();
+	rigidbody = owner.lock()->GetComponent<RigidBody>();
 	if (!rigidbody.lock()) {
 		RemoveThisComponent();
 		return -1;
 	}
 	rigidbody.lock()->ChangeToStatic();
-	model = owner->GetComponent<ModelRenderer>();
+	model = owner.lock()->GetComponent<ModelRenderer>();
 	if (model.lock() && rigidbody.lock())
 		AttachToModel();
 	return 0;
@@ -25,7 +25,7 @@ void MeshCollider::PrePhysics()
 	rigidbody.lock()->GetBody()->detachShape(*shape);
 
 	PxTransform trns = MakeCollisionTransform();
-	mesh.scale = owner->transform->scale;
+	mesh.scale = owner.lock()->transform->scale;
 	shape->setGeometry(mesh);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
 	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
@@ -38,9 +38,9 @@ void MeshCollider::DebugDraw()
 {
 	auto trns = rigidbody.lock()->GetBody()->getGlobalPose();
 	for (int i = 0; i < ref_poly_.PolygonNum; i++) {
-		Vector3 p0 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[0]].Position) * owner->transform->scale.x;
-		Vector3 p1 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[1]].Position) * owner->transform->scale.x;
-		Vector3 p2 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[2]].Position) * owner->transform->scale.x;
+		Vector3 p0 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[0]].Position) * owner.lock()->transform->scale.x;
+		Vector3 p1 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[1]].Position) * owner.lock()->transform->scale.x;
+		Vector3 p2 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[2]].Position) * owner.lock()->transform->scale.x;
 		p0 = trns.q.rotate(p0);
 		p1 = trns.q.rotate(p1);
 		p2 = trns.q.rotate(p2);
@@ -59,7 +59,7 @@ void MeshCollider::DebugDraw()
 void MeshCollider::AttachToModel()
 {
 	if (!model.lock())
-		model = owner->GetComponent<ModelRenderer>();
+		model = owner.lock()->GetComponent<ModelRenderer>();
 	if (attached || !model.lock() || !rigidbody.lock())
 		return;
 

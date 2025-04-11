@@ -12,7 +12,7 @@ void Scene::Physics()
 
 	//シミュレーション
 	in_simulation = true;
-	physics_scene->simulate(Time::FixedDeltaTime());
+	physics_scene->simulate(Time::FixedDeltaTime() * physics_timescale);
 	//シミュレーションを待つ
 	physics_scene->fetchResults(true);
 	in_simulation = false;
@@ -64,7 +64,7 @@ void Scene::DeleteShape(physx::PxShape* shape)
 		return;
 	auto wp = static_cast<std::weak_ptr<Collider>*>(shape->userData);
 	shape->userData = nullptr;
-	if (wp->lock())
+	if (wp)
 		delete wp;
 
 	auto body = shape->getActor();
@@ -116,6 +116,18 @@ void Scene::DestroyPhysics()
 	physics_scene = nullptr;
 }
 
+void Scene::MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where) {
+	for (auto pick_obj = objects.begin(); pick_obj != objects.end(); pick_obj++) {
+		if (move_object == *pick_obj)
+		{
+			ObjBase::changed_priority = true;
+			(*pick_obj)->scene = to_where;
+			to_where->objects.push_back(std::move(*pick_obj));
+			objects.erase(pick_obj);
+			return;
+		}
+	}
+}
 void Scene::DestroyObject(ObjBaseP destroy_obj) {
 	if (objects.size() <= 0)
 		return;

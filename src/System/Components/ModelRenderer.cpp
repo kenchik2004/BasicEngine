@@ -58,25 +58,20 @@ void ModelRenderer::Update()
 
 void ModelRenderer::LateUpdate()
 {
-	mat4x4 mat(CastPhysXQuat(owner->transform->rotation*rot));
-	mat.scale(Vector4(owner->transform->scale, 1));
+	mat4x4 mat(CastPhysXQuat(owner.lock()->transform->rotation*rot));
+	mat.scale(Vector4(owner.lock()->transform->scale, 1));
 	mat.scale(Vector4(scale, 1));
-	mat.setPosition(owner->transform->position+rot.rotate(pos));
-	//mat4x4 local_mat(CastPhysXQuat(rot));
-	//local_mat.scale(Vector4(scale, 1));
-	//local_mat.setPosition(pos);
+	mat.setPosition(owner.lock()->transform->position+rot.rotate(pos));
 	MV1SetMatrix(model.handle, cast(mat));
 }
 
 void ModelRenderer::PreDraw()
 {
-	mat4x4 mat(CastPhysXQuat(owner->transform->rotation * rot));
-	mat.scale(Vector4(owner->transform->scale, 1));
+	mat4x4 mat(CastPhysXQuat(owner.lock()->transform->rotation * rot));
+	mat.scale(Vector4(owner.lock()->transform->scale, 1));
 	mat.scale(Vector4(scale, 1));
-	mat.setPosition(owner->transform->position + rot.rotate(pos));
-	//mat4x4 local_mat(CastPhysXQuat(rot));
-	//local_mat.scale(Vector4(scale, 1));
-	//local_mat.setPosition(pos);
+	mat.setPosition(owner.lock()->transform->position + rot.rotate(pos));
+
 	MV1SetMatrix(model.handle, cast(mat));
 
 }
@@ -148,7 +143,7 @@ std::string_view ModelRenderer::GetCurrentAnimName()
 
 void ModelRenderer::DebugDraw()
 {
-	if (owner->GetComponent<MeshCollider>())
+	if (owner.lock()->GetComponent<MeshCollider>())
 		return;
 	MV1SetWireFrameDrawFlag(model.handle, true);
 	MV1DrawModel(model.handle);

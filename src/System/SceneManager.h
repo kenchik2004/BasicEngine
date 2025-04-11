@@ -1,6 +1,7 @@
 #pragma once
 
 USING_PTR(Scene);
+USING_PTR(DontDestroyOnLoadScene);
 class SceneManager final
 {
 
@@ -48,12 +49,16 @@ public:
 
 	static void Exit();
 
+	static inline SceneP GetDontDestoryOnLoadScene() { return another_scenes[0]; }
 	template<class T> static inline std::shared_ptr<T> GetScene()
 	{
 		ClassTypeInfo<T> info = ClassTypeInfo<T>(typeid(T).name(), &T::Super::info);
 
 		std::shared_ptr<T> scene_pick = nullptr;
-		for (auto& ite : scenes) {
+		std::vector<SceneP> all_scenes = scenes;
+		for (auto& another_scene : another_scenes)
+			all_scenes.push_back(another_scene);
+		for (auto& ite : all_scenes) {
 			if (ite->status.ClassName() == info.ClassName())
 				scene_pick = std::static_pointer_cast<T>(ite);
 
@@ -80,7 +85,7 @@ public:
 		current_scene->Destroy();
 		current_scene = scene;
 		scene->Init();
-			//ロード中にdeltatimeが蓄積し、物理がぶっ壊れることがあるため時飛ばし
+		//ロード中にdeltatimeが蓄積し、物理がぶっ壊れることがあるため時飛ばし
 		Time::ResetTime();
 
 	}
@@ -158,10 +163,18 @@ public:
 
 
 
-		template<class T> static inline std::shared_ptr<T> Get() {
+		template<class T> static inline std::shared_ptr<T> Get(SceneP target_scene = nullptr) {
 			if (!current_scene)
 				return nullptr;
-			std::shared_ptr<T> obj = current_scene->GetObjectPtr<T>();
+
+			std::shared_ptr<T> obj;
+			if (target_scene)
+			{
+				obj = target_scene->GetObjectPtr<T>();
+				return obj;
+			}
+
+			obj = current_scene->GetObjectPtr<T>();
 			return obj;
 		}
 
@@ -202,11 +215,13 @@ public:
 			current_scene->DestroyObject(destroy_obj);
 			destroy_obj.reset();
 		}
+		static void DontDestroyOnLoad(ObjBaseP obj, SceneP from_where);
 	};
 #endif
 
 private:
 	static ScenePVec scenes;
+	static ScenePVec another_scenes;
 	static SceneP current_scene;
 };
 
