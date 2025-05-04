@@ -73,7 +73,18 @@
     <ClCompile Include="src\System\Components\ModelRenderer.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp" />
+    <ClCompile Include="src\Game\PlaneObject.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SampleCutIn.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\SceneSample3.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -151,7 +162,18 @@
     <ClInclude Include="src\System\Components\ModelRenderer.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\DontDestroyOnLoadScene.h" />
+    <ClInclude Include="src\Game\SceneSample3.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\PlaneObject.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\SampleCutIn.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
