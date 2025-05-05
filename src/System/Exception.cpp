@@ -17,6 +17,10 @@ Exception::Exception(const char* main_message, const char* file_name, int line, 
 
 void Exception::Show()
 {
+
+	printfDx(message.c_str());
+	printfDx("\n");
+	return;
 	std::wstring wstr = Str2Wstr(message);
 
 #ifndef NDEBUG
@@ -40,6 +44,11 @@ NullptrException::NullptrException(const char* integer_name, const char* file_na
 	message += integer_name;
 	message += " Ç™nullptrÇ≈ÇµÇΩÅB\n";
 
+}
+
+NullptrException::NullptrException(const char* message_)
+{
+	message += message_;
 }
 
 OutOfRangeException::OutOfRangeException(int index, int array_size, const char* array_name, const char* file_name, int line, const char* func_name)

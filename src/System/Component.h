@@ -21,6 +21,9 @@ class Component :public std::enable_shared_from_this<Component>
 	friend class ObjBase;
 private:
 public:
+
+	virtual ~Component() {}
+
 	USING_SUPER(Component);
 	CompStat status;
 

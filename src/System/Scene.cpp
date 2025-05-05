@@ -47,9 +47,9 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 	physics_scene->lockWrite();// PhysX のスレッドをロック
 
 	//以降、Hit処理などに入らないようuserDataを解放して、nullptrにしておく
-	auto wp = static_cast<std::weak_ptr<ObjBase>*>(actor->userData);
+	auto wp = static_cast<SafeWeakPtr<ObjBase>*>(actor->userData);
 	actor->userData = nullptr;
-	if (wp->lock())
+	if (wp)
 		delete wp;
 
 	//削除予定アクターに追加登録
@@ -62,7 +62,7 @@ void Scene::DeleteShape(physx::PxShape* shape)
 {
 	if (!shape)
 		return;
-	auto wp = static_cast<std::weak_ptr<Collider>*>(shape->userData);
+	auto wp = static_cast<SafeWeakPtr<Collider>*>(shape->userData);
 	shape->userData = nullptr;
 	if (wp)
 		delete wp;

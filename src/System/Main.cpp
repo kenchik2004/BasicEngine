@@ -3,8 +3,8 @@
 #include "Game/SceneSample3.h"
 #include "Game/SceneSample.h"
 
-//#define DEBUG_WINDOW
-//#define USE_DEBUG_DRAW
+#define DEBUG_WINDOW
+#define USE_DEBUG_DRAW
 //#define FULL_SCREEN
 
 std::string window_classname[1] =
@@ -62,12 +62,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #ifdef FULL_SCREEN
 	//ChangeWindowMode(false);
 #endif
-	SetGraphMode(1920, 1080, 32, 240);
+	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
 	SetMainWindowText("メインウィンドウ");
 	SetBackgroundColor(100, 100, 100);
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
 	SetHookWinProc(DxWndProc);
-	SetDoubleStartValidFlag(TRUE);
+	SetDoubleStartValidFlag(FALSE);
 	SetAlwaysRunFlag(TRUE);
 	SetWaitVSyncFlag(false);
 
@@ -97,7 +97,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SceneManager::Init();
 
 	//描画のFPSを設定
-	Time::SetDrawFPSMAX(60);
+	Time::SetDrawFPSMAX(240);
 	//内部処理のFPSを設定
 	Time::SetFPSMAX(166);
 	Time::SetFixedFPSMAX(50);
@@ -222,15 +222,20 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	}
 	//終了
-	SceneManager::Exit();
-	//GameExit();
+	try {
+		SceneManager::Exit();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
 
-	//PhysXコピペソース
-	//============================================//
+	try {
+		PhysicsManager::Exit();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
 
-	PhysicsManager::Exit();
-
-	//============================================//
 	timeEndPeriod(1);
 	DxLib::DxLib_End();
 	return 0;
@@ -310,22 +315,7 @@ void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fil
 
 }
 
-TypeInfo TypeInfo::Root = TypeInfo("root", 0, nullptr);
 
-const char* TypeInfo::ClassName() const
-{
-	return class_name.c_str();
-}
-
-size_t TypeInfo::ClassSize() const
-{
-	return class_size;
-}
-
-const TypeInfo* TypeInfo::Parent() const
-{
-	return parent;
-}
 
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow)
 {
@@ -353,7 +343,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 		window_classname[0].c_str(),
 		"デバッグウィンドウ",
 		WS_MINIMIZEBOX | WS_SYSMENU,
-		window_x, window_y, window_x, window_y,
+		window_x * 0.5f, window_y * 0.5f, window_x, window_y,
 		NULL, NULL, hInstance, NULL
 	);
 	ShowWindow(window, nCmdShow);
