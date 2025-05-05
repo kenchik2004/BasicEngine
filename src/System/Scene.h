@@ -14,6 +14,7 @@ class Scene :public std::enable_shared_from_this<Scene>
 private:
 	physx::PxScene* physics_scene = nullptr;
 public:
+	virtual ~Scene() {}
 
 	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
@@ -86,11 +87,11 @@ private:
 
 protected:
 
-	template<class T>
-	inline std::shared_ptr<T> CreateObject(std::string_view name_)
+	template<class T,typename...Args>
+	inline SafeSharedPtr<T> CreateObject(std::string_view name_,Args&&... args)
 	{
-		auto obj = std::make_shared<T>();
-		obj->Construct<T>(shared_from_this());
+		auto obj = make_safe_shared<T>(std::forward<Args>(args)...);
+		obj->Construct<T>(SafeSharedPtr(shared_from_this()));
 		objects.push_back(obj);
 		ObjBase::changed_priority = true;
 
@@ -113,30 +114,30 @@ protected:
 		return obj;
 	}
 
-	template<class T> inline std::shared_ptr<T> GetObjectPtr() {
+	template<class T> inline SafeSharedPtr<T> GetObjectPtr() {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj)) {
+				if (auto pick_obj = SafeDynamicCast<T>(obj)) {
 					return pick_obj;
 				}
 		}
 		return nullptr;
 	}
 
-	template<class T> inline std::shared_ptr<T> GetObjectPtr(ObjBase::TAG tag) {
+	template<class T> inline SafeSharedPtr<T> GetObjectPtr(ObjBase::TAG tag) {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED) && obj->tag == tag)
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj)) {
+				if (auto pick_obj = SafeDynamicCast<T>(obj)) {
 					return pick_obj;
 				}
 		}
 		return nullptr;
 	}
 
-	template<class T> inline std::shared_ptr<T> GetObjectPtr(std::string_view name_) {
+	template<class T> inline SafeSharedPtr<T> GetObjectPtr(std::string_view name_) {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED) && obj->name == name_)
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj)) {
+				if (auto pick_obj = SafeDynamicCast<T>(obj)) {
 					return pick_obj;
 				}
 		}
@@ -144,24 +145,24 @@ protected:
 	}
 
 
-	template<class T> inline std::vector<std::shared_ptr<T>> GetObjectPtrVec() {
-		std::vector<std::shared_ptr<T>> vec(0);
+	template<class T> inline std::vector<SafeSharedPtr<T>> GetObjectPtrVec() {
+		std::vector<SafeSharedPtr<T>> vec(0);
 
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj))
+				if (auto pick_obj = SafeDynamicCast<T>(obj))
 				{
 					vec.push_back(pick_obj);
 				}
 		}
 		return vec;
 	}
-	template<class T> inline std::vector<std::shared_ptr<T>> GetObjectPtrVec(ObjBase::TAG tag) {
-		std::vector<std::shared_ptr<T>> vec(0);
+	template<class T> inline std::vector<SafeSharedPtr<T>> GetObjectPtrVec(ObjBase::TAG tag) {
+		std::vector<SafeSharedPtr<T>> vec(0);
 
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED) && obj->tag == tag)
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj))
+				if (auto pick_obj = SafeDynamicCast<T>(obj))
 				{
 					vec.push_back(pick_obj);
 				}
