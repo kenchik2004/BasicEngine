@@ -191,9 +191,9 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 		PxContactPair contact = pairs[i];
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
-			//std::weak_ptrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+			//SafeWeakPtrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
 			if (wp_a && wp_b) {
 				//ヒット時に、オブジェクトを消しちゃうおバカちゃんたちがいるかもしれないので
 				//あらかじめlockしてコールバック内で解放されないようにしておく
@@ -203,11 +203,11 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnCollisionEnter(hit_info0); // オブジェクトAのヒット発生関数を呼ぶ
+					sp_a->owner.lock()->OnCollisionEnter(hit_info0); // オブジェクトAのヒット発生関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnCollisionEnter(hit_info1); // オブジェクトBのヒット発生関数を呼ぶ
+					sp_b->owner.lock()->OnCollisionEnter(hit_info1); // オブジェクトBのヒット発生関数を呼ぶ
 				}
 
 			}
@@ -216,8 +216,8 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // 衝突が続けて発生したとき
 		{
 
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -225,19 +225,19 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnCollisionStay(hit_info0); // オブジェクトAのヒット継続関数を呼ぶ
+					sp_a->owner.lock()->OnCollisionStay(hit_info0); // オブジェクトAのヒット継続関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnCollisionStay(hit_info1); // オブジェクトBのヒット継続関数を呼ぶ
+					sp_b->owner.lock()->OnCollisionStay(hit_info1); // オブジェクトBのヒット継続関数を呼ぶ
 				}
 			}
 		}
 
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_LOST) // 衝突が終了したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -245,11 +245,11 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnCollisionExit(hit_info0); // オブジェクトAのヒット終了関数を呼ぶ
+					sp_a->owner.lock()->OnCollisionExit(hit_info0); // オブジェクトAのヒット終了関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnCollisionExit(hit_info1); // オブジェクトBのヒット終了関数を呼ぶ
+					sp_b->owner.lock()->OnCollisionExit(hit_info1); // オブジェクトBのヒット終了関数を呼ぶ
 				}
 			}
 		}
@@ -264,9 +264,9 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 		PxTriggerPair contact = pairs[i];
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairs[i].triggerShape->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairs[i].otherShape->userData));
-			//std::weak_ptrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
+			//SafeWeakPtrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
 			if (wp_a && wp_b) {
 
 				auto sp_a = wp_a->lock();
@@ -275,11 +275,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnTriggerEnter(hit_info0); // オブジェクトAのトリガー発生関数を呼ぶ
+					sp_a->owner.lock()->OnTriggerEnter(hit_info0); // オブジェクトAのトリガー発生関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnTriggerEnter(hit_info1); // オブジェクトBのトリガー発生関数を呼ぶ
+					sp_b->owner.lock()->OnTriggerEnter(hit_info1); // オブジェクトBのトリガー発生関数を呼ぶ
 				}
 
 			}
@@ -288,8 +288,8 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // 衝突が続けて発生したとき
 		{
 
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairs[i].triggerShape->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairs[i].otherShape->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -297,19 +297,19 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnTriggerStay(hit_info0); // オブジェクトAのトリガー継続関数を呼ぶ
+					sp_a->owner.lock()->OnTriggerStay(hit_info0); // オブジェクトAのトリガー継続関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnTriggerStay(hit_info1); // オブジェクトBのトリガー継続関数を呼ぶ
+					sp_b->owner.lock()->OnTriggerStay(hit_info1); // オブジェクトBのトリガー継続関数を呼ぶ
 				}
 			}
 		}
 
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_LOST) // 衝突が終了したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairs[i].triggerShape->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairs[i].otherShape->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -317,11 +317,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner->OnTriggerExit(hit_info0); // オブジェクトAのトリガー終了関数を呼ぶ
+					sp_a->owner.lock()->OnTriggerExit(hit_info0); // オブジェクトAのトリガー終了関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner->OnTriggerExit(hit_info1); // オブジェクトBのトリガー終了関数を呼ぶ
+					sp_b->owner.lock()->OnTriggerExit(hit_info1); // オブジェクトBのトリガー終了関数を呼ぶ
 				}
 			}
 		}

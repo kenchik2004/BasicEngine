@@ -28,11 +28,13 @@ private:
 USING_PTR(Component);
 USING_PTR(Transform);
 USING_PTR(ObjBase);
+USING_PTR(Scene);
 class ObjBase :public std::enable_shared_from_this<ObjBase>
 {
 	friend class Scene;
 	friend class SceneManager;
 public:
+	virtual ~ObjBase() {}
 
 	USING_SUPER(ObjBase);
 	ObjStat status;
@@ -50,47 +52,49 @@ private:
 
 
 	template <class T>
-	inline void Construct() {
+	inline void Construct(SceneP owner_scene) {
 		auto this_class = std::static_pointer_cast<T>(shared_from_this());
 		this_class->status.status_bit.on(ObjStat::STATUS::INITIALIZED);
 		this_class->status.status_bit.on(ObjStat::STATUS::ACTIVE);
 		this_class->status.status_bit.on(ObjStat::STATUS::DRAW);
 		this_class->status.class_name = typeid(T).name();
 		this_class->transform = this_class->AddComponent<Transform>();
+		this_class->scene = owner_scene;
 	};
 
 	static bool changed_priority;
 	bool changed_comp_priority = true;
 	ComponentPVec components;
+	SceneP scene;
 
 
 public:
-	template <class T> std::shared_ptr<T> AddComponent() {
+	template <class T,typename... Args> SafeSharedPtr<T> AddComponent(Args&& ...args) {
 
-		auto comp = std::make_shared<T>();
-		comp->owner = shared_from_this();
+		auto comp = make_safe_shared<T>(std::forward<Args>(args)...);
+		comp->owner = SafeSharedPtr(shared_from_this());
 		comp->Construct<T>();
 		components.push_back(comp);
 		comp->Init();
 		changed_comp_priority = true;
 		return comp;
 	}
-	template <class T> std::shared_ptr<T> GetComponent() {
+	template <class T> SafeSharedPtr<T> GetComponent() {
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
-				if (auto pick_comp = std::dynamic_pointer_cast<T>(comp)) {
+				if (auto pick_comp = SafeDynamicCast<T>(comp)) {
 					return pick_comp;
 				}
 		}
 		return nullptr;
 	}
-	template <class T> std::vector<std::shared_ptr<T>> GetComponents() {
-		std::vector<std::shared_ptr<T>> vec(0);
+	template <class T> std::vector<SafeSharedPtr<T>> GetComponents() {
+		std::vector<SafeSharedPtr<T>> vec(0);
 		if (!GetComponent<T>())
 			return vec;
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
-				if (auto pick_comp = std::dynamic_pointer_cast<T>(comp)) {
+				if (auto pick_comp = SafeDynamicCast<T>(comp)) {
 					vec.push_back(pick_comp);
 				}
 		}
@@ -98,13 +102,16 @@ public:
 	}
 
 	void RemoveComponent(ComponentP remove_comp) {
+		ComponentWP comp_wp;
 		for (auto comp = components.begin(); comp != components.end();) {
-			if ((*comp) == remove_comp) {
-				(*comp)->Exit();
-				(*comp)->status.status_bit.on(CompStat::STATUS::REMOVED);
+			comp_wp = (*comp);
+			if (comp_wp.lock() == remove_comp) {
+				comp_wp.lock()->Exit();
+				comp_wp.lock()->status.status_bit.on(CompStat::STATUS::REMOVED);
 				comp = components.erase(comp);
 				remove_comp.reset();
-				return;
+				break;
+
 			}
 			comp++;
 		}
@@ -113,6 +120,7 @@ public:
 	static inline const bool ChangedPriority() { return changed_priority; }
 	inline void SetPriority(int prio) { status.priority = prio; changed_priority = true; }
 	inline int GetPriority() { return status.priority; }
+	inline SceneP GetScene() { return scene; }
 
 	inline void ChangedCompPriority(bool is_changed = true) { changed_comp_priority = is_changed; }
 	inline const bool IsChangedCompPriority() { return changed_comp_priority; }

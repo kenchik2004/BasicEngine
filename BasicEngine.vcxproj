@@ -21,17 +21,23 @@
   <ItemGroup>
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\PlaneObject.cpp" />
+    <ClCompile Include="src\Game\SampleAttack.cpp" />
+    <ClCompile Include="src\Game\SampleCutIn.cpp" />
     <ClCompile Include="src\Game\SampleObject.cpp" />
+    <ClCompile Include="src\Game\SceneSample3.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\Game\SceneSample2.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
     <ClCompile Include="src\System\Components\BoxCollider.cpp" />
     <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
     <ClCompile Include="src\System\Components\Collider.cpp" />
+    <ClCompile Include="src\System\Components\MeshCollider.cpp" />
     <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
     <ClCompile Include="src\System\Components\RigidBody.cpp" />
     <ClCompile Include="src\System\Components\SphereCollider.cpp" />
     <ClCompile Include="src\System\Components\Transform.cpp" />
+    <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp" />
     <ClCompile Include="src\System\Exception.cpp" />
     <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
@@ -45,7 +51,11 @@
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\PlaneObject.h" />
+    <ClInclude Include="src\Game\SampleAttack.h" />
+    <ClInclude Include="src\Game\SampleCutIn.h" />
     <ClInclude Include="src\Game\SampleObject.h" />
+    <ClInclude Include="src\Game\SceneSample3.h" />
     <ClInclude Include="src\Game\SceneSample.h" />
     <ClInclude Include="src\Game\SceneSample2.h" />
     <ClInclude Include="src\precompile.h" />
@@ -53,10 +63,12 @@
     <ClInclude Include="src\System\Components\BoxCollider.h" />
     <ClInclude Include="src\System\Components\CapsuleCollider.h" />
     <ClInclude Include="src\System\Components\Collider.h" />
+    <ClInclude Include="src\System\Components\MeshCollider.h" />
     <ClInclude Include="src\System\Components\ModelRenderer.h" />
     <ClInclude Include="src\System\Components\RigidBody.h" />
     <ClInclude Include="src\System\Components\SphereCollider.h" />
     <ClInclude Include="src\System\Components\Transform.h" />
+    <ClInclude Include="src\System\DontDestroyOnLoadScene.h" />
     <ClInclude Include="src\System\Exception.h" />
     <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\Main.h" />
@@ -127,9 +139,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -177,6 +191,7 @@
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

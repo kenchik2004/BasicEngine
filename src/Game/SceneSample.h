@@ -9,10 +9,12 @@ public:
 	void Load() override;
 	int Init() override;
 	void Update() override;
+	void PreDraw() override;
 	void Draw() override;
 	void LateDraw() override;
 	void DebugDraw() override;
 	void LateDebugDraw() override;
 	void UnLoad() override;
-	SampleObjectP obj=nullptr;
+	SampleObjectWP obj;
+	ObjectWP obj2;
 };

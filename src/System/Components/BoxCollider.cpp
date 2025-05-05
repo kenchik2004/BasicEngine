@@ -7,17 +7,17 @@ using namespace physx;
 
 int BoxCollider::Init()
 {
-	rigidbody = owner->GetComponent<RigidBody>();
+	rigidbody = owner.lock()->GetComponent<RigidBody>();
 	if (!rigidbody.lock()) {
 		RemoveThisComponent();
 		return -1;
-	}
-	auto p_scene = SceneManager::GetCurrentScene()->GetPhysicsScene();
+	}	
+	auto p_scene = owner.lock()->GetScene()->GetPhysicsScene();
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
 		*Material::Metal_Default);
-	shape->userData = new std::weak_ptr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 
 	rigidbody.lock()->GetBody()->attachShape(*shape);

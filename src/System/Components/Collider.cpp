@@ -6,18 +6,18 @@
 using namespace physx;
 int Collider::Init()
 {
-	rigidbody = owner->GetComponent<RigidBody>();
+	rigidbody = owner.lock()->GetComponent<RigidBody>();
 	if (!rigidbody.lock()) {
 		RemoveThisComponent();
 		return -1;
 	}
-	auto p_scene = SceneManager::GetCurrentScene()->GetPhysicsScene();
+	auto p_scene = owner.lock()->GetScene()->GetPhysicsScene();
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxSphereGeometry(),
 		*Material::Metal_Default);
 
-	shape->userData = new std::weak_ptr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 	rigidbody.lock()->GetBody()->attachShape(*shape);
 
@@ -31,13 +31,13 @@ void Collider::Exit()
 		if (auto body = rigidbody.lock()->GetBody())
 			body->detachShape(*shape);
 	}
-	SceneManager::GetCurrentScene()->DeleteShape(shape);
+	owner.lock()->GetScene()->DeleteShape(shape);
 	shape = nullptr;
 }
 
 void Collider::AttachToModel(int attach_index)
 {
-	auto model = owner->GetComponent<ModelRenderer>();
+	auto model = owner.lock()->GetComponent<ModelRenderer>();
 	if (!model)
 		return;
 	attach_to_model = true;
@@ -56,13 +56,13 @@ PxTransform Collider::MakeCollisionTransform()
 {
 	Vector3 pos = { 0,0,0 };
 	Quaternion rot = { 0,0,0,1 };
-	auto model = owner->GetComponent<ModelRenderer>();
+	auto model = owner.lock()->GetComponent<ModelRenderer>();
 	if (attach_to_model && model) {
 		float3 frame_pos = MV1GetFramePosition(model->model.handle, model_attach_index);
 		mat4x4 frame_mat = MV1GetFrameLocalWorldMatrix(model->model.handle, model_attach_index, true);
 		physx::PxTransform t(frame_mat);
-		frame_pos -= owner->transform->position;
-		Quaternion q = Inverse(owner->transform->rotation);
+		frame_pos -= owner.lock()->transform->position;
+		Quaternion q = Inverse(owner.lock()->transform->rotation);
 		pos = q.rotate(frame_pos);
 		rot = q * t.q;
 	}

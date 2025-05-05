@@ -1,6 +1,7 @@
 #pragma once
 
 USING_PTR(ObjBase);
+USING_PTR(Scene);
 struct SceneStat {
 	friend class Scene;
 	std::string ClassName() { return class_name; }
@@ -13,7 +14,9 @@ class Scene :public std::enable_shared_from_this<Scene>
 private:
 	physx::PxScene* physics_scene = nullptr;
 public:
+	virtual ~Scene() {}
 
+	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
 
 	//TODO Objectから所属シーンへのポインタにアクセスできる機構の作成
@@ -73,20 +76,22 @@ public:
 	void DestroyPhysics();
 	inline const bool& IsInSimulation() { return in_simulation; }
 	inline void AddFunctionAfterSimulation(const std::function<void()> function) { waiting_functions.push_back(function); }
+	void MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where);
 private:
 	bool in_simulation = false;
 	ObjBasePVec objects;
 	std::vector<std::function<void()>> waiting_functions;
 	std::vector<physx::PxActor*> waiting_remove_actors;
 	std::vector<physx::PxShape*> waiting_remove_shapes;
+	ObjBaseWPVec leak_objects;
 
-	//template <class T> std::shared_ptr<T> CreateObject();
+protected:
 
-	template<class T>
-	inline std::shared_ptr<T> CreateObject(std::string_view name_)
+	template<class T,typename...Args>
+	inline SafeSharedPtr<T> CreateObject(std::string_view name_,Args&&... args)
 	{
-		auto obj = std::make_shared<T>();
-		obj->Construct<T>();
+		auto obj = make_safe_shared<T>(std::forward<Args>(args)...);
+		obj->Construct<T>(SafeSharedPtr(shared_from_this()));
 		objects.push_back(obj);
 		ObjBase::changed_priority = true;
 
@@ -109,30 +114,30 @@ private:
 		return obj;
 	}
 
-	template<class T> inline std::shared_ptr<T> GetObjectPtr() {
+	template<class T> inline SafeSharedPtr<T> GetObjectPtr() {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj)) {
+				if (auto pick_obj = SafeDynamicCast<T>(obj)) {
 					return pick_obj;
 				}
 		}
 		return nullptr;
 	}
 
-	template<class T> inline std::shared_ptr<T> GetObjectPtr(ObjBase::TAG tag) {
+	template<class T> inline SafeSharedPtr<T> GetObjectPtr(ObjBase::TAG tag) {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED) && obj->tag == tag)
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj)) {
+				if (auto pick_obj = SafeDynamicCast<T>(obj)) {
 					return pick_obj;
 				}
 		}
 		return nullptr;
 	}
 
-	template<class T> inline std::shared_ptr<T> GetObjectPtr(std::string_view name_) {
+	template<class T> inline SafeSharedPtr<T> GetObjectPtr(std::string_view name_) {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED) && obj->name == name_)
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj)) {
+				if (auto pick_obj = SafeDynamicCast<T>(obj)) {
 					return pick_obj;
 				}
 		}
@@ -140,24 +145,24 @@ private:
 	}
 
 
-	template<class T> inline std::vector<std::shared_ptr<T>> GetObjectPtrVec() {
-		std::vector<std::shared_ptr<T>> vec(0);
+	template<class T> inline std::vector<SafeSharedPtr<T>> GetObjectPtrVec() {
+		std::vector<SafeSharedPtr<T>> vec(0);
 
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj))
+				if (auto pick_obj = SafeDynamicCast<T>(obj))
 				{
 					vec.push_back(pick_obj);
 				}
 		}
 		return vec;
 	}
-	template<class T> inline std::vector<std::shared_ptr<T>> GetObjectPtrVec(ObjBase::TAG tag) {
-		std::vector<std::shared_ptr<T>> vec(0);
+	template<class T> inline std::vector<SafeSharedPtr<T>> GetObjectPtrVec(ObjBase::TAG tag) {
+		std::vector<SafeSharedPtr<T>> vec(0);
 
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED) && obj->tag == tag)
-				if (auto pick_obj = std::dynamic_pointer_cast<T>(obj))
+				if (auto pick_obj = SafeDynamicCast<T>(obj))
 				{
 					vec.push_back(pick_obj);
 				}
@@ -165,24 +170,7 @@ private:
 		return vec;
 	}
 
-	inline void DestroyObject(ObjBaseP destroy_obj) {
-		if (objects.size() <= 0)
-			return;
-		for (auto obj = objects.begin(); obj != objects.end();) {
-			if ((*obj) == destroy_obj) {
-				while ((*obj)->GetComponent<Component>()) {
-					(*obj)->RemoveComponent((*obj)->GetComponent<Component>());
-				}
-				(*obj)->Exit();
-				obj = objects.erase(obj);
-				destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
-				destroy_obj.reset();
-				return;
-			}
-			obj++;
-		}
-
-	}
+	void DestroyObject(ObjBaseP destroy_obj);
 
 };
 

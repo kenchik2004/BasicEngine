@@ -6,6 +6,9 @@ class SceneSample2 :
     int Init() override;
     void Update() override;
     void PreDraw() override;
-    ObjBaseP obj;
+    void LateDebugDraw() override;
+    void Exit() override;
+    ObjBaseWP obj;
+    ObjBaseWP obj2;
 };
 
