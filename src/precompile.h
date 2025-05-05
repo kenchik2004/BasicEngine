@@ -33,8 +33,8 @@
 #include <d3d11.h>
 //#include <d3dx9.h>
 
-#include "System/typedef.h"
 #include "System/Exception.h"
+#include "System/typedef.h"
 #include <DxLib.h>
 #include "float2.h"
 #include "float3.h"

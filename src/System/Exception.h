@@ -31,6 +31,7 @@ public:
 	//	例外が発生した行番号 
 	//	例外が発生した関数名
 	NullptrException(const char* integer_name, const char* file_name, int line, const char* func_name);
+	NullptrException(const char* message_);
 };
 
 //配列外アクセス検知用例外クラス

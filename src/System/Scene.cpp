@@ -47,9 +47,9 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 	physics_scene->lockWrite();// PhysX のスレッドをロック
 
 	//以降、Hit処理などに入らないようuserDataを解放して、nullptrにしておく
-	auto wp = static_cast<std::weak_ptr<ObjBase>*>(actor->userData);
+	auto wp = static_cast<SafeWeakPtr<ObjBase>*>(actor->userData);
 	actor->userData = nullptr;
-	if (wp->lock())
+	if (wp)
 		delete wp;
 
 	//削除予定アクターに追加登録
@@ -62,7 +62,7 @@ void Scene::DeleteShape(physx::PxShape* shape)
 {
 	if (!shape)
 		return;
-	auto wp = static_cast<std::weak_ptr<Collider>*>(shape->userData);
+	auto wp = static_cast<SafeWeakPtr<Collider>*>(shape->userData);
 	shape->userData = nullptr;
 	if (wp)
 		delete wp;
@@ -93,7 +93,7 @@ void Scene::Destroy()
 	for (auto& ite : leak_objects) {
 		try {
 			if (ite.lock())
-				;//throw(MemoryLeakException(ite.lock()->name.c_str(), DEFAULT_EXCEPTION_PARAM));
+				throw(MemoryLeakException(ite.lock()->name.c_str(), DEFAULT_EXCEPTION_PARAM));
 		}
 		catch (Exception& ex)
 		{
@@ -132,7 +132,7 @@ void Scene::DestroyObject(ObjBaseP destroy_obj) {
 	if (objects.size() <= 0)
 		return;
 	if (SceneManager::GetCurrentScene()->IsInSimulation()) {
-		SceneManager::GetCurrentScene()->AddFunctionAfterSimulation([this_ = static_cast<SceneWP>(shared_from_this()), obj = static_cast<ObjBaseWP>(destroy_obj)]()
+		SceneManager::GetCurrentScene()->AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjBaseWP(destroy_obj)]()
 			{if (this_.lock() && obj.lock())
 			this_.lock()->DestroyObject(obj.lock());
 			});
@@ -148,7 +148,7 @@ void Scene::DestroyObject(ObjBaseP destroy_obj) {
 				obj_w.lock()->RemoveComponent(comp_wp.lock());
 				try {
 					if (comp_wp.lock())
-						throw(MemoryLeakException(typeid(*comp_wp.lock().get()).name(), DEFAULT_EXCEPTION_PARAM));
+						throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
 				}
 				catch (Exception& ex) {
 					ex.Show();

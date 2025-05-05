@@ -191,9 +191,9 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 		PxContactPair contact = pairs[i];
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
-			//std::weak_ptrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+			//SafeWeakPtrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
 			if (wp_a && wp_b) {
 				//ヒット時に、オブジェクトを消しちゃうおバカちゃんたちがいるかもしれないので
 				//あらかじめlockしてコールバック内で解放されないようにしておく
@@ -216,8 +216,8 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // 衝突が続けて発生したとき
 		{
 
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -236,8 +236,8 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_LOST) // 衝突が終了したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -264,9 +264,9 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 		PxTriggerPair contact = pairs[i];
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairs[i].triggerShape->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairs[i].otherShape->userData));
-			//std::weak_ptrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
+			//SafeWeakPtrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
 			if (wp_a && wp_b) {
 
 				auto sp_a = wp_a->lock();
@@ -288,8 +288,8 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // 衝突が続けて発生したとき
 		{
 
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairs[i].triggerShape->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairs[i].otherShape->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
@@ -308,8 +308,8 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_LOST) // 衝突が終了したとき
 		{
-			auto wp_a = static_cast<std::weak_ptr<Collider>*>((pairs[i].triggerShape->userData));
-			auto wp_b = static_cast<std::weak_ptr<Collider>*>((pairs[i].otherShape->userData));
+			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
+			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
 			if (wp_a && wp_b) {
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();

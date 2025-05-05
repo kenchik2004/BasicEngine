@@ -7,10 +7,10 @@
 #include "algorithm"
 
 
-ScenePVec SceneManager::scenes = ScenePVec(0);
-ScenePVec SceneManager::another_scenes = ScenePVec(1);
-SceneP SceneManager::current_scene = nullptr;
-int SceneManager::debug_box = -1;
+ScenePVec SceneManager::scenes = ScenePVec(0);			//!<シーンの配列
+ScenePVec SceneManager::another_scenes = ScenePVec(1);	//!<裏シーンの配列
+SceneP SceneManager::current_scene = nullptr;			//!<カレントシーン
+int SceneManager::debug_box = -1;						//!<デバッグ描画用のボックスモデル
 
 int SceneManager::Init()
 {
@@ -20,16 +20,17 @@ int SceneManager::Init()
 	debug_box = MV1LoadModel("data/DebugBox/DebugMode/Box.mv1");
 	//===============================//
 
-	auto defaultdontdestroyonload_scene = std::make_shared<DontDestroyOnLoadScene>();
+	//裏シーンの配列の0番目は必ずここで作成するシーンが入っている
+	auto defaultdontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
 	defaultdontdestroyonload_scene->Construct<DontDestroyOnLoadScene>();
 	another_scenes[0] = defaultdontdestroyonload_scene;
+
 	return 0;
 }
 
 void SceneManager::PreUpdate()
 {
-	if (!current_scene)
-		return;
+
 	for (auto& another_scene : another_scenes)
 	{
 		if (another_scene->objects.size() > 1 && ObjBase::changed_priority) {
@@ -54,8 +55,13 @@ void SceneManager::PreUpdate()
 				}
 			}
 		}
+		try {
+			another_scene->PreUpdate();
 
-		another_scene->PreUpdate();
+		}
+		catch (Exception& ex) {
+			ex.Show();
+		}
 		ObjBaseWPVec objs;
 		for (auto& obj : Object::GetArray<ObjBase>())
 			objs.push_back(obj);
@@ -63,20 +69,34 @@ void SceneManager::PreUpdate()
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj.lock()->PreUpdate();
+				try {
+					obj.lock()->PreUpdate();
+				}
+				catch (Exception& ex) {
+					ex.Show();
+				}
 				ComponentWPVec comps;
 				for (auto& comp : obj.lock()->components) {
 					comps.push_back(comp);
 				}
 				std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 					if (comp.lock())
-						if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp.lock()->PreUpdate();
+						if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE)) {
+							try {
+								comp.lock()->PreUpdate();
+							}
+							catch (Exception& ex) {
+								ex.Show();
+							}
+						}
 					});
 			}
 			});
 	}
 
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	if (current_scene->objects.size() > 1 && ObjBase::changed_priority) {
 
 		for (int i = 0; i < current_scene->objects.size() - 1; i++) {
@@ -147,8 +167,7 @@ void SceneManager::PreUpdate()
 
 void SceneManager::Update()
 {
-	if (!current_scene)
-		return;
+
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->Update();
@@ -178,7 +197,15 @@ void SceneManager::Update()
 			}
 			});
 	}
-	current_scene->Update();
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
+	try {
+		current_scene->Update();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
@@ -205,7 +232,12 @@ void SceneManager::Update()
 		if (!obj.lock())
 			continue;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
+			try {
 			obj.lock()->Update();
+			}
+			catch (Exception& ex) {
+				ex.Show();
+			}
 			if (!obj.lock())
 				continue;
 			ComponentWPVec comps;
@@ -214,17 +246,21 @@ void SceneManager::Update()
 			}
 			for (auto& comp : comps)
 				if (comp.lock())
-					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE))
+					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE)) {
+						try {
 						comp.lock()->Update();
+						}
+						catch (Exception& ex) {
+							ex.Show();
+						}
+					}
 		}
-		}
+	}
 #endif
 }
 
 void SceneManager::LateUpdate()
 {
-	if (!current_scene)
-		return;
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->LateUpdate();
@@ -248,6 +284,9 @@ void SceneManager::LateUpdate()
 			}
 			});
 	}
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	current_scene->LateUpdate();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -293,8 +332,6 @@ void SceneManager::LateUpdate()
 
 void SceneManager::PostUpdate()
 {
-	if (!current_scene)
-		return;
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PostUpdate();
@@ -318,6 +355,9 @@ void SceneManager::PostUpdate()
 			}
 			});
 	}
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	current_scene->PostUpdate();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -363,8 +403,7 @@ void SceneManager::PostUpdate()
 
 void SceneManager::PrePhysics()
 {
-	if (!current_scene)
-		return;
+
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PrePhysics();
@@ -388,6 +427,9 @@ void SceneManager::PrePhysics()
 			}
 			});
 	}
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	current_scene->PrePhysics();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -433,8 +475,6 @@ void SceneManager::PrePhysics()
 
 void SceneManager::Physics()
 {
-	if (!current_scene)
-		return;
 	for (auto& another_scene : another_scenes)
 	{
 		ObjBaseWPVec objs;
@@ -460,6 +500,10 @@ void SceneManager::Physics()
 		another_scene->Physics();
 
 	}
+
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
 		objs.push_back(obj);
@@ -507,8 +551,6 @@ void SceneManager::Physics()
 
 void SceneManager::PostPhysics()
 {
-	if (!current_scene)
-		return;
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PostPhysics();
@@ -532,6 +574,9 @@ void SceneManager::PostPhysics()
 			}
 			});
 	}
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	current_scene->PostPhysics();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -577,8 +622,6 @@ void SceneManager::PostPhysics()
 
 void SceneManager::PreDraw()
 {
-	if (!current_scene)
-		return;
 	for (auto& another_scene : another_scenes)
 	{
 
@@ -603,6 +646,9 @@ void SceneManager::PreDraw()
 			}
 			});
 	}
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	current_scene->PreDraw();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -648,10 +694,6 @@ void SceneManager::PreDraw()
 
 void SceneManager::Draw()
 {
-	if (!current_scene) {
-		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
-		return;
-	}
 	for (auto& another_scene : another_scenes)
 	{
 
@@ -676,7 +718,10 @@ void SceneManager::Draw()
 			}
 			});
 	}
-
+	if (!current_scene) {
+		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
+		return;
+	}
 	current_scene->Draw();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -722,8 +767,6 @@ void SceneManager::Draw()
 
 void SceneManager::LateDraw()
 {
-	if (!current_scene)
-		return;
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->LateDraw();
@@ -747,6 +790,10 @@ void SceneManager::LateDraw()
 			}
 			});
 	}
+
+	//カレントシーンがいないならそちらは何もしない
+	if (!current_scene)
+		return;
 	current_scene->LateDraw();
 	ObjBaseWPVec objs;
 	for (auto& obj : Object::GetArray<ObjBase>())
@@ -788,7 +835,7 @@ void SceneManager::LateDraw()
 		}
 	}
 #endif
-			}
+}
 
 void SceneManager::DebugDraw()
 {
@@ -969,5 +1016,5 @@ void SceneManager::Exit()
 
 void SceneManager::Object::DontDestroyOnLoad(ObjBaseP obj, SceneP from_where)
 {
-	std::static_pointer_cast<DontDestroyOnLoadScene>(another_scenes[0])->DontDestroyOnLoad(obj, from_where);
+	SafeStaticCast<DontDestroyOnLoadScene>(another_scenes[0])->DontDestroyOnLoad(obj, from_where);
 }

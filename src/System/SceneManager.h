@@ -2,6 +2,7 @@
 
 USING_PTR(Scene);
 USING_PTR(DontDestroyOnLoadScene);
+//@brief シーンマネジメントクラス
 class SceneManager final
 {
 
@@ -15,64 +16,82 @@ public:
 	//-----------------------------
 	// Initブロック(初期化処理)
 	//-----------------------------
-	static int Init();
+
+	static int Init();		//<初期化
+
 	//-----------------------------
 
 	//-----------------------------
 	// Physicsブロック(物理前後処理)
 	//-----------------------------
-	static void PrePhysics();
-	static void Physics();
-	static void PostPhysics();
+
+	static void PrePhysics();		//<物理前更新
+	static void Physics();			//<物理更新
+	static void PostPhysics();		//<物理後更新
+
 	//-----------------------------
 
 	//-----------------------------
 	// Updateブロック(更新前後処理)
 	//-----------------------------
-	static void PreUpdate();
-	static void Update();
-	static void LateUpdate();
-	static void PostUpdate();
+
+	static void PreUpdate();		//<前更新
+	static void Update();			//<更新
+	static void LateUpdate();		//<遅延更新
+	static void PostUpdate();		//<後更新
+
 	//-----------------------------
 
 	//-----------------------------
 	// Drawブロック(描画前後処理)
 	//-----------------------------
-	static void PreDraw();
-	static void Draw();
-	static void LateDraw();
-	static void DebugDraw();
-	static void LateDebugDraw();
+
+	static void PreDraw();			//<前描画もしくは描画前更新
+	static void Draw();				//<描画
+	static void LateDraw();			//<遅延描画
+	static void DebugDraw();		//<デバッグ描画
+	static void LateDebugDraw();	//<後デバッグ描画
 
 	//ここの処理は次フレームまで反映されない
-	static void PostDraw();
+	static void PostDraw();			//<フレーム中最終更新
 
-	static void Exit();
+	static void Exit();			//<終了
 
+
+	//裏のデフォルトシーンを取得
 	static inline SceneP GetDontDestoryOnLoadScene() { return another_scenes[0]; }
-	template<class T> static inline std::shared_ptr<T> GetScene()
+
+	//特定のシーンを取得
+	template<class T> static inline SafeSharedPtr<T> GetScene()
 	{
 		ClassTypeInfo<T> info = ClassTypeInfo<T>(typeid(T).name(), &T::Super::info);
 
-		std::shared_ptr<T> scene_pick = nullptr;
+		SafeSharedPtr<T> scene_pick = nullptr;
+		//裏シーンも含める
 		std::vector<SceneP> all_scenes = scenes;
+		//検索先に裏シーンを追加
 		for (auto& another_scene : another_scenes)
 			all_scenes.push_back(another_scene);
+
+		//作成時のクラス名が一致するシーンを検索
 		for (auto& ite : all_scenes) {
 			if (ite->status.ClassName() == info.ClassName())
-				scene_pick = std::static_pointer_cast<T>(ite);
+				scene_pick = SafeStaticCast<T>(ite);
 
 		}
 		return scene_pick;
 
 	}
+
+	//現在の表シーンを取得
 	static inline SceneP GetCurrentScene() {
 		return current_scene;
 	}
 
-	template<class T> static inline void Change(std::shared_ptr<T> scene)
+	template<class T> static inline void Change(SafeSharedPtr<T> scene)
 	{
 		//シーンの切り替え
+		//カレントシーンがいないならそのままロード
 		if (!current_scene) {
 			current_scene = scene;
 			scene->Init();
@@ -80,7 +99,7 @@ public:
 			Time::ResetTime();
 			return;
 		}
-
+		//カレントシーンがいる場合は終了してロード
 		current_scene->Exit();
 		current_scene->Destroy();
 		current_scene = scene;
@@ -89,13 +108,19 @@ public:
 		Time::ResetTime();
 
 	}
-	template <class T> static inline void Destroy(std::shared_ptr<T> destroy_scene) {
+
+	//特定のシーンを完全に破棄
+	template <class T> static inline void Destroy(SafeSharedPtr<T> destroy_scene) {
 
 
+		//シーンを検索
 		for (auto scene = scenes.begin(); scene != scenes.end();) {
+			//見つかったら破棄
 			if ((*scene) == destroy_scene) {
 				(*scene)->Exit();
 				(*scene)->UnLoad();
+
+				//シーンを破棄する際、リークを検知するためtry->catch
 				try {
 					(*scene)->Destroy();
 					(*scene)->DestroyPhysics();
@@ -110,118 +135,173 @@ public:
 				break;
 			}
 		}
+		//破棄シーンがカレントシーンなら、参照を破棄
 		if (destroy_scene == current_scene) {
 			current_scene.reset();
 		}
 
 	}
-	template<class T> static inline std::shared_ptr<T> Load()
+
+	//シーンをロード(作成)
+	template<class T> static inline SafeSharedPtr<T> Load()
 	{
 		//シーンの作成(いたらロードの必要なし)
-		if (std::shared_ptr<T> scene = GetScene<T>()) {
-			Change(std::static_pointer_cast<Scene>(scene));
+		if (SafeSharedPtr<T> scene = GetScene<T>()) {
+			//指定のシーンに変更
+			Change(SafeStaticCast<Scene>(scene));
+			//変更先シーンのポインタを返す
 			return scene;
 
 		}
 
 		//(いなかったら、ロードの必要あり)
-		auto scene = std::make_shared<T>();
+		auto scene = make_safe_shared<T>();
+		//シーンの作成&登録
 		scene->Construct<T>();
+		//ロードデータがあるならロード
 		scene->Load();
-		scenes.push_back(std::static_pointer_cast<Scene>(scene));
-
-		Change(std::static_pointer_cast<Scene>(scene));
+		//シーンの配列に登録
+		scenes.push_back(SafeStaticCast<Scene>(scene));
+		//シーン変更
+		Change(SafeStaticCast<Scene>(scene));
 
 		return scene;
 	}
-#if 1
+
+	//オブジェクト関係の操作用クラス
 	class Object {
 	public:
 
-
+		//オブジェクトの作成
 		template<class T>
-		static inline std::shared_ptr<T> Create()
+		static inline SafeSharedPtr<T> Create()
 		{
 			if (!current_scene)
 				return nullptr;
-			std::shared_ptr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6);
+			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6);
+
 			obj->Init();
 
 			return obj;
 		}
 
+		//オブジェクトの作成(名付け)
 		template<class T>
-		static inline std::shared_ptr<T> Create(std::string_view name_)
+		static inline SafeSharedPtr<T> Create(std::string_view name_)
 		{
+			//カレントシーンがいないなら何もせずリターン
 			if (!current_scene)
 				return nullptr;
-			std::shared_ptr<T> obj = current_scene->CreateObject<T>(name_);
+			//カレントシーンにオブジェクト作成を依頼
+			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(name_);
+			//作成したオブジェクトをその場で初期化
 			obj->Init();
 
+			//初期化後のオブジェクトを返す
 			return obj;
 		}
 
 
+		//オブジェクト取得(シーン指定可)
+		template<class T> static inline SafeSharedPtr<T> Get(SceneP target_scene = nullptr) {
 
-		template<class T> static inline std::shared_ptr<T> Get(SceneP target_scene = nullptr) {
-			if (!current_scene)
+			//カレントシーンもターゲットシーンもいない場合、nullptrを返す
+			if (!current_scene && !target_scene)
 				return nullptr;
 
-			std::shared_ptr<T> obj;
+
+			SafeSharedPtr<T> obj = nullptr;
+			//シーン指定をしている場合
 			if (target_scene)
 			{
+				//そのシーンからオブジェクトを検索する
 				obj = target_scene->GetObjectPtr<T>();
+
 				return obj;
 			}
-
+			//指定がない場合はカレントシーンから検索
 			obj = current_scene->GetObjectPtr<T>();
 			return obj;
 		}
 
-		template<class T> static inline std::shared_ptr<T> GetWithTag(ObjBase::TAG tag) {
+		//オブジェクトをタグから検索
+		template<class T> static inline SafeSharedPtr<T> GetWithTag(ObjBase::TAG tag) {
+			//カレントシーンがいないならnullptrを返す
 			if (!current_scene)
 				return nullptr;
-			std::shared_ptr<T> obj = current_scene->GetObjectPtr<T>(tag);
+			//カレントシーンからオブジェクトを検索
+			SafeSharedPtr<T> obj = current_scene->GetObjectPtr<T>(tag);
+
+			//見つかったオブジェクトを返す
 			return obj;
 		}
-		template<class T> static inline std::shared_ptr<T> Get(std::string_view name_) {
+
+		//オブジェクトを名前から検索
+		template<class T> static inline SafeSharedPtr<T> Get(std::string_view name_) {
+			//カレントシーンがいないならnullptrを返す
 			if (!current_scene)
 				return nullptr;
-			std::shared_ptr<T> obj = current_scene->GetObjectPtr<T>(name_);
+			//カレントシーンからオブジェクトを検索
+			SafeSharedPtr<T> obj = current_scene->GetObjectPtr<T>(name_);
+
+			//見つかったオブジェクトを返す
 			return obj;
 		}
 
 
+		//同じ型のオブジェクトをまとめて取得
+		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArray() {
 
-		template<class T> static inline std::vector<std::shared_ptr<T>> GetArray() {
-			std::vector<std::shared_ptr<T>> vec(0);
+			//空っぽの配列を用意
+			std::vector<SafeSharedPtr<T>> vec(0);
+			//カレントシーンがいないなら、空のまま返す
 			if (!current_scene)
 				return vec;
+
+			//カレントシーンから、まとめて検索
 			vec = current_scene->GetObjectPtrVec<T>();
+
+			//見つかったものを返す
 			return vec;
 		}
 
 
-		template<class T> static inline std::vector<std::shared_ptr<T>> GetArrayWithTag(ObjBase::TAG tag) {
-			std::vector<std::shared_ptr<T>> vec(0);
+		//同じ型のオブジェクトをまとめて検索
+		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArrayWithTag(ObjBase::TAG tag) {
+
+			//空っぽの配列を用意
+			std::vector<SafeSharedPtr<T>> vec(0);
+			//カレントシーンがいないなら、空っぽのまま返す
 			if (!current_scene)
 				return vec;
+
+			//カレントシーンからまとめて検索
 			vec = current_scene->GetObjectPtrVec<T>(tag);
+
+			//見つかったものを返す
 			return vec;
 		}
+
+		//オブジェクトを削除
 		static inline void Destory(ObjBaseP destroy_obj) {
+			//カレントシーンがいないなら何もしない
 			if (!current_scene)
 				return;
+
+			//カレントシーンからオブジェクトを削除
 			current_scene->DestroyObject(destroy_obj);
+			//削除後、参照を削除
 			destroy_obj.reset();
 		}
+
+		//シーン切り替え時に破棄しないオブジェクトを登録(デフォルト裏シーンに所有権譲渡)
 		static void DontDestroyOnLoad(ObjBaseP obj, SceneP from_where);
 	};
-#endif
+
 
 private:
-	static ScenePVec scenes;
-	static ScenePVec another_scenes;
-	static SceneP current_scene;
+	static ScenePVec scenes;			//!<作成済みシーンの配列
+	static ScenePVec another_scenes;	//!<裏シーンの配列
+	static SceneP current_scene;		//!<現在シーン(カレントシーン)へのポインタ
 };
 

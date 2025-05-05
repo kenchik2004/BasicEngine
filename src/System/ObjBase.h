@@ -34,6 +34,7 @@ class ObjBase :public std::enable_shared_from_this<ObjBase>
 	friend class Scene;
 	friend class SceneManager;
 public:
+	virtual ~ObjBase() {}
 
 	USING_SUPER(ObjBase);
 	ObjStat status;
@@ -68,32 +69,32 @@ private:
 
 
 public:
-	template <class T> std::shared_ptr<T> AddComponent() {
+	template <class T,typename... Args> SafeSharedPtr<T> AddComponent(Args&& ...args) {
 
-		auto comp = std::make_shared<T>();
-		comp->owner = shared_from_this();
+		auto comp = make_safe_shared<T>(std::forward<Args>(args)...);
+		comp->owner = SafeSharedPtr(shared_from_this());
 		comp->Construct<T>();
 		components.push_back(comp);
 		comp->Init();
 		changed_comp_priority = true;
 		return comp;
 	}
-	template <class T> std::shared_ptr<T> GetComponent() {
+	template <class T> SafeSharedPtr<T> GetComponent() {
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
-				if (auto pick_comp = std::dynamic_pointer_cast<T>(comp)) {
+				if (auto pick_comp = SafeDynamicCast<T>(comp)) {
 					return pick_comp;
 				}
 		}
 		return nullptr;
 	}
-	template <class T> std::vector<std::shared_ptr<T>> GetComponents() {
-		std::vector<std::shared_ptr<T>> vec(0);
+	template <class T> std::vector<SafeSharedPtr<T>> GetComponents() {
+		std::vector<SafeSharedPtr<T>> vec(0);
 		if (!GetComponent<T>())
 			return vec;
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
-				if (auto pick_comp = std::dynamic_pointer_cast<T>(comp)) {
+				if (auto pick_comp = SafeDynamicCast<T>(comp)) {
 					vec.push_back(pick_comp);
 				}
 		}

@@ -5,6 +5,7 @@
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/MeshCollider.h"
 
+
 int SceneSample3::Init()
 {
 	plane = SceneManager::Object::Create<PlaneObject>();
@@ -13,7 +14,8 @@ int SceneSample3::Init()
 	obj2->transform->position = { 0,-50,0 };
 	obj2->transform->scale = { 0.1f,0.1f,0.1f };
 	obj2->AddComponent<RigidBody>();
-	obj2->AddComponent<ModelRenderer>()->Load("data/Stage/stage00.mv1");
+	auto model = obj2->AddComponent<ModelRenderer>();
+	model->Load("data/Stage/stage00.mv1");
 	auto mod_col = obj2->AddComponent<MeshCollider>();
 	mod_col->AttachToModel();
 	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
@@ -26,7 +28,16 @@ int SceneSample3::Init()
 void SceneSample3::Update()
 {
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
-		SceneManager::Change(shared_from_this());
+		SceneManager::Change(SafeSharedPtr(shared_from_this()));
 	if (!plane.lock())
 		SceneManager::Load<SceneSample3>();
+	if (Input::PushHitKey(KEY_INPUT_I))
+	{
+		SafeSharedPtr<ObjBase> obj = nullptr;
+		obj->AddComponent<RigidBody>();
+	}
+
+	
 }
+
+

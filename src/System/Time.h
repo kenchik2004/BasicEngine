@@ -2,10 +2,10 @@
 namespace Time
 {
 
-#define MICRO2SEC(micro_sec) micro_sec*0.000001
-#define SEC2MICRO(sec) sec*1000000
-#define MILLI2SEC(micro_sec) micro_sec*0.001
-#define SEC2MILLI(sec) sec*1000
+#define MICRO2SEC(micro_sec) micro_sec*0.000001		//!< マイクロ秒 -> 秒への変換マクロ
+#define SEC2MICRO(sec) sec*1000000					//!< 秒 -> マイクロ秒への変換マクロ
+#define MILLI2SEC(micro_sec) micro_sec*0.001		//!< ミリ秒 -> 秒への変換マクロ 
+#define SEC2MILLI(sec) sec*1000						//!< 秒 -> ミリ秒への変換マクロ
 
 
 	//初期化
@@ -20,7 +20,7 @@ namespace Time
 	void ResetTime();
 
 
-	//処理を指定FPSに固定・ゲーム更新のFPSを計測
+	//処理を指定FPSに固定
 	int FixFPS();
 	//描画処理の経過時間を初期化・描画FPSを計測
 	void FixDrawFPS();
@@ -61,6 +61,8 @@ namespace Time
 	const double SystemTimeFromStartD();
 	//アプリケーション開始後のゲーム内時間の取得
 	const double GetTimeFromStart();
+	//アプリケーション開始後の現実時間の取得
+	const double GetRealTimeFromStart();
 
 	//システム内時間の取得(float)
 	const float SystemTime();

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define SCREEN_W 800
-#define SCREEN_H 450
+#define SCREEN_W 1920
+#define SCREEN_H 1080
 
 
 float TO_RADIAN(float degree);

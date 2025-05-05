@@ -15,6 +15,10 @@ struct ModelData {
 	std::string path;
 	int handle = -1;
 };
+
+//!< TO_DO モデルのデータを構造体化->分離、アニメーションデータに関しても同様
+//!< TO_DO 自前シェーダーに対応
+
 class ModelRenderer :
 	public Component
 {
@@ -34,6 +38,7 @@ public:
 	void DebugDraw() override;
 	bool IsPlaying();
 	static void UnLoad();
+
 
 	Vector3 pos = { 0,0,0 };
 	Quaternion rot = { 0,0,0,1 };
