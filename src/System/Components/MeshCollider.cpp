@@ -124,7 +124,7 @@ void MeshCollider::AttachToModel()
 		mesh.triangleMesh = triangle_mesh;
 
 		shape = { PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Concrete_Default) };
-		shape->userData = new std::weak_ptr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+		shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 		rigidbody.lock()->GetBody()->attachShape(*shape);
 	}
 	catch (Exception& ex) {

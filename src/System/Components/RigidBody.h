@@ -22,6 +22,7 @@ public:
 	void DebugDraw() override;
 	void Exit() override;
 	void AddForce(Vector3 force, ForceMode force_mode = ForceMode::Force);
+	void AddForceAtPosition(Vector3 force, Vector3 world_position, ForceMode force_mode = ForceMode::Force);
 	void SetMassCenter(Vector3 center);
 	void SetVelocity(Vector3 velocity_);
 	Vector3 velocity = { 0,0,0 };
