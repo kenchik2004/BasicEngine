@@ -1,17 +1,17 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "Exception.h"
 #include "assert.h"
 #include <codecvt>
 
 Exception::Exception(const char* main_message, const char* file_name, int line, const char* func_name)
 {
-	message = "ƒtƒ@ƒCƒ‹–¼: ";
+	message = "ãƒ•ã‚¡ã‚¤ãƒ«å: ";
 	message += file_name;
-	message += "\ns: ";
+	message += "\nè¡Œ: ";
 	message += std::to_string(line);
-	message += "\nŠÖ”–¼: ";
+	message += "\né–¢æ•°å: ";
 	message += func_name;
-	message += "\n‚Å—áŠOƒXƒ[: \n";
+	message += "\nã§ä¾‹å¤–ã‚¹ãƒ­ãƒ¼: \n";
 	message += main_message;
 }
 
@@ -20,13 +20,14 @@ void Exception::Show()
 
 	printfDx(message.c_str());
 	printfDx("\n");
-	return;
 	std::wstring wstr = Str2Wstr(message);
 
 #ifndef NDEBUG
-	_wassert(wstr.c_str(), __FILEW__, __LINE__);
+	if (is_assert)
+		_wassert(wstr.c_str(), __FILEW__, __LINE__);
 #else
-	_ASSERT(false, "ERROR!!");
+	if (is_assert)
+		_ASSERT(false, "ERROR!!");
 #endif
 
 
@@ -34,15 +35,15 @@ void Exception::Show()
 
 NullptrException::NullptrException(const char* integer_name, const char* file_name, int line, const char* func_name)
 {
-	message = "ƒtƒ@ƒCƒ‹–¼: ";
+	message = "ãƒ•ã‚¡ã‚¤ãƒ«å: ";
 	message += file_name;
-	message += "\ns: ";
+	message += "\nè¡Œ: ";
 	message += std::to_string(line);
-	message += "\nŠÖ”–¼: ";
+	message += "\né–¢æ•°å: ";
 	message += func_name;
-	message += "\n‚Å—áŠOƒXƒ[: \n";
+	message += "\nã§ä¾‹å¤–ã‚¹ãƒ­ãƒ¼: \n";
 	message += integer_name;
-	message += " ‚ªnullptr‚Å‚µ‚½B\n";
+	message += " ãŒnullptrã§ã—ãŸã€‚\n";
 
 }
 
@@ -53,30 +54,31 @@ NullptrException::NullptrException(const char* message_)
 
 OutOfRangeException::OutOfRangeException(int index, int array_size, const char* array_name, const char* file_name, int line, const char* func_name)
 {
-	message = "ƒtƒ@ƒCƒ‹–¼: ";
+	message = "ãƒ•ã‚¡ã‚¤ãƒ«å: ";
 	message += file_name;
-	message += "\ns: ";
+	message += "\nè¡Œ: ";
 	message += std::to_string(line);
-	message += "\nŠÖ”–¼: ";
+	message += "\né–¢æ•°å: ";
 	message += func_name;
-	message += "\n‚Å—áŠOƒXƒ[: \n";
+	message += "\nã§ä¾‹å¤–ã‚¹ãƒ­ãƒ¼: \n";
 	message += std::to_string(index);
-	message += "‚ÍA";
+	message += "ã¯ã€";
 	message += array_name;
-	message += "‚ÌƒTƒCƒY [";
+	message += "ã®ã‚µã‚¤ã‚º [";
 	message += std::to_string(array_size);
-	message += "] ‚ğ’´‚¦‚Ä‚¢‚Ü‚·B\n";
+	message += "] ã‚’è¶…ãˆã¦ã„ã¾ã™ã€‚\n";
 }
 
 MemoryLeakException::MemoryLeakException(const char* integer_name, const char* file_name, int line, const char* func_name)
 {
-	message = "ƒtƒ@ƒCƒ‹–¼: ";
+	is_assert = true;
+	message = "ãƒ•ã‚¡ã‚¤ãƒ«å: ";
 	message += file_name;
-	message += "\ns: ";
+	message += "\nè¡Œ: ";
 	message += std::to_string(line);
-	message += "\nŠÖ”–¼: ";
+	message += "\né–¢æ•°å: ";
 	message += func_name;
-	message += "\n‚Å—áŠOƒXƒ[: \n";
+	message += "\nã§ä¾‹å¤–ã‚¹ãƒ­ãƒ¼: \n";
 	message += integer_name;
-	message += "‚ª‰ğ•ú‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½BzŠÂQÆ‚ª‹N‚±‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B\n •Ï”‚ğstd::weak_ptr‚Å•ÛAƒƒ‚ƒŠ‰ğ•ú‚Éstd::shared_ptr‚Énullptr‚ğ‘ã“ü‚È‚Ç‚ğ‚µ‚Ä‚İ‚Ä‚­‚¾‚³‚¢B";
+	message += "ãŒè§£æ”¾ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚å¾ªç’°å‚ç…§ãŒèµ·ã“ã£ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ã€‚\n å¤‰æ•°ã‚’std::weak_ptrã§ä¿æŒã€ãƒ¡ãƒ¢ãƒªè§£æ”¾æ™‚ã«std::shared_ptrã«nullptrã‚’ä»£å…¥ãªã©ã‚’è©¦ã—ã¦ã¿ã¦ãã ã•ã„ã€‚";
 }
