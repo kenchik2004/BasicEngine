@@ -1,222 +1,234 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "Time.h"
 
 namespace Time {
-	//ƒVƒXƒeƒ€—p‚ÌŠÔŠÇ——p•Ï”(ulonglongŠÇ—)
-	unsigned long long sys_time; //!<ƒVƒXƒeƒ€ã‚ÌŠÔ(Œ»À¢ŠE‚ÌŠÔ‚ğQÆ)
-	unsigned long long sys_time_start; //!<ƒVƒXƒeƒ€ã‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŠÔ
-	unsigned long long sys_time_prev; //!<ƒVƒXƒeƒ€ã‚Ì‘OƒtƒŒ[ƒ€‚ÌŠÔ
-	unsigned long long real_sys_time_prev; //!<³‚µ‚¢ƒVƒXƒeƒ€ã‚ÌŠÔ(Œ»À¢ŠE‚ÌŠÔ‚ğQÆ)
+	//ã‚·ã‚¹ãƒ†ãƒ ç”¨ã®æ™‚é–“ç®¡ç†ç”¨å¤‰æ•°(ulonglongç®¡ç†)
+	unsigned long long sys_time; //!<ã‚·ã‚¹ãƒ†ãƒ ä¸Šã®æ™‚é–“(ç¾å®Ÿä¸–ç•Œã®æ™‚é–“ã‚’å‚ç…§)
+	unsigned long long sys_time_start; //!<ã‚·ã‚¹ãƒ†ãƒ ä¸Šã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹æ™‚é–“
+	unsigned long long sys_time_prev; //!<ã‚·ã‚¹ãƒ†ãƒ ä¸Šã®å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ™‚é–“
+	unsigned long long real_sys_time_prev; //!<æ­£ã—ã„ã‚·ã‚¹ãƒ†ãƒ ä¸Šã®æ™‚é–“(ç¾å®Ÿä¸–ç•Œã®æ™‚é–“ã‚’å‚ç…§)
 
-	//ŠO•”‚Åg—p‚·‚é‚½‚ß‚ÌŠÔŠÇ——p•Ï”(double[•b]ŠÇ—)
-	double time;//!<ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌŒo‰ßŠÔ(ƒQ[ƒ€“àŠÔ)
-	double real_time;//!<ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌŒo‰ßŠÔ(Œ»ÀŠÔ)
-	double delta_time; //!<‘OƒtƒŒ[ƒ€‚Æ‚ÌŠÔ· (ƒ¢)
-	double real_delta_time; //!<‘OƒtƒŒ[ƒ€‚Æ‚ÌŠÔ· (ƒ¢)
-	double delta_time_max; //!<‘OƒtƒŒ[ƒ€‚Æ‚ÌŠÔ·‚ÌÅ‘å’l
-	double draw_delta_time; //<‘O•`‰æƒtƒŒ[ƒ€‚Æ‚ÌŠÔ· (ƒ¢)
-	double draw_delta_time_max; //!<‘O•`‰æƒtƒŒ[ƒ€‚Æ‚ÌŠÔ·‚ÌÅ‘å’l
-	double fixed_delta_time; //!<‘O•`‰æƒtƒŒ[ƒ€‚Æ‚ÌŠÔ· (ƒ¢)
-	double fixed_delta_time_max; //!<‘O•`‰æƒtƒŒ[ƒ€‚Æ‚ÌŠÔ·‚ÌÅ‘å’l
-	double time_scale = 1; //!<ƒ^ƒCƒ€ƒXƒP[ƒ‹(ƒQ[ƒ€“àŠÔ‚ÌisƒXƒs[ƒh)
+	//å¤–éƒ¨ã§ä½¿ç”¨ã™ã‚‹ãŸã‚ã®æ™‚é–“ç®¡ç†ç”¨å¤‰æ•°(double[ç§’]ç®¡ç†)
+	double time;//!<ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®çµŒéæ™‚é–“(ã‚²ãƒ¼ãƒ å†…æ™‚é–“)
+	double real_time;//!<ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®çµŒéæ™‚é–“(ç¾å®Ÿæ™‚é–“)
+	double delta_time; //!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·® (Î”)
+	double real_delta_time; //!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·® (Î”)
+	double delta_time_max; //!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·®ã®æœ€å¤§å€¤
+	double draw_delta_time; //<å‰æç”»ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·® (Î”)
+	double draw_delta_time_max; //!<å‰æç”»ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·®ã®æœ€å¤§å€¤
+	double fixed_delta_time; //!<å‰æç”»ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·® (Î”)
+	double fixed_delta_time_max; //!<å‰æç”»ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®æ™‚é–“å·®ã®æœ€å¤§å€¤
+	double time_scale = 1; //!<ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«(ã‚²ãƒ¼ãƒ å†…æ™‚é–“ã®é€²è¡Œã‚¹ãƒ”ãƒ¼ãƒ‰)
 
-	double fps_max = 60;		//!< UpdateFPS(“à•”XV)‚ÌÅ‘å’l
-	double draw_fps_max = 60;	//!< DrawFPS(•`‰æ)‚ÌÅ‘å’l
-	double fixed_fps_max = 50;	//!< PhysicsFPS(•¨—‰‰Z)‚ÌÅ‘å’l
-	double fps = 0;				//!< FPS(“à•”XV)‚Ì•p“x
-	double draw_fps = 0;		//!< DrawFPS(•`‰æ)‚Ì•p“x
-	double fixed_fps = 0;		//!< PhysicsFPS(•¨—‰‰Z)‚Ì•p“x
+	double fps_max = 60;		//!< UpdateFPS(å†…éƒ¨æ›´æ–°)ã®æœ€å¤§å€¤
+	double draw_fps_max = 60;	//!< DrawFPS(æç”»)ã®æœ€å¤§å€¤
+	double fixed_fps_max = 50;	//!< PhysicsFPS(ç‰©ç†æ¼”ç®—)ã®æœ€å¤§å€¤
+	double fps = 0;				//!< FPS(å†…éƒ¨æ›´æ–°)ã®é »åº¦
+	double draw_fps = 0;		//!< DrawFPS(æç”»)ã®é »åº¦
+	double fixed_fps = 0;		//!< PhysicsFPS(ç‰©ç†æ¼”ç®—)ã®é »åº¦
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Init()
 	{
-		sys_time = (unsigned long long)SEC2MICRO(GetOSTimeD());		//!<ƒVƒXƒeƒ€ŠÔ‚ğ‰Šú‰»
-		sys_time_start = sys_time;									//!<ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJn‚ğ‹L˜^
-		sys_time_prev = sys_time;									//!<‘OƒtƒŒ[ƒ€‚ÌƒVƒXƒeƒ€ŠÔ‚ğŒ»İ‚Ì‚à‚Ì‚Æ‚µ‚Ä‹L˜^
-		real_sys_time_prev = sys_time;								//!<³‹K‚Ì‘OƒtƒŒ[ƒ€ŠÔ‚ğŒ»İ‚Ì‚à‚Ì‚Æ‚µ‚Ä‹L˜^
-		delta_time = 0;												//!<‘OƒtƒŒ[ƒ€‚©‚ç‚Ìƒ¢ŠÔ‚ğ‰Šú‰»
-		real_delta_time = 0;												//!<‘OƒtƒŒ[ƒ€‚©‚ç‚Ìƒ¢ŠÔ‚ğ‰Šú‰»
+		sys_time = (unsigned long long)SEC2MICRO(GetOSTimeD());		//!<ã‚·ã‚¹ãƒ†ãƒ æ™‚é–“ã‚’åˆæœŸåŒ–
+		sys_time_start = sys_time;									//!<ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹æ™‚åˆ»ã‚’è¨˜éŒ²
+		sys_time_prev = sys_time;									//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚·ã‚¹ãƒ†ãƒ æ™‚é–“ã‚’ç¾åœ¨ã®ã‚‚ã®ã¨ã—ã¦è¨˜éŒ²
+		real_sys_time_prev = sys_time;								//!<æ­£è¦ã®å‰ãƒ•ãƒ¬ãƒ¼ãƒ æ™‚é–“ã‚’ç¾åœ¨ã®ã‚‚ã®ã¨ã—ã¦è¨˜éŒ²
+		delta_time = 0;												//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®Î”æ™‚é–“ã‚’åˆæœŸåŒ–
+		real_delta_time = 0;												//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®Î”æ™‚é–“ã‚’åˆæœŸåŒ–
 
-		time = 0;										//!<ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌŠÔ‚ğ‰Šú‰»
-		real_time = 0;									//!<ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚Ì³‹KŠÔ‚ğ‰Šú‰»
-		delta_time_max = 1.0 / fps_max;					//!<XVFPS‚Ìİ’è
-		draw_delta_time_max = 1.0 / draw_fps_max;		//!<•`‰æFPS‚Ìİ’è
-		fixed_delta_time_max = 1.0 / fixed_fps_max;		//!<•¨—FPS‚Ì‰Šú‰»
+		time = 0;										//!<ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®æ™‚é–“ã‚’åˆæœŸåŒ–
+		real_time = 0;									//!<ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®æ­£è¦æ™‚é–“ã‚’åˆæœŸåŒ–
+		delta_time_max = 1.0 / fps_max;					//!<æ›´æ–°FPSã®è¨­å®š
+		draw_delta_time_max = 1.0 / draw_fps_max;		//!<æç”»FPSã®è¨­å®š
+		fixed_delta_time_max = 1.0 / fixed_fps_max;		//!<ç‰©ç†FPSã®åˆæœŸåŒ–
 		return 0;
 	}
 
-	//XV
+	//æ›´æ–°
 	void Update()
 	{
-		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));					//!<ƒVƒXƒeƒ€ŠÔ‚ğ‹L˜^
-		delta_time = (double)(MICRO2SEC((sys_time - sys_time_prev)));				//!<‘OƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔ‚ğ‘ª’è
-		real_delta_time = (double)(MICRO2SEC((sys_time - real_sys_time_prev)));		//!<³‹K‚ÌŒo‰ßŠÔ‚ğ‹L˜^
-		real_time += delta_time;													//!<³‹K‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠÔ‚ğ‰ÁZ
-		time += delta_time * time_scale;											//!<ƒQ[ƒ€“àŠÔ‚ğ‰ÁZ
-		draw_delta_time += delta_time;												//!<‘O‰ñ‚Ì•`‰æ‚©‚ç‚ÌŒo‰ßŠÔ‚ğ‹L˜^
-		fixed_delta_time += delta_time;												//!<‘O‰ñ‚Ì•¨—XV‚©‚ç‚ÌŒo‰ßŠÔ‚ğ‹L˜^
+		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));					//!<ã‚·ã‚¹ãƒ†ãƒ æ™‚é–“ã‚’è¨˜éŒ²
+		delta_time = (double)(MICRO2SEC((sys_time - sys_time_prev)));				//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéæ™‚é–“ã‚’æ¸¬å®š
+		real_delta_time = (double)(MICRO2SEC((sys_time - real_sys_time_prev)));		//!<æ­£è¦ã®çµŒéæ™‚é–“ã‚’è¨˜éŒ²
+		real_time += real_delta_time;													//!<æ­£è¦ã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³æ™‚é–“ã‚’åŠ ç®—
+		time += delta_time * time_scale;											//!<ã‚²ãƒ¼ãƒ å†…æ™‚é–“ã‚’åŠ ç®—
+		draw_delta_time += delta_time;												//!<å‰å›ã®æç”»ã‹ã‚‰ã®çµŒéæ™‚é–“ã‚’è¨˜éŒ²
+		fixed_delta_time += delta_time;												//!<å‰å›ã®ç‰©ç†æ›´æ–°ã‹ã‚‰ã®çµŒéæ™‚é–“ã‚’è¨˜éŒ²
 
-		sys_time_prev = sys_time;						//!<‘OƒtƒŒ[ƒ€‚ÌƒVƒXƒeƒ€ŠÔ‚ğ‹L˜^
-		real_sys_time_prev = sys_time;					//!<‘OƒtƒŒ[ƒ€‚Ì³‹KƒVƒXƒeƒ€ŠÔ‚ğ‹L˜^
+		sys_time_prev = sys_time;						//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚·ã‚¹ãƒ†ãƒ æ™‚é–“ã‚’è¨˜éŒ²
+		real_sys_time_prev = sys_time;					//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ­£è¦ã‚·ã‚¹ãƒ†ãƒ æ™‚é–“ã‚’è¨˜éŒ²
 	}
 
-	//FPSXV
+	//FPSæ›´æ–°
 	void UpdateFPS()
 	{
-		//!<‚±‚±‚Å•’Ê‚Ìdelta_time‚ğg—p‚·‚é‚ÆA”ò‚Î‚µ‚ğs‚Á‚½ê‡‚ÉFPS‚ÌŒvZ‚ª”ñ³‹K‚Ì‚à‚Ì‚É‚È‚Á‚Ä‚µ‚Ü‚¤
-		fps = 1.0 / real_delta_time;		//!<ÀÛ‚ÌŒo‰ßŠÔ‚ğg—p‚µ‚ÄFPS‚ğ‘ª’è
+		//!<ã“ã“ã§æ™®é€šã®delta_timeã‚’ä½¿ç”¨ã™ã‚‹ã¨ã€æ™‚é£›ã°ã—ã‚’è¡Œã£ãŸå ´åˆã«FPSã®è¨ˆç®—ãŒéæ­£è¦ã®ã‚‚ã®ã«ãªã£ã¦ã—ã¾ã†
+		fps = 1.0 / real_delta_time;		//!<å®Ÿéš›ã®çµŒéæ™‚é–“ã‚’ä½¿ç”¨ã—ã¦FPSã‚’æ¸¬å®š
 
 	}
 
-	//ˆ—‚ğw’èFPS‚ÉŒÅ’è
+	//å‡¦ç†ã‚’æŒ‡å®šFPSã«å›ºå®š
 	int FixFPS()
 	{
-		// FPSŒÅ’è‚É‚Íwhile‚ğg—p‚µ‚È‚¢
-		// while‚Å‚â‚é‚ÆAFPSg—p—¦‚ğ”n­‚İ‚½‚¢‚ÉH‚¤‚Ì‚ÅA
-		// Chrono‚ğg—p‚µ‚½SleepŠÖ”‚ÅƒAƒvƒŠ‚ğˆê’â~‚·‚é
+		// FPSå›ºå®šã«ã¯whileã‚’ä½¿ç”¨ã—ãªã„
+		// whileã§ã‚„ã‚‹ã¨ã€FPSä½¿ç”¨ç‡ã‚’é¦¬é¹¿ã¿ãŸã„ã«é£Ÿã†ã®ã§ã€
+		// Chronoã‚’ä½¿ç”¨ã—ãŸSleepé–¢æ•°ã§ã‚¢ãƒ—ãƒªã‚’ä¸€æ™‚åœæ­¢ã™ã‚‹
 
-		double now_time = Time::GetOSTimeD();														//!<Œ»İ‚Ì³‹KŠÔ‚ğæ“¾
-		double system_time = Time::SystemTimeD();													//!<Œ»İ‚ÌƒVƒXƒeƒ€ŠÔ‚ğæ“¾
-		double sleep_time = delta_time_max - (now_time - system_time);								//!<SleepŠÔ‚ğŒvZ(deltaŠÔ-ÀÛ‚ÌŒo‰ßŠÔ)
-		int sleep_time_int = int(SEC2MILLI(sleep_time));											//!<sleepŠÔ‚ğSleepŠÖ”‚É“n‚·‚½‚ßA•b->ƒ~ƒŠ•b‚Ö‚Ì•ÏŠ·&intŒ^‚ÖƒLƒƒƒXƒg
-		sleep_time_int = sleep_time_int > 0 ? sleep_time_int : 0;									//!<Œë·‚âˆ——‚¿‚ÅsleepŠÔ‚ª•‰”‚É‚È‚é‚±‚Æ‚ª‚ ‚é‚Ì‚ÅA•â³
-		Sleep(sleep_time_int);																		//!<sleepŠÔ‚¾‚¯ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ’â~
-		while (now_time - system_time < delta_time_max) { now_time = Time::GetOSTimeD(); }			//!<‚à‚µsleep‚ğs‚Á‚Ä‚àŒo‰ßŠÔ‚ª‘«‚è‚È‚¯‚ê‚ÎA‚»‚Ì‚¾‚¯while‚Åˆ—‚ğ~‚ß‚é
+		double now_time = Time::GetOSTimeD();														//!<ç¾åœ¨ã®æ­£è¦æ™‚é–“ã‚’å–å¾—
+		double system_time = Time::SystemTimeD();													//!<ç¾åœ¨ã®ã‚·ã‚¹ãƒ†ãƒ æ™‚é–“ã‚’å–å¾—
+		double sleep_time = delta_time_max - (now_time - system_time);								//!<Sleepæ™‚é–“ã‚’è¨ˆç®—(deltaæ™‚é–“-å®Ÿéš›ã®çµŒéæ™‚é–“)
+		int sleep_time_int = int(SEC2MILLI(sleep_time));											//!<sleepæ™‚é–“ã‚’Sleepé–¢æ•°ã«æ¸¡ã™ãŸã‚ã€ç§’->ãƒŸãƒªç§’ã¸ã®å¤‰æ›&intå‹ã¸ã‚­ãƒ£ã‚¹ãƒˆ
+		sleep_time_int = sleep_time_int > 0 ? sleep_time_int : 0;									//!<èª¤å·®ã‚„å‡¦ç†è½ã¡ã§sleepæ™‚é–“ãŒè² æ•°ã«ãªã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ã€è£œæ­£
+		Sleep(sleep_time_int);																		//!<sleepæ™‚é–“ã ã‘ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åœæ­¢
+		while (now_time - system_time < delta_time_max) { now_time = Time::GetOSTimeD(); }			//!<ã‚‚ã—sleepã‚’è¡Œã£ã¦ã‚‚çµŒéæ™‚é–“ãŒè¶³ã‚Šãªã‘ã‚Œã°ã€ãã®æ™‚ã ã‘whileã§å‡¦ç†ã‚’æ­¢ã‚ã‚‹
 		return 0;
 	}
 
-	//”ò‚Î‚µ(ŠÔ‚Ìã‘‚«‚È‚Ì‚Å‚ ‚Ü‚è‘½—p‚µ‚È‚¢‚Å‚­‚¾‚³‚¢)
+	//æ™‚é£›ã°ã—(æ™‚é–“ã®ä¸Šæ›¸ããªã®ã§ã‚ã¾ã‚Šå¤šç”¨ã—ãªã„ã§ãã ã•ã„)
 	void ResetTime() {
-		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));			//!<ƒVƒXƒeƒ€ã‚ÌŠÔ‚ğã‘‚«
-		sys_time_prev = sys_time;											//!<‘OƒtƒŒ[ƒ€‚ÌŠÔ‚ğã‘‚«
+		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));			//!<ã‚·ã‚¹ãƒ†ãƒ ä¸Šã®æ™‚é–“ã‚’ä¸Šæ›¸ã
+		sys_time_prev = sys_time;											//!<å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ™‚é–“ã‚’ä¸Šæ›¸ã
 	}
 
-	//•`‰æˆ—‚ÌŒo‰ßŠÔ‚ğ‰Šú‰»E•`‰æFPS‚ğŒv‘ª
+	//æç”»å‡¦ç†ã®çµŒéæ™‚é–“ã‚’åˆæœŸåŒ–ãƒ»æç”»FPSã‚’è¨ˆæ¸¬
 	void FixDrawFPS() {
-		draw_fps = 1.0 / draw_delta_time;				//!<•`‰æFPS‚ğŒv‘ª
-		draw_delta_time = 0;							//!<‚»‚µ‚ÄŒo‰ßŠÔ‚ğƒŠƒZƒbƒg(•`‰æŒo‰ßŠÔ‚ÍAƒfƒNƒŠƒƒ“ƒg‚·‚é‚Æ”œ‘å‚È”’l‚É‚È‚é‚Ì‚Å0‚É‚·‚é)
+		draw_fps = 1.0 / draw_delta_time;				//!<æç”»FPSã‚’è¨ˆæ¸¬
+		draw_delta_time = 0;							//!<ãã—ã¦çµŒéæ™‚é–“ã‚’ãƒªã‚»ãƒƒãƒˆ(æç”»çµŒéæ™‚é–“ã¯ã€ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã™ã‚‹ã¨è«å¤§ãªæ•°å€¤ã«ãªã‚‹ã®ã§0ã«ã™ã‚‹)
 	}
 
-	// •¨—ˆ—‚ÌŒo‰ßŠÔ‚ğXVE•¨—ˆ—‚ÌFPS‚ğŒv‘ª
+	// ç‰©ç†å‡¦ç†ã®çµŒéæ™‚é–“ã‚’æ›´æ–°ãƒ»ç‰©ç†å‡¦ç†ã®FPSã‚’è¨ˆæ¸¬
 	void FixFixedFPS() {
-		fixed_fps = 1.0 / fixed_delta_time;						//!<•¨—FPS‚ğŒv‘ª
-		fixed_delta_time -= fixed_delta_time_max;				//!<‚»‚µ‚Ä1ƒtƒŒ[ƒ€•ªƒfƒNƒŠƒƒ“ƒg(‚±‚¿‚ç‚Í0‚É‚·‚é‚Æ•¨—‰‰Z‚ª•s³Šm‚É‚È‚é‚Ì‚ÅƒfƒNƒŠƒƒ“ƒg‚µ‚Äg‚¤)
+		fixed_fps = 1.0 / fixed_delta_time;						//!<ç‰©ç†FPSã‚’è¨ˆæ¸¬
+		fixed_delta_time -= fixed_delta_time_max;				//!<ãã—ã¦1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ(ã“ã¡ã‚‰ã¯0ã«ã™ã‚‹ã¨ç‰©ç†æ¼”ç®—ãŒä¸æ­£ç¢ºã«ãªã‚‹ã®ã§ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã¦ä½¿ã†)
 	}
 
 
-	//ƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ìæ“¾(float)
+	//ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—(float)
 	const float TimeScale()
 	{
 		return (float)time_scale;
 	}
 
-	//ƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ìæ“¾(double)
+	//ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—(double)
 	const double TimeScaleD()
 	{
 		return time_scale;
 	}
 
-	//ƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ì•ÏX
+	//ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«ã®å¤‰æ›´
 	void SetTimeScale(const double scale)
 	{
 		time_scale = scale;
 	}
 
-	//ƒQ[ƒ€“àƒ¢ŠÔ‚Ìæ“¾(float)
+	//ã‚²ãƒ¼ãƒ å†…Î”æ™‚é–“ã®å–å¾—(float)
 	const float DeltaTime()
 	{
 		return (float)(delta_time * time_scale);
 	}
 
-	//ƒQ[ƒ€“àƒ¢ŠÔ‚Ìæ“¾(double)
+	//ã‚²ãƒ¼ãƒ å†…Î”æ™‚é–“ã®å–å¾—(double)
 	const double DeltaTimeD()
 	{
 		return delta_time * time_scale;
 	}
 
-	//•`‰æ—pƒ¢ŠÔ‚Ìæ“¾(float)
+	//æç”»ç”¨Î”æ™‚é–“ã®å–å¾—(float)
 	const float DrawDeltaTime()
 	{
 		return  (float)draw_delta_time;
 	}
 
-	//•`‰æ—pƒ¢ŠÔ‚Ìæ“¾(double)
+	//æç”»ç”¨Î”æ™‚é–“ã®å–å¾—(double)
 	const double DrawDeltaTimeD()
 	{
 		return draw_delta_time;
 	}
 
-	//•¨——pƒ¢ŠÔ‚Ìæ“¾(float)
+	//ç‰©ç†ç”¨Î”æ™‚é–“ã®å–å¾—(float)
 	const float FixedDeltaTime()
 	{
 		return  (float)fixed_delta_time;
 	}
 
-	//•¨——pƒ¢ŠÔ‚Ìæ“¾(double)
+	//ç‰©ç†ç”¨Î”æ™‚é–“ã®å–å¾—(double)
 	const double FixedDeltaTimeD()
 	{
 		return fixed_delta_time;
 	}
 
-	//‘OƒtƒŒ[ƒ€‚Æ‚Ì•¨—“IŠÔ·‚Ìæ“¾(double)
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(double)
 	const double UnscaledDeltaTimeD()
 	{
 		return delta_time;
 	}
 
-	//‘OƒtƒŒ[ƒ€‚Æ‚Ì•¨—“IŠÔ·‚Ìæ“¾(float)
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®å®Ÿéš›ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(float)
+	const float RealDeltaTime()
+	{
+		return (float)real_delta_time;
+	}
+
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®å®Ÿéš›ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(double)
+	const float RealDeltaTimeD()
+	{
+		return real_delta_time;
+	}
+
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(float)
 	const float UnscaledDeltaTime()
 	{
 		return (float)delta_time;
 	}
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚Ì•¨—“IŠÔ‚Ìæ“¾(float)
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ç‰©ç†çš„æ™‚é–“ã®å–å¾—(float)
 	const float SystemTimeFromStart()
 	{
 		return (float)SystemTimeFromStartD();
 	}
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚Ì•¨—“IŠÔ‚Ìæ“¾(double)
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ç‰©ç†çš„æ™‚é–“ã®å–å¾—(double)
 	const double SystemTimeFromStartD()
 	{
 		return MICRO2SEC((double)(sys_time - sys_time_start));
 	}
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌƒQ[ƒ€“àŠÔ‚Ìæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ã‚²ãƒ¼ãƒ å†…æ™‚é–“ã®å–å¾—
 	const double GetTimeFromStart()
 	{
 		return time;
 	}
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌŒ»ÀŠÔ‚Ìæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ç¾å®Ÿæ™‚é–“ã®å–å¾—
 	const double GetRealTimeFromStart()
 	{
 		return real_time;
 	}
-	//ƒVƒXƒeƒ€“àŠÔ‚Ìæ“¾(float)
+	//ã‚·ã‚¹ãƒ†ãƒ å†…æ™‚é–“ã®å–å¾—(float)
 	const float SystemTime()
 	{
 		return (float)SystemTimeD();
 	}
 
-	//ƒVƒXƒeƒ€“àŠÔ‚Ìæ“¾(double)
+	//ã‚·ã‚¹ãƒ†ãƒ å†…æ™‚é–“ã®å–å¾—(double)
 	const double SystemTimeD()
 	{
 		return MICRO2SEC((double)sys_time);
 	}
 
-	//Windows‚©‚çæ“¾‚µ‚½Œ»İ(float)
+	//Windowsã‹ã‚‰å–å¾—ã—ãŸç¾åœ¨æ™‚åˆ»(float)
 	const float GetOSTime()
 	{
 
 		return (float)GetOSTimeD();
 	}
 
-	//Windows‚©‚çæ“¾‚µ‚½Œ»İ(double)
+	//Windowsã‹ã‚‰å–å¾—ã—ãŸç¾åœ¨æ™‚åˆ»(double)
 	const double GetOSTimeD()
 	{
 
-		//‚ ‚ñ‚Ü‚è‚æ‚­•ª‚©‚ç‚ñ‚¯‚ÇAOS‚ÌŠÔ‚ğæ“¾
+		//ã‚ã‚“ã¾ã‚Šã‚ˆãåˆ†ã‹ã‚‰ã‚“ã‘ã©ã€OSã®æ™‚é–“ã‚’å–å¾—
 		LARGE_INTEGER integer;
 		LARGE_INTEGER integer2;
 		QueryPerformanceCounter(&integer);
@@ -224,110 +236,110 @@ namespace Time {
 		return (integer.QuadPart / (double)integer2.QuadPart);
 	}
 
-	//FPS‚ÌÅ‘å’l‚ğæ“¾(float)
+	//FPSã®æœ€å¤§å€¤ã‚’å–å¾—(float)
 	const float GetFPSMAX()
 	{
 		return (float)fps_max;
 	}
 
-	//FPS‚ÌÅ‘å’l‚ğæ“¾(double)
+	//FPSã®æœ€å¤§å€¤ã‚’å–å¾—(double)
 	const double GetFPSMAXD()
 	{
 		return fps_max;
 	}
 
-	//•`‰æFPS‚ÌÅ‘å’l‚ğæ“¾(float)
+	//æç”»FPSã®æœ€å¤§å€¤ã‚’å–å¾—(float)
 	const float GetDrawFPSMAX()
 	{
 		return (float)draw_fps_max;
 	}
 
-	//•`‰æFPS‚ÌÅ‘å’l‚ğæ“¾(double)
+	//æç”»FPSã®æœ€å¤§å€¤ã‚’å–å¾—(double)
 	const double GetDrawFPSMAXD()
 	{
 		return draw_fps_max;
 	}
 
-	//FPS‚ÌÅ‘å’l‚ğİ’è
+	//FPSã®æœ€å¤§å€¤ã‚’è¨­å®š
 	void SetFPSMAX(const double& max)
 	{
-		//FPS‚ÌÅ‘å’l‚ª1‚ğ‰º‰ñ‚é‚Æƒ[ƒœZ‚ª‹N‚±‚Á‚½‚è‚¢‚ë‚¢‚ë‚ÆŠëŒ¯‚È‚Ì‚ÅA—áŠOƒXƒ[
+		//FPSã®æœ€å¤§å€¤ãŒ1ã‚’ä¸‹å›ã‚‹ã¨ã‚¼ãƒ­é™¤ç®—ãŒèµ·ã“ã£ãŸã‚Šã„ã‚ã„ã‚ã¨å±é™ºãªã®ã§ã€ä¾‹å¤–ã‚¹ãƒ­ãƒ¼
 		fps_max = max;
 		if (fps_max < 1)
 		{
 			throw(Exception("FPS_MAX_LOWER_ZERO", DEFAULT_EXCEPTION_PARAM));
 		}
-		delta_time_max = 1.0 / fps_max;		//!<“n‚³‚ê‚½FPS_MAX‚©‚çAdeltaŠÔ‚ÌÅ‘å’l‚ğÄİ’è
+		delta_time_max = 1.0 / fps_max;		//!<æ¸¡ã•ã‚ŒãŸFPS_MAXã‹ã‚‰ã€deltaæ™‚é–“ã®æœ€å¤§å€¤ã‚’å†è¨­å®š
 	}
 
-	//•¨—XVFPS‚ÌÅ‘å’l‚ğİ’è
+	//ç‰©ç†æ›´æ–°FPSã®æœ€å¤§å€¤ã‚’è¨­å®š
 	void SetFixedFPSMAX(const double& max)
 	{
 		fixed_fps_max = max;
-		//FIXED_FPS‚ÌÅ‘å’l‚ª1‚ğ‰º‰ñ‚é‚Æƒ[ƒœZ‚ª‹N‚±‚Á‚½‚è‚¢‚ë‚¢‚ë‚ÆŠëŒ¯‚È‚Ì‚ÅA—áŠOƒXƒ[
+		//FIXED_FPSã®æœ€å¤§å€¤ãŒ1ã‚’ä¸‹å›ã‚‹ã¨ã‚¼ãƒ­é™¤ç®—ãŒèµ·ã“ã£ãŸã‚Šã„ã‚ã„ã‚ã¨å±é™ºãªã®ã§ã€ä¾‹å¤–ã‚¹ãƒ­ãƒ¼
 		if (fixed_fps_max < 1)
 		{
 			throw(Exception("FIXED_FPS_MAX_LOWER_ZERO", DEFAULT_EXCEPTION_PARAM));
 		}
-		fixed_delta_time_max = 1.0 / fixed_fps_max;		//!<“n‚³‚ê‚½FIXED_FPS_MAX‚©‚çAdeltaŠÔ‚ÌÅ‘å’l‚ğÄİ’è
+		fixed_delta_time_max = 1.0 / fixed_fps_max;		//!<æ¸¡ã•ã‚ŒãŸFIXED_FPS_MAXã‹ã‚‰ã€deltaæ™‚é–“ã®æœ€å¤§å€¤ã‚’å†è¨­å®š
 	}
 
 
-	//•`‰æFPS‚ÌÅ‘å’l‚ğİ’è
+	//æç”»FPSã®æœ€å¤§å€¤ã‚’è¨­å®š
 	void SetDrawFPSMAX(const double& max)
 	{
 		draw_fps_max = max;
-		//DRAW_FPS‚ÌÅ‘å’l‚ª1‚ğ‰º‰ñ‚é‚Æƒ[ƒœZ‚ª‹N‚±‚Á‚½‚è‚¢‚ë‚¢‚ë‚ÆŠëŒ¯‚È‚Ì‚ÅA—áŠOƒXƒ[
+		//DRAW_FPSã®æœ€å¤§å€¤ãŒ1ã‚’ä¸‹å›ã‚‹ã¨ã‚¼ãƒ­é™¤ç®—ãŒèµ·ã“ã£ãŸã‚Šã„ã‚ã„ã‚ã¨å±é™ºãªã®ã§ã€ä¾‹å¤–ã‚¹ãƒ­ãƒ¼
 		if (draw_fps_max < 1)
 		{
 			throw(Exception("DRAW_FPS_MAX_LOWER_ZERO", DEFAULT_EXCEPTION_PARAM));
 		}
-		draw_delta_time_max = 1.0 / draw_fps_max;		//!<“n‚³‚ê‚½DRAW_FPS_MAX‚©‚çAdeltaŠÔ‚ÌÅ‘å’l‚ğÄİ’è
+		draw_delta_time_max = 1.0 / draw_fps_max;		//!<æ¸¡ã•ã‚ŒãŸDRAW_FPS_MAXã‹ã‚‰ã€deltaæ™‚é–“ã®æœ€å¤§å€¤ã‚’å†è¨­å®š
 	}
 
-	//•¨—ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(float)
+	//ç‰©ç†Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(float)
 	const float GetFixedDeltaTimeMAX()
 	{
 		return (float)fixed_delta_time_max;
 	}
 
-	//•¨—ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(double)
+	//ç‰©ç†Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(double)
 	const double GetFixedDeltaTimeMAXD()
 	{
 		return fixed_delta_time_max;
 	}
 
-	//•`‰æƒ¢ŠÔ‚ÌÅ‘å’læ“¾(float)
+	//æç”»Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(float)
 	const float GetDrawDeltaTimeMAX()
 	{
 		return (float)draw_delta_time_max;
 	}
 
-	//•`‰æƒ¢ŠÔ‚ÌÅ‘å’læ“¾(double)
+	//æç”»Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(double)
 	const double GetDrawDeltaTimeMAXD()
 	{
 		return draw_delta_time_max;
 	}
 
-	//ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(float)
+	//Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(float)
 	const float GetDeltaTimeMAX()
 	{
 		return (float)delta_time_max;
 	}
 
-	//ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(double)
+	//Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(double)
 	const double GetDeltaTimeMAXD()
 	{
 		return delta_time_max;
 	}
 
-	//FPS‚Ìæ“¾(float)
+	//FPSã®å–å¾—(float)
 	const float GetFPS()
 	{
 		return (float)fps;
 	}
 
-	//FPS‚Ìæ“¾(double)
+	//FPSã®å–å¾—(double)
 	const double GetFPSD()
 	{
 		return fps;
