@@ -185,6 +185,7 @@ class Object :public ObjBase {
 public:
 	USING_SUPER(Object);
 	Object();
+	Object(std::string name_);
 	void DebugDraw() override;
 
 

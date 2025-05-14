@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 USING_PTR(ObjBase);
 USING_PTR(Scene);
@@ -19,7 +19,7 @@ public:
 	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
 
-	//TODO Object‚©‚çŠ‘®ƒV[ƒ“‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÉƒAƒNƒZƒX‚Å‚«‚é‹@\‚Ìì¬
+	//TODO Objectã‹ã‚‰æ‰€å±ã‚·ãƒ¼ãƒ³ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹æ©Ÿæ§‹ã®ä½œæˆ
 
 	friend class SceneManager;
 	USING_SUPER(Scene);
@@ -32,14 +32,14 @@ public:
 	inline virtual void Load() {}
 
 	//-----------------------------
-	// InitƒuƒƒbƒN(‰Šú‰»ˆ—)
+	// Initãƒ–ãƒ­ãƒƒã‚¯(åˆæœŸåŒ–å‡¦ç†)
 	//-----------------------------
 	inline virtual int Init() { return 0; }
 	//-----------------------------
 
 
 	//-----------------------------
-	// PhysicsƒuƒƒbƒN(•¨—‘OŒãˆ—)
+	// Physicsãƒ–ãƒ­ãƒƒã‚¯(ç‰©ç†å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PrePhysics() {}
 	void Physics();
@@ -49,7 +49,7 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// UpdateƒuƒƒbƒN(XV‘OŒãˆ—)
+	// Updateãƒ–ãƒ­ãƒƒã‚¯(æ›´æ–°å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreUpdate() {}
 	inline virtual void Update() {}
@@ -58,16 +58,16 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// DrawƒuƒƒbƒN(•`‰æ‘OŒãˆ—)
+	// Drawãƒ–ãƒ­ãƒƒã‚¯(æç”»å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreDraw() {}
 	inline virtual void Draw() {}
 	inline virtual void LateDraw() {}
-	//ƒfƒoƒbƒO—p•`‰æ(ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚É•`‰æ‚³‚ê‚é)
+	//ãƒ‡ãƒãƒƒã‚°ç”¨æç”»(ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«æç”»ã•ã‚Œã‚‹)
 	inline virtual void DebugDraw() {}
 	inline virtual void LateDebugDraw() {}
 
-	//‚±‚±‚Ìˆ—‚Í•`‰æ‚ÉŸƒtƒŒ[ƒ€‚Ü‚Å”½‰f‚³‚ê‚È‚¢
+	//ã“ã“ã®å‡¦ç†ã¯æç”»ã«æ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã¾ã§åæ˜ ã•ã‚Œãªã„
 	inline virtual void PostDraw() {}
 
 	inline virtual void Exit() {}

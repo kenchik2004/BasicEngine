@@ -61,16 +61,16 @@ void BoxCollider::DebugDraw()
 		points[i] = mat.getPosition() + mat.rotate(points[i]);
 	}
 	for (int i = 0; i < 4; i++) {
-		DrawLine3D(cast(points[i]), i != 3 ? cast(points[i + 1]) : cast(points[0]), GREEN);
-		DrawLine3D(cast(points[i]), cast(points[i + 4]), GREEN);
+		DrawLine3D(cast(points[i]), i != 3 ? cast(points[i + 1]) : cast(points[0]), Color::GREEN);
+		DrawLine3D(cast(points[i]), cast(points[i + 4]), Color::GREEN);
 		if (i % 2 == 0 && i != 0) {
-			DrawLine3D(cast(points[i]), cast(points[i - 2]), GREEN);
+			DrawLine3D(cast(points[i]), cast(points[i - 2]), Color::GREEN);
 		}
 	}
 	for (int i = 4; i < 8; i++) {
-		DrawLine3D(cast(points[i]), i != 7 ? cast(points[i + 1]) : cast(points[4]), GREEN);
+		DrawLine3D(cast(points[i]), i != 7 ? cast(points[i + 1]) : cast(points[4]), Color::GREEN);
 		if (i % 2 == 0 && i != 4) {
-			DrawLine3D(cast(points[i]), cast(points[i - 2]), GREEN);
+			DrawLine3D(cast(points[i]), cast(points[i - 2]), Color::GREEN);
 		}
 	}
 }

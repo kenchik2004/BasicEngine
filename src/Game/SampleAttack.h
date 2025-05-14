@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "System/Component.h"
 USING_PTR(ModelRenderer);
+USING_PTR(Animator);
 USING_PTR(CapsuleCollider);
 USING_PTR(SampleCutIn);
 class SampleAttack :
@@ -14,6 +15,7 @@ public:
 	float timer = 0.0f;
 
 	ModelRendererWP model;
+	AnimatorWP animator;
 	CapsuleColliderWP fist;
 	SampleCutInWP cut_in;
 };

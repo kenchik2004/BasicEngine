@@ -1,4 +1,4 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "System/Scene.h"
 #include "System/ObjBase.h"
 
@@ -8,34 +8,35 @@
 void Scene::Physics()
 {
 	if (!physics_scene)
-		throw Exception("PhysXƒV[ƒ“‚ª‚È‚¢ƒ“ƒS!!ƒ„ƒo‚¢ƒ“ƒS!", DEFAULT_EXCEPTION_PARAM);
+		throw Exception("PhysXã‚·ãƒ¼ãƒ³ãŒãªã„ãƒ³ã‚´!!ãƒ¤ãƒã„ãƒ³ã‚´!", DEFAULT_EXCEPTION_PARAM);
 
-	//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“
+	//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³
 	in_simulation = true;
 	physics_scene->simulate(Time::FixedDeltaTime() * physics_timescale);
-	//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğ‘Ò‚Â
+	//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å¾…ã¤
 	physics_scene->fetchResults(true);
 	in_simulation = false;
-	//ˆ—‘Ò‚¿ŠÖ”‚ÌŒÄ‚Ño‚µ
+	//å‡¦ç†å¾…ã¡é–¢æ•°ã®å‘¼ã³å‡ºã—
 	for (auto& func : waiting_functions) {
 		func();
 	}
 	waiting_functions.clear();
 
-	//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“I—¹ŒãAˆÀ‘S‚ÉƒAƒNƒ^[‚ğíœ‚·‚é
+	//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†å¾Œã€å®‰å…¨ã«ã‚¢ã‚¯ã‚¿ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹
 	for (auto actor : waiting_remove_actors) {
 
 		physics_scene->removeActor(*actor);
 		actor->release();
-		//“ñ“x‚ÆQÆ‚·‚é‚±‚Æ‚ª‚È‚¢‚æ‚¤A‚«‚Á‚¿‚ènullptr‚ğ“ü‚ê‚Ä‚¨‚­
+		//äºŒåº¦ã¨å‚ç…§ã™ã‚‹ã“ã¨ãŒãªã„ã‚ˆã†ã€ãã£ã¡ã‚Šnullptrã‚’å…¥ã‚Œã¦ãŠã
 		actor = nullptr;
 	}
 	for (auto shape : waiting_remove_shapes) {
+
 		shape->release();
-		//“ñ“x‚ÆQÆ‚·‚é‚±‚Æ‚ª‚È‚¢‚æ‚¤A‚«‚Á‚¿‚ènullptr‚ğ“ü‚ê‚Ä‚¨‚­
+		//äºŒåº¦ã¨å‚ç…§ã™ã‚‹ã“ã¨ãŒãªã„ã‚ˆã†ã€ãã£ã¡ã‚Šnullptrã‚’å…¥ã‚Œã¦ãŠã
 		shape = nullptr;
 	}
-	//‘S•”Á‚¦‚½‚Ì‚Å‚·‚Á‚«‚è‚³‚¹‚é
+	//å…¨éƒ¨æ¶ˆãˆãŸã®ã§ã™ã£ãã‚Šã•ã›ã‚‹
 	waiting_remove_actors.clear();
 	waiting_remove_shapes.clear();
 }
@@ -44,18 +45,18 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 {
 	if (!actor)
 		return;
-	physics_scene->lockWrite();// PhysX ‚ÌƒXƒŒƒbƒh‚ğƒƒbƒN
+	physics_scene->lockWrite();// PhysX ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ãƒ­ãƒƒã‚¯
 
-	//ˆÈ~AHitˆ—‚È‚Ç‚É“ü‚ç‚È‚¢‚æ‚¤userData‚ğ‰ğ•ú‚µ‚ÄAnullptr‚É‚µ‚Ä‚¨‚­
+	//ä»¥é™ã€Hitå‡¦ç†ãªã©ã«å…¥ã‚‰ãªã„ã‚ˆã†userDataã‚’è§£æ”¾ã—ã¦ã€nullptrã«ã—ã¦ãŠã
 	auto wp = static_cast<SafeWeakPtr<ObjBase>*>(actor->userData);
 	actor->userData = nullptr;
 	if (wp)
 		delete wp;
 
-	//íœ—\’èƒAƒNƒ^[‚É’Ç‰Á“o˜^
+	//å‰Šé™¤äºˆå®šã‚¢ã‚¯ã‚¿ãƒ¼ã«è¿½åŠ ç™»éŒ²
 	waiting_remove_actors.push_back(actor);
 
-	physics_scene->unlockWrite();// PhysX ‚ÌƒXƒŒƒbƒh‚ğƒAƒ“ƒƒbƒN
+	physics_scene->unlockWrite();// PhysX ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
 }
 
 void Scene::DeleteShape(physx::PxShape* shape)
@@ -102,16 +103,16 @@ void Scene::Destroy()
 	}
 	leak_objects.clear();
 	if (!physics_scene)
-		throw (Exception("PhysXƒV[ƒ“‚ª‚È‚¢ƒ“ƒS!!ƒ„ƒo‚¢ƒ“ƒS!", DEFAULT_EXCEPTION_PARAM));
+		throw (Exception("PhysXã‚·ãƒ¼ãƒ³ãŒãªã„ãƒ³ã‚´!!ãƒ¤ãƒã„ãƒ³ã‚´!", DEFAULT_EXCEPTION_PARAM));
 	Physics();
-
-
+	int nb_conv = PhysicsManager::GetPhysicsInstance()->getNbConvexMeshes();
+	int nb_tringle = PhysicsManager::GetPhysicsInstance()->getNbTriangleMeshes();
 
 }
 
 void Scene::DestroyPhysics()
 {
-	//PhysXƒV[ƒ“‚ğíœ(relese)
+	//PhysXã‚·ãƒ¼ãƒ³ã‚’å‰Šé™¤(relese)
 	PhysicsManager::ReleaseScene(physics_scene);
 	physics_scene = nullptr;
 }

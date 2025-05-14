@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "System/Component.h"
 
 USING_PTR(ModelRenderer);
+USING_PTR(Animator);
 
 class SampleCutIn :
 	public Component
@@ -21,5 +22,6 @@ public:
 	float3 pos = { 0,0,0 };
 
 	ModelRendererWP model;
+	AnimatorWP animator;
 };
 

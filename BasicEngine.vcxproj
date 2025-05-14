@@ -19,8 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SceneShader.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\DiceD10.cpp" />
+    <ClCompile Include="src\Game\DiceD12.cpp" />
+    <ClCompile Include="src\Game\DiceD20.cpp" />
+    <ClCompile Include="src\Game\DiceD4.cpp" />
+    <ClCompile Include="src\Game\DiceD6.cpp" />
+    <ClCompile Include="src\Game\DiceD8.cpp" />
     <ClCompile Include="src\Game\PlaneObject.cpp" />
     <ClCompile Include="src\Game\SampleAttack.cpp" />
     <ClCompile Include="src\Game\SampleCutIn.cpp" />
@@ -28,10 +35,13 @@
     <ClCompile Include="src\Game\SceneSample3.cpp" />
     <ClCompile Include="src\Game\SceneSample.cpp" />
     <ClCompile Include="src\Game\SceneSample2.cpp" />
+    <ClCompile Include="src\System\Color.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
+    <ClCompile Include="src\System\Components\Animator.cpp" />
     <ClCompile Include="src\System\Components\BoxCollider.cpp" />
     <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
     <ClCompile Include="src\System\Components\Collider.cpp" />
+    <ClCompile Include="src\System\Components\ConvexMeshCollider.cpp" />
     <ClCompile Include="src\System\Components\MeshCollider.cpp" />
     <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
     <ClCompile Include="src\System\Components\RigidBody.cpp" />
@@ -41,6 +51,7 @@
     <ClCompile Include="src\System\Exception.cpp" />
     <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
+    <ClCompile Include="src\System\ModelManager.cpp" />
     <ClCompile Include="src\System\ObjBase.cpp" />
     <ClCompile Include="src\System\PhysicsManager.cpp" />
     <ClCompile Include="src\System\Scene.cpp" />
@@ -49,8 +60,15 @@
     <ClCompile Include="src\System\typedef.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SceneShader.h" />
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\DiceD10.h" />
+    <ClInclude Include="src\Game\DiceD12.h" />
+    <ClInclude Include="src\Game\DiceD20.h" />
+    <ClInclude Include="src\Game\DiceD4.h" />
+    <ClInclude Include="src\Game\DiceD6.h" />
+    <ClInclude Include="src\Game\DiceD8.h" />
     <ClInclude Include="src\Game\PlaneObject.h" />
     <ClInclude Include="src\Game\SampleAttack.h" />
     <ClInclude Include="src\Game\SampleCutIn.h" />
@@ -59,10 +77,13 @@
     <ClInclude Include="src\Game\SceneSample.h" />
     <ClInclude Include="src\Game\SceneSample2.h" />
     <ClInclude Include="src\precompile.h" />
+    <ClInclude Include="src\System\Color.h" />
     <ClInclude Include="src\System\Component.h" />
+    <ClInclude Include="src\System\Components\Animator.h" />
     <ClInclude Include="src\System\Components\BoxCollider.h" />
     <ClInclude Include="src\System\Components\CapsuleCollider.h" />
     <ClInclude Include="src\System\Components\Collider.h" />
+    <ClInclude Include="src\System\Components\ConvexMeshCollider.h" />
     <ClInclude Include="src\System\Components\MeshCollider.h" />
     <ClInclude Include="src\System\Components\ModelRenderer.h" />
     <ClInclude Include="src\System\Components\RigidBody.h" />
@@ -72,6 +93,7 @@
     <ClInclude Include="src\System\Exception.h" />
     <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\Main.h" />
+    <ClInclude Include="src\System\ModelManager.h" />
     <ClInclude Include="src\System\ObjBase.h" />
     <ClInclude Include="src\System\PhysicsManager.h" />
     <ClInclude Include="src\System\Scene.h" />

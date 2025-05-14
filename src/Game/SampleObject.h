@@ -22,6 +22,6 @@ public:
 	Vector3 velocity = { 0,0,0 };
 	CapsuleColliderWP fist;
 
-	unsigned int color = MAGENTA;
+	Color color = Color::MAGENTA;
 	bool camera = false;
 };

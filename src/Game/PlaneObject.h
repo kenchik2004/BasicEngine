@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "ObjBase.h"
 
 USING_PTR(ModelRenderer);
+USING_PTR(Animator);
 USING_PTR(RigidBody);
 USING_PTR(CapsuleCollider);
 class PlaneObject :

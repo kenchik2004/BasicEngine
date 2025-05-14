@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "System/Components/Collider.h"
 
 
@@ -7,15 +7,18 @@ class MeshCollider :
 	public Collider
 {
 public:
+	USING_SUPER(MeshCollider);
 	int Init() override;
 	void PrePhysics() override;
 	void DebugDraw() override;
+	void Update() override;
 	void AttachToModel();
+	void Exit() override;
 
 private:
 	ModelRendererWP model;
 	physx::PxTriangleMeshGeometry mesh{};
 	bool attached = false;
-	MV1_REF_POLYGONLIST                   ref_poly_{};       //!< ƒ|ƒŠƒSƒ“ƒf[ƒ^
+	MV1_REF_POLYGONLIST* ref_poly_ = nullptr;       //!< ãƒãƒªã‚´ãƒ³ãƒ‡ãƒ¼ã‚¿
 };
 

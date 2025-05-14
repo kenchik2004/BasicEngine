@@ -1,4 +1,4 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "SceneSample.h"
 #include "SceneSample2.h"
 #include "SampleObject.h"
@@ -6,10 +6,30 @@
 #include <System/Components/BoxCollider.h>
 #include <System/Components/ModelRenderer.h>
 #include <System/Components/MeshCollider.h>
+#include <System/Components/ConvexMeshCollider.h>
+#include "Game/DiceD4.h"
+#include "Game/DiceD6.h"
+#include "Game/DiceD8.h"
+#include "Game/DiceD10.h"
+#include "Game/DiceD12.h"
+#include "Game/DiceD20.h"
+#include "System/ModelManager.h"
 
 
 void SceneSample::Load()
 {
+	ModelManager::LoadAsModel("data/dice/D4.mv1", "D4");
+	ModelManager::LoadAsModel("data/dice/D6.mv1", "D6");
+	ModelManager::LoadAsModel("data/dice/D8.mv1", "D8");
+	ModelManager::LoadAsModel("data/dice/D10.mv1", "D10");
+	ModelManager::LoadAsModel("data/dice/D12.mv1", "D12");
+	ModelManager::LoadAsModel("data/dice/D20.mv1", "D20");
+	ModelManager::LoadAsModel("data/Stage/stage00.mv1", "Stage");
+
+	ModelManager::LoadAsModel("data/model.mv1", "man");
+	ModelManager::LoadAsAnimation("data/anim_walk.mv1", "walk");
+	ModelManager::LoadAsAnimation("data/anim_stand.mv1", "stand");
+	ModelManager::LoadAsAnimation("data/anim_punch.mv1", "punch");
 }
 physx::PxShape* shape = nullptr;
 
@@ -24,33 +44,36 @@ int SceneSample::Init()
 	box_col->extension = { 200,0.1f,200 };
 	box_col->GetRigidBody()->is_kinematic = true;
 #endif
-
-
 	obj = SceneManager::Object::Create<SampleObject>();
-	obj.lock()->transform->rotation = Quaternion(DEG2RAD(180), {0,1,0});
-	for (int j = 0; j < 0; j++)
-		for (int i = 0; i < 10; i++) {
-			auto a = SceneManager::Object::Create<Object>("Box");
-			auto mod = a->AddComponent<ModelRenderer>();
-			mod->Load("data/cube.mv1", "cube");
-			mod->scale = { 0.005f,0.005f,0.005f };
-			mod->pos = { 0,-1000.5f,0 };
-			a->transform->position = Vector3(i - 6.0f, j + 0.5f, 6.0f - i);
-			a->transform->rotation = Quaternion(DEG2RAD(45), Vector3(0, 1, 0));
-			auto rb = a->AddComponent<RigidBody>();
-			rb->mass = 0.01f;
-			//rb->SetMassCenter({ 0,0.5f,0 });
-			auto col = a->AddComponent<BoxCollider>();
-			//col->position = { 0,0.5f,0 };
+	obj.lock()->transform->rotation = Quaternion(DEG2RAD(135), { 0,1,0 });
+	obj.lock()->transform->position = { -1,0,0 };
+	handle_d4 = LoadGraph("data/dice/D4.png");
+	handle_d6 = LoadGraph("data/dice/D6.png");
+	handle_d8 = LoadGraph("data/dice/D8.png");
+	handle_d10 = LoadGraph("data/dice/D10.png");
+	handle_d12 = LoadGraph("data/dice/D12.png");
+	handle_d20 = LoadGraph("data/dice/D20.png");
+	for (int i = 0; i < 2; i++)
+		for (int j = 0; j < 10; j++)
+		{
+			auto dice = SceneManager::Object::Create<DiceD4>(handle_d4);
 
+			dice->transform->position = Vector3(i - 5.0f, 5.6f, j - 5.0f);
 		}
 
+	//plane = physx::PxCreatePlane(
+	//	*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
+	//	*Material::Concrete_Default);
+	//GetPhysicsScene()->addActor(*plane);
+	
+	
 	obj2 = SceneManager::Object::Create<Object>();
 	obj2.lock()->tag = ObjBase::TAG::Stage;
 	obj2.lock()->transform->position = { 0,-1,0 };
 	obj2.lock()->transform->scale = { 0.01f,0.01f,0.01f };
-	obj2.lock()->AddComponent<RigidBody>();
-	obj2.lock()->AddComponent<ModelRenderer>()->Load("data/Stage/stage00.mv1");
+	obj2.lock()->AddComponent<RigidBody>()->use_gravity = false;
+
+	obj2.lock()->AddComponent<ModelRenderer>()->SetModel("Stage");
 	auto mod_col = obj2.lock()->AddComponent<MeshCollider>();
 
 	return 0;
@@ -66,13 +89,29 @@ void SceneSample::Update()
 		Time::SetFPSMAX(Time::GetFPSMAX() - 2);
 
 	if (Input::PushHitKey(KEY_INPUT_RETURN))
-		SceneManager::Load<SceneSample2>();
+		SceneManager::Load<SceneSample>();
 
+	if (Input::PushHitKey(KEY_INPUT_P)) {
+
+		DrawString(SCREEN_W * 0.5f, SCREEN_H * 0.5f, "スキップ中", Color::CYAN);
+		ScreenFlip();
+		float delta = 1.0f / 50.0f;
+
+		SceneManager::PrePhysics();
+		for (float i = 0.0f; i < 10.0f; i += delta) {
+
+
+			GetPhysicsScene()->simulate(delta);
+			GetPhysicsScene()->fetchResults(true);
+		}
+		SceneManager::PostPhysics();
+
+	}
 }
 
 void SceneSample::PreDraw()
 {
-	SetCameraPositionAndTarget_UpVecY(float3(0, 5, -5), float3(0, 1, 0));
+	SetCameraPositionAndTarget_UpVecY(float3(0, 7, -10), float3(0, 1, 0));
 }
 
 void SceneSample::Draw()
@@ -88,6 +127,7 @@ void SceneSample::Draw()
 	DrawLine3D(float3(0, 0, 0), float3(1, 0, 0), GetColor(0, 255, 0));
 	DrawLine3D(float3(0, 0, 0), float3(0, 1, 0), GetColor(255, 0, 0));
 	DrawLine3D(float3(0, 0, 0), float3(0, 0, 1), GetColor(0, 0, 255));
+
 }
 
 void SceneSample::LateDraw()
@@ -121,6 +161,17 @@ void SceneSample::LateDebugDraw()
 	DrawBox(0, 0, 300, 50, GetColor(128, 0, 0), true);
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "FPS : %.2f / %.2f", Time::GetFPSMAX(), Time::GetFPS());
 	DrawFormatString(0, 24, GetColor(255, 255, 255), "Objects : %d", SceneManager::Object::GetArray<ObjBase>().size());
+}
+void SceneSample::Exit()
+{
+	if(plane)
+	plane->release();
+	DeleteGraph(handle_d4);
+	DeleteGraph(handle_d6);
+	DeleteGraph(handle_d8);
+	DeleteGraph(handle_d10);
+	DeleteGraph(handle_d12);
+	DeleteGraph(handle_d20);
 }
 void SceneSample::UnLoad()
 {

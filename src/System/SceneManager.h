@@ -62,16 +62,17 @@ public:
 	static inline SceneP GetDontDestoryOnLoadScene() { return another_scenes[0]; }
 
 	//特定のシーンを取得
-	template<class T> static inline SafeSharedPtr<T> GetScene()
+	template<class T> static inline SafeSharedPtr<T> GetScene(bool include_another = false)
 	{
 		ClassTypeInfo<T> info = ClassTypeInfo<T>(typeid(T).name(), &T::Super::info);
 
 		SafeSharedPtr<T> scene_pick = nullptr;
 		//裏シーンも含める
 		std::vector<SceneP> all_scenes = scenes;
-		//検索先に裏シーンを追加
-		for (auto& another_scene : another_scenes)
-			all_scenes.push_back(another_scene);
+		//検索先に裏シーンを追加(引数で裏シーンを含める場合のみ)
+		if (include_another)
+			for (auto& another_scene : another_scenes)
+				all_scenes.push_back(another_scene);
 
 		//作成時のクラス名が一致するシーンを検索
 		for (auto& ite : all_scenes) {
@@ -143,7 +144,7 @@ public:
 	}
 
 	//シーンをロード(作成)
-	template<class T> static inline SafeSharedPtr<T> Load()
+	template<class T, class...Args> static inline SafeSharedPtr<T> Load(Args&&...args)
 	{
 		//シーンの作成(いたらロードの必要なし)
 		if (SafeSharedPtr<T> scene = GetScene<T>()) {
@@ -155,7 +156,7 @@ public:
 		}
 
 		//(いなかったら、ロードの必要あり)
-		auto scene = make_safe_shared<T>();
+		auto scene = make_safe_shared<T>(std::forward<Args>(args)...);
 		//シーンの作成&登録
 		scene->Construct<T>();
 		//ロードデータがあるならロード
@@ -167,18 +168,37 @@ public:
 
 		return scene;
 	}
+	template <class T, class... Args> static inline SafeSharedPtr<T> LoadAsAnother(Args&&... args) {
+		//シーンの作成(いたらロードの必要なし)
+		if (SafeSharedPtr<T> scene = GetScene<T>()) {
+			//見つかったシーンのポインタを返す
+			return scene;
+
+		}
+
+		//(いなかったら、ロードの必要あり)
+		auto scene = make_safe_shared<T>(std::forward<Args>(args)...);
+		//シーンの作成&登録
+		scene->Construct<T>();
+		//ロードデータがあるならロード
+		scene->Load();
+		//シーンの配列に登録
+		scenes.push_back(SafeStaticCast<Scene>(scene));
+
+		return scene;
+	}
 
 	//オブジェクト関係の操作用クラス
 	class Object {
 	public:
 
 		//オブジェクトの作成
-		template<class T>
-		static inline SafeSharedPtr<T> Create()
+		template<class T, class...Args>
+		static inline SafeSharedPtr<T> Create(Args&&...args)
 		{
 			if (!current_scene)
 				return nullptr;
-			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6);
+			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
 
 			obj->Init();
 
@@ -186,14 +206,14 @@ public:
 		}
 
 		//オブジェクトの作成(名付け)
-		template<class T>
-		static inline SafeSharedPtr<T> Create(std::string_view name_)
+		template<class T, class...Args>
+		static inline SafeSharedPtr<T> Create(std::string_view name_, Args&&...args)
 		{
 			//カレントシーンがいないなら何もせずリターン
 			if (!current_scene)
 				return nullptr;
 			//カレントシーンにオブジェクト作成を依頼
-			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(name_);
+			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(name_, std::forward<Args>(args)...);
 			//作成したオブジェクトをその場で初期化
 			obj->Init();
 

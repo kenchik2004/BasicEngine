@@ -1,10 +1,15 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "SceneSample3.h"
 #include "Game/PlaneObject.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/MeshCollider.h"
 
+
+void SceneSample3::Load()
+{
+	ModelManager::LoadAsModel("data/aircraft.mv1", "aircraft");
+}
 
 int SceneSample3::Init()
 {
@@ -15,13 +20,9 @@ int SceneSample3::Init()
 	obj2->transform->scale = { 0.1f,0.1f,0.1f };
 	obj2->AddComponent<RigidBody>();
 	auto model = obj2->AddComponent<ModelRenderer>();
-	model->Load("data/Stage/stage00.mv1");
+	model->SetModel("stage00");
 	auto mod_col = obj2->AddComponent<MeshCollider>();
 	mod_col->AttachToModel();
-	GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-		*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, 0),
-		*PhysicsManager::GetPhysicsInstance()->createMaterial(0.99f, 0.99f, 0.0f))
-	);
 	return 0;
 }
 
@@ -31,9 +32,12 @@ void SceneSample3::Update()
 		SceneManager::Change(SafeSharedPtr(shared_from_this()));
 	if (!plane.lock())
 		SceneManager::Load<SceneSample3>();
+
 	if (Input::PushHitKey(KEY_INPUT_I))
 	{
-		SafeSharedPtr<ObjBase> obj = nullptr;
+
+		SafeWeakPtr<ObjBase> obj;
+
 		obj->AddComponent<RigidBody>();
 	}
 

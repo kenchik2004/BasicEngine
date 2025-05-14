@@ -1,10 +1,11 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "SampleObject.h"
 #include "System/Components/RigidBody.h"
 #include <System/Components/Collider.h>
 #include <System/Components/CapsuleCollider.h>
 #include <System/Components/BoxCollider.h>
 #include <System/Components/ModelRenderer.h>
+#include <System/Components/Animator.h>
 #include <Game/SampleAttack.h>
 
 
@@ -16,13 +17,14 @@ int SampleObject::Init()
 {
 	transform->SetPosition(float3(0, 0, 5));
 	auto model = AddComponent<ModelRenderer>();
+	model->SetModel("man");
 	model->rot = Quaternion(DEG2RAD(180), Vector3(0, 1, 0));
-	model->Load("data/model.mv1", "model_1");
 	model->scale = { 0.01f,0.01f,0.01f };
-	model->SetAnimation("data/anim_walk.mv1", "walk", 1);
-	model->SetAnimation("data/anim_stand.mv1", "stand", 1);
-	model->SetAnimation("data/anim_punch.mv1", "punch", 0);
-	model->PlayAnimationNoSame("stand");
+	auto animator = AddComponent<Animator>();
+	animator->SetAnimation("walk", 1);
+	animator->SetAnimation("stand", 1);
+	animator->SetAnimation("punch", 0);
+	animator->PlayIfNoSame("stand");
 
 	AddComponent<RigidBody>()->freeze_rotation = { 1, 1, 1 };
 	auto col = AddComponent<CapsuleCollider>();
@@ -56,11 +58,11 @@ void SampleObject::Update()
 	GetComponent<RigidBody>()->velocity = velocity_factor;
 
 	if (Input::PushHitKey(KEY_INPUT_SPACE) && !GetComponent<SampleAttack>()) {
- 		AddComponent<SampleAttack>();
+		AddComponent<SampleAttack>();
 	}
-	if (auto model = GetComponent<ModelRenderer>()) {
+	if (auto model = GetComponent<Animator>()) {
 		if (!model->IsPlaying())
-			model->PlayAnimationNoSame("stand", true);
+			model->PlayIfNoSame("stand", true);
 	}
 
 }
@@ -77,9 +79,9 @@ void SampleObject::Draw()
 
 void SampleObject::PreDraw()
 {
-	SetCameraNearFar(0.1f, 3000.0f);
-	SetupCamera_Perspective(TO_RADIAN(45.0f));
-	SetCameraPositionAndTargetAndUpVec(float3(transform->position + Vector3(0, 1.6f, 0) - transform->AxisZ() * 0.05f), float3(transform->position + Vector3(0, 1.6f, 0) + transform->AxisZ()), float3(transform->AxisY()));
+	//SetCameraNearFar(0.1f, 3000.0f);
+	//SetupCamera_Perspective(TO_RADIAN(45.0f));
+	//SetCameraPositionAndTargetAndUpVec(float3(transform->position + Vector3(0, 1.6f, 0) - transform->AxisZ() * 0.05f), float3(transform->position + Vector3(0, 1.6f, 0) + transform->AxisZ()), float3(transform->AxisY()));
 }
 void SampleObject::PrePhysics()
 {
@@ -95,6 +97,8 @@ void SampleObject::PostPhysics()
 void SampleObject::DebugDraw()
 {
 
+
+	color = Color(255, 255, 0);
 	DrawSphere3D(cast(transform->position), 0.5f, 8, color, color, true);
 
 }
@@ -111,7 +115,7 @@ void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
 
 void SampleObject::OnTriggerEnter(const HitInfo& hit_info)
 {
-	color = YELLOW;
+	color = Color::YELLOW;
 	if (auto atk = GetComponent<SampleAttack>())
 		atk->OnTriggerEnter(hit_info);
 }

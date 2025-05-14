@@ -85,6 +85,39 @@
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp">
       <Filter>System</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\DiceD4.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\DiceD6.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\DiceD8.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\DiceD10.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\DiceD12.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\DiceD20.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\ModelManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\ConvexMeshCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\Animator.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Color.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneShader.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -172,6 +205,37 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneShader.h" />
+    <ClInclude Include="src\Game\DiceD20.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\DiceD4.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\DiceD6.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\DiceD8.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\DiceD10.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\DiceD12.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\ModelManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\ConvexMeshCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\Animator.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Color.h">
       <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
