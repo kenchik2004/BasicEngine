@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 #include <System/Component.h>
 struct LockFlag {
 	bool x = false;
 	bool y = false;
 	bool z = false;
 };
-enum ForceMode  {		//—Í‚ğ‰Á‚¦‚éƒ‚[ƒh
-	Force = physx::PxForceMode::eFORCE,						//d‚³‚ğ‰Á–¡‚µ‚½’P”­“I‚È—Í‚Ì•Ï‰»(N/s^2)
-	Impulse = physx::PxForceMode::eIMPULSE,					//d‚³‚ğ‰Á–¡‚µ‚½Œp‘±“I‚È‰^“®—Ê‚Ì•Ï‰»(N/s)
-	VelocityCange = physx::PxForceMode::eVELOCITY_CHANGE,	//d‚³‚ğ–³‹‚µ‚½‘¬“x‚Ì•Ï‰»(m/s)
-	Acceleration = physx::PxForceMode::eACCELERATION,		//d‚³‚ğ–³‹‚µ‚½‰Á‘¬“x‚Ì•Ï‰»(m/s^2)
+enum ForceMode  {		//åŠ›ã‚’åŠ ãˆã‚‹ãƒ¢ãƒ¼ãƒ‰
+	Force = physx::PxForceMode::eFORCE,						//é‡ã•ã‚’åŠ å‘³ã—ãŸå˜ç™ºçš„ãªåŠ›ã®å¤‰åŒ–(N/s^2)
+	Impulse = physx::PxForceMode::eIMPULSE,					//é‡ã•ã‚’åŠ å‘³ã—ãŸç¶™ç¶šçš„ãªé‹å‹•é‡ã®å¤‰åŒ–(N/s)
+	VelocityCange = physx::PxForceMode::eVELOCITY_CHANGE,	//é‡ã•ã‚’ç„¡è¦–ã—ãŸé€Ÿåº¦ã®å¤‰åŒ–(m/s)
+	Acceleration = physx::PxForceMode::eACCELERATION,		//é‡ã•ã‚’ç„¡è¦–ã—ãŸåŠ é€Ÿåº¦ã®å¤‰åŒ–(m/s^2)
 };
 class RigidBody :public Component
 {
@@ -22,6 +22,7 @@ public:
 	void DebugDraw() override;
 	void Exit() override;
 	void AddForce(Vector3 force, ForceMode force_mode = ForceMode::Force);
+	void AddTorque(Vector3 torque,ForceMode force_mode=ForceMode::Force);
 	void AddForceAtPosition(Vector3 force, Vector3 world_position, ForceMode force_mode = ForceMode::Force);
 	void SetMassCenter(Vector3 center);
 	void SetVelocity(Vector3 velocity_);

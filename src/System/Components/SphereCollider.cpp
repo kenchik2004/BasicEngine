@@ -44,7 +44,7 @@ void SphereCollider::DebugDraw()
 	auto body_trns = rigidbody.lock()->GetBody()->getGlobalPose();
 	auto shape_trns = shape->getLocalPose();
 	mat4x4 mat(body_trns * shape_trns);
-	DrawSphere3D(cast(mat.getPosition()), radius, 8, GREEN, GREEN, false);
+	DrawSphere3D(cast(mat.getPosition()), radius, 8, Color::GREEN, Color::GREEN, false);
 }
 
 

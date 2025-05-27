@@ -1,64 +1,54 @@
-#pragma once
+ï»¿#pragma once
 #include "System/Component.h"
+#include "System/ModelManager.h"
 
-#define CUR_ANIMTIME_MAX FLT_MAX
 
-struct AnimationData {
-	std::string name;
-	std::string path;
-	int handle = -1;
-	int animation_index = 0;
-	float anim_total_time = 0;
-};
-struct ModelData {
-	std::string name;
-	std::string path;
-	int handle = -1;
-};
 
-//!< TO_DO ƒ‚ƒfƒ‹‚Ìƒf[ƒ^‚ğ\‘¢‘Ì‰»->•ª—£AƒAƒjƒ[ƒVƒ‡ƒ“ƒf[ƒ^‚ÉŠÖ‚µ‚Ä‚à“¯—l
-//!< TO_DO ©‘OƒVƒF[ƒ_[‚É‘Î‰
+
+//!< TO_DO è‡ªå‰ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«å¯¾å¿œ
 
 class ModelRenderer :
 	public Component
 {
 public:
+
 	USING_SUPER(ModelRenderer);
 	int Init() override;
-	void Load(std::string_view path, std::string_view name = "");
-	void SetAnimation(std::string_view name, std::string_view path, int index);
+	void SetModel(std::string_view name_, std::string_view new_name_ = "");
 	void Update() override;
 	void LateUpdate() override;
 	void PreDraw() override;
 	void Exit() override;
 	void Draw() override;
-	void PlayAnimation(std::string_view name, bool loop = false, float start_time = 0.0f);
-	void PlayAnimationNoSame(std::string_view name, bool loop = false, float start_time = 0.0f);
-	std::string_view GetCurrentAnimName();
 	void DebugDraw() override;
-	bool IsPlaying();
-	static void UnLoad();
+
+	static inline void Load(std::string_view path, std::string_view name) {
+		ModelManager::LoadAsModel(path, name);
+	}
+
+	const int GetModelHandle() { return model ? model->handle : -1; }
+	bool IsLoaded() { return model ? model->handle >= 0 : false; }
+
+	std::string model_name = "";
+	std::string new_name = "";
 
 
+	//!<IDEA ãƒ¢ãƒ‡ãƒ«ã¯ã€data/modelãƒ•ã‚©ãƒ«ãƒ€ã«æ ¼ç´ã—ã¦ã„ã‚‹ã‚‚ã®ã™ã¹ã¦ã‚’ã€ãƒãƒãƒ¼ã‚¸ãƒ£åˆæœŸåŒ–æ™‚ã«ãƒ­ãƒ¼ãƒ‰ã—ã€ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ã¦ãŠã
+	//! â†‘ã“ã®å ´åˆã€ãƒ¢ãƒ‡ãƒ«ã®åå‰ä»˜ã‘ã¯ã©ã†ã™ã‚‹ã‹...
+
+
+	//ãƒ¢ãƒ‡ãƒ«ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒç®¡ç†ã™ã‚‹ã¹ãã‚‚ã®
+	SafeSharedPtr<Model> model;
 	Vector3 pos = { 0,0,0 };
 	Quaternion rot = { 0,0,0,1 };
 	Vector3 scale = { 1,1,1 };
 
-	float anim_time = 0;
-	float anim_speed = 1.0f;
-	bool anim_loop = false;
 
-	ModelData model;
-	bool cloned = false;
-	std::vector<AnimationData> animation;
-	AnimationData* current_anim = nullptr;
-	int current_index = -1;
 
-	static std::vector<AnimationData> anim_pool;
-	static std::vector<ModelData> model_pool;
+
 };
 
-//DXLib::MATRIX‚Å‚ÍAPhysX‚Ìs—ñ‚ÆŒİŠ·«‚ª‚È‚¢‚Ì‚ÅAƒXƒP[ƒ‹î•ñ‚ğ”jŠü‚µ‚½ã‚Ås‚Æ—ñ‚ğ“ü‚ê‘Ö‚¦‚Äæ“¾
+//DXLib::MATRIXã§ã¯ã€PhysXã®è¡Œåˆ—ã¨äº’æ›æ€§ãŒãªã„ã®ã§ã€ã‚¹ã‚±ãƒ¼ãƒ«æƒ…å ±ã‚’ç ´æ£„ã—ãŸä¸Šã§è¡Œã¨åˆ—ã‚’å…¥ã‚Œæ›¿ãˆã¦å–å¾—
 inline mat4x4 MV1GetFrameLocalWorldMatrix(int MHandle, int FrameIndex, bool is_physx) {
 	mat4x4 mat = cast(MV1GetFrameLocalWorldMatrix(MHandle, FrameIndex));
 	mat = CastPhysXMat(mat);

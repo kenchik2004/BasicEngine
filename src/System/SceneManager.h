@@ -1,79 +1,80 @@
-#pragma once
+ï»¿#pragma once
 
 USING_PTR(Scene);
 USING_PTR(DontDestroyOnLoadScene);
-//@brief ƒV[ƒ“ƒ}ƒlƒWƒƒ“ƒgƒNƒ‰ƒX
+//@brief ã‚·ãƒ¼ãƒ³ãƒãƒã‚¸ãƒ¡ãƒ³ãƒˆã‚¯ãƒ©ã‚¹
 class SceneManager final
 {
 
 
 	//===============================//
-	//ƒfƒoƒbƒO—pƒ{ƒbƒNƒX(SooS’ñ‹Ÿ)‚Ìƒnƒ“ƒhƒ‹
-	static int debug_box;
+	//ãƒ‡ãƒãƒƒã‚°ç”¨ãƒœãƒƒã‚¯ã‚¹(SooSæä¾›)ã®ãƒãƒ³ãƒ‰ãƒ«
+	static SafeSharedPtr<Model> debug_box;
 	//===============================//
 
 public:
 	//-----------------------------
-	// InitƒuƒƒbƒN(‰Šú‰»ˆ—)
+	// Initãƒ–ãƒ­ãƒƒã‚¯(åˆæœŸåŒ–å‡¦ç†)
 	//-----------------------------
 
-	static int Init();		//<‰Šú‰»
-
-	//-----------------------------
-
-	//-----------------------------
-	// PhysicsƒuƒƒbƒN(•¨—‘OŒãˆ—)
-	//-----------------------------
-
-	static void PrePhysics();		//<•¨—‘OXV
-	static void Physics();			//<•¨—XV
-	static void PostPhysics();		//<•¨—ŒãXV
+	static int Init();		//<åˆæœŸåŒ–
 
 	//-----------------------------
 
 	//-----------------------------
-	// UpdateƒuƒƒbƒN(XV‘OŒãˆ—)
+	// Physicsãƒ–ãƒ­ãƒƒã‚¯(ç‰©ç†å‰å¾Œå‡¦ç†)
 	//-----------------------------
 
-	static void PreUpdate();		//<‘OXV
-	static void Update();			//<XV
-	static void LateUpdate();		//<’x‰„XV
-	static void PostUpdate();		//<ŒãXV
+	static void PrePhysics();		//<ç‰©ç†å‰æ›´æ–°
+	static void Physics();			//<ç‰©ç†æ›´æ–°
+	static void PostPhysics();		//<ç‰©ç†å¾Œæ›´æ–°
 
 	//-----------------------------
 
 	//-----------------------------
-	// DrawƒuƒƒbƒN(•`‰æ‘OŒãˆ—)
+	// Updateãƒ–ãƒ­ãƒƒã‚¯(æ›´æ–°å‰å¾Œå‡¦ç†)
 	//-----------------------------
 
-	static void PreDraw();			//<‘O•`‰æ‚à‚µ‚­‚Í•`‰æ‘OXV
-	static void Draw();				//<•`‰æ
-	static void LateDraw();			//<’x‰„•`‰æ
-	static void DebugDraw();		//<ƒfƒoƒbƒO•`‰æ
-	static void LateDebugDraw();	//<ŒãƒfƒoƒbƒO•`‰æ
+	static void PreUpdate();		//<å‰æ›´æ–°
+	static void Update();			//<æ›´æ–°
+	static void LateUpdate();		//<é…å»¶æ›´æ–°
+	static void PostUpdate();		//<å¾Œæ›´æ–°
 
-	//‚±‚±‚Ìˆ—‚ÍŸƒtƒŒ[ƒ€‚Ü‚Å”½‰f‚³‚ê‚È‚¢
-	static void PostDraw();			//<ƒtƒŒ[ƒ€’†ÅIXV
+	//-----------------------------
 
-	static void Exit();			//<I—¹
+	//-----------------------------
+	// Drawãƒ–ãƒ­ãƒƒã‚¯(æç”»å‰å¾Œå‡¦ç†)
+	//-----------------------------
+
+	static void PreDraw();			//<å‰æç”»ã‚‚ã—ãã¯æç”»å‰æ›´æ–°
+	static void Draw();				//<æç”»
+	static void LateDraw();			//<é…å»¶æç”»
+	static void DebugDraw();		//<ãƒ‡ãƒãƒƒã‚°æç”»
+	static void LateDebugDraw();	//<å¾Œãƒ‡ãƒãƒƒã‚°æç”»
+
+	//ã“ã“ã®å‡¦ç†ã¯æ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã¾ã§åæ˜ ã•ã‚Œãªã„
+	static void PostDraw();			//<ãƒ•ãƒ¬ãƒ¼ãƒ ä¸­æœ€çµ‚æ›´æ–°
+
+	static void Exit();			//<çµ‚äº†
 
 
-	//— ‚ÌƒfƒtƒHƒ‹ƒgƒV[ƒ“‚ğæ“¾
+	//è£ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚·ãƒ¼ãƒ³ã‚’å–å¾—
 	static inline SceneP GetDontDestoryOnLoadScene() { return another_scenes[0]; }
 
-	//“Á’è‚ÌƒV[ƒ“‚ğæ“¾
-	template<class T> static inline SafeSharedPtr<T> GetScene()
+	//ç‰¹å®šã®ã‚·ãƒ¼ãƒ³ã‚’å–å¾—
+	template<class T> static inline SafeSharedPtr<T> GetScene(bool include_another = false)
 	{
-		ClassTypeInfo<T> info = ClassTypeInfo<T>(typeid(T).name(), &T::Super::info);
+		ClassTypeInfo<T>& info = T::info;
 
 		SafeSharedPtr<T> scene_pick = nullptr;
-		//— ƒV[ƒ“‚àŠÜ‚ß‚é
+		//è£ã‚·ãƒ¼ãƒ³ã‚‚å«ã‚ã‚‹
 		std::vector<SceneP> all_scenes = scenes;
-		//ŒŸõæ‚É— ƒV[ƒ“‚ğ’Ç‰Á
-		for (auto& another_scene : another_scenes)
-			all_scenes.push_back(another_scene);
+		//æ¤œç´¢å…ˆã«è£ã‚·ãƒ¼ãƒ³ã‚’è¿½åŠ (å¼•æ•°ã§è£ã‚·ãƒ¼ãƒ³ã‚’å«ã‚ã‚‹å ´åˆã®ã¿)
+		if (include_another)
+			for (auto& another_scene : another_scenes)
+				all_scenes.push_back(another_scene);
 
-		//ì¬‚ÌƒNƒ‰ƒX–¼‚ªˆê’v‚·‚éƒV[ƒ“‚ğŒŸõ
+		//ä½œæˆæ™‚ã®ã‚¯ãƒ©ã‚¹åãŒä¸€è‡´ã™ã‚‹ã‚·ãƒ¼ãƒ³ã‚’æ¤œç´¢
 		for (auto& ite : all_scenes) {
 			if (ite->status.ClassName() == info.ClassName())
 				scene_pick = SafeStaticCast<T>(ite);
@@ -83,44 +84,44 @@ public:
 
 	}
 
-	//Œ»İ‚Ì•\ƒV[ƒ“‚ğæ“¾
+	//ç¾åœ¨ã®è¡¨ã‚·ãƒ¼ãƒ³ã‚’å–å¾—
 	static inline SceneP GetCurrentScene() {
 		return current_scene;
 	}
 
 	template<class T> static inline void Change(SafeSharedPtr<T> scene)
 	{
-		//ƒV[ƒ“‚ÌØ‚è‘Ö‚¦
-		//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚Ì‚Ü‚Üƒ[ƒh
+		//ã‚·ãƒ¼ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆ
+		//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã®ã¾ã¾ãƒ­ãƒ¼ãƒ‰
 		if (!current_scene) {
 			current_scene = scene;
 			scene->Init();
-			//ƒ[ƒh’†‚Édeltatime‚ª’~Ï‚µA•¨—‚ª‚Ô‚Á‰ó‚ê‚é‚±‚Æ‚ª‚ ‚é‚½‚ß”ò‚Î‚µ
+			//ãƒ­ãƒ¼ãƒ‰ä¸­ã«deltatimeãŒè“„ç©ã—ã€ç‰©ç†ãŒã¶ã£å£Šã‚Œã‚‹ã“ã¨ãŒã‚ã‚‹ãŸã‚æ™‚é£›ã°ã—
 			Time::ResetTime();
 			return;
 		}
-		//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚éê‡‚ÍI—¹‚µ‚Äƒ[ƒh
+		//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ã‚‹å ´åˆã¯çµ‚äº†ã—ã¦ãƒ­ãƒ¼ãƒ‰
 		current_scene->Exit();
 		current_scene->Destroy();
 		current_scene = scene;
 		scene->Init();
-		//ƒ[ƒh’†‚Édeltatime‚ª’~Ï‚µA•¨—‚ª‚Ô‚Á‰ó‚ê‚é‚±‚Æ‚ª‚ ‚é‚½‚ß”ò‚Î‚µ
+		//ãƒ­ãƒ¼ãƒ‰ä¸­ã«deltatimeãŒè“„ç©ã—ã€ç‰©ç†ãŒã¶ã£å£Šã‚Œã‚‹ã“ã¨ãŒã‚ã‚‹ãŸã‚æ™‚é£›ã°ã—
 		Time::ResetTime();
 
 	}
 
-	//“Á’è‚ÌƒV[ƒ“‚ğŠ®‘S‚É”jŠü
+	//ç‰¹å®šã®ã‚·ãƒ¼ãƒ³ã‚’å®Œå…¨ã«ç ´æ£„
 	template <class T> static inline void Destroy(SafeSharedPtr<T> destroy_scene) {
 
 
-		//ƒV[ƒ“‚ğŒŸõ
+		//ã‚·ãƒ¼ãƒ³ã‚’æ¤œç´¢
 		for (auto scene = scenes.begin(); scene != scenes.end();) {
-			//Œ©‚Â‚©‚Á‚½‚ç”jŠü
+			//è¦‹ã¤ã‹ã£ãŸã‚‰ç ´æ£„
 			if ((*scene) == destroy_scene) {
 				(*scene)->Exit();
 				(*scene)->UnLoad();
 
-				//ƒV[ƒ“‚ğ”jŠü‚·‚éÛAƒŠ[ƒN‚ğŒŸ’m‚·‚é‚½‚ßtry->catch
+				//ã‚·ãƒ¼ãƒ³ã‚’ç ´æ£„ã™ã‚‹éš›ã€ãƒªãƒ¼ã‚¯ã‚’æ¤œçŸ¥ã™ã‚‹ãŸã‚try->catch
 				try {
 					(*scene)->Destroy();
 					(*scene)->DestroyPhysics();
@@ -135,173 +136,197 @@ public:
 				break;
 			}
 		}
-		//”jŠüƒV[ƒ“‚ªƒJƒŒƒ“ƒgƒV[ƒ“‚È‚çAQÆ‚ğ”jŠü
+		//ç ´æ£„ã‚·ãƒ¼ãƒ³ãŒã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãªã‚‰ã€å‚ç…§ã‚’ç ´æ£„
 		if (destroy_scene == current_scene) {
 			current_scene.reset();
 		}
 
 	}
 
-	//ƒV[ƒ“‚ğƒ[ƒh(ì¬)
-	template<class T> static inline SafeSharedPtr<T> Load()
+	//ã‚·ãƒ¼ãƒ³ã‚’ãƒ­ãƒ¼ãƒ‰(ä½œæˆ)
+	template<class T, class...Args> static inline SafeSharedPtr<T> Load(T* ptr = nullptr, Args&&...args)
 	{
-		//ƒV[ƒ“‚Ìì¬(‚¢‚½‚çƒ[ƒh‚Ì•K—v‚È‚µ)
+		//ã‚·ãƒ¼ãƒ³ã®ä½œæˆ(ã„ãŸã‚‰ãƒ­ãƒ¼ãƒ‰ã®å¿…è¦ãªã—)
 		if (SafeSharedPtr<T> scene = GetScene<T>()) {
-			//w’è‚ÌƒV[ƒ“‚É•ÏX
+			//æŒ‡å®šã®ã‚·ãƒ¼ãƒ³ã«å¤‰æ›´
 			Change(SafeStaticCast<Scene>(scene));
-			//•ÏXæƒV[ƒ“‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚·
+			//å¤‰æ›´å…ˆã‚·ãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
 			return scene;
 
 		}
 
-		//(‚¢‚È‚©‚Á‚½‚çAƒ[ƒh‚Ì•K—v‚ ‚è)
-		auto scene = make_safe_shared<T>();
-		//ƒV[ƒ“‚Ìì¬&“o˜^
+		//(ã„ãªã‹ã£ãŸã‚‰ã€ãƒ­ãƒ¼ãƒ‰ã®å¿…è¦ã‚ã‚Š)
+		SafeSharedPtr<T> scene;
+		//ãŸã ã—ã€CreateInstanceç­‰ã§newã•ã‚ŒãŸç”ŸãƒãŒã‚ã‚Œã°ã€ãã„ã¤ã‚’make_sharedã›ãšç›´æ¥Sharedã«æ¸¡ã—ã¦ç™»éŒ²ã™ã‚‹
+		if (ptr)
+			scene = SafeSharedPtr<T>(std::shared_ptr<T>(ptr));
+		else
+			scene = make_safe_shared<T>(std::forward<Args>(args)...);
+		//ã‚·ãƒ¼ãƒ³ã®ä½œæˆ&ç™»éŒ²
 		scene->Construct<T>();
-		//ƒ[ƒhƒf[ƒ^‚ª‚ ‚é‚È‚çƒ[ƒh
-		scene->Load();
-		//ƒV[ƒ“‚Ì”z—ñ‚É“o˜^
+		//ã‚·ãƒ¼ãƒ³ã®é…åˆ—ã«ç™»éŒ²
 		scenes.push_back(SafeStaticCast<Scene>(scene));
-		//ƒV[ƒ“•ÏX
+		//ãƒ­ãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹ãªã‚‰ãƒ­ãƒ¼ãƒ‰
+		scene->Load();
+		//ã‚·ãƒ¼ãƒ³å¤‰æ›´
 		Change(SafeStaticCast<Scene>(scene));
 
 		return scene;
 	}
+	template <class T, class... Args> static inline SafeSharedPtr<T> LoadAsAnother(Args&&... args) {
+		//ã‚·ãƒ¼ãƒ³ã®ä½œæˆ(ã„ãŸã‚‰ãƒ­ãƒ¼ãƒ‰ã®å¿…è¦ãªã—)
+		if (SafeSharedPtr<T> scene = GetScene<T>()) {
+			//è¦‹ã¤ã‹ã£ãŸã‚·ãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
+			return scene;
 
-	//ƒIƒuƒWƒFƒNƒgŠÖŒW‚Ì‘€ì—pƒNƒ‰ƒX
+		}
+
+		//(ã„ãªã‹ã£ãŸã‚‰ã€ãƒ­ãƒ¼ãƒ‰ã®å¿…è¦ã‚ã‚Š)
+		auto scene = make_safe_shared<T>(std::forward<Args>(args)...);
+		//ã‚·ãƒ¼ãƒ³ã®ä½œæˆ&ç™»éŒ²
+		scene->Construct<T>();
+		//ãƒ­ãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹ãªã‚‰ãƒ­ãƒ¼ãƒ‰
+		scene->Load();
+		//ã‚·ãƒ¼ãƒ³ã®é…åˆ—ã«ç™»éŒ²
+		scenes.push_back(SafeStaticCast<Scene>(scene));
+
+		return scene;
+	}
+
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé–¢ä¿‚ã®æ“ä½œç”¨ã‚¯ãƒ©ã‚¹
 	class Object {
 	public:
 
-		//ƒIƒuƒWƒFƒNƒg‚Ìì¬
-		template<class T>
-		static inline SafeSharedPtr<T> Create()
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆ
+		template<class T, class...Args>
+		static inline SafeSharedPtr<T> Create(Args&&...args)
 		{
 			if (!current_scene)
 				return nullptr;
-			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6);
+			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
 
 			obj->Init();
 
 			return obj;
 		}
 
-		//ƒIƒuƒWƒFƒNƒg‚Ìì¬(–¼•t‚¯)
-		template<class T>
-		static inline SafeSharedPtr<T> Create(std::string_view name_)
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆ(åä»˜ã‘)
+		template<class T, class...Args>
+		static inline SafeSharedPtr<T> Create(std::string_view name_, Args&&...args)
 		{
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‰½‚à‚¹‚¸ƒŠƒ^[ƒ“
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ä½•ã‚‚ã›ãšãƒªã‚¿ãƒ¼ãƒ³
 			if (!current_scene)
 				return nullptr;
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ÉƒIƒuƒWƒFƒNƒgì¬‚ğˆË—Š
-			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(name_);
-			//ì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğ‚»‚Ìê‚Å‰Šú‰»
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä½œæˆã‚’ä¾é ¼
+			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(name_, std::forward<Args>(args)...);
+			//ä½œæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ãã®å ´ã§åˆæœŸåŒ–
 			obj->Init();
 
-			//‰Šú‰»Œã‚ÌƒIƒuƒWƒFƒNƒg‚ğ•Ô‚·
+			//åˆæœŸåŒ–å¾Œã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™
 			return obj;
 		}
 
 
-		//ƒIƒuƒWƒFƒNƒgæ“¾(ƒV[ƒ“w’è‰Â)
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå–å¾—(ã‚·ãƒ¼ãƒ³æŒ‡å®šå¯)
 		template<class T> static inline SafeSharedPtr<T> Get(SceneP target_scene = nullptr) {
 
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚àƒ^[ƒQƒbƒgƒV[ƒ“‚à‚¢‚È‚¢ê‡Anullptr‚ğ•Ô‚·
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‚‚ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚·ãƒ¼ãƒ³ã‚‚ã„ãªã„å ´åˆã€nullptrã‚’è¿”ã™
 			if (!current_scene && !target_scene)
 				return nullptr;
 
 
 			SafeSharedPtr<T> obj = nullptr;
-			//ƒV[ƒ“w’è‚ğ‚µ‚Ä‚¢‚éê‡
+			//ã‚·ãƒ¼ãƒ³æŒ‡å®šã‚’ã—ã¦ã„ã‚‹å ´åˆ
 			if (target_scene)
 			{
-				//‚»‚ÌƒV[ƒ“‚©‚çƒIƒuƒWƒFƒNƒg‚ğŒŸõ‚·‚é
+				//ãã®ã‚·ãƒ¼ãƒ³ã‹ã‚‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œç´¢ã™ã‚‹
 				obj = target_scene->GetObjectPtr<T>();
 
 				return obj;
 			}
-			//w’è‚ª‚È‚¢ê‡‚ÍƒJƒŒƒ“ƒgƒV[ƒ“‚©‚çŒŸõ
+			//æŒ‡å®šãŒãªã„å ´åˆã¯ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‹ã‚‰æ¤œç´¢
 			obj = current_scene->GetObjectPtr<T>();
 			return obj;
 		}
 
-		//ƒIƒuƒWƒFƒNƒg‚ğƒ^ƒO‚©‚çŒŸõ
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚¿ã‚°ã‹ã‚‰æ¤œç´¢
 		template<class T> static inline SafeSharedPtr<T> GetWithTag(ObjBase::TAG tag) {
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚çnullptr‚ğ•Ô‚·
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰nullptrã‚’è¿”ã™
 			if (!current_scene)
 				return nullptr;
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚©‚çƒIƒuƒWƒFƒNƒg‚ğŒŸõ
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‹ã‚‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œç´¢
 			SafeSharedPtr<T> obj = current_scene->GetObjectPtr<T>(tag);
 
-			//Œ©‚Â‚©‚Á‚½ƒIƒuƒWƒFƒNƒg‚ğ•Ô‚·
+			//è¦‹ã¤ã‹ã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™
 			return obj;
 		}
 
-		//ƒIƒuƒWƒFƒNƒg‚ğ–¼‘O‚©‚çŒŸõ
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’åå‰ã‹ã‚‰æ¤œç´¢
 		template<class T> static inline SafeSharedPtr<T> Get(std::string_view name_) {
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚çnullptr‚ğ•Ô‚·
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰nullptrã‚’è¿”ã™
 			if (!current_scene)
 				return nullptr;
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚©‚çƒIƒuƒWƒFƒNƒg‚ğŒŸõ
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‹ã‚‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œç´¢
 			SafeSharedPtr<T> obj = current_scene->GetObjectPtr<T>(name_);
 
-			//Œ©‚Â‚©‚Á‚½ƒIƒuƒWƒFƒNƒg‚ğ•Ô‚·
+			//è¦‹ã¤ã‹ã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™
 			return obj;
 		}
 
 
-		//“¯‚¶Œ^‚ÌƒIƒuƒWƒFƒNƒg‚ğ‚Ü‚Æ‚ß‚Äæ“¾
+		//åŒã˜å‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã¾ã¨ã‚ã¦å–å¾—
 		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArray() {
 
-			//‹ó‚Á‚Û‚Ì”z—ñ‚ğ—pˆÓ
+			//ç©ºã£ã½ã®é…åˆ—ã‚’ç”¨æ„
 			std::vector<SafeSharedPtr<T>> vec(0);
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚çA‹ó‚Ì‚Ü‚Ü•Ô‚·
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ã€ç©ºã®ã¾ã¾è¿”ã™
 			if (!current_scene)
 				return vec;
 
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚©‚çA‚Ü‚Æ‚ß‚ÄŒŸõ
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‹ã‚‰ã€ã¾ã¨ã‚ã¦æ¤œç´¢
 			vec = current_scene->GetObjectPtrVec<T>();
 
-			//Œ©‚Â‚©‚Á‚½‚à‚Ì‚ğ•Ô‚·
+			//è¦‹ã¤ã‹ã£ãŸã‚‚ã®ã‚’è¿”ã™
 			return vec;
 		}
 
 
-		//“¯‚¶Œ^‚ÌƒIƒuƒWƒFƒNƒg‚ğ‚Ü‚Æ‚ß‚ÄŒŸõ
+		//åŒã˜å‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã¾ã¨ã‚ã¦æ¤œç´¢
 		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArrayWithTag(ObjBase::TAG tag) {
 
-			//‹ó‚Á‚Û‚Ì”z—ñ‚ğ—pˆÓ
+			//ç©ºã£ã½ã®é…åˆ—ã‚’ç”¨æ„
 			std::vector<SafeSharedPtr<T>> vec(0);
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚çA‹ó‚Á‚Û‚Ì‚Ü‚Ü•Ô‚·
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ã€ç©ºã£ã½ã®ã¾ã¾è¿”ã™
 			if (!current_scene)
 				return vec;
 
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚©‚ç‚Ü‚Æ‚ß‚ÄŒŸõ
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‹ã‚‰ã¾ã¨ã‚ã¦æ¤œç´¢
 			vec = current_scene->GetObjectPtrVec<T>(tag);
 
-			//Œ©‚Â‚©‚Á‚½‚à‚Ì‚ğ•Ô‚·
+			//è¦‹ã¤ã‹ã£ãŸã‚‚ã®ã‚’è¿”ã™
 			return vec;
 		}
 
-		//ƒIƒuƒWƒFƒNƒg‚ğíœ
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤
 		static inline void Destory(ObjBaseP destroy_obj) {
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‰½‚à‚µ‚È‚¢
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ä½•ã‚‚ã—ãªã„
 			if (!current_scene)
 				return;
 
-			//ƒJƒŒƒ“ƒgƒV[ƒ“‚©‚çƒIƒuƒWƒFƒNƒg‚ğíœ
+			//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ã‹ã‚‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤
 			current_scene->DestroyObject(destroy_obj);
-			//íœŒãAQÆ‚ğíœ
+			//å‰Šé™¤å¾Œã€å‚ç…§ã‚’å‰Šé™¤
 			destroy_obj.reset();
 		}
 
-		//ƒV[ƒ“Ø‚è‘Ö‚¦‚É”jŠü‚µ‚È‚¢ƒIƒuƒWƒFƒNƒg‚ğ“o˜^(ƒfƒtƒHƒ‹ƒg— ƒV[ƒ“‚ÉŠ—LŒ ÷“n)
+		//ã‚·ãƒ¼ãƒ³åˆ‡ã‚Šæ›¿ãˆæ™‚ã«ç ´æ£„ã—ãªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç™»éŒ²(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè£ã‚·ãƒ¼ãƒ³ã«æ‰€æœ‰æ¨©è­²æ¸¡)
 		static void DontDestroyOnLoad(ObjBaseP obj, SceneP from_where);
 	};
 
 
 private:
-	static ScenePVec scenes;			//!<ì¬Ï‚İƒV[ƒ“‚Ì”z—ñ
-	static ScenePVec another_scenes;	//!<— ƒV[ƒ“‚Ì”z—ñ
-	static SceneP current_scene;		//!<Œ»İƒV[ƒ“(ƒJƒŒƒ“ƒgƒV[ƒ“)‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	static ScenePVec scenes;			//!<ä½œæˆæ¸ˆã¿ã‚·ãƒ¼ãƒ³ã®é…åˆ—
+	static ScenePVec another_scenes;	//!<è£ã‚·ãƒ¼ãƒ³ã®é…åˆ—
+	static SceneP current_scene;		//!<ç¾åœ¨ã‚·ãƒ¼ãƒ³(ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³)ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 };
 

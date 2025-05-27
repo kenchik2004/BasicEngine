@@ -1,41 +1,42 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "System/Scene.h"
 #include "System/ObjBase.h"
-
+#include <algorithm>
 
 
 
 void Scene::Physics()
 {
 	if (!physics_scene)
-		throw Exception("PhysXƒV[ƒ“‚ª‚È‚¢ƒ“ƒS!!ƒ„ƒo‚¢ƒ“ƒS!", DEFAULT_EXCEPTION_PARAM);
+		throw Exception("PhysXã‚·ãƒ¼ãƒ³ãŒãªã„ãƒ³ã‚´!!ãƒ¤ãƒã„ãƒ³ã‚´!", DEFAULT_EXCEPTION_PARAM);
 
-	//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“
+	//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³
 	in_simulation = true;
 	physics_scene->simulate(Time::FixedDeltaTime() * physics_timescale);
-	//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğ‘Ò‚Â
+	//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å¾…ã¤
 	physics_scene->fetchResults(true);
 	in_simulation = false;
-	//ˆ—‘Ò‚¿ŠÖ”‚ÌŒÄ‚Ño‚µ
+	//å‡¦ç†å¾…ã¡é–¢æ•°ã®å‘¼ã³å‡ºã—
 	for (auto& func : waiting_functions) {
 		func();
 	}
 	waiting_functions.clear();
 
-	//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“I—¹ŒãAˆÀ‘S‚ÉƒAƒNƒ^[‚ğíœ‚·‚é
+	//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†å¾Œã€å®‰å…¨ã«ã‚¢ã‚¯ã‚¿ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹
 	for (auto actor : waiting_remove_actors) {
 
 		physics_scene->removeActor(*actor);
 		actor->release();
-		//“ñ“x‚ÆQÆ‚·‚é‚±‚Æ‚ª‚È‚¢‚æ‚¤A‚«‚Á‚¿‚ènullptr‚ğ“ü‚ê‚Ä‚¨‚­
+		//äºŒåº¦ã¨å‚ç…§ã™ã‚‹ã“ã¨ãŒãªã„ã‚ˆã†ã€ãã£ã¡ã‚Šnullptrã‚’å…¥ã‚Œã¦ãŠã
 		actor = nullptr;
 	}
 	for (auto shape : waiting_remove_shapes) {
+
 		shape->release();
-		//“ñ“x‚ÆQÆ‚·‚é‚±‚Æ‚ª‚È‚¢‚æ‚¤A‚«‚Á‚¿‚ènullptr‚ğ“ü‚ê‚Ä‚¨‚­
+		//äºŒåº¦ã¨å‚ç…§ã™ã‚‹ã“ã¨ãŒãªã„ã‚ˆã†ã€ãã£ã¡ã‚Šnullptrã‚’å…¥ã‚Œã¦ãŠã
 		shape = nullptr;
 	}
-	//‘S•”Á‚¦‚½‚Ì‚Å‚·‚Á‚«‚è‚³‚¹‚é
+	//å…¨éƒ¨æ¶ˆãˆãŸã®ã§ã™ã£ãã‚Šã•ã›ã‚‹
 	waiting_remove_actors.clear();
 	waiting_remove_shapes.clear();
 }
@@ -44,18 +45,18 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 {
 	if (!actor)
 		return;
-	physics_scene->lockWrite();// PhysX ‚ÌƒXƒŒƒbƒh‚ğƒƒbƒN
+	physics_scene->lockWrite();// PhysX ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ãƒ­ãƒƒã‚¯
 
-	//ˆÈ~AHitˆ—‚È‚Ç‚É“ü‚ç‚È‚¢‚æ‚¤userData‚ğ‰ğ•ú‚µ‚ÄAnullptr‚É‚µ‚Ä‚¨‚­
+	//ä»¥é™ã€Hitå‡¦ç†ãªã©ã«å…¥ã‚‰ãªã„ã‚ˆã†userDataã‚’è§£æ”¾ã—ã¦ã€nullptrã«ã—ã¦ãŠã
 	auto wp = static_cast<SafeWeakPtr<ObjBase>*>(actor->userData);
 	actor->userData = nullptr;
 	if (wp)
 		delete wp;
 
-	//íœ—\’èƒAƒNƒ^[‚É’Ç‰Á“o˜^
+	//å‰Šé™¤äºˆå®šã‚¢ã‚¯ã‚¿ãƒ¼ã«è¿½åŠ ç™»éŒ²
 	waiting_remove_actors.push_back(actor);
 
-	physics_scene->unlockWrite();// PhysX ‚ÌƒXƒŒƒbƒh‚ğƒAƒ“ƒƒbƒN
+	physics_scene->unlockWrite();// PhysX ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
 }
 
 void Scene::DeleteShape(physx::PxShape* shape)
@@ -87,13 +88,17 @@ void Scene::Destroy()
 		}
 		obj.lock()->Exit();
 		obj.lock()->status.status_bit.on(ObjStat::STATUS::REMOVED);
-		SceneManager::Object::Destory(obj.lock());
+		DestroyObject(obj.lock());
 	}
 	objects.clear();
 	for (auto& ite : leak_objects) {
 		try {
-			if (ite.lock())
+			if (ite.lock()) {
+#ifdef NDEBUG
+				std::quick_exit(0);
+#endif
 				throw(MemoryLeakException(ite.lock()->name.c_str(), DEFAULT_EXCEPTION_PARAM));
+			}
 		}
 		catch (Exception& ex)
 		{
@@ -102,16 +107,16 @@ void Scene::Destroy()
 	}
 	leak_objects.clear();
 	if (!physics_scene)
-		throw (Exception("PhysXƒV[ƒ“‚ª‚È‚¢ƒ“ƒS!!ƒ„ƒo‚¢ƒ“ƒS!", DEFAULT_EXCEPTION_PARAM));
+		throw (Exception("PhysXã‚·ãƒ¼ãƒ³ãŒãªã„ãƒ³ã‚´!!ãƒ¤ãƒã„ãƒ³ã‚´!", DEFAULT_EXCEPTION_PARAM));
 	Physics();
-
-
+	int nb_conv = PhysicsManager::GetPhysicsInstance()->getNbConvexMeshes();
+	int nb_tringle = PhysicsManager::GetPhysicsInstance()->getNbTriangleMeshes();
 
 }
 
 void Scene::DestroyPhysics()
 {
-	//PhysXƒV[ƒ“‚ğíœ(relese)
+	//PhysXã‚·ãƒ¼ãƒ³ã‚’å‰Šé™¤(relese)
 	PhysicsManager::ReleaseScene(physics_scene);
 	physics_scene = nullptr;
 }
@@ -120,14 +125,42 @@ void Scene::MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where) {
 	for (auto pick_obj = objects.begin(); pick_obj != objects.end(); pick_obj++) {
 		if (move_object == *pick_obj)
 		{
-			ObjBase::changed_priority = true;
 			(*pick_obj)->scene = to_where;
+			to_where->dirty_priority_objects.push_back(*pick_obj);
 			to_where->objects.push_back(std::move(*pick_obj));
 			objects.erase(pick_obj);
 			return;
 		}
 	}
 }
+
+void Scene::SyncObjectsPriority()
+{
+
+	if (dirty_priority_objects.empty()) return;
+
+	// 1) dirty_priority_objects ã‚’å„ªå…ˆåº¦é †ã«ä¸¦ã¹æ›¿ãˆã‚‹
+	std::sort(dirty_priority_objects.begin(), dirty_priority_objects.end(),
+		[](ObjBaseP a, ObjBaseP b) { return a->GetPriority() < b->GetPriority(); });
+
+	// 2) ã¾ã¨ã‚ã¦ objects ã¸æŒ¿å…¥
+	for (ObjBaseP& obj : dirty_priority_objects)
+	{
+		if (obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
+			continue;
+		// 2â€‘1) å¤ã„å ´æ‰€ã‚’æ¶ˆã™ï¼ˆåŒã˜ãƒã‚¤ãƒ³ã‚¿é‡è¤‡ã‚’é˜²ãï¼‰
+		auto cur = std::find(objects.begin(), objects.end(), obj);
+		if (cur != objects.end()) objects.erase(cur);
+
+		// 2â€‘2) å„ªå…ˆåº¦ã«åˆã£ãŸå ´æ‰€ã‚’äºŒåˆ†æ¢ç´¢ã§æ¢ã™
+		auto pos = std::upper_bound(objects.begin(), objects.end(), obj,
+			[](ObjBaseP a, ObjBaseP b) { return a->GetPriority() < b->GetPriority(); });
+
+		objects.insert(pos, obj);  // ã“ã“ã«å·®ã—è¾¼ã‚€
+	}
+	dirty_priority_objects.clear();
+}
+
 void Scene::DestroyObject(ObjBaseP destroy_obj) {
 	if (objects.size() <= 0)
 		return;
@@ -139,6 +172,10 @@ void Scene::DestroyObject(ObjBaseP destroy_obj) {
 		return;
 	}
 	ObjBaseWP obj_w;
+	if (auto obj = std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), destroy_obj); obj != dirty_priority_objects.end())
+	{
+		dirty_priority_objects.erase(obj);
+	}
 	for (auto obj = objects.begin(); obj != objects.end();) {
 		obj_w = (*obj);
 		if (obj_w.lock() == destroy_obj) {

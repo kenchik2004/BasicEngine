@@ -1,4 +1,4 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "System/SceneManager.h"
 #include "System/Scene.h"
 #include "System/DontDestroyOnLoadScene.h"
@@ -6,21 +6,25 @@
 #include "System/Components/ModelRenderer.h"
 #include "algorithm"
 
+#define SORT
 
-ScenePVec SceneManager::scenes = ScenePVec(0);			//!<ƒV[ƒ“‚Ì”z—ñ
-ScenePVec SceneManager::another_scenes = ScenePVec(1);	//!<— ƒV[ƒ“‚Ì”z—ñ
-SceneP SceneManager::current_scene = nullptr;			//!<ƒJƒŒƒ“ƒgƒV[ƒ“
-int SceneManager::debug_box = -1;						//!<ƒfƒoƒbƒO•`‰æ—p‚Ìƒ{ƒbƒNƒXƒ‚ƒfƒ‹
+
+ScenePVec SceneManager::scenes = ScenePVec(0);			//!<ã‚·ãƒ¼ãƒ³ã®é…åˆ—
+ScenePVec SceneManager::another_scenes = ScenePVec(1);	//!<è£ã‚·ãƒ¼ãƒ³ã®é…åˆ—
+SceneP SceneManager::current_scene = nullptr;			//!<ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³
+SafeSharedPtr<Model> SceneManager::debug_box = nullptr;						//!<ãƒ‡ãƒãƒƒã‚°æç”»ç”¨ã®ãƒœãƒƒã‚¯ã‚¹ãƒ¢ãƒ‡ãƒ«
 
 int SceneManager::Init()
 {
-
+	ModelManager::Init();
+	AudioManager::Init();
 	//===============================//
-	//ƒfƒoƒbƒO—pƒ{ƒbƒNƒX(SooS’ñ‹Ÿ)‚Ìƒ[ƒh
-	debug_box = MV1LoadModel("data/DebugBox/DebugMode/Box.mv1");
+	//ãƒ‡ãƒãƒƒã‚°ç”¨ãƒœãƒƒã‚¯ã‚¹(SooSæä¾›)ã®ãƒ­ãƒ¼ãƒ‰
+	ModelManager::LoadAsModel("data/DebugBox/DebugMode/Box.mv1", "debug_box");
+	debug_box = ModelManager::CloneModelByName("debug_box");
 	//===============================//
 
-	//— ƒV[ƒ“‚Ì”z—ñ‚Ì0”Ô–Ú‚Í•K‚¸‚±‚±‚Åì¬‚·‚éƒV[ƒ“‚ª“ü‚Á‚Ä‚¢‚é
+	//è£ã‚·ãƒ¼ãƒ³ã®é…åˆ—ã®0ç•ªç›®ã¯å¿…ãšã“ã“ã§ä½œæˆã™ã‚‹ã‚·ãƒ¼ãƒ³ãŒå…¥ã£ã¦ã„ã‚‹
 	auto defaultdontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
 	defaultdontdestroyonload_scene->Construct<DontDestroyOnLoadScene>();
 	another_scenes[0] = defaultdontdestroyonload_scene;
@@ -33,8 +37,10 @@ void SceneManager::PreUpdate()
 
 	for (auto& another_scene : another_scenes)
 	{
-		if (another_scene->objects.size() > 1 && ObjBase::changed_priority) {
-
+		if (another_scene->objects.size() > 1) {
+#ifdef SORT
+			another_scene->SyncObjectsPriority();
+#else
 			for (int i = 0; i < another_scene->objects.size() - 1; i++) {
 				for (int j = i + 1; j < another_scene->objects.size(); j++) {
 					if (another_scene->objects[i]->GetPriority() > another_scene->objects[j]->GetPriority())
@@ -42,10 +48,14 @@ void SceneManager::PreUpdate()
 
 				}
 			}
+#endif
+			Time::ResetTime();
 		}
 		for (auto& obj : another_scene->objects) {
-			if (obj->components.size() > 1 && obj->IsChangedCompPriority()) {
-
+			if (obj->components.size() > 1) {
+#ifdef SORT
+				obj->SyncComponentsPriority();
+#else
 				for (int i = 0; i < obj->components.size() - 1; i++) {
 					for (int j = i + 1; j < obj->components.size(); j++) {
 						if (obj->components[i]->GetPriority() > obj->components[j]->GetPriority())
@@ -53,6 +63,8 @@ void SceneManager::PreUpdate()
 
 					}
 				}
+#endif
+				Time::ResetTime();
 			}
 		}
 		try {
@@ -94,11 +106,13 @@ void SceneManager::PreUpdate()
 			});
 	}
 
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
-	if (current_scene->objects.size() > 1 && ObjBase::changed_priority) {
-
+	if (current_scene->objects.size() > 1) {
+#ifdef SORT
+		current_scene->SyncObjectsPriority();
+#else
 		for (int i = 0; i < current_scene->objects.size() - 1; i++) {
 			for (int j = i + 1; j < current_scene->objects.size(); j++) {
 				if (current_scene->objects[i]->GetPriority() > current_scene->objects[j]->GetPriority())
@@ -106,11 +120,14 @@ void SceneManager::PreUpdate()
 
 			}
 		}
-		ObjBase::changed_priority = false;
+#endif
+		Time::ResetTime();
 	}
 	for (auto& obj : current_scene->objects) {
-		if (obj->components.size() > 1 && obj->IsChangedCompPriority()) {
-
+		if (obj->components.size() > 1) {
+#ifdef SORT
+			obj->SyncComponentsPriority();
+#else
 			for (int i = 0; i < obj->components.size() - 1; i++) {
 				for (int j = i + 1; j < obj->components.size(); j++) {
 					if (obj->components[i]->GetPriority() > obj->components[j]->GetPriority())
@@ -118,6 +135,8 @@ void SceneManager::PreUpdate()
 
 				}
 			}
+#endif
+			Time::ResetTime();
 		}
 	}
 
@@ -197,7 +216,7 @@ void SceneManager::Update()
 			}
 			});
 	}
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	try {
@@ -233,7 +252,7 @@ void SceneManager::Update()
 			continue;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 			try {
-			obj.lock()->Update();
+				obj.lock()->Update();
 			}
 			catch (Exception& ex) {
 				ex.Show();
@@ -248,7 +267,7 @@ void SceneManager::Update()
 				if (comp.lock())
 					if (comp.lock()->status.status_bit.is(CompStat::STATUS::ACTIVE)) {
 						try {
-						comp.lock()->Update();
+							comp.lock()->Update();
 						}
 						catch (Exception& ex) {
 							ex.Show();
@@ -284,7 +303,7 @@ void SceneManager::LateUpdate()
 			}
 			});
 	}
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	current_scene->LateUpdate();
@@ -355,7 +374,7 @@ void SceneManager::PostUpdate()
 			}
 			});
 	}
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	current_scene->PostUpdate();
@@ -427,7 +446,7 @@ void SceneManager::PrePhysics()
 			}
 			});
 	}
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	current_scene->PrePhysics();
@@ -496,12 +515,12 @@ void SceneManager::Physics()
 					});
 			}
 			});
-		//Physics‚¾‚¯AƒV[ƒ“‚ÌƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğÅŒã‚És‚¤
+		//Physicsã ã‘ã€ã‚·ãƒ¼ãƒ³ã®ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æœ€å¾Œã«è¡Œã†
 		another_scene->Physics();
 
 	}
 
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	ObjBaseWPVec objs;
@@ -545,7 +564,7 @@ void SceneManager::Physics()
 	}
 #endif
 
-	//Physics‚¾‚¯AƒV[ƒ“‚ÌƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğÅŒã‚És‚¤
+	//Physicsã ã‘ã€ã‚·ãƒ¼ãƒ³ã®ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æœ€å¾Œã«è¡Œã†
 	current_scene->Physics();
 }
 
@@ -574,7 +593,7 @@ void SceneManager::PostPhysics()
 			}
 			});
 	}
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	current_scene->PostPhysics();
@@ -646,7 +665,7 @@ void SceneManager::PreDraw()
 			}
 			});
 	}
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	current_scene->PreDraw();
@@ -719,7 +738,7 @@ void SceneManager::Draw()
 			});
 	}
 	if (!current_scene) {
-		DrawString(0, 0, "ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‘¶İ‚µ‚Ü‚¹‚ñ", GetColor(255, 0, 0));
+		DrawString(0, 0, "ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒå­˜åœ¨ã—ã¾ã›ã‚“", GetColor(255, 0, 0));
 		return;
 	}
 	current_scene->Draw();
@@ -791,7 +810,7 @@ void SceneManager::LateDraw()
 			});
 	}
 
-	//ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‚¢‚È‚¢‚È‚ç‚»‚¿‚ç‚Í‰½‚à‚µ‚È‚¢
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒã„ãªã„ãªã‚‰ãã¡ã‚‰ã¯ä½•ã‚‚ã—ãªã„
 	if (!current_scene)
 		return;
 	current_scene->LateDraw();
@@ -840,15 +859,15 @@ void SceneManager::LateDraw()
 void SceneManager::DebugDraw()
 {
 	if (!current_scene) {
-		DrawString(0, 0, "ƒJƒŒƒ“ƒgƒV[ƒ“‚ª‘¶İ‚µ‚Ü‚¹‚ñ", GetColor(255, 0, 0));
+		DrawString(0, 0, "ã‚«ãƒ¬ãƒ³ãƒˆã‚·ãƒ¼ãƒ³ãŒå­˜åœ¨ã—ã¾ã›ã‚“", GetColor(255, 0, 0));
 		return;
 	}
 
 	//===============================//
-	//ƒfƒoƒbƒO—pƒ{ƒbƒNƒX(SooS’ñ‹Ÿ)‚Ì•`‰æ
-	MV1SetPosition(debug_box, VGet(0, 0, 0));
+	//ãƒ‡ãƒãƒƒã‚°ç”¨ãƒœãƒƒã‚¯ã‚¹(SooSæä¾›)ã®æç”»
+	MV1SetPosition(debug_box->handle, VGet(0, 0, 0));
 	//MV1SetScale(debug_box, VGet(10, 10, 10));
-	MV1DrawModel(debug_box);
+	//MV1DrawModel(debug_box);
 
 	SetUseLighting(false);
 	SetLightEnable(false);
@@ -974,17 +993,19 @@ void SceneManager::Exit()
 			obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
 		}
 		current_scene->Exit();
+		current_scene->UnLoad();
 		current_scene->Destroy();
 		current_scene->DestroyPhysics();
-		for (auto ite = scenes.begin(); ite != scenes.end(); ite++) {
-			if ((*ite) == current_scene)
-			{
-				scenes.erase(ite);
-				current_scene = nullptr;
-				break;
-			}
+	}
+	for (auto ite = scenes.begin(); ite != scenes.end(); ite++) {
+		if ((*ite) == current_scene)
+		{
+			scenes.erase(ite);
+			current_scene = nullptr;
+			break;
 		}
 	}
+
 	for (auto& scene : scenes) {
 		scene->UnLoad();
 		scene->Destroy();
@@ -1006,10 +1027,11 @@ void SceneManager::Exit()
 	}
 
 	//===============================//
-	//ƒfƒoƒbƒO—pƒ{ƒbƒNƒX(SooS’ñ‹Ÿ)‚Ì‰ğ•ú
-	MV1DeleteModel(debug_box);
+	//ãƒ‡ãƒãƒƒã‚°ç”¨ãƒœãƒƒã‚¯ã‚¹(SooSæä¾›)ã®è§£æ”¾
+	debug_box.reset();
 	//===============================//
-	ModelRenderer::UnLoad();
+	ModelManager::Exit();
+	AudioManager::Exit();
 	scenes.clear();
 	another_scenes.clear();
 }

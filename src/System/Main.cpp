@@ -1,21 +1,21 @@
-#include "Main.h"
+ï»¿#include "Main.h"
 #include "System/SceneManager.h"
-#include "Game/SceneSample3.h"
+#include "Game/SceneShader.h"
 #include "Game/SceneSample.h"
+#include <fstream>
 
-#define DEBUG_WINDOW
-#define USE_DEBUG_DRAW
+//#define DEBUG_WINDOW
+//#define USE_DEBUG_DRAW
 //#define FULL_SCREEN
 
 std::string window_classname[1] =
 {
-	"ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE1",
+	"ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦1",
 };
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
 
-
-// ƒƒbƒZ[ƒWˆ——pŠÖ”
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†ç”¨é–¢æ•°
 constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -24,7 +24,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 		PostQuitMessage(0);
 		break;
 	case WM_MOVING:
-		//ƒEƒBƒ“ƒhƒEˆÚ“®’†‚Í”ò‚Î‚µ‚ğs‚¤(Physics‚âƒAƒbƒvƒf[ƒgˆ—‚Ì–\‘–‚ğ–h‚®‚½‚ß)
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç§»å‹•ä¸­ã¯æ™‚é£›ã°ã—ã‚’è¡Œã†(Physicsã‚„ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆå‡¦ç†ã®æš´èµ°ã‚’é˜²ããŸã‚)
 		Time::ResetTime();
 		break;
 	default:
@@ -37,7 +37,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 	switch (msg)
 	{
 	case WM_MOVING:
-		//ƒEƒBƒ“ƒhƒEˆÚ“®’†‚Í”ò‚Î‚µ‚ğs‚¤(Physics‚âƒAƒbƒvƒf[ƒgˆ—‚Ì–\‘–‚ğ–h‚®‚½‚ß)
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç§»å‹•ä¸­ã¯æ™‚é£›ã°ã—ã‚’è¡Œã†(Physicsã‚„ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆå‡¦ç†ã®æš´èµ°ã‚’é˜²ããŸã‚)
 		Time::ResetTime();
 		break;
 	}
@@ -63,14 +63,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//ChangeWindowMode(false);
 #endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
-	SetMainWindowText("ƒƒCƒ“ƒEƒBƒ“ƒhƒE");
+	SetMainWindowText("ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦");
 	SetBackgroundColor(100, 100, 100);
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
 	SetHookWinProc(DxWndProc);
 	SetDoubleStartValidFlag(FALSE);
 	SetAlwaysRunFlag(TRUE);
 	SetWaitVSyncFlag(false);
-
+	Set3DSoundOneMetre(1.0f);
+	SetEnableXAudioFlag(true);
+	SetUseDirect3DVersion(DX_DIRECT3D_11);
 
 	if (DxLib_Init() == -1)	return -1;
 
@@ -96,9 +98,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	PhysicsManager::Init();
 	SceneManager::Init();
 
-	//•`‰æ‚ÌFPS‚ğİ’è
+	//æç”»ã®FPSã‚’è¨­å®š
 	Time::SetDrawFPSMAX(240);
-	//“à•”ˆ—‚ÌFPS‚ğİ’è
+	//å†…éƒ¨å‡¦ç†ã®FPSã‚’è¨­å®š
 	Time::SetFPSMAX(166);
 	Time::SetFixedFPSMAX(50);
 	Time::SetTimeScale(1);
@@ -118,15 +120,17 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	//GameInit();
 
 	while (TRUE)
 	{
+
+	MAIN_LOOP:
 		try {
 #ifdef DEBUG_WINDOW
 			//=======================//
-			//•Ğ•û‚ÌƒEƒBƒ“ƒhƒE‚ªÁ‚³‚ê‚½‚çA‚à‚¤•Ğ•û‚àI—¹‚·‚é
+			//ç‰‡æ–¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒæ¶ˆã•ã‚ŒãŸã‚‰ã€ã‚‚ã†ç‰‡æ–¹ã‚‚çµ‚äº†ã™ã‚‹
 			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
@@ -140,24 +144,63 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #endif
 
 			//=======================//
-
 			Time::Update();
 			Input::Update();
 
-			//ƒAƒbƒvƒf[ƒg
+			//ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ
 			//GameUpdate();
 			SceneManager::PreUpdate();
 			SceneManager::Update();
 
-			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN))
-				SceneManager::Load<SceneSample3>();
+			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN)) {
 
+				std::string class_name = "SceneSample";
+				const TypeInfo& base_type = TypeInfo::Root();
+				const TypeInfo* p = base_type.Child();
+				bool            returnFromTraverse = false;
+				const TypeInfo* next = nullptr;
+
+				//----------------------------------------------------------
+				// ç¶™æ‰¿ãƒ„ãƒªãƒ¼æ§‹é€ ã‚’æ¢ç´¢
+				// ã‚¹ã‚¿ãƒƒã‚¯å†å¸°ã‚’ä½¿ã‚ãªã„é«˜é€Ÿãªãƒ„ãƒªãƒ¼æ¢ç´¢ (stackless tree traversal)
+				//----------------------------------------------------------
+				while (p != &base_type) {
+					if (!returnFromTraverse) {
+						// åå‰ãƒã‚§ãƒƒã‚¯ã—ã¦ä¸€è‡´ã—ãŸã‚‰ä½œæˆ
+						if (p->ClassName() == class_name) {
+							break;
+						}
+					}
+
+					if (p->Child() && !returnFromTraverse) {
+						// å­ãŒã‚ã‚‹å ´åˆã¯å­ã‚’å…ˆã«èª¿ã¹ã‚‹ã€‚(å­ã‹ã‚‰æ¢ç´¢ã§æˆ»ã£ã¦ããŸå ´åˆã¯é™¤å¤–)
+						next = p->Child();
+						returnFromTraverse = false;
+					}
+					else if (p->Sibling()) {
+						// å…„å¼ŸãŒã„ã‚‹å ´åˆã¯å…„å¼Ÿã‚’èª¿ã¹ã‚‹
+						next = p->Sibling();
+						returnFromTraverse = false;
+					}
+					else {
+						// è¦ªã¸æˆ»ã‚‹ã€‚
+						next = p->Parent();
+						returnFromTraverse = true;
+					}
+					p = next;
+				}
+				if (p) {
+					auto ptr = static_cast<SceneSample*>(p->CreateInstance<SceneSample>());
+
+					SceneManager::Load<SceneSample>(ptr);
+				}
+			}
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
 			bool phys = false;
 			while (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD())
 			{
-				//•¨—
+				//ç‰©ç†
 				SceneManager::PrePhysics();
 				SceneManager::Physics();
 				SceneManager::PostPhysics();
@@ -168,12 +211,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				}
 				Time::FixFixedFPS();
 			}
-			//‚ ‚Ü‚è‚æ‚ë‚µ‚­‚Í‚È‚¢‚ªAFPS’á‰º‚É‚ÍPhysics‚ª–\‘–‚·‚é‰Â”\«‚ª‚ ‚é‚Ì‚ÅA
-			// fixed_deltatime‚ª2ƒ‹[ƒv•ªˆÈã—­‚Ü‚Á‚½‚ç”ò‚Î‚µ‚ğs‚¤
+			//ã‚ã¾ã‚Šã‚ˆã‚ã—ãã¯ãªã„ãŒã€FPSä½ä¸‹æ™‚ã«ã¯PhysicsãŒæš´èµ°ã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã®ã§ã€
+			// fixed_deltatimeãŒ2ãƒ«ãƒ¼ãƒ—åˆ†ä»¥ä¸Šæºœã¾ã£ãŸã‚‰æ™‚é£›ã°ã—ã‚’è¡Œã†
 			if (phys)
 				Time::ResetTime();
 
-			//•`‰æ
+			//æç”»
 			if (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
 			{
 
@@ -186,28 +229,28 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 				//GameRender();
 #ifdef DEBUG_WINDOW
-				//‘‚«‚İ‚ğs‚¤ƒEƒBƒ“ƒhƒE‚ğAƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Éİ’è
+				//æ›¸ãè¾¼ã¿ã‚’è¡Œã†ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ã€ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è¨­å®š
 				SetScreenFlipTargetWindow(NULL);
 				ScreenFlip();
 				//============//
-				// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì‰f‚è‚İ‚ª‚ ‚éê‡‚ÍA’¼‰º‚Ìs‚ğ—LŒø‰»
+				// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ˜ ã‚Šè¾¼ã¿ãŒã‚ã‚‹å ´åˆã¯ã€ç›´ä¸‹ã®è¡Œã‚’æœ‰åŠ¹åŒ–
 				//WaitTimer(2);
 				ClearDrawScreen();
-				//ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚Ö‚Ì•`‰æ
+				//ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸ã®æç”»
 #endif
 #ifdef USE_DEBUG_DRAW
 				SceneManager::DebugDraw();
 				SceneManager::LateDebugDraw();
 #endif
 #ifdef DEBUG_WINDOW
-				//‘‚«‚İ‚ğs‚¤ƒEƒBƒ“ƒhƒE‚ğAƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚Éİ’è
+				//æ›¸ãè¾¼ã¿ã‚’è¡Œã†ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ã€ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è¨­å®š
 				SetScreenFlipTargetWindow(window[0]);
 #endif
 				ScreenFlip();
 				Time::FixDrawFPS();
 				//============//
 			}
-			//PostDraw‚·‚é
+			//PostDrawã™ã‚‹
 			SceneManager::PostDraw();
 
 			Time::FixFPS();
@@ -217,11 +260,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		catch (Exception& ex) {
 			ex.Show();
-			break;
+			goto MAIN_LOOP;
+
 		}
 
 	}
-	//I—¹
+	//çµ‚äº†
 	try {
 		SceneManager::Exit();
 	}
@@ -238,25 +282,77 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	timeEndPeriod(1);
 	DxLib::DxLib_End();
+	std::ofstream f("data/tree.txt");
+	std::string start_scene = "SceneSample";
+	if (!f.fail()) {
+
+
+		auto& base_type = TypeInfo::Root();
+		const TypeInfo* p = base_type.Child();
+		bool            returnFromTraverse = false;
+		const TypeInfo* next = nullptr;
+		f << base_type.ClassName() << std::endl;
+		//----------------------------------------------------------
+		// ç¶™æ‰¿ãƒ„ãƒªãƒ¼æ§‹é€ ã‚’æ¢ç´¢
+		// ã‚¹ã‚¿ãƒƒã‚¯å†å¸°ã‚’ä½¿ã‚ãªã„é«˜é€Ÿãªãƒ„ãƒªãƒ¼æ¢ç´¢ (stackless tree traversal)
+		//----------------------------------------------------------
+		int nest = 0;
+		while (p && (p != &base_type)) {
+			if (!returnFromTraverse) {
+				for (int i = 0; i < nest; i++)
+					f << "|        " << std::flush;
+				f << "|-----" << p->ClassName() << std::endl;
+			}
+			if (p->Child() && !returnFromTraverse) {
+				// å­ãŒã‚ã‚‹å ´åˆã¯å­ã‚’å…ˆã«èª¿ã¹ã‚‹ã€‚(å­ã‹ã‚‰æ¢ç´¢ã§æˆ»ã£ã¦ããŸå ´åˆã¯é™¤å¤–)
+				nest++;
+				next = p->Child();
+				returnFromTraverse = false;
+			}
+			else if (p->Sibling()) {
+				// å…„å¼ŸãŒã„ã‚‹å ´åˆã¯å…„å¼Ÿã‚’èª¿ã¹ã‚‹
+				next = p->Sibling();
+				returnFromTraverse = false;
+			}
+			else {
+				// è¦ªã¸æˆ»ã‚‹ã€‚
+				next = p->Parent();
+				for (int i = 0; i < nest; i++)
+					f << "|        " << std::flush;
+				f << "end_of_node" << std::endl;
+				for (int i = 0; i < nest; i++)
+					f << "|        " << std::flush;
+				f << std::endl;
+				nest--;
+
+				returnFromTraverse = true;
+			}
+
+			p = next;
+		}
+		f.close();
+	}
+	system("pause");
 	return 0;
 }
 
+
 //---------------------------------------------------------------------------------
-//	“x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·‚·‚éŠÖ”
+//	åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›ã™ã‚‹é–¢æ•°
 //---------------------------------------------------------------------------------
 float TO_RADIAN(float degree)
 {
 	return degree * 3.14159265f / 180.0f;
 }
 //---------------------------------------------------------------------------------
-//	ƒ‰ƒWƒAƒ“‚ğ“x‚É•ÏŠ·‚·‚éŠÖ”
+//	ãƒ©ã‚¸ã‚¢ãƒ³ã‚’åº¦ã«å¤‰æ›ã™ã‚‹é–¢æ•°
 //---------------------------------------------------------------------------------
 float TO_DEGREE(float radian)
 {
 	return radian * 180.0f / 3.14159265f;
 }
 //---------------------------------------------------------------------------------
-//	‚w‚y•ûŒü‚É‰~‚ğ•`‰æ‚·‚é
+//	ï¼¸ï¼ºæ–¹å‘ã«å††ã‚’æç”»ã™ã‚‹
 //---------------------------------------------------------------------------------
 void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 {
@@ -280,7 +376,7 @@ void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 	}
 }
 //---------------------------------------------------------------------------------
-//	‚w‚y•ûŒü‚ÉlŠp‚ğ•`‰æ‚·‚é
+//	ï¼¸ï¼ºæ–¹å‘ã«å››è§’ã‚’æç”»ã™ã‚‹
 //---------------------------------------------------------------------------------
 void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fill)
 {
@@ -322,7 +418,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 	//==================================//
 
 
-// ƒfƒoƒbƒOƒEƒCƒ“ƒhƒE‚Ìì¬
+// ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	window_parameter.style = CS_HREDRAW | CS_VREDRAW;
 	window_parameter.lpfnWndProc = WndProc;
 	window_parameter.cbClsExtra = 0;
@@ -341,7 +437,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 
 	window = CreateWindow(
 		window_classname[0].c_str(),
-		"ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE",
+		"ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦",
 		WS_MINIMIZEBOX | WS_SYSMENU,
 		window_x * 0.5f, window_y * 0.5f, window_x, window_y,
 		NULL, NULL, hInstance, NULL

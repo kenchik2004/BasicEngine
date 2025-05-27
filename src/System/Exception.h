@@ -1,62 +1,63 @@
-#pragma once
+ï»¿#pragma once
 #define DEFAULT_EXCEPTION_PARAM __FILE__,__LINE__,__FUNCTION__
 #define INTEGER_NAME(integer) #integer
 
 
-//ƒfƒtƒHƒ‹ƒg‚Ì—áŠOŒŸ’m—pƒNƒ‰ƒX
+//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ä¾‹å¤–æ¤œçŸ¥ç”¨ã‚¯ãƒ©ã‚¹
 class Exception
 {
 public:
-	//ƒ}ƒNƒ DEFAULT_EXCEPTION_PARAM‚ðŽg—p‚µ‚Ä‰Šú‰»‚ª‚Å‚«‚é
-	//ˆø”F
-	//	ƒƒCƒ“ƒƒbƒZ[ƒW‚Ì“à—e
-	//	—áŠO‚ª”­¶‚µ‚½ƒtƒ@ƒCƒ‹‚Ì–¼‘O
-	//	—áŠO‚ª”­¶‚µ‚½s”Ô† 
-	//	—áŠO‚ª”­¶‚µ‚½ŠÖ”–¼
+	//ãƒžã‚¯ãƒ­ DEFAULT_EXCEPTION_PARAMã‚’ä½¿ç”¨ã—ã¦åˆæœŸåŒ–ãŒã§ãã‚‹
+	//å¼•æ•°ï¼š
+	//	ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å†…å®¹
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸè¡Œç•ªå· 
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸé–¢æ•°å
 	Exception(const char* main_message, const char* file_name, int line, const char* func_name);
 	void Show();
 protected:
+	bool is_assert = false;
 	Exception() {}
-	std::string message = "";//ÅI“I‚Éo—Í‚·‚éƒƒbƒZ[ƒW
+	std::string message = "";//æœ€çµ‚çš„ã«å‡ºåŠ›ã™ã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 };
 
-//nullptr‚Ö‚ÌƒAƒNƒZƒXŒŸ’m—p—áŠOƒNƒ‰ƒX
+//nullptrã¸ã®ã‚¢ã‚¯ã‚»ã‚¹æ¤œçŸ¥ç”¨ä¾‹å¤–ã‚¯ãƒ©ã‚¹
 class NullptrException :public Exception {
 public:
-	NullptrException() = delete;		//‹K’èƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìíœ
-	//ƒ}ƒNƒ@INTEGER_NAME ‚Æ DEFAULT_EXCEPTION_PARAM‚ðŽg—p‚µ‚Ä‰Šú‰»‚ª‚Å‚«‚é
-	//ˆø”F
-	//	ƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚½•Ï”–¼
-	//	—áŠO‚ª”­¶‚µ‚½ƒtƒ@ƒCƒ‹‚Ì–¼‘O
-	//	—áŠO‚ª”­¶‚µ‚½s”Ô† 
-	//	—áŠO‚ª”­¶‚µ‚½ŠÖ”–¼
+	NullptrException() = delete;		//è¦å®šã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å‰Šé™¤
+	//ãƒžã‚¯ãƒ­ã€€INTEGER_NAME ã¨ DEFAULT_EXCEPTION_PARAMã‚’ä½¿ç”¨ã—ã¦åˆæœŸåŒ–ãŒã§ãã‚‹
+	//å¼•æ•°ï¼š
+	//	ã‚¢ã‚¯ã‚»ã‚¹ã—ã‚ˆã†ã¨ã—ãŸå¤‰æ•°å
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸè¡Œç•ªå· 
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸé–¢æ•°å
 	NullptrException(const char* integer_name, const char* file_name, int line, const char* func_name);
 	NullptrException(const char* message_);
 };
 
-//”z—ñŠOƒAƒNƒZƒXŒŸ’m—p—áŠOƒNƒ‰ƒX
+//é…åˆ—å¤–ã‚¢ã‚¯ã‚»ã‚¹æ¤œçŸ¥ç”¨ä¾‹å¤–ã‚¯ãƒ©ã‚¹
 class OutOfRangeException :public Exception {
 public:
-	OutOfRangeException() = delete;		//‹K’èƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìíœ
-	//ƒ}ƒNƒ@INTEGER_NAME ‚Æ DEFAULT_EXCEPTION_PARAM‚ðŽg—p‚µ‚Ä‰Šú‰»‚ª‚Å‚«‚é
-	//ˆø”F
-	//	ƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚½ƒCƒ“ƒfƒbƒNƒX
-	//	ƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚½”z—ñ‚ÌƒTƒCƒY
-	//	ƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚½”z—ñ‚Ì–¼‘O
-	//	—áŠO‚ª”­¶‚µ‚½ƒtƒ@ƒCƒ‹‚Ì–¼‘O
-	//	—áŠO‚ª”­¶‚µ‚½s”Ô† 
-	//	—áŠO‚ª”­¶‚µ‚½ŠÖ”–¼
+	OutOfRangeException() = delete;		//è¦å®šã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å‰Šé™¤
+	//ãƒžã‚¯ãƒ­ã€€INTEGER_NAME ã¨ DEFAULT_EXCEPTION_PARAMã‚’ä½¿ç”¨ã—ã¦åˆæœŸåŒ–ãŒã§ãã‚‹
+	//å¼•æ•°ï¼š
+	//	ã‚¢ã‚¯ã‚»ã‚¹ã—ã‚ˆã†ã¨ã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	//	ã‚¢ã‚¯ã‚»ã‚¹ã—ã‚ˆã†ã¨ã—ãŸé…åˆ—ã®ã‚µã‚¤ã‚º
+	//	ã‚¢ã‚¯ã‚»ã‚¹ã—ã‚ˆã†ã¨ã—ãŸé…åˆ—ã®åå‰
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸè¡Œç•ªå· 
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸé–¢æ•°å
 	OutOfRangeException(int index, int array_size, const char* array_name, const char* file_name, int line, const char* func_name);
 };
-class MemoryLeakException :public Exception{
+class MemoryLeakException :public Exception {
 public:
-	MemoryLeakException() = delete;		//‹K’èƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìíœ
-	//ƒ}ƒNƒ@INTEGER_NAME ‚Æ DEFAULT_EXCEPTION_PARAM‚ðŽg—p‚µ‚Ä‰Šú‰»‚ª‚Å‚«‚é
-	//ˆø”F
-	//	‰ð•ú‚Å‚«‚È‚©‚Á‚½•Ï”‚Ì–¼‘O(‚Ü‚½‚ÍƒIƒuƒWƒFƒNƒgEƒRƒ“ƒ|[ƒlƒ“ƒg–¼)
-	//	—áŠO‚ª”­¶‚µ‚½ƒtƒ@ƒCƒ‹‚Ì–¼‘O
-	//	—áŠO‚ª”­¶‚µ‚½s”Ô† 
-	//	—áŠO‚ª”­¶‚µ‚½ŠÖ”–¼
+	MemoryLeakException() = delete;		//è¦å®šã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å‰Šé™¤
+	//ãƒžã‚¯ãƒ­ã€€INTEGER_NAME ã¨ DEFAULT_EXCEPTION_PARAMã‚’ä½¿ç”¨ã—ã¦åˆæœŸåŒ–ãŒã§ãã‚‹
+	//å¼•æ•°ï¼š
+	//	è§£æ”¾ã§ããªã‹ã£ãŸå¤‰æ•°ã®åå‰(ã¾ãŸã¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆå)
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸè¡Œç•ªå· 
+	//	ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸé–¢æ•°å
 	MemoryLeakException(const char* integer_name, const char* file_name, int line, const char* func_name);
 };
 

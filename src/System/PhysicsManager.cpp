@@ -5,22 +5,23 @@
 #include <System/Components/Collider.h>
 
 using namespace physx;
-
+// PhysXの初期化に必要なコールバック
+// メモリ確保用のコールバックでメモリの確保と解放を行う
 PxDefaultAllocator PhysicsManager::m_defaultAllocator;
-
+// エラー時用のコールバックでエラー内容が入ってる
 PxDefaultErrorCallback PhysicsManager::m_defaultErrorCallback;
-
+// 上位レベルのSDK(PxPhysicsなど)をインスタンス化する際に必要
 PxFoundation* PhysicsManager::m_pFoundation = nullptr;
-
+// 実際に物理演算を行う
 PxPhysics* PhysicsManager::m_pPhysics = nullptr;
-
+// シミュレーションをどう処理するかの設定でマルチスレッドの設定もできる
 PxDefaultCpuDispatcher* PhysicsManager::m_pDispatcher = nullptr;
-
+// PVDと通信する際に必要
 PxPvd* PhysicsManager::m_pPvd = nullptr;
-
+// シーンの配列
 std::vector<physx::PxScene*> PhysicsManager::scenes(0);
 
-
+// マテリアルのインスタンス
 physx::PxMaterial* Material::Metal_Default = nullptr;
 physx::PxMaterial* Material::Rubber_Default = nullptr;
 physx::PxMaterial* Material::Wood_Default = nullptr;
@@ -31,7 +32,9 @@ physx::PxMaterial* Material::Asphalt_Default = nullptr;
 physx::PxMaterial* Material::Wool_Default = nullptr;
 physx::PxMaterial* Material::Paper_Default = nullptr;
 
+// コールバッククラスのインスタンス
 HitCallBack hit_callback;
+
 
 PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	PxFilterData filterData0,
@@ -63,6 +66,8 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 
 	return PxFilterFlag::eDEFAULT;
 }
+
+
 void PhysicsManager::Init()
 {
 	if (!(m_pFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator, m_defaultErrorCallback))) {

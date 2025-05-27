@@ -1,113 +1,117 @@
-#pragma once
+ï»¿#pragma once
 namespace Time
 {
 
-#define MICRO2SEC(micro_sec) micro_sec*0.000001		//!< ƒ}ƒCƒNƒ•b -> •b‚Ö‚Ì•ÏŠ·ƒ}ƒNƒ
-#define SEC2MICRO(sec) sec*1000000					//!< •b -> ƒ}ƒCƒNƒ•b‚Ö‚Ì•ÏŠ·ƒ}ƒNƒ
-#define MILLI2SEC(micro_sec) micro_sec*0.001		//!< ƒ~ƒŠ•b -> •b‚Ö‚Ì•ÏŠ·ƒ}ƒNƒ 
-#define SEC2MILLI(sec) sec*1000						//!< •b -> ƒ~ƒŠ•b‚Ö‚Ì•ÏŠ·ƒ}ƒNƒ
+#define MICRO2SEC(micro_sec) micro_sec*0.000001		//!< ãƒã‚¤ã‚¯ãƒ­ç§’ -> ç§’ã¸ã®å¤‰æ›ãƒã‚¯ãƒ­
+#define SEC2MICRO(sec) sec*1000000					//!< ç§’ -> ãƒã‚¤ã‚¯ãƒ­ç§’ã¸ã®å¤‰æ›ãƒã‚¯ãƒ­
+#define MILLI2SEC(micro_sec) micro_sec*0.001		//!< ãƒŸãƒªç§’ -> ç§’ã¸ã®å¤‰æ›ãƒã‚¯ãƒ­ 
+#define SEC2MILLI(sec) sec*1000						//!< ç§’ -> ãƒŸãƒªç§’ã¸ã®å¤‰æ›ãƒã‚¯ãƒ­
 
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Init();
-	//XV
+	//æ›´æ–°
 	void Update();
-	//FPSXV
+	//FPSæ›´æ–°
 	void UpdateFPS();
 
 
-	//”ò‚Î‚µ(ŠÔ‚Ìã‘‚«‚È‚Ì‚Å‚ ‚Ü‚è‘½—p‚µ‚È‚¢‚Å‚­‚¾‚³‚¢)
+	//æ™‚é£›ã°ã—(æ™‚é–“ã®ä¸Šæ›¸ããªã®ã§ã‚ã¾ã‚Šå¤šç”¨ã—ãªã„ã§ãã ã•ã„)
 	void ResetTime();
 
 
-	//ˆ—‚ğw’èFPS‚ÉŒÅ’è
+	//å‡¦ç†ã‚’æŒ‡å®šFPSã«å›ºå®š
 	int FixFPS();
-	//•`‰æˆ—‚ÌŒo‰ßŠÔ‚ğ‰Šú‰»E•`‰æFPS‚ğŒv‘ª
+	//æç”»å‡¦ç†ã®çµŒéæ™‚é–“ã‚’åˆæœŸåŒ–ãƒ»æç”»FPSã‚’è¨ˆæ¸¬
 	void FixDrawFPS();
-	//•¨—ˆ—‚ÌŒo‰ßŠÔ‚ğXVE•¨—ˆ—‚ÌFPS‚ğŒv‘ª
+	//ç‰©ç†å‡¦ç†ã®çµŒéæ™‚é–“ã‚’æ›´æ–°ãƒ»ç‰©ç†å‡¦ç†ã®FPSã‚’è¨ˆæ¸¬
 	void FixFixedFPS();
 
 
-	//ƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ìæ“¾(float)
+	//ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—(float)
 	const float TimeScale();
-	//ƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ìæ“¾(double)
+	//ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—(double)
 	const double TimeScaleD();
 
-	//ƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ì•ÏX
+	//ã‚¿ã‚¤ãƒ ã‚¹ã‚±ãƒ¼ãƒ«ã®å¤‰æ›´
 	void SetTimeScale(const double scale);
 
 
-	//ƒQ[ƒ€“àƒ¢ŠÔ‚Ìæ“¾(float)
+	//ã‚²ãƒ¼ãƒ å†…Î”æ™‚é–“ã®å–å¾—(float)
 	const float DeltaTime();
-	//ƒQ[ƒ€“àƒ¢ŠÔ‚Ìæ“¾(double)
+	//ã‚²ãƒ¼ãƒ å†…Î”æ™‚é–“ã®å–å¾—(double)
 	const double DeltaTimeD();
-	//•`‰æ—pƒ¢ŠÔ‚Ìæ“¾(float)
+	//æç”»ç”¨Î”æ™‚é–“ã®å–å¾—(float)
 	const float DrawDeltaTime();
-	//•`‰æ—pƒ¢ŠÔ‚Ìæ“¾(double)
+	//æç”»ç”¨Î”æ™‚é–“ã®å–å¾—(double)
 	const double DrawDeltaTimeD();
-	//•¨——pƒ¢ŠÔ‚Ìæ“¾(float)
+	//ç‰©ç†ç”¨Î”æ™‚é–“ã®å–å¾—(float)
 	const float FixedDeltaTime();
-	//•¨——pƒ¢ŠÔ‚Ìæ“¾(double)
+	//ç‰©ç†ç”¨Î”æ™‚é–“ã®å–å¾—(double)
 	const double FixedDeltaTimeD();
-	//‘OƒtƒŒ[ƒ€‚Æ‚Ì•¨—“IŠÔ·‚Ìæ“¾(float)
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(float)
 	const float UnscaledDeltaTime();
-	//‘OƒtƒŒ[ƒ€‚Æ‚Ì•¨—“IŠÔ·‚Ìæ“¾(double)
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(double)
 	const double UnscaledDeltaTimeD();
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®å®Ÿéš›ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(float)
+	const float RealDeltaTime();
+	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã®å®Ÿéš›ã®ç‰©ç†çš„æ™‚é–“å·®ã®å–å¾—(double)
+	const float RealDeltaTimeD();
 
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚Ì•¨—“IŠÔ‚Ìæ“¾(float)
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ç‰©ç†çš„æ™‚é–“ã®å–å¾—(float)
 	const float SystemTimeFromStart();
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚Ì•¨—“IŠÔ‚Ìæ“¾(double)
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ç‰©ç†çš„æ™‚é–“ã®å–å¾—(double)
 	const double SystemTimeFromStartD();
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌƒQ[ƒ€“àŠÔ‚Ìæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ã‚²ãƒ¼ãƒ å†…æ™‚é–“ã®å–å¾—
 	const double GetTimeFromStart();
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJnŒã‚ÌŒ»ÀŠÔ‚Ìæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹å¾Œã®ç¾å®Ÿæ™‚é–“ã®å–å¾—
 	const double GetRealTimeFromStart();
 
-	//ƒVƒXƒeƒ€“àŠÔ‚Ìæ“¾(float)
+	//ã‚·ã‚¹ãƒ†ãƒ å†…æ™‚é–“ã®å–å¾—(float)
 	const float SystemTime();
-	//ƒVƒXƒeƒ€“àŠÔ‚Ìæ“¾(double)
+	//ã‚·ã‚¹ãƒ†ãƒ å†…æ™‚é–“ã®å–å¾—(double)
 	const double SystemTimeD();
-	//Windows‚©‚çæ“¾‚µ‚½Œ»İ(float)
+	//Windowsã‹ã‚‰å–å¾—ã—ãŸç¾åœ¨æ™‚åˆ»(float)
 	const float GetOSTime();
-	//Windows‚©‚çæ“¾‚µ‚½Œ»İ(double)
+	//Windowsã‹ã‚‰å–å¾—ã—ãŸç¾åœ¨æ™‚åˆ»(double)
 	const double GetOSTimeD();
 
 
-	//FPS‚ÌÅ‘å’l‚ğæ“¾(float)
+	//FPSã®æœ€å¤§å€¤ã‚’å–å¾—(float)
 	const float GetFPSMAX();
-	//FPS‚ÌÅ‘å’l‚ğæ“¾(double)
+	//FPSã®æœ€å¤§å€¤ã‚’å–å¾—(double)
 	const double GetFPSMAXD();
-	//•`‰æFPS‚ÌÅ‘å’l‚ğæ“¾(float)
+	//æç”»FPSã®æœ€å¤§å€¤ã‚’å–å¾—(float)
 	const float GetDrawFPSMAX();
-	//•`‰æFPS‚ÌÅ‘å’l‚ğæ“¾(double)
+	//æç”»FPSã®æœ€å¤§å€¤ã‚’å–å¾—(double)
 	const double GetDrawFPSMAXD();
 
-	//FPS‚ÌÅ‘å’l‚ğİ’è
+	//FPSã®æœ€å¤§å€¤ã‚’è¨­å®š
 	void SetFPSMAX(const double& max);
-	//•¨—XVFPS‚ÌÅ‘å’l‚ğİ’è
+	//ç‰©ç†æ›´æ–°FPSã®æœ€å¤§å€¤ã‚’è¨­å®š
 	void SetFixedFPSMAX(const double& max);
-	//•`‰æFPS‚ÌÅ‘å’l‚ğİ’è
+	//æç”»FPSã®æœ€å¤§å€¤ã‚’è¨­å®š
 	void SetDrawFPSMAX(const double& max);
 
 
-	//•¨—ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(float)
+	//ç‰©ç†Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(float)
 	const float GetFixedDeltaTimeMAX();
-	//•¨—ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(double)
+	//ç‰©ç†Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(double)
 	const double GetFixedDeltaTimeMAXD();
-	//•`‰æƒ¢ŠÔ‚ÌÅ‘å’læ“¾(float)
+	//æç”»Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(float)
 	const float GetDrawDeltaTimeMAX();
-	//•`‰æƒ¢ŠÔ‚ÌÅ‘å’læ“¾(double)
+	//æç”»Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(double)
 	const double GetDrawDeltaTimeMAXD();
-	//ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(float)
+	//Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(float)
 	const float GetDeltaTimeMAX();
-	//ƒ¢ŠÔ‚ÌÅ‘å’læ“¾(double)
+	//Î”æ™‚é–“ã®æœ€å¤§å€¤å–å¾—(double)
 	const double GetDeltaTimeMAXD();
 
 
-	//FPS‚Ìæ“¾(float)
+	//FPSã®å–å¾—(float)
 	const float GetFPS();
-	//FPS‚Ìæ“¾(double)
+	//FPSã®å–å¾—(double)
 	const double GetFPSD();
 };
 

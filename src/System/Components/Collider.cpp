@@ -1,4 +1,4 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "Collider.h"
 #include <System/Components/RigidBody.h>
 #include <System/Components/ModelRenderer.h>
@@ -57,15 +57,16 @@ PxTransform Collider::MakeCollisionTransform()
 	Vector3 pos = { 0,0,0 };
 	Quaternion rot = { 0,0,0,1 };
 	auto model = owner.lock()->GetComponent<ModelRenderer>();
-	if (attach_to_model && model) {
-		float3 frame_pos = MV1GetFramePosition(model->model.handle, model_attach_index);
-		mat4x4 frame_mat = MV1GetFrameLocalWorldMatrix(model->model.handle, model_attach_index, true);
-		physx::PxTransform t(frame_mat);
-		frame_pos -= owner.lock()->transform->position;
-		Quaternion q = Inverse(owner.lock()->transform->rotation);
-		pos = q.rotate(frame_pos);
-		rot = q * t.q;
-	}
+	if (model->IsLoaded())
+		if (attach_to_model && model) {
+			float3 frame_pos = MV1GetFramePosition(model->GetModelHandle(), model_attach_index);
+			mat4x4 frame_mat = MV1GetFrameLocalWorldMatrix(model->GetModelHandle(), model_attach_index, true);
+			physx::PxTransform t(frame_mat);
+			frame_pos -= owner.lock()->transform->position;
+			Quaternion q = Inverse(owner.lock()->transform->rotation);
+			pos = q.rotate(frame_pos);
+			rot = q * t.q;
+		}
 	rot *= rotation;
 	pos += rot.rotate(position);
 	return physx::PxTransform(pos, rot);

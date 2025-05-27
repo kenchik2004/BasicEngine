@@ -1,4 +1,4 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "PlaneObject.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/ModelRenderer.h"
@@ -16,7 +16,7 @@ int PlaneObject::Init()
 	col = capsule;
 	rb.lock()->freeze_rotation = { 1,1,1 };
 	model = AddComponent<ModelRenderer>();
-	model.lock()->Load("data/aircraft.mv1", "aircraft");
+	model.lock()->SetModel("aircraft");
 	model.lock()->scale = { 0.0002f,0.0002f,0.0002f };
 	model.lock()->rot = Quaternion(DEG2RAD(180), { 0,1,0 });
 	transform->position = { 0,5,0 };
@@ -56,42 +56,42 @@ void PlaneObject::Update()
 	Vector3 velocityDir = velocity.getNormalized();
 	float angleOfAttack = physx::PxAcos(velocityDir.dot(forwardDir));
 	float slipAngle = physx::PxAcos(velocityDir.dot(forwardDir));
-	// —g—Í‚ÌŒvŽZ
+	// æšåŠ›ã®è¨ˆç®—
 	float airDensity = 1.225f;
 	float wingArea = 0.2f;
 	float maxLiftCoeff = 1.0f;
-	float liftCoeff = physx::PxSin(angleOfAttack) * maxLiftCoeff; // AoA‚ÉŠî‚Ã‚­—g—ÍŒW”
+	float liftCoeff = physx::PxSin(angleOfAttack) * maxLiftCoeff; // AoAã«åŸºã¥ãæšåŠ›ä¿‚æ•°
 	float liftForce = 0.5f * airDensity * wingArea * liftCoeff * velocity.magnitude();
 
-	// **—g—ÍƒxƒNƒgƒ‹**
+	// **æšåŠ›ãƒ™ã‚¯ãƒˆãƒ«**
 	Vector3 lift = upDir * liftForce;
 
-	// **‘O•û„i¬•ª‚ð’Šo**
-	float forwardComponent = upDir.dot(forwardDir); // —g—Í‚Ì‚¤‚¿A‘O•û‚ÖŒü‚©‚¤Š„‡
-	Vector3 forwardThrust = forwardDir * (liftForce * forwardComponent); // „i—Í‚Æ‚µ‚Ä“K—p
+	// **å‰æ–¹æŽ¨é€²æˆåˆ†ã‚’æŠ½å‡º**
+	float forwardComponent = upDir.dot(forwardDir); // æšåŠ›ã®ã†ã¡ã€å‰æ–¹ã¸å‘ã‹ã†å‰²åˆ
+	Vector3 forwardThrust = forwardDir * (liftForce * forwardComponent); // æŽ¨é€²åŠ›ã¨ã—ã¦é©ç”¨
 
-	float sideDragCoeff = 1.0f; // ‰¡ŠŠ‚è—}§‚Ì‹­‚³i’²®—pj
+	float sideDragCoeff = 1.0f; // æ¨ªæ»‘ã‚ŠæŠ‘åˆ¶ã®å¼·ã•ï¼ˆèª¿æ•´ç”¨ï¼‰
 
-	// ‰¡•ûŒü‚Ì‘¬“x¬•ª‚ðŽæ“¾
+	// æ¨ªæ–¹å‘ã®é€Ÿåº¦æˆåˆ†ã‚’å–å¾—
 	Vector3 lateralVelocity = velocity - (forwardDir * velocity.dot(forwardDir));
 
-	// ‰¡ŠŠ‚è‚ð—}‚¦‚éR—Í‚ð‰Á‚¦‚é
+	// æ¨ªæ»‘ã‚Šã‚’æŠ‘ãˆã‚‹æŠ—åŠ›ã‚’åŠ ãˆã‚‹
 	Vector3 sideDrag = -lateralVelocity * (slipAngle * sideDragCoeff);
 	float dragCoeff = 1.8f;
-	float angleBetween = physx::PxAcos(physx::PxClamp(forwardDir.dot(velocityDir), -1.0f, 1.0f)); // ƒ‰ƒWƒAƒ“
+	float angleBetween = physx::PxAcos(physx::PxClamp(forwardDir.dot(velocityDir), -1.0f, 1.0f)); // ãƒ©ã‚¸ã‚¢ãƒ³
 
-	// **‹ó‹C’ïR‚ÌŒvŽZ**
-	float baseDrag = 0.000002f;             // ’ïR‚ÌŠî‘b’li¬‚³‚¢’lj
-	float dragFactor = 0.001f;           // Šp“x‚É‚æ‚é‰e‹¿‚Ì‘å‚«‚³i’²®‰Â”\j
-	float dragCoefficient = baseDrag + physx::PxSin(angleBetween) * dragFactor; // Šp“x‚ª‘å‚«‚¢‚Ù‚Ç’ïR‚ª‘‚·
-	Vector3 dragForce = -velocity * dragCoefficient * velocity.magnitude(); // ‘¬“x‚É”ä—á‚µ‚½’ïR
+	// **ç©ºæ°—æŠµæŠ—ã®è¨ˆç®—**
+	float baseDrag = 0.000002f;             // æŠµæŠ—ã®åŸºç¤Žå€¤ï¼ˆå°ã•ã„å€¤ï¼‰
+	float dragFactor = 0.001f;           // è§’åº¦ã«ã‚ˆã‚‹å½±éŸ¿ã®å¤§ãã•ï¼ˆèª¿æ•´å¯èƒ½ï¼‰
+	float dragCoefficient = baseDrag + physx::PxSin(angleBetween) * dragFactor; // è§’åº¦ãŒå¤§ãã„ã»ã©æŠµæŠ—ãŒå¢—ã™
+	Vector3 dragForce = -velocity * dragCoefficient * velocity.magnitude(); // é€Ÿåº¦ã«æ¯”ä¾‹ã—ãŸæŠµæŠ—
 
-	// —Í‚ð“K—p
-	rb.lock()->AddForce(lift, Force); // —g—Í
+	// åŠ›ã‚’é©ç”¨
+	rb.lock()->AddForce(lift, Force); // æšåŠ›
 	//rb.lock()->AddForce(sideDrag, Acceleration);
 	rb.lock()->AddForce(dragForce, Acceleration);
-	rb.lock()->AddForce(forwardThrust, Force); // ‘O•û„i—Í
-	rb.lock()->AddForce(forwardDir * speed, Force); // ‘O•û„i—Í
+	rb.lock()->AddForce(forwardThrust, Force); // å‰æ–¹æŽ¨é€²åŠ›
+	rb.lock()->AddForce(forwardDir * speed, Force); // å‰æ–¹æŽ¨é€²åŠ›
 
 
 }
@@ -105,8 +105,8 @@ void PlaneObject::PreDraw()
 
 void PlaneObject::LateDraw()
 {
-	DrawFormatString(0, 0, RED, "ƒGƒ“ƒWƒ“„—Í: %.1f %", speed / SPEED_MAX * 100.0f);
-	DrawFormatString(0, 24, RED, "‘Î’n‘¬“x: %.1f km/h", rb.lock()->velocity.magnitude());
+	DrawFormatString(0, 0, Color::RED, "ã‚¨ãƒ³ã‚¸ãƒ³æŽ¨åŠ›: %.1f %", speed / SPEED_MAX * 100.0f);
+	DrawFormatString(0, 24, Color::RED, "å¯¾åœ°é€Ÿåº¦: %.1f km/h", rb.lock()->velocity.magnitude());
 }
 
 void PlaneObject::OnCollisionEnter(const HitInfo& hit_info)

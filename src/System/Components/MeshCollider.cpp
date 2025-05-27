@@ -1,4 +1,4 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "System/Components/RigidBody.h"
 #include "MeshCollider.h"
 #include "System/Components/ModelRenderer.h"
@@ -22,6 +22,8 @@ int MeshCollider::Init()
 
 void MeshCollider::PrePhysics()
 {
+	if (!shape)
+		return;
 	rigidbody.lock()->GetBody()->detachShape(*shape);
 
 	PxTransform trns = MakeCollisionTransform();
@@ -36,24 +38,33 @@ void MeshCollider::PrePhysics()
 
 void MeshCollider::DebugDraw()
 {
+	if (!ref_poly_)
+		return;
+
 	auto trns = rigidbody.lock()->GetBody()->getGlobalPose();
-	for (int i = 0; i < ref_poly_.PolygonNum; i++) {
-		Vector3 p0 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[0]].Position) * owner.lock()->transform->scale.x;
-		Vector3 p1 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[1]].Position) * owner.lock()->transform->scale.x;
-		Vector3 p2 = cast(ref_poly_.Vertexs[ref_poly_.Polygons[i].VIndex[2]].Position) * owner.lock()->transform->scale.x;
+	for (int i = 0; i < ref_poly_->PolygonNum; i++) {
+		Vector3 p0 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[0]].Position) * owner.lock()->transform->scale.x;
+		Vector3 p1 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[1]].Position) * owner.lock()->transform->scale.x;
+		Vector3 p2 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[2]].Position) * owner.lock()->transform->scale.x;
 		p0 = trns.q.rotate(p0);
 		p1 = trns.q.rotate(p1);
 		p2 = trns.q.rotate(p2);
 		p0 += trns.p;
 		p1 += trns.p;
 		p2 += trns.p;
-		// ƒ|ƒŠƒSƒ“‚ğŒ`¬‚·‚éO’¸“_‚ğg—p‚µ‚ÄƒƒCƒ„[ƒtƒŒ[ƒ€‚ğ•`‰æ‚·‚é
-		DrawLine3D(cast(p0), cast(p1), RED);
+		// ãƒãƒªã‚´ãƒ³ã‚’å½¢æˆã™ã‚‹ä¸‰é ‚ç‚¹ã‚’ä½¿ç”¨ã—ã¦ãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æç”»ã™ã‚‹
+		DrawLine3D(cast(p0), cast(p1), Color::RED);
 
-		DrawLine3D(cast(p1), cast(p2), RED);
+		DrawLine3D(cast(p1), cast(p2), Color::RED);
 
-		DrawLine3D(cast(p2), cast(p0), RED);
+		DrawLine3D(cast(p2), cast(p0), Color::RED);
 	}
+}
+
+void MeshCollider::Update()
+{
+	if (model.lock() && !attached)
+		AttachToModel();
 }
 
 void MeshCollider::AttachToModel()
@@ -62,68 +73,19 @@ void MeshCollider::AttachToModel()
 		model = owner.lock()->GetComponent<ModelRenderer>();
 	if (attached || !model.lock() || !rigidbody.lock())
 		return;
+	if (!model.lock()->IsLoaded())
+		return;
+
+
 
 	try {
-		PxCookingParams params(PhysicsManager::GetPhysicsInstance()->getTolerancesScale());
-		params.midphaseDesc = PxMeshMidPhase::eBVH34;
-		int handle = model.lock()->model.handle;
-		MV1SetupReferenceMesh(handle, -1, false);
-		ref_poly_ = MV1GetReferenceMesh(handle, -1, false);
-		PxTriangleMeshDesc desc;
-		int meshNum = MV1GetMeshNum(handle);
-		// ’¸“_ƒf[ƒ^æ“¾
-		std::vector<PxVec3> vertices;
-		for (int i = 0; i < ref_poly_.VertexNum; i++) {
-			VECTOR vertex = ref_poly_.Vertexs[i].Position;
-			vertices.push_back(Vector3(vertex.x, vertex.y, vertex.z));
-
-		}
-
-		desc.points.count = static_cast<PxU32>(vertices.size());
-		desc.points.stride = sizeof(Vector3);
-		desc.points.data = vertices.data();
-
-		// ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^æ“¾
-		std::vector<PxU32> indices;
-		for (int i = 0; i < ref_poly_.PolygonNum; i++) {
-			PxU32 idx0 = ref_poly_.Polygons[i].VIndex[0];
-			PxU32 idx1 = ref_poly_.Polygons[i].VIndex[1];
-			PxU32 idx2 = ref_poly_.Polygons[i].VIndex[2];
-
-			indices.push_back(idx0);
-			indices.push_back(idx1);
-			indices.push_back(idx2);
-		}
-
-		desc.triangles.count = ref_poly_.PolygonNum;
-		desc.triangles.stride = sizeof(PxU32) * 3;
-		desc.triangles.data = indices.data();
-		desc.flags = PxMeshFlags();
-
-#ifndef NDEBUG
-		if (!desc.isValid())
-			throw(Exception("ERROR!!DESC_INVALID", DEFAULT_EXCEPTION_PARAM));
-#endif
-
-		PxDefaultMemoryOutputStream write_buffer;
-		bool status{ PxCookTriangleMesh(params,desc, write_buffer) };
-#ifndef NDEBUG
-		if (!status)
-			throw(Exception("ERROR!!STATUS_INVALID", DEFAULT_EXCEPTION_PARAM));
-#endif
-
-		PxDefaultMemoryInputData read_buffer(write_buffer.getData(), write_buffer.getSize());
-		PxTriangleMesh* triangle_mesh{ PhysicsManager::GetPhysicsInstance()->createTriangleMesh(read_buffer) };
-
-#ifndef NDEBUG
-		if (!triangle_mesh)
-			throw(Exception("ERROR!!MESH_INVALID", DEFAULT_EXCEPTION_PARAM));
-#endif
-
-
+		auto triangle_mesh = model.lock()->model->GetTriangleMesh();
+		ref_poly_ = model.lock()->model->GetPolygon();
 		mesh.triangleMesh = triangle_mesh;
+		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Concrete_Default);
+		if (!shape)
+			throw(Exception("ãƒˆãƒ©ã‚¤ã‚¢ãƒ³ã‚°ãƒ«ãƒ¡ãƒƒã‚·ãƒ¥ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ãŒç„¡åŠ¹ã§ã™ã€‚ãƒ¢ãƒ‡ãƒ«ãŒæœ‰åŠ¹ãªã‚‚ã®ã‹å†ç¢ºèªã—ã¦ãã ã•ã„", DEFAULT_EXCEPTION_PARAM));
 
-		shape = { PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Concrete_Default) };
 		shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 		rigidbody.lock()->GetBody()->attachShape(*shape);
 	}
@@ -132,4 +94,9 @@ void MeshCollider::AttachToModel()
 		return;
 	}
 	attached = true;
+}
+
+void MeshCollider::Exit()
+{
+	Super::Exit();
 }

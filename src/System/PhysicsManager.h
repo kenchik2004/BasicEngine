@@ -1,8 +1,6 @@
 #pragma once
 class PhysicsManager
 {
-	//PhysX　コピペソース
-//===============================================//
 	static physx::PxDefaultAllocator m_defaultAllocator;
 	// エラー時用のコールバックでエラー内容が入ってる
 	static physx::PxDefaultErrorCallback m_defaultErrorCallback;
@@ -16,8 +14,12 @@ class PhysicsManager
 	static physx::PxPvd* m_pPvd;
 	static std::vector<physx::PxScene*> scenes;
 public:
+
+
 	static void Init();
+
 	static void Exit();
+
 	static physx::PxScene* AddScene();
 	static void ReleaseScene(physx::PxScene* scene_);
 	inline static physx::PxPhysics* GetPhysicsInstance() { return m_pPhysics; }
@@ -29,6 +31,7 @@ public:
 	ColliderP collision = nullptr;
 	ColliderP hit_collision = nullptr;
 };
+
 class HitCallBack : public physx::PxSimulationEventCallback {
 
 	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
@@ -40,6 +43,8 @@ class HitCallBack : public physx::PxSimulationEventCallback {
 	void onSleep(physx::PxActor**, physx::PxU32) override {}
 	void onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, physx::PxU32) override {}
 };
+
+
 struct Material {
 	static physx::PxMaterial* Metal_Default;
 	static physx::PxMaterial* Rubber_Default;

@@ -1,9 +1,9 @@
 #pragma once
 #include "Scene.h"
 class DontDestroyOnLoadScene :
-    public Scene
+	public Scene
 {
 public:
-   void DontDestroyOnLoad(ObjBaseP object,SceneP from_where);
+	void DontDestroyOnLoad(ObjBaseP object, SceneP from_where);
 };
 

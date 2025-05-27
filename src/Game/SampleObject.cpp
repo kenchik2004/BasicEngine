@@ -1,12 +1,13 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "SampleObject.h"
 #include "System/Components/RigidBody.h"
 #include <System/Components/Collider.h>
 #include <System/Components/CapsuleCollider.h>
 #include <System/Components/BoxCollider.h>
 #include <System/Components/ModelRenderer.h>
+#include <System/Components/Animator.h>
 #include <Game/SampleAttack.h>
-
+#include <System\Components\AudioListener.h>
 
 
 float anim_time = 0;
@@ -16,13 +17,18 @@ int SampleObject::Init()
 {
 	transform->SetPosition(float3(0, 0, 5));
 	auto model = AddComponent<ModelRenderer>();
+	model->SetModel("man");
 	model->rot = Quaternion(DEG2RAD(180), Vector3(0, 1, 0));
-	model->Load("data/model.mv1", "model_1");
 	model->scale = { 0.01f,0.01f,0.01f };
-	model->SetAnimation("data/anim_walk.mv1", "walk", 1);
-	model->SetAnimation("data/anim_stand.mv1", "stand", 1);
-	model->SetAnimation("data/anim_punch.mv1", "punch", 0);
-	model->PlayAnimationNoSame("stand");
+	auto animator = AddComponent<Animator>();
+	auto stand = ModelManager::CloneAnimByName("stand", 1);
+	auto&& lambda = [=]() {
+		animator->Play("punch"); };
+	stand->SetCallBack(std::move(lambda), 60, "p");
+	animator->SetAnimation(stand);
+	animator->SetAnimation("walk", 1);
+	animator->SetAnimation("punch", 0);
+	animator->PlayIfNoSame("stand");
 
 	AddComponent<RigidBody>()->freeze_rotation = { 1, 1, 1 };
 	auto col = AddComponent<CapsuleCollider>();
@@ -30,7 +36,7 @@ int SampleObject::Init()
 	col->radius = 0.3f;
 	col->rotation = Quaternion(DEG2RAD(90), Vector3(0, 0, 1));
 	col->position = Vector3(0.5f, 0, 0);
-
+	AddComponent<AudioListener>();
 
 	return 0;
 }
@@ -48,19 +54,22 @@ void SampleObject::Update()
 	if (Input::CheckHitKey(KEY_INPUT_A))
 		velocity_factor -= transform->AxisX();
 	if (Input::CheckHitKey(KEY_INPUT_LEFT))
-		transform->AddRotation(Quaternion(DEG2RAD(-120 * Time::DeltaTime()), Vector3(0, 1, 0)));
+		transform->AddRotation(Vector3(0, -45 * Time::DeltaTime(), 0));
 	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
-		transform->AddRotation(Quaternion(DEG2RAD(120 * Time::DeltaTime()), Vector3(0, 1, 0)));
-	velocity_factor = velocity_factor.normalized() * 2.5f;
+		transform->AddRotation(Vector3(0, 45 * Time::DeltaTime(), 0));
+
+	velocity_factor = velocity_factor.normalized() * 10;
 	velocity_factor.y = GetComponent<RigidBody>()->velocity.y;
+	if (Input::PushHitKey(KEY_INPUT_SPACE))
+		velocity_factor.y = 5;
 	GetComponent<RigidBody>()->velocity = velocity_factor;
 
 	if (Input::PushHitKey(KEY_INPUT_SPACE) && !GetComponent<SampleAttack>()) {
- 		AddComponent<SampleAttack>();
+		AddComponent<SampleAttack>();
 	}
-	if (auto model = GetComponent<ModelRenderer>()) {
+	if (auto model = GetComponent<Animator>()) {
 		if (!model->IsPlaying())
-			model->PlayAnimationNoSame("stand", true);
+			model->PlayIfNoSame("stand", true);
 	}
 
 }
@@ -77,8 +86,8 @@ void SampleObject::Draw()
 
 void SampleObject::PreDraw()
 {
-	SetCameraNearFar(0.1f, 3000.0f);
-	SetupCamera_Perspective(TO_RADIAN(45.0f));
+	//SetCameraNearFar(0.1f, 3000.0f);
+	//SetupCamera_Perspective(TO_RADIAN(45.0f));
 	SetCameraPositionAndTargetAndUpVec(float3(transform->position + Vector3(0, 1.6f, 0) - transform->AxisZ() * 0.05f), float3(transform->position + Vector3(0, 1.6f, 0) + transform->AxisZ()), float3(transform->AxisY()));
 }
 void SampleObject::PrePhysics()
@@ -95,6 +104,8 @@ void SampleObject::PostPhysics()
 void SampleObject::DebugDraw()
 {
 
+
+	color = Color(255, 255, 0);
 	DrawSphere3D(cast(transform->position), 0.5f, 8, color, color, true);
 
 }
@@ -111,7 +122,7 @@ void SampleObject::OnCollisionEnter(const HitInfo& hit_info)
 
 void SampleObject::OnTriggerEnter(const HitInfo& hit_info)
 {
-	color = YELLOW;
+	color = Color::YELLOW;
 	if (auto atk = GetComponent<SampleAttack>())
 		atk->OnTriggerEnter(hit_info);
 }

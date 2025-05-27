@@ -1,8 +1,11 @@
-#pragma once
+ï»¿#pragma once
+#include "System/Color.h"
+#include "source_location"
+#include <any>
 
-#define PI 3.1415926535f			//‰~ü—¦
-#define DEG2RAD(deg) deg*PI/180		//ƒIƒCƒ‰[Šp->ƒ‰ƒWƒAƒ“Šp‚Ì•ÏŠ·
-#define RAD2DEG(rad) rad*180/PI		//ƒ‰ƒWƒAƒ“Šp->ƒIƒCƒ‰[Šp‚Ì•ÏŠ·
+#define PI 3.1415926535f			//å††å‘¨ç‡
+#define DEG2RAD(deg) deg*PI/180		//ã‚ªã‚¤ãƒ©ãƒ¼è§’->ãƒ©ã‚¸ã‚¢ãƒ³è§’ã®å¤‰æ›
+#define RAD2DEG(rad) rad*180/PI		//ãƒ©ã‚¸ã‚¢ãƒ³è§’->ã‚ªã‚¤ãƒ©ãƒ¼è§’ã®å¤‰æ›
 
 
 #define NON_COPYABLE(CLASS)										\
@@ -18,7 +21,7 @@
 					NON_COPYABLE;													\
 					static CLASS* instance(){static CLASS class_; return &class_;}	\
 
-//ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^‚ğg—p‚·‚é‚½‚ß‚Ìƒ}ƒNƒ
+//ã‚¹ãƒãƒ¼ãƒˆãƒã‚¤ãƒ³ã‚¿ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã®ãƒã‚¯ãƒ­
 #define USING_PTR(CLASS)                                        \
     class CLASS;                                                \
     using CLASS##P          = SafeSharedPtr<CLASS>;           \
@@ -37,96 +40,158 @@ using Vector4 = physx::PxVec4;
 using Quaternion = physx::PxQuat;
 using mat3x3 = physx::PxMat33;
 using mat4x4 = physx::PxMat44;
-
+#if 1
 class TypeInfo {
 public:
-	TypeInfo(std::string name, size_t size, TypeInfo* parent_info) {
-		class_name = name;
+	TypeInfo(std::string_view name, size_t size, TypeInfo* parent_info) {
+
+		child = nullptr;
+		sibling = nullptr;
+		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®ä¿å­˜
+		auto ite = name.find("class");
+		if (ite != name.npos)
+			class_name = &name.data()[6];
+		else if (ite = name.find("struct"); ite != class_name.npos)
+			class_name = &name.data()[7];
+		else
+			class_name = name;
 		class_size = size;
-		if (parent_info == nullptr)
-			parent_info = &Root;
+
+		//----------------------------------------------------------
+		// ç¶™æ‰¿ãƒ„ãƒªãƒ¼æ§‹é€ ã®æ§‹ç¯‰
+		//----------------------------------------------------------
+		if (parent_info == nullptr && strcmp(class_name.c_str(), "root")) {    // "root"ã§ã¯ãªã„
+			parent_info = &TypeInfo::Root();                            // åŸºåº•ã‚¯ãƒ©ã‚¹ã¯ãƒ«ãƒ¼ãƒˆã«æ¥ç¶šã™ã‚‹
+		}
+
 		parent = parent_info;
+		if (parent_info) {
+			auto child = parent_info->Child();
+			// è¦ªã‚¯ãƒ©ã‚¹ã®å­ãŒã‚ã£ãŸå ´åˆã¯è¿½åŠ ç™»éŒ²ã€å­ãŒä¸€ã¤ã‚‚ãªã„å ´åˆã¯æ–°è¦ç™»éŒ²
+			if (child) {
+				sibling = child;
+			}
+			parent_info->child = this;
+		}
+	}
+	//  ã‚¯ãƒ©ã‚¹åã‚’å–å¾—
+	std::string_view ClassName() const;
+	//  ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ(ã‚¯ãƒ©ã‚¹ã‚’newã—ã¦ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™)
+	template <class T, class...Args> void* CreateInstance(Args&&...args) const;
+	//  ã‚¯ãƒ©ã‚¹ã®ã‚µã‚¤ã‚ºã‚’å–å¾—
+	size_t ClassSize() const;
+	//  è¦ªãƒãƒ¼ãƒ‰ã‚’å–å¾—
+//! @return ãƒãƒ¼ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿ (å­˜åœ¨ã—ãªã„å ´åˆã¯nullptr)
+	const TypeInfo* Parent() const;
+	const TypeInfo* Child() const;
+	const TypeInfo* Sibling() const;
+	static inline TypeInfo& Root() {
+
+		static TypeInfo root("root", sizeof(TypeInfo), nullptr);
+		return root;
 
 	}
-	//  ƒNƒ‰ƒX–¼‚ğæ“¾
-	const char* ClassName() const;
-	//  ƒNƒ‰ƒX‚ÌƒTƒCƒY‚ğæ“¾
-	size_t ClassSize() const;
-	//  eƒm[ƒh‚ğæ“¾
-//! @return ƒm[ƒh‚Ö‚Ìƒ|ƒCƒ“ƒ^ (‘¶İ‚µ‚È‚¢ê‡‚Ínullptr)
-	const TypeInfo* Parent() const;
 private:
-
 	std::string class_name;
 	size_t class_size = 0;
-	TypeInfo* parent = nullptr;
+	const TypeInfo* parent;
+	const TypeInfo* child;
+	const TypeInfo* sibling;
 public:
-	static TypeInfo Root;
 
 };
+#endif
+
+
 
 template <class T>
 class ClassTypeInfo :public TypeInfo {
 public:
-	ClassTypeInfo(std::string name, TypeInfo* parent_info = nullptr)
+	ClassTypeInfo(const char* name, TypeInfo* parent_info = nullptr)
 		:TypeInfo(name, sizeof(T), parent_info)
 	{
 	}
+
 };
 class Class {
 public:
-	static inline TypeInfo& info = TypeInfo::Root;
+	static inline TypeInfo& info = TypeInfo::Root();
 	inline virtual TypeInfo* Info() { return static_cast<TypeInfo*>(&info); }
 };
 
 
+//! ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆã‚¯ãƒ©ã‚¹
+template <typename T, bool is_abstract = std::is_abstract<T>::value, class...Args>
+class CreateInstance
+{
+public:
+	static void* create(Args&&...args) { return new T(std::forward<Args>(args)...); }
+};
 
+//! æŠ½è±¡ã‚¯ãƒ©ã‚¹ã®å ´åˆã¯newã§ããªã„ãŸã‚nullptrã‚’è¿”ã™ç‰¹æ®ŠåŒ–  
+template <typename T, class... Args>
+class CreateInstance<T, true, Args...>
+{
+public:
+	static void* create() { return nullptr; }
+
+};
+
+#if 1
 #define USING_SUPER(CLASS)																					\
 		using Super = Class;																				\
 		using Class = CLASS;																				\
-static inline ClassTypeInfo<CLASS> info=ClassTypeInfo<CLASS>(#CLASS,&Super::info);							\
-inline virtual TypeInfo* Info() {return static_cast<TypeInfo*>(&info);};									\
+	    /*! ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ(ã‚¯ãƒ©ã‚¹ã‚’newã—ã¦ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™)*/														 \
+	    template <class...Args>static CLASS* createInstance(Args&&...args)                                                                            \
+	    {                                                                                                        \
+	        return static_cast<CLASS*>(CreateInstance<CLASS,std::is_abstract<CLASS>::value,Args...>::create(std::forward<Args>(args)...));  \
+	    };																											\
+		static inline const char* Name() {return typeid(CLASS).name();};											\
+		static inline ClassTypeInfo<CLASS> info=ClassTypeInfo<CLASS>(Name(),&Super::info);							\
+		inline virtual TypeInfo* Info() {return static_cast<TypeInfo*>(&info);};									\
+
+#endif
 
 
-using s8 = int8_t;      //!<  8bit •„†‚ ‚è®”
-using s16 = int16_t;     //!< 16bit •„†‚ ‚è®”
-using s32 = int32_t;     //!< 32bit •„†‚ ‚è®”
-using s64 = int64_t;     //!< 64bit •„†‚ ‚è®”
-using u8 = uint8_t;     //!<  8bit •„†‚È‚µ®”
-using u16 = uint16_t;    //!< 16bit •„†‚È‚µ®”
-using u32 = uint32_t;    //!< 32bit •„†‚È‚µ®”
-using u64 = uint64_t;    //!< 64bit •„†‚È‚µ®”
-using f32 = float;       //!< ’P¸“x•‚“®¬”“_”
-using f64 = double;      //!< ”{¸“x•‚“®¬”“_”
+using s8 = int8_t;      //!<  8bit ç¬¦å·ã‚ã‚Šæ•´æ•°
+using s16 = int16_t;     //!< 16bit ç¬¦å·ã‚ã‚Šæ•´æ•°
+using s32 = int32_t;     //!< 32bit ç¬¦å·ã‚ã‚Šæ•´æ•°
+using s64 = int64_t;     //!< 64bit ç¬¦å·ã‚ã‚Šæ•´æ•°
+using u8 = uint8_t;     //!<  8bit ç¬¦å·ãªã—æ•´æ•°
+using u16 = uint16_t;    //!< 16bit ç¬¦å·ãªã—æ•´æ•°
+using u32 = uint32_t;    //!< 32bit ç¬¦å·ãªã—æ•´æ•°
+using u64 = uint64_t;    //!< 64bit ç¬¦å·ãªã—æ•´æ•°
+using f32 = float;       //!< å˜ç²¾åº¦æµ®å‹•å°æ•°ç‚¹æ•°
+using f64 = double;      //!< å€ç²¾åº¦æµ®å‹•å°æ•°ç‚¹æ•°
 
 
-//ƒXƒe[ƒ^ƒXŠÇ——pƒrƒbƒg‰‰Zƒeƒ“ƒvƒŒ[ƒg
+//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ç®¡ç†ç”¨ãƒ“ãƒƒãƒˆæ¼”ç®—ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
 template <class T, class V = u32> struct SBit {
 	enum struct Bits : V
 	{
 	};
 
-	inline V on(T b)																	//ƒrƒbƒg‚ÌƒIƒ“
+	inline V on(T b)																	//ãƒ“ãƒƒãƒˆã®ã‚ªãƒ³
 	{
 		status_bit_ |= 1ui64 << static_cast<V>(b);
 		return status_bit_;
 	}
-	inline V off(T b)																	//ƒrƒbƒg‚ÌƒIƒt
+	inline V off(T b)																	//ãƒ“ãƒƒãƒˆã®ã‚ªãƒ•
 	{
 		status_bit_ &= ~(1ui64 << static_cast<V>(b));
 		return status_bit_;
 	}
-	inline V  set(T b, bool _on) { return _on ? on(b) : off(b); }						//1ƒrƒbƒg‚Ì‚İ‚ÌƒZƒbƒg
-	inline V  set(T b) { status_bit_ = b; return status_bit_; }							//‘Sƒrƒbƒg‚ÌƒZƒbƒg
-	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<int>(b)); }	//ƒrƒbƒg‚Ì³”Û‚ğ•Ô‚·
-	inline V& get() { return status_bit_; }												//‘Sƒrƒbƒg‚Ìî•ñ‚ğ•Ô‚·
+	inline V  set(T b, bool _on) { return _on ? on(b) : off(b); }						//1ãƒ“ãƒƒãƒˆã®ã¿ã®ã‚»ãƒƒãƒˆ
+	inline V  set(T b) { status_bit_ = b; return status_bit_; }							//å…¨ãƒ“ãƒƒãƒˆã®ã‚»ãƒƒãƒˆ
+	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<int>(b)); }	//ãƒ“ãƒƒãƒˆã®æ­£å¦ã‚’è¿”ã™
+	inline V& get() { return status_bit_; }												//å…¨ãƒ“ãƒƒãƒˆã®æƒ…å ±ã‚’è¿”ã™
 
 private:
 	V status_bit_ = 0;
 };
 
-std::wstring Str2Wstr(std::string in);			//’Êístring‚ğƒƒCƒhstring‚É•ÏŠ·
-std::string WStr2Str(std::wstring in);			//ƒƒCƒhstring‚ğ’Êístring‚É•ÏŠ·
+std::wstring Str2Wstr(std::string in);			//é€šå¸¸stringã‚’ãƒ¯ã‚¤ãƒ‰stringã«å¤‰æ›
+std::string WStr2Str(std::wstring in);			//ãƒ¯ã‚¤ãƒ‰stringã‚’é€šå¸¸stringã«å¤‰æ›
 
 
 template <class T>
@@ -135,25 +200,33 @@ class SafeUniquePtr {
 
 public:
 	SafeUniquePtr() = default;
-	SafeUniquePtr(const std::unique_ptr<T>& p) :u_p(std::move(p)) {  }
+	~SafeUniquePtr() { u_p.reset(); }
 	SafeUniquePtr(std::nullptr_t) : u_p(nullptr) {}
 
+	SafeUniquePtr(std::unique_ptr<T>&& p) noexcept : u_p(std::move(p)) {}
 
-	// Šî’êƒNƒ‰ƒX‚Ö‚ÌˆÃ–Ù•ÏŠ·ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	SafeUniquePtr(SafeUniquePtr&& other) noexcept = default;
+	SafeUniquePtr& operator=(SafeUniquePtr&& other) noexcept = default;
+
+	SafeUniquePtr(const SafeUniquePtr&) = delete;
+	SafeUniquePtr& operator=(const SafeUniquePtr&) = delete;
+
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã¸ã®æš—é»™å¤‰æ›ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	template <typename U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
 	SafeUniquePtr(const SafeUniquePtr<U>& other)
-		: u_p(std::move(other.raw_unique())) {}
+		: u_p(std::move(other.raw_unique())) {
+	}
 
 	T* operator->() const {
 		if (!u_p) {
-			throw NullptrException("‚à‚¤’m‚ç‚ñ!‚Ê‚é‚Û!");
+			throw NullptrException("ã‚‚ã†çŸ¥ã‚‰ã‚“!ã¬ã‚‹ã½!");
 		}
 		return u_p.get();
 	}
 
 	T& operator*() const {
 		if (!u_p) {
-			throw NullptrException("‚à‚¤’m‚ç‚ñ!‚Ê‚é‚Û!");
+			throw NullptrException("ã‚‚ã†çŸ¥ã‚‰ã‚“!ã¬ã‚‹ã½!");
 		}
 		return *u_p;
 	}
@@ -173,28 +246,43 @@ class SafeSharedPtr {
 
 public:
 	SafeSharedPtr() = default;
+	~SafeSharedPtr() { s_p.reset(); }
 	SafeSharedPtr(const std::shared_ptr<T>& p) : s_p(p) {}
 	SafeSharedPtr(std::nullptr_t) : s_p(nullptr) {}
 
-	// Šî’êƒNƒ‰ƒX‚Ö‚ÌˆÃ–Ù•ÏŠ·ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã¸ã®æš—é»™å¤‰æ›ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	template <typename U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
 	SafeSharedPtr(const SafeSharedPtr<U>& other)
-		: s_p(other.raw_shared()) {}
+		: s_p(other.raw_shared()) {
+	}
 
 	T* operator->() const {
+
 		if (!s_p) {
-			throw NullptrException("‚à‚¤’m‚ç‚ñ!‚Ê‚é‚Û!");
+			throw NullptrException("ã‚‚ã†çŸ¥ã‚‰ã‚“!ã¬ã‚‹ã½!");
 		}
 		return s_p.get();
 	}
 
 	T& operator*() const {
 		if (!s_p) {
-			throw NullptrException("‚à‚¤’m‚ç‚ñ!‚Ê‚é‚Û!");
+			throw NullptrException("ã‚‚ã†çŸ¥ã‚‰ã‚“!ã¬ã‚‹ã½!");
 		}
 		return *s_p;
 	}
-	operator bool() const { return s_p.get() != nullptr; }
+	explicit operator bool() const { return s_p.get() != nullptr; }
+	bool operator==(std::nullptr_t) const { return !s_p; }
+	bool operator!=(std::nullptr_t) const { return s_p != nullptr; }
+
+	template<typename U>
+	bool operator==(const SafeSharedPtr<U>& other) const {
+		return s_p == other.raw_shared();
+	}
+
+	template<typename U>
+	bool operator!=(const SafeSharedPtr<U>& other) const {
+		return s_p != other.raw_shared();
+	}
 
 	void swap(std::shared_ptr<T>& other) { s_p.swap(other); }
 	void swap(SafeSharedPtr<T>& other) { s_p.swap(other.raw_shared()); }
@@ -213,31 +301,46 @@ class SafeWeakPtr {
 	std::weak_ptr<T> w_p;
 public:
 	SafeWeakPtr() = default;
+	~SafeWeakPtr() { w_p.reset(); }
 	SafeWeakPtr(const std::shared_ptr<T>& p) : w_p(p) {}
 	SafeWeakPtr(SafeSharedPtr<T> p) : w_p(p.raw_shared()) {}
 	void operator=(SafeSharedPtr<T> p) { w_p = p.raw_shared(); }
 	void operator=(SafeWeakPtr<T> p) { w_p = p.raw_weak(); }
 
 
-	// Šî’êƒNƒ‰ƒX‚Ö‚ÌˆÃ–Ù•ÏŠ·ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã¸ã®æš—é»™å¤‰æ›ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	template <typename U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
 	SafeWeakPtr(const SafeWeakPtr<U>& other)
-		: w_p(other.raw_weak()) {}
+		: w_p(other.raw_weak()) {
+	}
 
-	T* operator->() const {
+	std::shared_ptr<T> operator->() const {
 		auto lock = w_p.lock();
 		if (!lock)
-			throw NullptrException("‚à‚¤’m‚ç‚ñ!‚Ê‚é‚Û!");
-		return lock.get();
+			throw NullptrException("ã‚‚ã†çŸ¥ã‚‰ã‚“!ã¬ã‚‹ã½!");
+		return lock;
 	}
 
 	T& operator*() const {
 		if (!w_p.lock()) {
-			throw NullptrException("‚à‚¤’m‚ç‚ñ!‚Ê‚é‚Û!");
+			throw NullptrException("ã‚‚ã†çŸ¥ã‚‰ã‚“!ã¬ã‚‹ã½!");
 		}
 		return *(w_p.lock());
 	}
-	operator bool() const { return w_p.lock() != nullptr; }
+	explicit operator bool() const { return w_p.lock() != nullptr; }
+
+	bool operator==(std::nullptr_t) const { return !w_p.lock(); }
+	bool operator!=(std::nullptr_t) const { return w_p.lock() != nullptr; }
+
+	template<typename U>
+	bool operator==(const SafeWeakPtr<U>& other) const {
+		return w_p.lock() == other.raw_weak().lock();
+	}
+
+	template<typename U>
+	bool operator!=(const SafeWeakPtr<U>& other) const {
+		return w_p.lock() != other.raw_weak().lock();
+	}
 
 	SafeSharedPtr<T> lock() const { return SafeSharedPtr<T>(w_p.lock()); }
 	bool expired() { return w_p.expired(); }
@@ -247,7 +350,7 @@ public:
 	long use_count() { return w_p.use_count(); }
 
 
-	const std::weak_ptr<T>& raw_weak() const{ return w_p; }
+	const std::weak_ptr<T>& raw_weak() const { return w_p; }
 	std::weak_ptr<T>& raw_weak() { return w_p; }
 };
 
@@ -259,7 +362,7 @@ SafeSharedPtr<T> make_safe_shared(Args&&... args) {
 
 template <typename T, typename... Args>
 SafeUniquePtr<T> make_safe_unique(Args&&... args) {
-	return std::move(SafeUniquePtr<T>(std::make_unique<T>(std::forward<Args>(args)...)));
+	return SafeUniquePtr<T>(std::make_unique<T>(std::forward<Args>(args)...));
 }
 
 
@@ -274,23 +377,12 @@ SafeSharedPtr<To> SafeStaticCast(const SafeSharedPtr<From>& from) {
 	return SafeSharedPtr<To>(std::static_pointer_cast<To>(from.raw_shared()));
 }
 
-
-
-//ŠeF‚ÌGetColor‚ğg—p‚¹‚¸‚Éˆµ‚¤‚½‚ß‚Ì’è”(16i” unsigned int)
-#define BLACK     0x000000		//•
-#define WHITE     0xFFFFFF		//”’
-#define RED       0xFF0000		//Ô
-#define GREEN     0x00FF00		//—Î
-#define BLUE      0x0000FF		//Â
-#define YELLOW    0xFFFF00		//‰©
-#define CYAN      0x00FFFF		//ƒVƒAƒ“
-#define MAGENTA   0xFF00FF		//ƒ}ƒ[ƒ“ƒ^
-#define GRAY      0x808080		//ŠD
-#define DARK_RED  0x800000		//ƒ_[ƒNƒŒƒbƒh
-#define DARK_GREEN 0x006400		//ƒ_[ƒNƒOƒŠ[ƒ“
-#define DARK_BLUE 0x00008B		//ƒ_[ƒNƒuƒ‹[
-#define ORANGE    0xFFA500		//ƒIƒŒƒ“ƒW
-#define PINK      0xFFC0CB		//ƒsƒ“ƒN
-#define BROWN     0xA52A2A		//’ƒ
-#define PURPLE    0x800080		//‡
-
+#if 1
+template<class T, class ...Args>
+inline void* TypeInfo::CreateInstance(Args && ...args) const
+{
+	if (!strcmp(class_name.c_str(), "root"))
+		return nullptr;
+	return T::createInstance(std::forward<Args>(args)...);
+}
+#endif

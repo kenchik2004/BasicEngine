@@ -1,35 +1,36 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 
 
-//’Êístring‚ğƒƒCƒhstring‚É•ÏŠ·
+//é€šå¸¸stringã‚’ãƒ¯ã‚¤ãƒ‰stringã«å¤‰æ›
 std::wstring Str2Wstr(std::string in)
 {
-	// •ÏŠ·‚É•K—v‚ÈƒTƒCƒY‚ğæ“¾
-	int size_needed = MultiByteToWideChar(CP_OEMCP, 0, in.c_str(), static_cast<int>(in.size()), NULL, 0);
-	// •ÏŠ·æ‚Ìwchar_t”z—ñ‚ğì¬
+	// å¤‰æ›ã«å¿…è¦ãªã‚µã‚¤ã‚ºã‚’å–å¾—
+	int size_needed = MultiByteToWideChar(CP_ACP, 0, in.c_str(), static_cast<int>(in.size()), NULL, 0);
+	// å¤‰æ›å…ˆã®wchar_té…åˆ—ã‚’ä½œæˆ
 	std::wstring out(size_needed, 0);
-	// •ÏŠ·‚ğÀs
-	MultiByteToWideChar(CP_OEMCP, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed);
+	// å¤‰æ›ã‚’å®Ÿè¡Œ
+	MultiByteToWideChar(CP_ACP, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed);
 	return out;
 }
 
-//ƒƒCƒhstring‚ğ’Êístring‚É•ÏŠ·
+//ãƒ¯ã‚¤ãƒ‰stringã‚’é€šå¸¸stringã«å¤‰æ›
 std::string WStr2Str(std::wstring in)
 {
 
-	// •ÏŠ·‚É•K—v‚ÈƒTƒCƒY‚ğæ“¾
-	int size_needed = WideCharToMultiByte(CP_OEMCP, 0, in.c_str(), static_cast<int>(in.size()), NULL, 0, NULL, NULL);
-	// •ÏŠ·æ‚Ìwchar_t”z—ñ‚ğì¬
+	// å¤‰æ›ã«å¿…è¦ãªã‚µã‚¤ã‚ºã‚’å–å¾—
+	int size_needed = WideCharToMultiByte(CP_ACP, 0, in.c_str(), static_cast<int>(in.size()), NULL, 0, NULL, NULL);
+	// å¤‰æ›å…ˆã®wchar_té…åˆ—ã‚’ä½œæˆ
 	std::string out(size_needed, 0);
-	// •ÏŠ·‚ğÀs
-	WideCharToMultiByte(CP_OEMCP, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed, NULL, NULL);
+	// å¤‰æ›ã‚’å®Ÿè¡Œ
+	WideCharToMultiByte(CP_ACP, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed, NULL, NULL);
 	return out;
 }
 
-const char* TypeInfo::ClassName() const
+std::string_view TypeInfo::ClassName() const
 {
-	return class_name.c_str();
+	return class_name;
 }
+
 
 size_t TypeInfo::ClassSize() const
 {
@@ -41,4 +42,13 @@ const TypeInfo* TypeInfo::Parent() const
 	return parent;
 }
 
-TypeInfo TypeInfo::Root = TypeInfo("root", sizeof(TypeInfo), nullptr);
+const TypeInfo* TypeInfo::Child() const
+{
+	return child;
+}
+
+const TypeInfo* TypeInfo::Sibling() const
+{
+	return sibling;
+}
+

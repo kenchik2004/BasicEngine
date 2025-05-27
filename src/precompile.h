@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -41,6 +41,8 @@
 #include "System/Input.h"
 #include "System/Time.h"
 #include "System/PhysicsManager.h"
+#include "System/ModelManager.h"
+#include "System/AudioManager.h"
 #include "System/Component.h"
 #include "System/Components/Transform.h"
 #include "System/ObjBase.h"

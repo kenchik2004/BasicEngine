@@ -1,6 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
 USING_PTR(ObjBase);
+USING_PTR(AudioListener);
 USING_PTR(Scene);
 struct SceneStat {
 	friend class Scene;
@@ -14,12 +15,22 @@ class Scene :public std::enable_shared_from_this<Scene>
 private:
 	physx::PxScene* physics_scene = nullptr;
 public:
+	inline void SetObjPriority(int new_priority, ObjBaseP who) {
+		who->status.priority = new_priority;
+		dirty_priority_objects.push_back(who);
+	}
+	enum class LOADING_STATUS :unsigned char {
+		LOADING,
+		LOADED,
+		UNLOADED
+	};
+	LOADING_STATUS loading_status = LOADING_STATUS::LOADING;
 	virtual ~Scene() {}
 
 	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
 
-	//TODO Object‚©‚çŠ‘®ƒV[ƒ“‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÉƒAƒNƒZƒX‚Å‚«‚é‹@\‚Ìì¬
+	//TODO Objectã‹ã‚‰æ‰€å±ã‚·ãƒ¼ãƒ³ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹æ©Ÿæ§‹ã®ä½œæˆ
 
 	friend class SceneManager;
 	USING_SUPER(Scene);
@@ -29,17 +40,17 @@ public:
 		class_->status.class_name = typeid(T).name();
 		physics_scene = PhysicsManager::AddScene();
 	}
-	inline virtual void Load() {}
+	inline virtual void Load() { loading_status = LOADING_STATUS::LOADED; }
 
 	//-----------------------------
-	// InitƒuƒƒbƒN(‰Šú‰»ˆ—)
+	// Initãƒ–ãƒ­ãƒƒã‚¯(åˆæœŸåŒ–å‡¦ç†)
 	//-----------------------------
 	inline virtual int Init() { return 0; }
 	//-----------------------------
 
 
 	//-----------------------------
-	// PhysicsƒuƒƒbƒN(•¨—‘OŒãˆ—)
+	// Physicsãƒ–ãƒ­ãƒƒã‚¯(ç‰©ç†å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PrePhysics() {}
 	void Physics();
@@ -49,7 +60,7 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// UpdateƒuƒƒbƒN(XV‘OŒãˆ—)
+	// Updateãƒ–ãƒ­ãƒƒã‚¯(æ›´æ–°å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreUpdate() {}
 	inline virtual void Update() {}
@@ -58,16 +69,16 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// DrawƒuƒƒbƒN(•`‰æ‘OŒãˆ—)
+	// Drawãƒ–ãƒ­ãƒƒã‚¯(æç”»å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreDraw() {}
 	inline virtual void Draw() {}
 	inline virtual void LateDraw() {}
-	//ƒfƒoƒbƒO—p•`‰æ(ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚É•`‰æ‚³‚ê‚é)
+	//ãƒ‡ãƒãƒƒã‚°ç”¨æç”»(ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«æç”»ã•ã‚Œã‚‹)
 	inline virtual void DebugDraw() {}
 	inline virtual void LateDebugDraw() {}
 
-	//‚±‚±‚Ìˆ—‚Í•`‰æ‚ÉŸƒtƒŒ[ƒ€‚Ü‚Å”½‰f‚³‚ê‚È‚¢
+	//ã“ã“ã®å‡¦ç†ã¯æç”»ã«æ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã¾ã§åæ˜ ã•ã‚Œãªã„
 	inline virtual void PostDraw() {}
 
 	inline virtual void Exit() {}
@@ -77,23 +88,34 @@ public:
 	inline const bool& IsInSimulation() { return in_simulation; }
 	inline void AddFunctionAfterSimulation(const std::function<void()> function) { waiting_functions.push_back(function); }
 	void MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where);
+
+	void SetCurrentAudioListener(ComponentP listener) { current_audio_listener = listener; }
+	ComponentWP GetCurrentAudioListener() { return current_audio_listener; }
+	void SetCurrentCamera(ComponentP camera) { current_camera = camera; }
+	ComponentWP GetCurrentCamera() { return current_camera; }
+
+
 private:
 	bool in_simulation = false;
 	ObjBasePVec objects;
+	ObjBasePVec dirty_priority_objects;
 	std::vector<std::function<void()>> waiting_functions;
 	std::vector<physx::PxActor*> waiting_remove_actors;
 	std::vector<physx::PxShape*> waiting_remove_shapes;
 	ObjBaseWPVec leak_objects;
+	void SyncObjectsPriority();
+	ComponentWP current_audio_listener;
+	ComponentWP current_camera;
 
 protected:
 
-	template<class T,typename...Args>
-	inline SafeSharedPtr<T> CreateObject(std::string_view name_,Args&&... args)
+	template<class T, typename...Args>
+	inline SafeSharedPtr<T> CreateObject(std::string_view name_, Args&&... args)
 	{
 		auto obj = make_safe_shared<T>(std::forward<Args>(args)...);
 		obj->Construct<T>(SafeSharedPtr(shared_from_this()));
+		dirty_priority_objects.push_back(obj);
 		objects.push_back(obj);
-		ObjBase::changed_priority = true;
 
 		if (!GetObjectPtr<ObjBase>(name_)) {
 			obj->name = name_.data();
