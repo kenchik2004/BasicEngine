@@ -4,6 +4,7 @@ class DiceD20 :
 	public Object
 {
 public:
+	USING_SUPER(DiceD20);
 	DiceD20(int texture);
 	int Init() override;
 	void Update() override;

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "System/Scene.h"
 USING_PTR(SampleObject);
+USING_PTR(AudioPlayer);
 USING_PTR(Model);
 class SceneSample :
 	public Scene
@@ -25,5 +26,11 @@ public:
 	int handle_d12 = -1;
 	int handle_d20 = -1;
 	physx::PxActor* plane = nullptr;
+	SafeSharedPtr<AudioClip> audio = nullptr;
+	SafeSharedPtr<AudioClip> audio2 = nullptr;
+	SafeSharedPtr<AudioClip> bgm = nullptr;
+	AudioPlayerWP audio_player;
+
 	ObjectWP obj2;
+	ObjectWP obj3;
 };

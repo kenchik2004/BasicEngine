@@ -35,7 +35,6 @@ public:
 
 	//!<IDEA モデルは、data/modelフォルダに格納しているものすべてを、マネージャ初期化時にロードし、キャッシュしておく
 	//! ↑この場合、モデルの名前付けはどうするか...
-	//void Load(std::string_view path, std::string_view name = "");
 
 
 	//モデルコンポーネントが管理するべきもの

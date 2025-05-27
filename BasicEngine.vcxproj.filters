@@ -115,9 +115,23 @@
     <ClCompile Include="src\System\Color.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="SceneShader.cpp">
+    <ClCompile Include="src\System\AudioManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\AudioPlayer.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\AudioListener.cpp" />
+    <ClCompile Include="src\Game\SceneShader.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\Shader.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\FileWatcher.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -207,7 +221,6 @@
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="SceneShader.h" />
     <ClInclude Include="src\Game\DiceD20.h">
       <Filter>Game</Filter>
     </ClInclude>
@@ -238,6 +251,29 @@
     <ClInclude Include="src\System\Color.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="src\System\AudioManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\AudioPlayer.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\AudioListener.h" />
+    <ClInclude Include="src\Game\SceneShader.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="data\shader\dxlib_ps.h">
+      <Filter>shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Shader.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\FileWatcher.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="data\shader\dxlib_vs_model.h">
+      <Filter>shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -252,5 +288,22 @@
     <Filter Include="Game">
       <UniqueIdentifier>{4a67c7c6-df48-4812-8203-4b8003926a6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{9e7682ef-6479-4955-923f-a52f497c24cd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="data\shader\SimpleShader.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shader\vs_model.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shader\vs_shadow.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shader\ps_shadow.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

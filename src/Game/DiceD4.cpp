@@ -34,6 +34,7 @@ int DiceD4::Init()
 
 	auto rb = AddComponent<RigidBody>();
 	//static_cast<physx::PxRigidDynamic*>(rb->GetBody())->setAngularDamping(2.0f);
+	rb->velocity = Vector3((float)(GetRand(800) - 400)*0.01f, (float)(GetRand(800) - 800) * 0.02f, (float)(GetRand(800) - 400) * 0.01f);
 	rb->AddTorque(Vector3(200, 200, 0));
 	auto col = AddComponent<ConvexMeshCollider>();
 	rb->mass = 5;

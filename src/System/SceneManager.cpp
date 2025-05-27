@@ -6,18 +6,22 @@
 #include "System/Components/ModelRenderer.h"
 #include "algorithm"
 
+#define SORT
+
 
 ScenePVec SceneManager::scenes = ScenePVec(0);			//!<シーンの配列
 ScenePVec SceneManager::another_scenes = ScenePVec(1);	//!<裏シーンの配列
 SceneP SceneManager::current_scene = nullptr;			//!<カレントシーン
-int SceneManager::debug_box = -1;						//!<デバッグ描画用のボックスモデル
+SafeSharedPtr<Model> SceneManager::debug_box = nullptr;						//!<デバッグ描画用のボックスモデル
 
 int SceneManager::Init()
 {
-
+	ModelManager::Init();
+	AudioManager::Init();
 	//===============================//
 	//デバッグ用ボックス(SooS提供)のロード
-	debug_box = MV1LoadModel("data/DebugBox/DebugMode/Box.mv1");
+	ModelManager::LoadAsModel("data/DebugBox/DebugMode/Box.mv1", "debug_box");
+	debug_box = ModelManager::CloneModelByName("debug_box");
 	//===============================//
 
 	//裏シーンの配列の0番目は必ずここで作成するシーンが入っている
@@ -33,8 +37,10 @@ void SceneManager::PreUpdate()
 
 	for (auto& another_scene : another_scenes)
 	{
-		if (another_scene->objects.size() > 1 && ObjBase::changed_priority) {
-
+		if (another_scene->objects.size() > 1) {
+#ifdef SORT
+			another_scene->SyncObjectsPriority();
+#else
 			for (int i = 0; i < another_scene->objects.size() - 1; i++) {
 				for (int j = i + 1; j < another_scene->objects.size(); j++) {
 					if (another_scene->objects[i]->GetPriority() > another_scene->objects[j]->GetPriority())
@@ -42,10 +48,14 @@ void SceneManager::PreUpdate()
 
 				}
 			}
+#endif
+			Time::ResetTime();
 		}
 		for (auto& obj : another_scene->objects) {
-			if (obj->components.size() > 1 && obj->IsChangedCompPriority()) {
-
+			if (obj->components.size() > 1) {
+#ifdef SORT
+				obj->SyncComponentsPriority();
+#else
 				for (int i = 0; i < obj->components.size() - 1; i++) {
 					for (int j = i + 1; j < obj->components.size(); j++) {
 						if (obj->components[i]->GetPriority() > obj->components[j]->GetPriority())
@@ -53,6 +63,8 @@ void SceneManager::PreUpdate()
 
 					}
 				}
+#endif
+				Time::ResetTime();
 			}
 		}
 		try {
@@ -97,8 +109,10 @@ void SceneManager::PreUpdate()
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
-	if (current_scene->objects.size() > 1 && ObjBase::changed_priority) {
-
+	if (current_scene->objects.size() > 1) {
+#ifdef SORT
+		current_scene->SyncObjectsPriority();
+#else
 		for (int i = 0; i < current_scene->objects.size() - 1; i++) {
 			for (int j = i + 1; j < current_scene->objects.size(); j++) {
 				if (current_scene->objects[i]->GetPriority() > current_scene->objects[j]->GetPriority())
@@ -106,11 +120,14 @@ void SceneManager::PreUpdate()
 
 			}
 		}
-		ObjBase::changed_priority = false;
+#endif
+		Time::ResetTime();
 	}
 	for (auto& obj : current_scene->objects) {
-		if (obj->components.size() > 1 && obj->IsChangedCompPriority()) {
-
+		if (obj->components.size() > 1) {
+#ifdef SORT
+			obj->SyncComponentsPriority();
+#else
 			for (int i = 0; i < obj->components.size() - 1; i++) {
 				for (int j = i + 1; j < obj->components.size(); j++) {
 					if (obj->components[i]->GetPriority() > obj->components[j]->GetPriority())
@@ -118,6 +135,8 @@ void SceneManager::PreUpdate()
 
 				}
 			}
+#endif
+			Time::ResetTime();
 		}
 	}
 
@@ -846,7 +865,7 @@ void SceneManager::DebugDraw()
 
 	//===============================//
 	//デバッグ用ボックス(SooS提供)の描画
-	MV1SetPosition(debug_box, VGet(0, 0, 0));
+	MV1SetPosition(debug_box->handle, VGet(0, 0, 0));
 	//MV1SetScale(debug_box, VGet(10, 10, 10));
 	//MV1DrawModel(debug_box);
 
@@ -1009,9 +1028,10 @@ void SceneManager::Exit()
 
 	//===============================//
 	//デバッグ用ボックス(SooS提供)の解放
-	MV1DeleteModel(debug_box);
+	debug_box.reset();
 	//===============================//
 	ModelManager::Exit();
+	AudioManager::Exit();
 	scenes.clear();
 	another_scenes.clear();
 }

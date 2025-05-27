@@ -58,7 +58,7 @@ void ModelRenderer::Draw()
 {
 	if (!model)
 		return;
-	int a = MV1DrawModel(model->handle);
+	model->Draw();
 }
 
 

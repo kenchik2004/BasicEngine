@@ -30,6 +30,7 @@ public:
 	std::string_view GetCurrentAnimName();
 	bool IsPlaying();
 	void SetAnimation(std::string_view name, int index = 0, std::string_view new_name = "");
+	void SetAnimation(SafeSharedPtr<Animation> anim);
 	static inline void Load(std::string_view path, std::string_view name)
 	{
 		ModelManager::LoadAsAnimation(path, name);

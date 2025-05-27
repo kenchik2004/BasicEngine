@@ -15,9 +15,6 @@ int SampleCutIn::Init()
 	// アニメーション速度を設定
 	animator.lock()->anim_speed = 0.7f;
 
-	// 透過色を設定
-	SetTransColor(0, 0, 0);
-
 	// 動画を読み込む
 	image = LoadGraph("data/cutin.mp4");
 
@@ -25,21 +22,19 @@ int SampleCutIn::Init()
 	SetCreateSoundTimeStretchRate(0.9f);
 
 	// 効果音を読み込む
-	se = LoadSoundMem("data/se.mp3");
+	se = AudioManager::CloneByName("cutin_se");
 
 	// 動画と効果音を再生
 	PlayMovieToGraph(image, DX_MOVIEPLAYTYPE_BCANCEL);
-	PlaySoundMem(se, DX_PLAYTYPE_BACK);
+	se->PlayOneShot();
 
 	// 初期位置を設定
 	pos.x = SCREEN_W * 2;
 	pos.y = SCREEN_H * 0.5f;
 
 	// 時間のスケールを変更
-	Time::SetTimeScale(0.1f);
+	Time::SetTimeScale(0.0f);
 
-	// 別の透過色を設定
-	SetTransColor(255, 0, 255);
 
 	return 0;
 }
@@ -115,7 +110,7 @@ void SampleCutIn::Exit()
 		animator.lock()->anim_speed = 1.0f;
 
 	// リソースを解放
-	DeleteSoundMem(se);
+	se.reset();
 	DeleteGraph(handle);
 	DeleteGraph(image);
 }

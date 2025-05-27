@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 USING_PTR(SampleObject);
 USING_PTR(CapsuleCollider);
 class SampleObject :public Object
@@ -17,9 +17,7 @@ public:
 
 	void OnCollisionEnter(const HitInfo& hit_info) override;
 	void OnTriggerEnter(const HitInfo& hit_info) override;
-	physx::PxRigidDynamic* rigid_dynamic = nullptr;
-	physx::PxShape* my_shape = nullptr;
-	Vector3 velocity = { 0,0,0 };
+
 	CapsuleColliderWP fist;
 
 	Color color = Color::MAGENTA;

@@ -8,6 +8,7 @@ class SampleAttack :
 	public Component
 {
 public:
+	USING_SUPER(SampleAttack);
 	int Init() override;
 	void Update() override;
 	void Exit() override;

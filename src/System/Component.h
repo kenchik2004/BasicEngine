@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 struct CompStat {
 
@@ -37,17 +37,16 @@ public:
 		this_class->status.status_bit.on(CompStat::STATUS::DRAW);
 		this_class->status.class_name = typeid(T).name();
 	};
-	void SetPriority(int prio);
-	inline int GetPriority() { return status.priority; }
+	void SetPriority(int prio);	inline int GetPriority() { return status.priority; }
 	void RemoveThisComponent();
 	//-----------------------------
-	// InitƒuƒƒbƒN(‰Šú‰»ˆ—)
+	// Initãƒ–ãƒ­ãƒƒã‚¯(åˆæœŸåŒ–å‡¦ç†)
 	//-----------------------------
 	inline virtual int Init() { return 0; }
 	//-----------------------------
 
 	//-----------------------------
-	// UpdateƒuƒƒbƒN(XV‘OŒãˆ—)
+	// Updateãƒ–ãƒ­ãƒƒã‚¯(æ›´æ–°å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreUpdate() {}
 	inline virtual void Update() {}
@@ -56,7 +55,7 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// PhysicsƒuƒƒbƒN(•¨—‘OŒãˆ—)
+	// Physicsãƒ–ãƒ­ãƒƒã‚¯(ç‰©ç†å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PrePhysics() {}
 	inline virtual void Physics() {}
@@ -64,7 +63,7 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// DrawƒuƒƒbƒN(•`‰æ‘OŒãˆ—)
+	// Drawãƒ–ãƒ­ãƒƒã‚¯(æç”»å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreDraw() {}
 	inline virtual void Draw() {}
@@ -72,7 +71,7 @@ public:
 	inline virtual void DebugDraw() {}
 	inline virtual void LateDebugDraw() {}
 
-	//‚±‚±‚Ìˆ—‚Í•`‰æ‚ÉŸƒtƒŒ[ƒ€‚Ü‚Å”½‰f‚³‚ê‚È‚¢
+	//ã“ã“ã®å‡¦ç†ã¯æç”»ã«æ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã¾ã§åæ˜ ã•ã‚Œãªã„
 	inline virtual void PostDraw() {}
 	//-----------------------------
 

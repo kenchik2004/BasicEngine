@@ -1,15 +1,15 @@
-#pragma once
+﻿#pragma once
 #include <System/Component.h>
 struct LockFlag {
 	bool x = false;
 	bool y = false;
 	bool z = false;
 };
-enum ForceMode  {		//�͂������郂�[�h
-	Force = physx::PxForceMode::eFORCE,						//�d�������������P���I�ȗ͂̕ω�(N/s^2)
-	Impulse = physx::PxForceMode::eIMPULSE,					//�d�������������p���I�ȉ^���ʂ̕ω�(N/s)
-	VelocityCange = physx::PxForceMode::eVELOCITY_CHANGE,	//�d���𖳎��������x�̕ω�(m/s)
-	Acceleration = physx::PxForceMode::eACCELERATION,		//�d���𖳎����������x�̕ω�(m/s^2)
+enum ForceMode  {		//力を加えるモード
+	Force = physx::PxForceMode::eFORCE,						//重さを加味した単発的な力の変化(N/s^2)
+	Impulse = physx::PxForceMode::eIMPULSE,					//重さを加味した継続的な運動量の変化(N/s)
+	VelocityCange = physx::PxForceMode::eVELOCITY_CHANGE,	//重さを無視した速度の変化(m/s)
+	Acceleration = physx::PxForceMode::eACCELERATION,		//重さを無視した加速度の変化(m/s^2)
 };
 class RigidBody :public Component
 {

@@ -1,8 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 
 
 struct ObjStat {
+	friend class Scene;
 	friend class ObjBase;
 	friend class Object;
 	friend class UIObject;
@@ -62,21 +63,32 @@ private:
 		this_class->scene = owner_scene;
 	};
 
-	static bool changed_priority;
-	bool changed_comp_priority = true;
+
+	void SyncComponentsPriority();
+
 	ComponentPVec components;
+	ComponentPVec dirty_priority_components;
 	SceneP scene;
 
 
 public:
-	template <class T,typename... Args> SafeSharedPtr<T> AddComponent(Args&& ...args) {
+	void SetComponentPriority(int prio, ComponentP who) {
+		who->status.priority = prio;
+		dirty_priority_components.push_back(who);
+	}
 
+	template <class T, typename... Args> SafeSharedPtr<T> AddComponent(Args&& ...args) {
 		auto comp = make_safe_shared<T>(std::forward<Args>(args)...);
-		comp->owner = SafeSharedPtr(shared_from_this());
-		comp->Construct<T>();
-		components.push_back(comp);
-		comp->Init();
-		changed_comp_priority = true;
+		try {
+			comp->owner = SafeSharedPtr(shared_from_this());
+			comp->Construct<T>();
+			dirty_priority_components.push_back(comp);
+			components.push_back(comp);
+			comp->Init();
+		}
+		catch (Exception& ex) {
+			ex.Show();
+		}
 		return comp;
 	}
 	template <class T> SafeSharedPtr<T> GetComponent() {
@@ -103,6 +115,10 @@ public:
 
 	void RemoveComponent(ComponentP remove_comp) {
 		ComponentWP comp_wp;
+		if (auto comp = std::find(dirty_priority_components.begin(), dirty_priority_components.end(), remove_comp); comp != dirty_priority_components.end())
+		{
+			dirty_priority_components.erase(comp);
+		}
 		for (auto comp = components.begin(); comp != components.end();) {
 			comp_wp = (*comp);
 			if (comp_wp.lock() == remove_comp) {
@@ -117,22 +133,19 @@ public:
 		}
 	}
 
-	static inline const bool ChangedPriority() { return changed_priority; }
-	inline void SetPriority(int prio) { status.priority = prio; changed_priority = true; }
+	inline void SetPriority(int prio);
 	inline int GetPriority() { return status.priority; }
 	inline SceneP GetScene() { return scene; }
 
-	inline void ChangedCompPriority(bool is_changed = true) { changed_comp_priority = is_changed; }
-	inline const bool IsChangedCompPriority() { return changed_comp_priority; }
 
 	//-----------------------------
-	// InitƒuƒƒbƒN(‰Šú‰»ˆ—)
+	// Initãƒ–ãƒ­ãƒƒã‚¯(åˆæœŸåŒ–å‡¦ç†)
 	//-----------------------------
 	inline virtual int Init() { return 0; }
 	//-----------------------------
 
 	//-----------------------------
-	// UpdateƒuƒƒbƒN(XV‘OŒãˆ—)
+	// Updateãƒ–ãƒ­ãƒƒã‚¯(æ›´æ–°å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreUpdate() {}
 	inline virtual void Update() {}
@@ -141,7 +154,7 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// PhysicsƒuƒƒbƒN(•¨—‘OŒãˆ—)
+	// Physicsãƒ–ãƒ­ãƒƒã‚¯(ç‰©ç†å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PrePhysics() {}
 	inline virtual void Physics() {}
@@ -149,14 +162,14 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// HitƒR[ƒ‹ƒoƒbƒN
+	// Hitæ™‚ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	//-----------------------------
 	inline virtual void OnCollisionEnter(const HitInfo& hit_info) {}
 	inline virtual void OnCollisionStay(const HitInfo& hit_info) {}
 	inline virtual void OnCollisionExit(const HitInfo& hit_info) {}
 
 	//-----------------------------
-	// HitƒR[ƒ‹ƒoƒbƒN(ƒgƒŠƒK[)
+	// Hitæ™‚ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯(ãƒˆãƒªã‚¬ãƒ¼)
 	//-----------------------------
 	inline virtual void OnTriggerEnter(const HitInfo& hit_info) {}
 	inline virtual void OnTriggerStay(const HitInfo& hit_info) {}
@@ -164,16 +177,16 @@ public:
 	//-----------------------------
 
 	//-----------------------------
-	// DrawƒuƒƒbƒN(•`‰æ‘OŒãˆ—)
+	// Drawãƒ–ãƒ­ãƒƒã‚¯(æç”»å‰å¾Œå‡¦ç†)
 	//-----------------------------
 	inline virtual void PreDraw() {}
 	inline virtual void Draw() {}
 	inline virtual void LateDraw() {}
-	//ƒfƒoƒbƒO—p•`‰æ(ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚É•`‰æ‚³‚ê‚é)
+	//ãƒ‡ãƒãƒƒã‚°ç”¨æç”»(ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«æç”»ã•ã‚Œã‚‹)
 	inline virtual void DebugDraw() {}
 	inline virtual void LateDebugDraw() {}
 
-	//‚±‚±‚Ìˆ—‚Í•`‰æ‚ÉŸƒtƒŒ[ƒ€‚Ü‚Å”½‰f‚³‚ê‚È‚¢
+	//ã“ã“ã®å‡¦ç†ã¯æç”»ã«æ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã¾ã§åæ˜ ã•ã‚Œãªã„
 	inline virtual void PostDraw() {}
 	//-----------------------------
 

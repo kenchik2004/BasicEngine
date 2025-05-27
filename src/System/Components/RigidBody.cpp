@@ -1,4 +1,4 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "RigidBody.h"
 
 using namespace physx;
@@ -114,7 +114,7 @@ void RigidBody::AddForceAtPosition(Vector3 force, Vector3 world_position, ForceM
 		static_cast<PxRigidDynamic*>(body)->addTorque(cross, static_cast<PxForceMode::Enum>(force_mode));
 		return;
 	}
-	auto lambda = [wp =SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), force, world_position, force_mode]() {
+	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), force, world_position, force_mode]() {
 		if (!wp.lock())
 			return;
 		if (static_cast<SafeWeakPtr<ObjBase>*>(wp.lock()->body->userData)->lock()) {
@@ -136,14 +136,16 @@ void RigidBody::SetVelocity(Vector3 velocity_)
 	velocity = velocity_;
 	bool in_simulation = SceneManager::GetCurrentScene()->IsInSimulation();
 	if (!in_simulation) {
-		static_cast<PxRigidDynamic*>(body)->setLinearVelocity(velocity_);
+		if (body->is<PxRigidDynamic>())
+			static_cast<PxRigidDynamic*>(body)->setLinearVelocity(velocity_);
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), velocity_]() {
 		if (!wp.lock())
 			return;
-		if (static_cast<SafeWeakPtr<ObjBase>*>(wp.lock()->body->userData)->lock())
-			static_cast<PxRigidDynamic*>(wp.lock()->body)->setLinearVelocity(velocity_);
+		if (auto owner_obj = static_cast<SafeWeakPtr<ObjBase>*>(wp.lock()->body->userData)->lock())
+			if (wp.lock()->body->is<PxRigidDynamic>())
+				static_cast<PxRigidDynamic*>(wp.lock()->body)->setLinearVelocity(velocity_);
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
 }

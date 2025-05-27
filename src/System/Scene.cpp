@@ -1,7 +1,7 @@
 ﻿#include "precompile.h"
 #include "System/Scene.h"
 #include "System/ObjBase.h"
-
+#include <algorithm>
 
 
 
@@ -88,13 +88,17 @@ void Scene::Destroy()
 		}
 		obj.lock()->Exit();
 		obj.lock()->status.status_bit.on(ObjStat::STATUS::REMOVED);
-		SceneManager::Object::Destory(obj.lock());
+		DestroyObject(obj.lock());
 	}
 	objects.clear();
 	for (auto& ite : leak_objects) {
 		try {
-			if (ite.lock())
+			if (ite.lock()) {
+#ifdef NDEBUG
+				std::quick_exit(0);
+#endif
 				throw(MemoryLeakException(ite.lock()->name.c_str(), DEFAULT_EXCEPTION_PARAM));
+			}
 		}
 		catch (Exception& ex)
 		{
@@ -121,14 +125,42 @@ void Scene::MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where) {
 	for (auto pick_obj = objects.begin(); pick_obj != objects.end(); pick_obj++) {
 		if (move_object == *pick_obj)
 		{
-			ObjBase::changed_priority = true;
 			(*pick_obj)->scene = to_where;
+			to_where->dirty_priority_objects.push_back(*pick_obj);
 			to_where->objects.push_back(std::move(*pick_obj));
 			objects.erase(pick_obj);
 			return;
 		}
 	}
 }
+
+void Scene::SyncObjectsPriority()
+{
+
+	if (dirty_priority_objects.empty()) return;
+
+	// 1) dirty_priority_objects を優先度順に並べ替える
+	std::sort(dirty_priority_objects.begin(), dirty_priority_objects.end(),
+		[](ObjBaseP a, ObjBaseP b) { return a->GetPriority() < b->GetPriority(); });
+
+	// 2) まとめて objects へ挿入
+	for (ObjBaseP& obj : dirty_priority_objects)
+	{
+		if (obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
+			continue;
+		// 2‑1) 古い場所を消す（同じポインタ重複を防ぐ）
+		auto cur = std::find(objects.begin(), objects.end(), obj);
+		if (cur != objects.end()) objects.erase(cur);
+
+		// 2‑2) 優先度に合った場所を二分探索で探す
+		auto pos = std::upper_bound(objects.begin(), objects.end(), obj,
+			[](ObjBaseP a, ObjBaseP b) { return a->GetPriority() < b->GetPriority(); });
+
+		objects.insert(pos, obj);  // ここに差し込む
+	}
+	dirty_priority_objects.clear();
+}
+
 void Scene::DestroyObject(ObjBaseP destroy_obj) {
 	if (objects.size() <= 0)
 		return;
@@ -140,6 +172,10 @@ void Scene::DestroyObject(ObjBaseP destroy_obj) {
 		return;
 	}
 	ObjBaseWP obj_w;
+	if (auto obj = std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), destroy_obj); obj != dirty_priority_objects.end())
+	{
+		dirty_priority_objects.erase(obj);
+	}
 	for (auto obj = objects.begin(); obj != objects.end();) {
 		obj_w = (*obj);
 		if (obj_w.lock() == destroy_obj) {

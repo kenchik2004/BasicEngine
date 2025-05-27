@@ -7,7 +7,7 @@
 
 int Animator::Init()
 {
-	if (auto m=owner.lock()->GetComponent<ModelRenderer>())
+	if (auto m = owner.lock()->GetComponent<ModelRenderer>())
 		model = m;
 	else
 		RemoveThisComponent();
@@ -24,6 +24,13 @@ void Animator::SetAnimation(std::string_view name, int index, std::string_view n
 	animation.push_back(data);
 }
 
+void Animator::SetAnimation(SafeSharedPtr<Animation> anim)
+{
+	if (!anim)
+		return;
+	animation.push_back(anim);
+}
+
 void Animator::Update()
 {
 	if (!model)
@@ -35,8 +42,11 @@ void Animator::Update()
 		current_anim = nullptr;
 	if (current_anim) {
 		MV1SetAttachAnimTime(model->GetModelHandle(), current_index, anim_time);
-		if (anim_loop && !IsPlaying())
+		current_anim->Update(anim_time);
+		if (anim_loop && !IsPlaying()) {
 			anim_time = anim_time > current_anim->total_time ? 0 : current_anim->total_time;
+			current_anim->InitCallBacks();
+		}
 	}
 }
 
@@ -70,8 +80,10 @@ void Animator::Play(std::string_view name, bool loop, float start_time)
 		MV1DetachAnim(model->GetModelHandle(), current_index);
 		current_index = -1;
 		current_index = MV1AttachAnim(model->GetModelHandle(), select->index, select->handle, false);
+		current_anim->InitCallBacks();
 		if (current_index >= 0) {
 			current_anim = select;
+			current_anim->InitCallBacks();
 			anim_loop = loop;
 			if (start_time == CUR_ANIMTIME_MAX)
 				start_time = select->total_time / 60.0f;
@@ -83,6 +95,7 @@ void Animator::Play(std::string_view name, bool loop, float start_time)
 	if (current_index >= 0) {
 		anim_loop = loop;
 		current_anim = select;
+		current_anim->InitCallBacks();
 		if (start_time == CUR_ANIMTIME_MAX)
 			start_time = select->total_time / 60.0f;
 		anim_time = start_time * 60;
@@ -98,6 +111,7 @@ void Animator::Stop()
 	MV1DetachAnim(model->GetModelHandle(), current_index);
 	current_index = -1;
 	anim_loop = false;
+	current_anim->InitCallBacks();
 	current_anim.reset();
 
 }

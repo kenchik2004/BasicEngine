@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+
+class Shader;
+class ShaderPs;
+class ShaderVs;
 class ModelSource {
 	friend class ModelManager;
 	std::string path;
@@ -29,6 +33,7 @@ public:
 };
 
 class Model {
+	friend class SceneManager;
 	friend class ModelManager;
 	friend class ModelRenderer;
 	friend class Animator;
@@ -38,20 +43,30 @@ class Model {
 
 	static inline int instance = 0;
 	//TO_DO! シェーダーのポインタはこいつに持たせる(特にトゥーンなどで複数ある場合)
+	Shader* shader_ps = nullptr;
+	Shader* default_shader_ps = nullptr;
+	Shader* shader_vs = nullptr;
+	Shader* default_shader_vs = nullptr;
+
 public:
+	void SetShader(Shader* pixel = nullptr, Shader* vertex = nullptr);
+	void SetDefaultShader(Shader* pixel = nullptr, Shader* vertex = nullptr);
 	MV1_REF_POLYGONLIST* GetPolygon() { return original->GetPolygon(); }
 	physx::PxConvexMesh* GetConvexMesh();
 	physx::PxTriangleMesh* GetTriangleMesh();
-	Model() { instance++; }
+	Model();
 	Model(const Model& other) {
 		name = other.name;
 		handle = other.handle;
+		SetShader(other.shader_ps, other.shader_vs);
+		SetDefaultShader(other.default_shader_ps, other.default_shader_vs);
 		instance++;
 	}
 	~Model() {
 		MV1DeleteModel(handle);
 		instance--;
 	}
+	void Draw();
 };
 
 class Animation {
@@ -62,6 +77,13 @@ class Animation {
 	int handle = -1;
 	int index = -1;
 	float total_time = 0;
+	struct AnimationCallBack {
+		float ex_frame = 0;
+		std::function<void()> function = nullptr;
+		bool is_executed = false;
+	};
+	std::vector<AnimationCallBack> call_backs;
+	std::unordered_map<std::string, size_t> method_names;
 public:
 	Animation() { instance++; }
 	Animation(const Animation& other) {
@@ -71,6 +93,10 @@ public:
 		total_time = other.total_time;
 		instance++;
 	}
+	void Update(float anim_timer);
+	void InitCallBacks();
+	void SetCallBack(const std::function<void()>& call_back, float execute_frame, std::string_view method_name);
+	void ResetCallBack(std::string_view method_name);
 	~Animation() { MV1DeleteModel(handle); instance--; }
 };
 
@@ -87,6 +113,7 @@ public:
 		int index = -1;
 		int handle = -1;
 	};
+	static inline int loading_count = 0;
 	struct PtrToCacheAndModelData {
 		std::vector<SafeUniquePtr<ModelSource>>* model_cache = nullptr;
 		std::vector<SafeUniquePtr<AnimSource>>* anim_cache = nullptr;
@@ -107,8 +134,12 @@ public:
 	static SafeSharedPtr<Model> CloneModelByPath(std::string_view path, std::string_view new_name = "");
 	static SafeSharedPtr<Animation> CloneAnimByName(std::string_view name, int index = 0, std::string_view new_name = "");
 	static SafeSharedPtr<Animation> CloneAnimByPath(std::string_view path, int index = 0, std::string_view new_name = "");
+	static inline const int GetLoadingCount() { return loading_count; }
 	static void Init();
 	static void Exit();
+	static SafeUniquePtr<ShaderPs> default_shader_ps;
+	static SafeUniquePtr<ShaderVs> default_shader_vs;
+
 
 
 };

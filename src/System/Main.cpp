@@ -1,7 +1,8 @@
 ﻿#include "Main.h"
 #include "System/SceneManager.h"
-#include "Game/SceneSample3.h"
+#include "Game/SceneShader.h"
 #include "Game/SceneSample.h"
+#include <fstream>
 
 //#define DEBUG_WINDOW
 //#define USE_DEBUG_DRAW
@@ -13,7 +14,6 @@ std::string window_classname[1] =
 };
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
-
 
 // メッセージ処理用関数
 constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -70,7 +70,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetDoubleStartValidFlag(FALSE);
 	SetAlwaysRunFlag(TRUE);
 	SetWaitVSyncFlag(false);
-
+	Set3DSoundOneMetre(1.0f);
+	SetEnableXAudioFlag(true);
+	SetUseDirect3DVersion(DX_DIRECT3D_11);
 
 	if (DxLib_Init() == -1)	return -1;
 
@@ -150,9 +152,49 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::PreUpdate();
 			SceneManager::Update();
 
-			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN))
-				SceneManager::Load<SceneSample>();
+			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN)) {
 
+				std::string class_name = "SceneSample";
+				const TypeInfo& base_type = TypeInfo::Root();
+				const TypeInfo* p = base_type.Child();
+				bool            returnFromTraverse = false;
+				const TypeInfo* next = nullptr;
+
+				//----------------------------------------------------------
+				// 継承ツリー構造を探索
+				// スタック再帰を使わない高速なツリー探索 (stackless tree traversal)
+				//----------------------------------------------------------
+				while (p != &base_type) {
+					if (!returnFromTraverse) {
+						// 名前チェックして一致したら作成
+						if (p->ClassName() == class_name) {
+							break;
+						}
+					}
+
+					if (p->Child() && !returnFromTraverse) {
+						// 子がある場合は子を先に調べる。(子から探索で戻ってきた場合は除外)
+						next = p->Child();
+						returnFromTraverse = false;
+					}
+					else if (p->Sibling()) {
+						// 兄弟がいる場合は兄弟を調べる
+						next = p->Sibling();
+						returnFromTraverse = false;
+					}
+					else {
+						// 親へ戻る。
+						next = p->Parent();
+						returnFromTraverse = true;
+					}
+					p = next;
+				}
+				if (p) {
+					auto ptr = static_cast<SceneSample*>(p->CreateInstance<SceneSample>());
+
+					SceneManager::Load<SceneSample>(ptr);
+				}
+			}
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
 			bool phys = false;
@@ -240,9 +282,60 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	timeEndPeriod(1);
 	DxLib::DxLib_End();
+	std::ofstream f("data/tree.txt");
+	std::string start_scene = "SceneSample";
+	if (!f.fail()) {
+
+
+		auto& base_type = TypeInfo::Root();
+		const TypeInfo* p = base_type.Child();
+		bool            returnFromTraverse = false;
+		const TypeInfo* next = nullptr;
+		f << base_type.ClassName() << std::endl;
+		//----------------------------------------------------------
+		// 継承ツリー構造を探索
+		// スタック再帰を使わない高速なツリー探索 (stackless tree traversal)
+		//----------------------------------------------------------
+		int nest = 0;
+		while (p && (p != &base_type)) {
+			if (!returnFromTraverse) {
+				for (int i = 0; i < nest; i++)
+					f << "|        " << std::flush;
+				f << "|-----" << p->ClassName() << std::endl;
+			}
+			if (p->Child() && !returnFromTraverse) {
+				// 子がある場合は子を先に調べる。(子から探索で戻ってきた場合は除外)
+				nest++;
+				next = p->Child();
+				returnFromTraverse = false;
+			}
+			else if (p->Sibling()) {
+				// 兄弟がいる場合は兄弟を調べる
+				next = p->Sibling();
+				returnFromTraverse = false;
+			}
+			else {
+				// 親へ戻る。
+				next = p->Parent();
+				for (int i = 0; i < nest; i++)
+					f << "|        " << std::flush;
+				f << "end_of_node" << std::endl;
+				for (int i = 0; i < nest; i++)
+					f << "|        " << std::flush;
+				f << std::endl;
+				nest--;
+
+				returnFromTraverse = true;
+			}
+
+			p = next;
+		}
+		f.close();
+	}
 	system("pause");
 	return 0;
 }
+
 
 //---------------------------------------------------------------------------------
 //	度をラジアンに変換する関数

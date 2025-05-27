@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "System/Color.h"
 #include "source_location"
+#include <any>
 
 #define PI 3.1415926535f			//円周率
 #define DEG2RAD(deg) deg*PI/180		//オイラー角->ラジアン角の変換
@@ -39,55 +40,117 @@ using Vector4 = physx::PxVec4;
 using Quaternion = physx::PxQuat;
 using mat3x3 = physx::PxMat33;
 using mat4x4 = physx::PxMat44;
-
+#if 1
 class TypeInfo {
 public:
-	TypeInfo(std::string name, size_t size, TypeInfo* parent_info) {
-		class_name = name;
-		class_size = size;
-		if (parent_info == nullptr)
-			parent_info = &Root;
-		parent = parent_info;
+	TypeInfo(std::string_view name, size_t size, TypeInfo* parent_info) {
 
+		child = nullptr;
+		sibling = nullptr;
+		// パラメーターの保存
+		auto ite = name.find("class");
+		if (ite != name.npos)
+			class_name = &name.data()[6];
+		else if (ite = name.find("struct"); ite != class_name.npos)
+			class_name = &name.data()[7];
+		else
+			class_name = name;
+		class_size = size;
+
+		//----------------------------------------------------------
+		// 継承ツリー構造の構築
+		//----------------------------------------------------------
+		if (parent_info == nullptr && strcmp(class_name.c_str(), "root")) {    // "root"ではない
+			parent_info = &TypeInfo::Root();                            // 基底クラスはルートに接続する
+		}
+
+		parent = parent_info;
+		if (parent_info) {
+			auto child = parent_info->Child();
+			// 親クラスの子があった場合は追加登録、子が一つもない場合は新規登録
+			if (child) {
+				sibling = child;
+			}
+			parent_info->child = this;
+		}
 	}
 	//  クラス名を取得
-	const char* ClassName() const;
+	std::string_view ClassName() const;
+	//  インスタンスを作成(クラスをnewしてポインタを返す)
+	template <class T, class...Args> void* CreateInstance(Args&&...args) const;
 	//  クラスのサイズを取得
 	size_t ClassSize() const;
 	//  親ノードを取得
 //! @return ノードへのポインタ (存在しない場合はnullptr)
 	const TypeInfo* Parent() const;
-private:
+	const TypeInfo* Child() const;
+	const TypeInfo* Sibling() const;
+	static inline TypeInfo& Root() {
 
+		static TypeInfo root("root", sizeof(TypeInfo), nullptr);
+		return root;
+
+	}
+private:
 	std::string class_name;
 	size_t class_size = 0;
-	TypeInfo* parent = nullptr;
+	const TypeInfo* parent;
+	const TypeInfo* child;
+	const TypeInfo* sibling;
 public:
-	static TypeInfo Root;
 
 };
+#endif
+
+
 
 template <class T>
 class ClassTypeInfo :public TypeInfo {
 public:
-	ClassTypeInfo(std::string name, TypeInfo* parent_info = nullptr)
+	ClassTypeInfo(const char* name, TypeInfo* parent_info = nullptr)
 		:TypeInfo(name, sizeof(T), parent_info)
 	{
 	}
+
 };
 class Class {
 public:
-	static inline TypeInfo& info = TypeInfo::Root;
+	static inline TypeInfo& info = TypeInfo::Root();
 	inline virtual TypeInfo* Info() { return static_cast<TypeInfo*>(&info); }
 };
 
 
+//! インスタンス作成クラス
+template <typename T, bool is_abstract = std::is_abstract<T>::value, class...Args>
+class CreateInstance
+{
+public:
+	static void* create(Args&&...args) { return new T(std::forward<Args>(args)...); }
+};
 
+//! 抽象クラスの場合はnewできないためnullptrを返す特殊化  
+template <typename T, class... Args>
+class CreateInstance<T, true, Args...>
+{
+public:
+	static void* create() { return nullptr; }
+
+};
+
+#if 1
 #define USING_SUPER(CLASS)																					\
 		using Super = Class;																				\
 		using Class = CLASS;																				\
-static inline ClassTypeInfo<CLASS> info=ClassTypeInfo<CLASS>(#CLASS,&Super::info);							\
-inline virtual TypeInfo* Info() {return static_cast<TypeInfo*>(&info);};									\
+	    /*! インスタンスを作成(クラスをnewしてポインタを返す)*/														 \
+	    template <class...Args>static CLASS* createInstance(Args&&...args)                                                                            \
+	    {                                                                                                        \
+	        return static_cast<CLASS*>(CreateInstance<CLASS,std::is_abstract<CLASS>::value,Args...>::create(std::forward<Args>(args)...));  \
+	    };																											\
+		static inline const char* Name() {return typeid(CLASS).name();};											\
+		static inline ClassTypeInfo<CLASS> info=ClassTypeInfo<CLASS>(Name(),&Super::info);							\
+		inline virtual TypeInfo* Info() {return static_cast<TypeInfo*>(&info);};									\
+
+#endif
 
 
 using s8 = int8_t;      //!<  8bit 符号あり整数
@@ -138,6 +201,7 @@ class SafeUniquePtr {
 public:
 	SafeUniquePtr() = default;
 	~SafeUniquePtr() { u_p.reset(); }
+	SafeUniquePtr(std::nullptr_t) : u_p(nullptr) {}
 
 	SafeUniquePtr(std::unique_ptr<T>&& p) noexcept : u_p(std::move(p)) {}
 
@@ -313,7 +377,12 @@ SafeSharedPtr<To> SafeStaticCast(const SafeSharedPtr<From>& from) {
 	return SafeSharedPtr<To>(std::static_pointer_cast<To>(from.raw_shared()));
 }
 
-
-
-
-
+#if 1
+template<class T, class ...Args>
+inline void* TypeInfo::CreateInstance(Args && ...args) const
+{
+	if (!strcmp(class_name.c_str(), "root"))
+		return nullptr;
+	return T::createInstance(std::forward<Args>(args)...);
+}
+#endif

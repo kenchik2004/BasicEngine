@@ -1,5 +1,6 @@
 ﻿#include "precompile.h"
 #include "ModelManager.h"
+#include "System/Shader.h"
 
 using namespace physx;
 
@@ -9,6 +10,8 @@ std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::m_na
 std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::m_path;
 std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::a_name;
 std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::a_path;
+SafeUniquePtr<ShaderPs> ModelManager::default_shader_ps = nullptr;
+SafeUniquePtr<ShaderVs> ModelManager::default_shader_vs = nullptr;
 
 
 void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
@@ -29,6 +32,7 @@ void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
 		(*(ptr->m_name))[name].index = cache_index;
 		(*(ptr->m_path))[path].index = cache_index;
 		ptr->model_cache->push_back(std::move(ptr->m_source));
+		loading_count--;
 		delete ptr;
 		};
 	PtrToCacheAndModelData* data = new PtrToCacheAndModelData;
@@ -41,6 +45,7 @@ void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
 	m_name[name_key].handle = data->m_source->handle;
 	m_path[path_key].handle = data->m_source->handle;
 	SetASyncLoadFinishCallback(data->m_source->handle, call_back, data);
+	loading_count++;
 	SetUseASyncLoadFlag(false);
 	return;
 }
@@ -63,6 +68,7 @@ void ModelManager::LoadAsAnimation(std::string_view path, std::string_view name)
 		(*(ptr->a_name))[name].index = cache_index;
 		(*(ptr->a_path))[path].index = cache_index;
 		ptr->anim_cache->push_back(std::move(ptr->a_source));
+		loading_count--;
 		delete ptr;
 		};
 	PtrToCacheAndModelData* data = new PtrToCacheAndModelData;
@@ -75,6 +81,7 @@ void ModelManager::LoadAsAnimation(std::string_view path, std::string_view name)
 	a_name[name_key].handle = data->a_source->handle;
 	a_path[path_key].handle = data->a_source->handle;
 	SetASyncLoadFinishCallback(data->a_source->handle, call_back, data);
+	loading_count++;
 	SetUseASyncLoadFlag(false);
 }
 
@@ -150,6 +157,8 @@ SafeSharedPtr<Animation> ModelManager::CloneAnimByPath(std::string_view path, in
 
 void ModelManager::Init()
 {
+	default_shader_ps = make_safe_unique<ShaderPs>("data/shader/SimpleShader.fx");
+	default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 7);
 }
 
 void ModelManager::Exit()
@@ -161,6 +170,8 @@ void ModelManager::Exit()
 	m_path.clear();
 	a_name.clear();
 	a_path.clear();
+	default_shader_ps.reset();
+	default_shader_vs.reset();
 	if (Model::instance > 0) {
 		std::string msg = typeid(Model).name();
 		throw(MemoryLeakException(msg.c_str(), DEFAULT_EXCEPTION_PARAM));
@@ -291,7 +302,7 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 
 		PxDefaultMemoryInputData read_buffer(write_buffer.getData(), write_buffer.getSize());
 		convex_mesh = PhysicsManager::GetPhysicsInstance()->createConvexMesh(read_buffer);
-
+		Time::ResetTime();
 		if (!convex_mesh)
 			throw(Exception("ERROR!!MESH_INVALID", DEFAULT_EXCEPTION_PARAM));
 
@@ -355,7 +366,7 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 
 		physx::PxDefaultMemoryInputData read_buffer(write_buffer.getData(), write_buffer.getSize());
 		triangle_mesh = PhysicsManager::GetPhysicsInstance()->createTriangleMesh(read_buffer);
-
+		Time::ResetTime();
 #ifndef NDEBUG
 		if (!triangle_mesh)
 			throw(Exception("ERROR!!MESH_INVALID", DEFAULT_EXCEPTION_PARAM));
@@ -367,6 +378,18 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 	return triangle_mesh;
 }
 
+void Model::SetShader(Shader* pixel, Shader* vertex)
+{
+	shader_ps = pixel;
+	shader_vs = vertex;
+}
+
+void Model::SetDefaultShader(Shader* pixel, Shader* vertex)
+{
+	default_shader_ps = pixel ? pixel : default_shader_ps;
+	default_shader_vs = vertex ? vertex : default_shader_vs;
+}
+
 physx::PxConvexMesh* Model::GetConvexMesh()
 {
 	return original->GetOrCreateConvexMesh();
@@ -375,4 +398,111 @@ physx::PxConvexMesh* Model::GetConvexMesh()
 physx::PxTriangleMesh* Model::GetTriangleMesh()
 {
 	return original->GetOrCreateTriangleMesh();
+}
+
+Model::Model()
+{
+	instance++;
+	default_shader_ps = nullptr;
+	default_shader_vs = nullptr;
+	shader_ps = nullptr;
+	shader_vs = nullptr;
+}
+
+void Model::Draw()
+{
+	//フレーム(リグ)単位でメッシュを描画
+	for (s32 frame_index = 0; frame_index < MV1GetFrameNum(handle); frame_index++)
+	{
+		//フレームのメッシュ数を取得
+		s32 mesh_count = MV1GetFrameMeshNum(handle, frame_index);
+		for (s32 mesh_index = 0; mesh_index < mesh_count; mesh_index++)
+		{
+
+			//メッシュ番号を取得
+			s32 mesh = MV1GetFrameMesh(handle, frame_index, mesh_index);
+
+			//メッシュのトライアングルリスト数を取得
+			s32 tlist_cout = MV1GetMeshTListNum(handle, mesh);
+			for (s32 tlist_index = 0; tlist_index < tlist_cout; tlist_index++)
+			{
+				//トライアングルリスト番号を取得
+				s32 tlist = MV1GetMeshTList(handle, mesh, tlist_index);
+
+				//トライアングルリストが使用しているマテリアルのインデックスを取得
+				auto material_index = MV1GetTriangleListUseMaterial(handle, tlist);
+				//--------------------------------------------------
+				// シェーダーバリエーションを選択
+				//--------------------------------------------------
+				// 頂点データタイプ(DX_MV1_VERTEX_TYPE_1FRAME 等)
+				auto vertex_type = MV1GetTriangleListVertexType(handle, tlist);
+				u32  variant_vs = vertex_type;    // DXライブラリの頂点タイプをそのままバリエーション番号に
+
+				//--------------------------------------------------
+				// トライアングルリストを描画
+				//--------------------------------------------------
+
+				if (default_shader_ps && default_shader_vs) {
+
+					int handle_vs = shader_vs ? shader_vs->variant(variant_vs) : default_shader_vs->variant(variant_vs);
+					int handle_ps = shader_ps ? *shader_ps : *default_shader_ps;
+
+					// シェーダーがない場合はオリジナルシェーダー利用を無効化
+					bool enable_shader = (handle_vs != -1) && (handle_ps != -1);
+					//MV1SetUseOrigShader(enable_shader);
+					SetUseVertexShader(handle_vs);
+					SetUsePixelShader(handle_ps);
+				}
+
+				//トライアングルリストを描画
+				MV1DrawTriangleList(handle, tlist);
+			}
+
+		}
+	}
+	MV1SetUseOrigShader(false);
+}
+
+void Animation::Update(float anim_timer)
+{
+	for (auto& call_back : call_backs) {
+		if (!call_back.is_executed && anim_timer > call_back.ex_frame)
+		{
+			call_back.is_executed = true;
+			if (call_back.function)
+				call_back.function();
+		}
+	}
+}
+
+void Animation::InitCallBacks()
+{
+	for (auto& call_back : call_backs) {
+		call_back.is_executed = false;
+	}
+}
+
+void Animation::SetCallBack(const std::function<void()>& call_back, float execute_frame, std::string_view method_name)
+{
+	std::string name(method_name);
+	auto it = method_names.find(name);
+	if (it != method_names.end())
+		return;
+	AnimationCallBack anim_call_back;
+	anim_call_back.function = std::move(call_back);
+	anim_call_back.ex_frame = execute_frame;
+	anim_call_back.is_executed = false;
+	call_backs.push_back(std::move(anim_call_back));
+	method_names[name] = call_backs.size();
+
+}
+
+void Animation::ResetCallBack(std::string_view method_name)
+{
+	std::string name(method_name);
+	auto ite = method_names.find(name);
+	if (ite != method_names.end())
+		return;
+	call_backs.erase(call_backs.begin() + ite->second);
+	method_names.erase(ite);
 }
