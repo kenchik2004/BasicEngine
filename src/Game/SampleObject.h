@@ -20,5 +20,5 @@ public:
 
 	CapsuleColliderWP fist;
 
-	unsigned int color = MAGENTA;
+	unsigned int color = Color::MAGENTA;
 };

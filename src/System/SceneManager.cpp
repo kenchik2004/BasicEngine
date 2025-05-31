@@ -26,7 +26,7 @@ int SceneManager::Init()
 
 	//裏シーンの配列の0番目は必ずここで作成するシーンが入っている
 	auto defaultdontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
-	defaultdontdestroyonload_scene->Construct<DontDestroyOnLoadScene>();
+	defaultdontdestroyonload_scene->Construct();
 	another_scenes[0] = defaultdontdestroyonload_scene;
 
 	return 0;

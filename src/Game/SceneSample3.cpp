@@ -9,6 +9,7 @@
 void SceneSample3::Load()
 {
 	ModelManager::LoadAsModel("data/aircraft.mv1", "aircraft");
+	ModelManager::LoadAsModel("data/Stage/stage00.mv1", "Stage");
 }
 
 int SceneSample3::Init()
@@ -17,10 +18,10 @@ int SceneSample3::Init()
 	auto obj2 = SceneManager::Object::Create<Object>();
 	obj2->tag = ObjBase::TAG::Stage;
 	obj2->transform->position = { 0,-50,0 };
-	obj2->transform->scale = { 0.1f,0.1f,0.1f };
+	obj2->transform->scale = { 0.01f,0.01f,0.01f };
 	obj2->AddComponent<RigidBody>();
 	auto model = obj2->AddComponent<ModelRenderer>();
-	model->SetModel("stage00");
+	model->SetModel("Stage");
 	auto mod_col = obj2->AddComponent<MeshCollider>();
 	mod_col->AttachToModel();
 	return 0;

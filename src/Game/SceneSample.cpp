@@ -26,11 +26,7 @@ namespace Hoge {
 		USING_SUPER(FugaComp);
 	};
 	class FooComp :public FugaComp {
-		using Super = Class; using Class = FooComp; static inline const char* Name() {
-			return (typeid(FooComp).name());
-		}; static inline ClassTypeInfo<FooComp> info = ClassTypeInfo<FooComp>(Name(), &Super::info); inline virtual TypeInfo* Info() {
-			return static_cast<TypeInfo*>(&info);
-		};;
+		USING_SUPER(FooComp);
 	};
 }
 class FugaComp :public HogeComp {

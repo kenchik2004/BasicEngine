@@ -76,8 +76,6 @@ public:
 	}
 	//  クラス名を取得
 	std::string_view ClassName() const;
-	//  インスタンスを作成(クラスをnewしてポインタを返す)
-	template <class T, class...Args> void* CreateInstance(Args&&...args) const;
 	//  クラスのサイズを取得
 	size_t ClassSize() const;
 	//  親ノードを取得
@@ -98,10 +96,43 @@ private:
 	const TypeInfo* child;
 	const TypeInfo* sibling;
 public:
-
+	virtual void* Create() const { return nullptr; }
 };
 #endif
 
+
+//! インスタンス作成クラス
+template <typename T, bool is_abstract = std::is_abstract_v<T>, bool is_default_constractible = std::is_default_constructible_v<T>>
+class CreateInstance
+{
+public:
+	static void* create() { return new T; }
+};
+
+//! 抽象クラスの場合はnewできないためnullptrを返す特殊化  
+//! 非デフォルト構築不可の場合はnewできないためnullptrを返す特殊化  
+ template <typename T>
+class CreateInstance<T, false, false>
+{
+public:
+	static void* create() { return nullptr; }
+
+};
+template <typename T>
+class CreateInstance<T, true, true>
+{
+public:
+	static void* create() { return nullptr; }
+
+};
+//! どっちもの場合はそもそも論外。nullptrを返す特殊化  
+template <typename T>
+class CreateInstance<T, true, false>
+{
+public:
+	static void* create() { return nullptr; }
+
+};
 
 
 template <class T>
@@ -112,6 +143,8 @@ public:
 	{
 	}
 
+	//  インスタンスを作成(クラスをnewしてポインタを返す)
+	void* Create() const override { return CreateInstance<T>::create(); }
 };
 class Class {
 public:
@@ -120,32 +153,11 @@ public:
 };
 
 
-//! インスタンス作成クラス
-template <typename T, bool is_abstract = std::is_abstract<T>::value, class...Args>
-class CreateInstance
-{
-public:
-	static void* create(Args&&...args) { return new T(std::forward<Args>(args)...); }
-};
-
-//! 抽象クラスの場合はnewできないためnullptrを返す特殊化  
-template <typename T, class... Args>
-class CreateInstance<T, true, Args...>
-{
-public:
-	static void* create() { return nullptr; }
-
-};
 
 #if 1
 #define USING_SUPER(CLASS)																					\
 		using Super = Class;																				\
 		using Class = CLASS;																				\
-	    /*! インスタンスを作成(クラスをnewしてポインタを返す)*/														 \
-	    template <class...Args>static CLASS* createInstance(Args&&...args)                                                                            \
-	    {                                                                                                        \
-	        return static_cast<CLASS*>(CreateInstance<CLASS,std::is_abstract<CLASS>::value,Args...>::create(std::forward<Args>(args)...));  \
-	    };																											\
 		static inline const char* Name() {return typeid(CLASS).name();};											\
 		static inline ClassTypeInfo<CLASS> info=ClassTypeInfo<CLASS>(Name(),&Super::info);							\
 		inline virtual TypeInfo* Info() {return static_cast<TypeInfo*>(&info);};									\
@@ -377,10 +389,14 @@ SafeSharedPtr<To> SafeStaticCast(const SafeSharedPtr<From>& from) {
 	return SafeSharedPtr<To>(std::static_pointer_cast<To>(from.raw_shared()));
 }
 
-#if 1
-template<class T, class ...Args>
-inline void* TypeInfo::CreateInstance(Args && ...args) const
+#if 0
+//void* ClassTypeInfo<T>::CreateInstance(Args && ...args) const
 {
+
+}
+template <class T>
+template<class...Args>
+inline void* ClassTypeInfo<T>::CreateInstance(Args&&... args) const {
 	if (!strcmp(class_name.c_str(), "root"))
 		return nullptr;
 	return T::createInstance(std::forward<Args>(args)...);
