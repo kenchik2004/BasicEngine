@@ -31,12 +31,6 @@
     <ClCompile Include="src\System\Input.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\SceneSample.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\SampleObject.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\System\Exception.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -64,23 +58,8 @@
     <ClCompile Include="src\System\Components\MeshCollider.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\SampleAttack.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\SceneSample2.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\System\Components\ModelRenderer.cpp">
       <Filter>System\Compnents</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\PlaneObject.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\SampleCutIn.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\SceneSample3.cpp">
-      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp">
       <Filter>System</Filter>
@@ -122,9 +101,6 @@
       <Filter>System\Compnents</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\AudioListener.cpp" />
-    <ClCompile Include="src\Game\SceneShader.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\System\Shader.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -132,6 +108,8 @@
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\Camera.cpp" />
+    <ClCompile Include="src\Game\Scene\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Scene\DiceScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -167,14 +145,8 @@
     <ClInclude Include="src\System\Input.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\SceneSample.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\System\typedef.h">
       <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\SampleObject.h">
-      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Exception.h">
       <Filter>System</Filter>
@@ -200,23 +172,8 @@
     <ClInclude Include="src\System\Components\MeshCollider.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\SceneSample2.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\SampleAttack.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\System\Components\ModelRenderer.h">
       <Filter>System\Compnents</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\SceneSample3.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\PlaneObject.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\SampleCutIn.h">
-      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
       <Filter>System</Filter>
@@ -258,9 +215,6 @@
       <Filter>System\Compnents</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\AudioListener.h" />
-    <ClInclude Include="src\Game\SceneShader.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="data\shader\dxlib_ps.h">
       <Filter>shader</Filter>
     </ClInclude>
@@ -274,6 +228,8 @@
       <Filter>shader</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\Camera.h" />
+    <ClInclude Include="src\Game\Scene\SceneTitle.h" />
+    <ClInclude Include="src\Game\Scene\DiceScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

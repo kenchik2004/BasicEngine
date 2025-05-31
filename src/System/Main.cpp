@@ -1,7 +1,5 @@
 ﻿#include "Main.h"
 #include "System/SceneManager.h"
-#include "Game/SceneShader.h"
-#include "Game/SceneSample.h"
 #include <fstream>
 
 //#define DEBUG_WINDOW
@@ -154,7 +152,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 			if (!SceneManager::GetCurrentScene() && Input::GetKeyDown(KeyCode::Return)) {
 
-				void* p = CreateInstanceFromName<Scene>("SceneSample");
+				void* p = CreateInstanceFromName<Scene>("RLyeh::SceneTitle");
 				if (p) {
 					auto ptr = static_cast<Scene*>(p);
 					SceneManager::Load<Scene>(ptr);

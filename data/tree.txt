@@ -1,16 +1,12 @@
 root
 |-----Scene
-|        |-----SceneShader
-|        |-----SceneSample2
-|        |-----SceneSample
-|        |-----SceneSample3
+|        |-----RLyeh::SceneTitle
+|        |-----DiceScene
 |        end_of_node
 |        
 |-----ObjBase
 |        |-----UIObject
 |        |-----Object
-|        |        |-----SampleObject
-|        |        |-----PlaneObject
 |        |        |-----DiceD8
 |        |        |-----DiceD6
 |        |        |-----DiceD4
@@ -22,29 +18,13 @@ root
 |        end_of_node
 |        
 |-----Component
-|        |-----HogeComp
-|        |        |-----FugaComp
-|        |        |        |-----FooComp
-|        |        |        |        |-----PiyoComp
-|        |        |        |        end_of_node
-|        |        |        |        
-|        |        |        end_of_node
-|        |        |        
-|        |        |-----Hoge::FugaComp
-|        |        |        |-----Hoge::FooComp
-|        |        |        end_of_node
-|        |        |        
-|        |        end_of_node
-|        |        
 |        |-----AudioPlayer
-|        |-----SampleCutIn
 |        |-----Animator
-|        |-----SampleAttack
 |        |-----Collider
 |        |        |-----SphereCollider
-|        |        |-----MeshCollider
-|        |        |-----BoxCollider
 |        |        |-----CapsuleCollider
+|        |        |-----BoxCollider
+|        |        |-----MeshCollider
 |        |        |-----ConvexMeshCollider
 |        |        end_of_node
 |        |        
