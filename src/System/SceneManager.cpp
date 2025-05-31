@@ -75,7 +75,7 @@ void SceneManager::PreUpdate()
 			ex.Show();
 		}
 		ObjBaseWPVec objs;
-		for (auto& obj : Object::GetArray<ObjBase>())
+		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
 			objs.push_back(obj);
 		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
 			if (!obj.lock())
@@ -104,6 +104,7 @@ void SceneManager::PreUpdate()
 					});
 			}
 			});
+		another_scene->OnPreUpdateFinish();
 	}
 
 	//カレントシーンがいないならそちらは何もしない
@@ -182,6 +183,7 @@ void SceneManager::PreUpdate()
 		}
 	}
 #endif
+	current_scene->OnPreUpdateFinish();
 }
 
 void SceneManager::Update()
@@ -215,6 +217,7 @@ void SceneManager::Update()
 					});
 			}
 			});
+		another_scene->OnUpdateFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
@@ -276,6 +279,7 @@ void SceneManager::Update()
 		}
 	}
 #endif
+	current_scene->OnUpdateFinish();
 }
 
 void SceneManager::LateUpdate()
@@ -302,6 +306,7 @@ void SceneManager::LateUpdate()
 					});
 			}
 			});
+		another_scene->OnLateUpdateFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
@@ -347,6 +352,7 @@ void SceneManager::LateUpdate()
 		}
 	}
 #endif
+	current_scene->OnLateUpdateFinish();
 }
 
 void SceneManager::PostUpdate()
@@ -373,6 +379,7 @@ void SceneManager::PostUpdate()
 					});
 			}
 			});
+		another_scene->OnPostUpdateFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
@@ -418,6 +425,7 @@ void SceneManager::PostUpdate()
 		}
 	}
 #endif
+	current_scene->OnPostUpdateFinish();
 }
 
 void SceneManager::PrePhysics()
@@ -664,6 +672,7 @@ void SceneManager::PreDraw()
 					});
 			}
 			});
+		another_scene->OnPreDrawFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
@@ -709,6 +718,7 @@ void SceneManager::PreDraw()
 		}
 	}
 #endif
+	current_scene->OnPostUpdateFinish();
 }
 
 void SceneManager::Draw()
@@ -736,6 +746,7 @@ void SceneManager::Draw()
 					});
 			}
 			});
+		another_scene->OnDrawFinish();
 	}
 	if (!current_scene) {
 		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
@@ -782,6 +793,7 @@ void SceneManager::Draw()
 		}
 	}
 #endif
+	current_scene->OnDrawFinish();
 }
 
 void SceneManager::LateDraw()
@@ -808,6 +820,7 @@ void SceneManager::LateDraw()
 					});
 			}
 			});
+		another_scene->OnLateDrawFinish();
 	}
 
 	//カレントシーンがいないならそちらは何もしない
@@ -854,6 +867,7 @@ void SceneManager::LateDraw()
 		}
 	}
 #endif
+	current_scene->OnLateDrawFinish();
 }
 
 void SceneManager::DebugDraw()
@@ -908,7 +922,7 @@ void SceneManager::DebugDraw()
 		}
 	}
 #endif
-
+	current_scene->OnDebugDrawFinish();
 	SetUseLighting(true);
 	SetLightEnable(true);
 }
@@ -952,6 +966,7 @@ void SceneManager::LateDebugDraw()
 		}
 	}
 #endif
+	current_scene->OnLateDebugDrawFinish();
 }
 
 void SceneManager::PostDraw()
@@ -979,6 +994,7 @@ void SceneManager::PostDraw()
 						comp.lock()->PostDraw();
 		}
 	}
+	current_scene->OnPostDrawFinish();
 }
 
 void SceneManager::Exit()

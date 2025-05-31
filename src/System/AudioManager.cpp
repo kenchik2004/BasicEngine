@@ -24,6 +24,7 @@ void AudioManager::Load(std::string_view path, std::string_view name, bool use_3
 		(*(ptr->name_map))[name].index = cache_index;
 		(*(ptr->path_map))[path].index = cache_index;
 		ptr->cache->push_back(std::move(ptr->audio_source));
+		loading_count--;
 		delete ptr;
 		};
 	PtrToCacheAndAudioData* data = new PtrToCacheAndAudioData;
@@ -37,6 +38,7 @@ void AudioManager::Load(std::string_view path, std::string_view name, bool use_3
 	names[name_key].handle = data->audio_source->handle;
 	paths[path_key].handle = data->audio_source->handle;
 	SetASyncLoadFinishCallback(data->audio_source->handle, call_back, data);
+	loading_count++;
 	SetUseASyncLoadFlag(false);
 	return;
 }

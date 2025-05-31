@@ -186,11 +186,12 @@ public:
 		//(いなかったら、ロードの必要あり)
 		auto scene = make_safe_shared<T>(std::forward<Args>(args)...);
 		//シーンの作成&登録
-		scene->Construct<T>();
+		scene->Construct();
 		//ロードデータがあるならロード
 		scene->Load();
 		//シーンの配列に登録
-		scenes.push_back(SafeStaticCast<Scene>(scene));
+		another_scenes.push_back(SafeStaticCast<Scene>(scene));
+		scene->Init();
 
 		return scene;
 	}
@@ -199,13 +200,17 @@ public:
 	class Object {
 	public:
 
-		//オブジェクトの作成
+		//オブジェクトの作成(シーン指定可)
 		template<class T, class...Args>
-		static inline SafeSharedPtr<T> Create(Args&&...args)
+		static inline SafeSharedPtr<T> Create(SceneP target_scene = nullptr, Args&&...args)
 		{
-			if (!current_scene)
+			if (!current_scene && target_scene)
 				return nullptr;
-			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
+			SafeSharedPtr<T> obj;
+			if (target_scene)
+				obj = target_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
+			else
+				obj = current_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
 
 			obj->Init();
 
