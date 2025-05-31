@@ -29,12 +29,12 @@ int SceneSample3::Init()
 
 void SceneSample3::Update()
 {
-	if (Input::PushHitKey(KEY_INPUT_RETURN))
+	if (Input::GetKeyDown(KeyCode::Return))
 		SceneManager::Change(SafeSharedPtr(shared_from_this()));
 	if (!plane.lock())
 		SceneManager::Load<SceneSample3>();
 
-	if (Input::PushHitKey(KEY_INPUT_I))
+	if (Input::GetKeyDown(KeyCode::I))
 	{
 
 		SafeWeakPtr<ObjBase> obj;

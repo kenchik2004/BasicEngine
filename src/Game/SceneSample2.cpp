@@ -53,36 +53,36 @@ void SceneSample2::Update()
 	auto model = obj.lock()->GetComponent<ModelRenderer>();
 	auto animator = obj.lock()->GetComponent<Animator>();
 
-	if (Input::CheckHitKey(KEY_INPUT_LEFT))
+	if (Input::GetKey(KeyCode::Left))
 		obj.lock()->transform->AddRotation(float3(0, -90 * Time::UnscaledDeltaTime(), 0));
-	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
+	if (Input::GetKey(KeyCode::Right))
 		obj.lock()->transform->AddRotation(float3(0, 90 * Time::UnscaledDeltaTime(), 0));
 
-	if (Input::CheckHitKey(KEY_INPUT_UP))
+	if (Input::GetKey(KeyCode::Up))
 		obj.lock()->transform->AddRotation(float3(-90 * Time::UnscaledDeltaTime(), 0, 0));
-	if (Input::CheckHitKey(KEY_INPUT_DOWN))
+	if (Input::GetKey(KeyCode::Down))
 		obj.lock()->transform->AddRotation(float3(90 * Time::UnscaledDeltaTime(), 0, 0));
 
-	if (Input::CheckHitKey(KEY_INPUT_W)) {
+	if (Input::GetKey(KeyCode::W)) {
 		velocity_factor += obj.lock()->transform->AxisZ();
 		model->rot = Quaternion(DEG2RAD(180), Vector3(0, 1, 0));
 	}
-	if (Input::CheckHitKey(KEY_INPUT_S)) {
+	if (Input::GetKey(KeyCode::S)) {
 		velocity_factor -= obj.lock()->transform->AxisZ();
 		model->rot = Quaternion(DEG2RAD(0), Vector3(0, 1, 0));
 
 	}
-	if (Input::CheckHitKey(KEY_INPUT_D)) {
+	if (Input::GetKey(KeyCode::D)) {
 		velocity_factor += obj.lock()->transform->AxisX();
 		model->rot = Quaternion(DEG2RAD(270), Vector3(0, 1, 0));
 	}
-	if (Input::CheckHitKey(KEY_INPUT_A)) {
+	if (Input::GetKey(KeyCode::A)) {
 		velocity_factor -= obj.lock()->transform->AxisX();
 		model->rot = Quaternion(DEG2RAD(90), Vector3(0, 1, 0));
 
 	}
 	velocity_factor = ProjectOnPlane(velocity_factor, float3(0, 1, 0)).normalized() * 3.5f;
-	if (Input::CheckHitKey(KEY_INPUT_LSHIFT))
+	if (Input::GetKey(KeyCode::LShift))
 		velocity_factor *= 1.5f;
 	if (velocity_factor.GetLength() < FLT_EPSILON && !is_jump)
 		animator->PlayIfNoSame("stand", true);
@@ -96,11 +96,11 @@ void SceneSample2::Update()
 	velocity_factor.y = rb->velocity.y;
 	rb->velocity = velocity_factor;
 
-	if (Input::PushHitKey(KEY_INPUT_SPACE))
+	if (Input::GetKeyDown(KeyCode::Space))
 		rb->AddForce(Vector3(0, 10.0f, 0), ForceMode::Impulse);
 	rb = nullptr;
 	model = nullptr;
-	if (Input::PushHitKey(KEY_INPUT_RETURN))
+	if (Input::GetKeyDown(KeyCode::Return))
 		SceneManager::Change(SceneManager::GetScene<SceneSample>());
 }
 

@@ -155,6 +155,8 @@ public:
 
 		}
 
+		if (!dynamic_cast<Scene*>(ptr))
+			return SafeSharedPtr<T>(nullptr);
 		//(いなかったら、ロードの必要あり)
 		SafeSharedPtr<Scene> scene;
 		//ただし、CreateInstance等でnewされた生ポがあれば、そいつをmake_sharedせず直接Sharedに渡して登録する

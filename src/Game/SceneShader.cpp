@@ -105,7 +105,7 @@ void SceneShader::Draw()
 	//オリジナルシェーダーを使用するフラグをoff(後片付け)
 	MV1SetUseOrigShader(false);
 
-	if (Input::PushHitKey(KEY_INPUT_SPACE))
+	if (Input::GetKeyDown(KeyCode::Space))
 	{
 		SaveDrawValidGraph(shadow_map, 0, 0, 1024, 1024, "data/shadow_map.png");
 	}

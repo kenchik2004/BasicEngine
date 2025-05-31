@@ -111,7 +111,7 @@ public:
 
 //! 抽象クラスの場合はnewできないためnullptrを返す特殊化  
 //! 非デフォルト構築不可の場合はnewできないためnullptrを返す特殊化  
- template <typename T>
+template <typename T>
 class CreateInstance<T, false, false>
 {
 public:
@@ -389,16 +389,7 @@ SafeSharedPtr<To> SafeStaticCast(const SafeSharedPtr<From>& from) {
 	return SafeSharedPtr<To>(std::static_pointer_cast<To>(from.raw_shared()));
 }
 
-#if 0
-//void* ClassTypeInfo<T>::CreateInstance(Args && ...args) const
-{
+[[nodiscard]] void* CreateInstanceFromName(std::string_view name, TypeInfo& type = TypeInfo::Root());
 
-}
-template <class T>
-template<class...Args>
-inline void* ClassTypeInfo<T>::CreateInstance(Args&&... args) const {
-	if (!strcmp(class_name.c_str(), "root"))
-		return nullptr;
-	return T::createInstance(std::forward<Args>(args)...);
-}
-#endif
+template<class T>
+[[nodiscard]] T* CreateInstanceFromName(std::string_view name) { return reinterpret_cast<T*>(CreateInstanceFromName(name, T::info)); }

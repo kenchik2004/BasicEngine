@@ -501,8 +501,8 @@ void Animation::ResetCallBack(std::string_view method_name)
 {
 	std::string name(method_name);
 	auto ite = method_names.find(name);
-	if (ite != method_names.end())
+	if (ite == method_names.end())
 		return;
-	call_backs.erase(call_backs.begin() + ite->second);
+	call_backs.erase(call_backs.begin() + ite->second-1);
 	method_names.erase(ite);
 }

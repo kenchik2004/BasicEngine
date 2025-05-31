@@ -27,25 +27,25 @@ int PlaneObject::Init()
 
 void PlaneObject::Update()
 {
-	if (Input::CheckHitKey(KEY_INPUT_W))
+	if (Input::GetKey(KeyCode::W))
 		transform->AddRotation({ DEG2RAD(30) ,0,0 });
-	if (Input::CheckHitKey(KEY_INPUT_S))
+	if (Input::GetKey(KeyCode::S))
 		transform->AddRotation({ -DEG2RAD(30) ,0,0 });
-	if (Input::CheckHitKey(KEY_INPUT_A))
+	if (Input::GetKey(KeyCode::A))
 		transform->AddRotation({ 0 ,0,DEG2RAD(30) });
-	if (Input::CheckHitKey(KEY_INPUT_D))
+	if (Input::GetKey(KeyCode::D))
 		transform->AddRotation({ 0 ,0,-DEG2RAD(30) });
-	if (Input::CheckHitKey(KEY_INPUT_UP))
+	if (Input::GetKey(KeyCode::Up))
 		camera_rot *= Quaternion(DEG2RAD(30) * Time::DeltaTime(), { 1,0,0 });
-	if (Input::CheckHitKey(KEY_INPUT_DOWN))
+	if (Input::GetKey(KeyCode::Down))
 		camera_rot *= Quaternion(DEG2RAD(-30) * Time::DeltaTime(), { 1,0,0 });
-	if (Input::CheckHitKey(KEY_INPUT_LEFT))
+	if (Input::GetKey(KeyCode::Left))
 		camera_rot *= Quaternion(DEG2RAD(30) * Time::DeltaTime(), { 0,0,1 });
-	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
+	if (Input::GetKey(KeyCode::Right))
 		camera_rot *= Quaternion(DEG2RAD(-30) * Time::DeltaTime(), { 0,0,1 });
-	if (Input::CheckHitKey(KEY_INPUT_LSHIFT))
+	if (Input::GetKey(KeyCode::LShift))
 		speed += 1.0f * Time::DeltaTime();
-	if (Input::CheckHitKey(KEY_INPUT_LCONTROL))
+	if (Input::GetKey(KeyCode::LControl))
 		speed -= 1.0f * Time::DeltaTime();
 	if (speed<0 || speed>SPEED_MAX)
 		speed = speed < 0 ? 0 : SPEED_MAX;

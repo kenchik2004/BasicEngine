@@ -137,26 +137,26 @@ void SceneSample::Update()
 		return;
 	}
 
-	if (Input::CheckHitKey(KEY_INPUT_F))
+	if (Input::GetKey(KeyCode::F))
 		Time::SetFPSMAX(Time::GetFPSMAX() + 2);
 
-	if (Input::CheckHitKey(KEY_INPUT_G))
+	if (Input::GetKey(KeyCode::G))
 		Time::SetFPSMAX(Time::GetFPSMAX() - 2);
 
-	if (Input::PushHitKey(KEY_INPUT_RETURN)) {
+	if (Input::GetKeyDown(KeyCode::Return)) {
 		SceneManager::Load<SceneSample>();
 		return;
 	}
-	if (Input::PushHitKey(KEY_INPUT_R) && audio_player.lock())
+	if (Input::GetKeyDown(KeyCode::R) && audio_player.lock())
 		audio_player.lock()->Play(1.5f);
-	if (Input::PushHitKey(KEY_INPUT_T) && audio_player.lock())
+	if (Input::GetKeyDown(KeyCode::T) && audio_player.lock())
 		audio_player.lock()->Stop();
-	if (Input::CheckHitKey(KEY_INPUT_UP) && audio_player.lock())
+	if (Input::GetKey(KeyCode::Up) && audio_player.lock())
 		audio_player.lock()->pitch_rate += 0.001f;
-	if (Input::CheckHitKey(KEY_INPUT_DOWN) && audio_player.lock())
+	if (Input::GetKey(KeyCode::Down) && audio_player.lock())
 		audio_player.lock()->pitch_rate -= 0.001f;
 
-	if (Input::PushHitKey(KEY_INPUT_P)) {
+	if (Input::GetKeyDown(KeyCode::P)) {
 
 		DrawString(SCREEN_W * 0.5f, SCREEN_H * 0.5f, "スキップ中", Color::CYAN);
 		ScreenFlip();

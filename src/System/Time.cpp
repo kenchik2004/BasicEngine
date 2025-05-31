@@ -72,7 +72,7 @@ namespace Time {
 	int FixFPS()
 	{
 		// FPS固定にはwhileを使用しない
-		// whileでやると、FPS使用率を馬鹿みたいに食うので、
+		// whileでやると、FPSのリソースを馬鹿みたいに食うので、
 		// Chronoを使用したSleep関数でアプリを一時停止する
 
 		double now_time = Time::GetOSTimeD();														//!<現在の正規時間を取得
@@ -87,6 +87,7 @@ namespace Time {
 
 	//時飛ばし(時間の上書きなのであまり多用しないでください)
 	void ResetTime() {
+		//一応実際のシステム時間は保管する(アニメーションとかは実際の時間をもとに動く)
 		sys_time = (unsigned long long)(SEC2MICRO(GetOSTimeD()));			//!<システム上の時間を上書き
 		sys_time_prev = sys_time;											//!<前フレームの時間を上書き
 	}
@@ -194,14 +195,25 @@ namespace Time {
 		return MICRO2SEC((double)(sys_time - sys_time_start));
 	}
 
-	//アプリケーション開始後のゲーム内時間の取得
+	//アプリケーション開始後のゲーム内時間の取得(float)
 	const double GetTimeFromStart()
+	{
+		return (float)time;
+	}
+
+	//アプリケーション開始後のゲーム内時間の取得(double)
+	const double GetTimeFromStartD()
 	{
 		return time;
 	}
 
-	//アプリケーション開始後の現実時間の取得
+	//アプリケーション開始後の現実時間の取得(float)
 	const double GetRealTimeFromStart()
+	{
+		return (float)real_time;
+	}
+	//アプリケーション開始後の現実時間の取得(double)
+	const double GetRealTimeFromStartD()
 	{
 		return real_time;
 	}
