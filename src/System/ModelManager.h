@@ -10,8 +10,8 @@ class ModelSource {
 	std::string name;
 	int handle = -1;
 	bool is_loaded = false;
-	physx::PxConvexMesh* convex_mesh;
-	physx::PxTriangleMesh* triangle_mesh;
+	physx::PxConvexMesh* convex_mesh = nullptr;
+	physx::PxTriangleMesh* triangle_mesh = nullptr;
 	MV1_REF_POLYGONLIST ref_poly_{};
 	bool polygons_loaded = false;
 public:

@@ -63,23 +63,33 @@ public:
 	// Updateブロック(更新前後処理)
 	//-----------------------------
 	inline virtual void PreUpdate() {}
+	inline virtual void OnPreUpdateFinish() {}
 	inline virtual void Update() {}
+	inline virtual void OnUpdateFinish() {}
 	inline virtual void LateUpdate() {}
+	inline virtual void OnLateUpdateFinish() {}
 	inline virtual void PostUpdate() {}
+	inline virtual void OnPostUpdateFinish() {}
 	//-----------------------------
 
 	//-----------------------------
 	// Drawブロック(描画前後処理)
 	//-----------------------------
 	inline virtual void PreDraw() {}
+	inline virtual void OnPreDrawFinish() {}
 	inline virtual void Draw() {}
+	inline virtual void OnDrawFinish() {}
 	inline virtual void LateDraw() {}
+	inline virtual void OnLateDrawFinish() {}
 	//デバッグ用描画(デバッグウィンドウに描画される)
 	inline virtual void DebugDraw() {}
+	inline virtual void OnDebugDrawFinish() {}
 	inline virtual void LateDebugDraw() {}
+	inline virtual void OnLateDebugDrawFinish() {}
 
 	//ここの処理は描画に次フレームまで反映されない
 	inline virtual void PostDraw() {}
+	inline virtual void OnPostDrawFinish() {}
 
 	inline virtual void Exit() {}
 	virtual void UnLoad() {}

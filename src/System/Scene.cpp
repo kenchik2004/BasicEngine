@@ -83,11 +83,6 @@ void Scene::Destroy()
 	for (auto& obj : w_vec) {
 		if (!obj.lock())
 			continue;
-		while (auto comp = obj.lock()->GetComponent<Component>()) {
-			comp->RemoveThisComponent();
-		}
-		obj.lock()->Exit();
-		obj.lock()->status.status_bit.on(ObjStat::STATUS::REMOVED);
 		DestroyObject(obj.lock());
 	}
 	objects.clear();
@@ -164,8 +159,8 @@ void Scene::SyncObjectsPriority()
 void Scene::DestroyObject(ObjBaseP destroy_obj) {
 	if (objects.size() <= 0)
 		return;
-	if (SceneManager::GetCurrentScene()->IsInSimulation()) {
-		SceneManager::GetCurrentScene()->AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjBaseWP(destroy_obj)]()
+	if (IsInSimulation()) {
+		AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjBaseWP(destroy_obj)]()
 			{if (this_.lock() && obj.lock())
 			this_.lock()->DestroyObject(obj.lock());
 			});
