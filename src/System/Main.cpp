@@ -152,46 +152,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::PreUpdate();
 			SceneManager::Update();
 
-			if (!SceneManager::GetCurrentScene() && Input::PushHitKey(KEY_INPUT_RETURN)) {
+			if (!SceneManager::GetCurrentScene() && Input::GetKeyDown(KeyCode::Return)) {
 
-				std::string class_name = "SceneSample";
-				const TypeInfo& base_type = TypeInfo::Root();
-				const TypeInfo* p = base_type.Child();
-				bool            returnFromTraverse = false;
-				const TypeInfo* next = nullptr;
-
-				//----------------------------------------------------------
-				// 継承ツリー構造を探索
-				// スタック再帰を使わない高速なツリー探索 (stackless tree traversal)
-				//----------------------------------------------------------
-				while (p != &base_type) {
-					if (!returnFromTraverse) {
-						// 名前チェックして一致したら作成
-						if (p->ClassName() == class_name) {
-							break;
-						}
-					}
-
-					if (p->Child() && !returnFromTraverse) {
-						// 子がある場合は子を先に調べる。(子から探索で戻ってきた場合は除外)
-						next = p->Child();
-						returnFromTraverse = false;
-					}
-					else if (p->Sibling()) {
-						// 兄弟がいる場合は兄弟を調べる
-						next = p->Sibling();
-						returnFromTraverse = false;
-					}
-					else {
-						// 親へ戻る。
-						next = p->Parent();
-						returnFromTraverse = true;
-					}
-					p = next;
-				}
+				void* p = CreateInstanceFromName<Scene>("SceneSample");
 				if (p) {
-					auto ptr = static_cast<Scene*>(p->Create());
-
+					auto ptr = static_cast<Scene*>(p);
 					SceneManager::Load<Scene>(ptr);
 				}
 			}
@@ -256,7 +221,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			Time::FixFPS();
 			Time::UpdateFPS();
 			if (ProcessMessage())	break;
-			if (CheckHitKey(KEY_INPUT_ESCAPE))	break;
+			if (Input::GetKey(KeyCode::Escape))	break;
 		}
 		catch (Exception& ex) {
 			ex.Show();

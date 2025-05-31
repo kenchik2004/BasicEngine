@@ -63,10 +63,14 @@ namespace Time
 	const float SystemTimeFromStart();
 	//アプリケーション開始後の物理的時間の取得(double)
 	const double SystemTimeFromStartD();
-	//アプリケーション開始後のゲーム内時間の取得
+	//アプリケーション開始後のゲーム内時間の取得(float)
 	const double GetTimeFromStart();
-	//アプリケーション開始後の現実時間の取得
+	//アプリケーション開始後のゲーム内時間の取得(double)
+	const double GetTimeFromStartD();
+	//アプリケーション開始後の現実時間の取得(float)
 	const double GetRealTimeFromStart();
+	//アプリケーション開始後の現実時間の取得(double)
+	const double GetRealTimeFromStartD();
 
 	//システム内時間の取得(float)
 	const float SystemTime();

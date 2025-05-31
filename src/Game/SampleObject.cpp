@@ -23,7 +23,8 @@ int SampleObject::Init()
 	auto animator = AddComponent<Animator>();
 	auto stand = ModelManager::CloneAnimByName("stand", 1);
 	auto&& lambda = [=]() {
-		animator->Play("punch"); };
+		animator->Play("punch");
+		stand->ResetCallBack("p"); };
 	stand->SetCallBack(std::move(lambda), 60, "p");
 	animator->SetAnimation(stand);
 	animator->SetAnimation("walk", 1);
@@ -45,26 +46,26 @@ void SampleObject::Update()
 {
 	anim_time += Time::DeltaTime() * 10;
 	float3 velocity_factor = float3(0, 0, 0);
-	if (Input::CheckHitKey(KEY_INPUT_W))
+	if (Input::GetKey(KeyCode::W))
 		velocity_factor += transform->AxisZ();
-	if (Input::CheckHitKey(KEY_INPUT_S))
+	if (Input::GetKey(KeyCode::S))
 		velocity_factor -= transform->AxisZ();
-	if (Input::CheckHitKey(KEY_INPUT_D))
+	if (Input::GetKey(KeyCode::D))
 		velocity_factor += transform->AxisX();
-	if (Input::CheckHitKey(KEY_INPUT_A))
+	if (Input::GetKey(KeyCode::A))
 		velocity_factor -= transform->AxisX();
-	if (Input::CheckHitKey(KEY_INPUT_LEFT))
+	if (Input::GetKey(KeyCode::Left))
 		transform->AddRotation(Vector3(0, -45 * Time::DeltaTime(), 0));
-	if (Input::CheckHitKey(KEY_INPUT_RIGHT))
+	if (Input::GetKey(KeyCode::Right))
 		transform->AddRotation(Vector3(0, 45 * Time::DeltaTime(), 0));
 
 	velocity_factor = velocity_factor.normalized() * 10;
 	velocity_factor.y = GetComponent<RigidBody>()->velocity.y;
-	if (Input::PushHitKey(KEY_INPUT_SPACE))
+	if (Input::GetKeyDown(KeyCode::Space))
 		velocity_factor.y = 5;
 	GetComponent<RigidBody>()->velocity = velocity_factor;
 
-	if (Input::PushHitKey(KEY_INPUT_SPACE) && !GetComponent<SampleAttack>()) {
+	if (Input::GetKeyDown(KeyCode::Space) && !GetComponent<SampleAttack>()) {
 		AddComponent<SampleAttack>();
 	}
 	if (auto model = GetComponent<Animator>()) {
