@@ -15,6 +15,8 @@ class Scene :public std::enable_shared_from_this<Scene>
 private:
 	physx::PxScene* physics_scene = nullptr;
 public:
+
+	Scene() { physics_scene = PhysicsManager::AddScene(); }
 	inline void SetObjPriority(int new_priority, ObjBaseP who) {
 		who->status.priority = new_priority;
 		dirty_priority_objects.push_back(who);
@@ -35,10 +37,8 @@ public:
 	friend class SceneManager;
 	USING_SUPER(Scene);
 	SceneStat status;
-	template <class T> void Construct() {
-		auto class_ = std::static_pointer_cast<T>(shared_from_this());
-		class_->status.class_name = typeid(T).name();
-		physics_scene = PhysicsManager::AddScene();
+	void Construct() {
+		status.class_name = Info()->ClassName();
 	}
 	inline virtual void Load() { loading_status = LOADING_STATUS::LOADED; }
 

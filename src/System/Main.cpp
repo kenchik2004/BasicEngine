@@ -190,9 +190,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					p = next;
 				}
 				if (p) {
-					auto ptr = static_cast<SceneSample*>(p->CreateInstance<SceneSample>());
+					auto ptr = static_cast<Scene*>(p->Create());
 
-					SceneManager::Load<SceneSample>(ptr);
+					SceneManager::Load<Scene>(ptr);
 				}
 			}
 			SceneManager::LateUpdate();

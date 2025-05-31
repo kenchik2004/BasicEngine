@@ -20,6 +20,5 @@ public:
 
 	CapsuleColliderWP fist;
 
-	Color color = Color::MAGENTA;
-	bool camera = false;
+	unsigned int color = Color::MAGENTA;
 };

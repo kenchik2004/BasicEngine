@@ -156,22 +156,22 @@ public:
 		}
 
 		//(いなかったら、ロードの必要あり)
-		SafeSharedPtr<T> scene;
+		SafeSharedPtr<Scene> scene;
 		//ただし、CreateInstance等でnewされた生ポがあれば、そいつをmake_sharedせず直接Sharedに渡して登録する
 		if (ptr)
-			scene = SafeSharedPtr<T>(std::shared_ptr<T>(ptr));
+			scene = SafeSharedPtr<Scene>(std::shared_ptr<Scene>(static_cast<Scene*>(ptr)));
 		else
 			scene = make_safe_shared<T>(std::forward<Args>(args)...);
 		//シーンの作成&登録
-		scene->Construct<T>();
+		scene->Construct();
 		//シーンの配列に登録
-		scenes.push_back(SafeStaticCast<Scene>(scene));
+		scenes.push_back(scene);
 		//ロードデータがあるならロード
 		scene->Load();
 		//シーン変更
-		Change(SafeStaticCast<Scene>(scene));
+		Change(scene);
 
-		return scene;
+		return SafeStaticCast<T>(scene);
 	}
 	template <class T, class... Args> static inline SafeSharedPtr<T> LoadAsAnother(Args&&... args) {
 		//シーンの作成(いたらロードの必要なし)
