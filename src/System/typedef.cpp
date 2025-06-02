@@ -26,7 +26,7 @@ std::string WStr2Str(std::wstring in)
 	return out;
 }
 
-void* CreateInstanceFromName(std::string_view name,TypeInfo& type)
+SafeSharedPtr<void> CreateInstanceFromName(std::string_view name,TypeInfo& type)
 {
 	std::string class_name(name);
 	const TypeInfo& base_type = type;

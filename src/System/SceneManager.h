@@ -144,7 +144,7 @@ public:
 	}
 
 	//シーンをロード(作成)
-	template<class T, class...Args> static inline SafeSharedPtr<T> Load(T* ptr = nullptr, Args&&...args)
+	template<class T, class...Args> static inline SafeSharedPtr<T> Load(SafeSharedPtr<T> ptr = nullptr, Args&&...args)
 	{
 		//シーンの作成(いたらロードの必要なし)
 		if (SafeSharedPtr<T> scene = GetScene<T>()) {
@@ -155,13 +155,13 @@ public:
 
 		}
 
-		if (!dynamic_cast<Scene*>(ptr))
+		if (!SafeDynamicCast<Scene>(ptr))
 			return SafeSharedPtr<T>(nullptr);
 		//(いなかったら、ロードの必要あり)
 		SafeSharedPtr<Scene> scene;
 		//ただし、CreateInstance等でnewされた生ポがあれば、そいつをmake_sharedせず直接Sharedに渡して登録する
 		if (ptr)
-			scene = SafeSharedPtr<Scene>(std::shared_ptr<Scene>(static_cast<Scene*>(ptr)));
+			scene = SafeStaticCast<Scene>(ptr);
 		else
 			scene = make_safe_shared<T>(std::forward<Args>(args)...);
 		//シーンの作成&登録
@@ -204,7 +204,7 @@ public:
 		template<class T, class...Args>
 		static inline SafeSharedPtr<T> Create(SceneP target_scene = nullptr, Args&&...args)
 		{
-			if (!current_scene && target_scene)
+			if (!current_scene && !target_scene)
 				return nullptr;
 			SafeSharedPtr<T> obj;
 			if (target_scene)
@@ -322,6 +322,17 @@ public:
 
 			//カレントシーンからオブジェクトを削除
 			current_scene->DestroyObject(destroy_obj);
+			//削除後、参照を削除
+			destroy_obj.reset();
+		}
+		//オブジェクトを削除(シーン指定あり)
+		static inline void Destory(SceneP target_scene, ObjBaseP destroy_obj) {
+			//シーンがいないなら何もしない(そもそも大問題)
+			if (!target_scene)
+				return;
+
+			//カレントシーンからオブジェクトを削除
+			target_scene->DestroyObject(destroy_obj);
 			//削除後、参照を削除
 			destroy_obj.reset();
 		}
