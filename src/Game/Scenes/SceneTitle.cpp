@@ -1,7 +1,7 @@
 ﻿#include "precompile.h"
 #include "SceneTitle.h"
-#include "Game/Scene/DiceScene.h"
-
+#include "Game/Scenes/DiceScene.h"
+#include <algorithm>
 
 namespace RLyeh {
 
@@ -33,8 +33,11 @@ namespace RLyeh {
 				return;
 		}
 		//とりあえず技術検証用に裏シーンとのやり取り
-		if (Input::GetKeyDown(KeyCode::Space))
-			dice_scene->Roll(1, 4);
+		if (Input::GetKeyDown(KeyCode::Space)) {
+			dice_scene->Clear();
+			dice_scene->Roll(10, 100);
+		}
+
 	}
 
 	void SceneTitle::LateDraw()
@@ -56,7 +59,7 @@ namespace RLyeh {
 		}
 		else {
 			//裏シーンの描画領域をこっちに持ってくる
-			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_W, dice_scene->screen, true);
+			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, dice_scene->screen, true);
 			//デカデカとタイトル表示
 			SetFontSize(150);
 			int x, y;
@@ -65,6 +68,23 @@ namespace RLyeh {
 			DrawString(SCREEN_W * 0.5f - x * 0.5f, SCREEN_H * 0.5f - y * 0.5f, "  THE\nR'LYEH", Color::RED);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			SetFontSize(DEFAULT_FONT_SIZE);
+			//とりあえず1でスキップ&結果集計
+			int i = 0;
+			if (Input::GetKeyDown(KeyCode::Alpha1)) {
+				dice_scene->Skip();
+				results.clear();
+				results = dice_scene->FetchResults();
+				std::sort(results.begin(), results.end(), [](int a, int b) {return a < b; });
+			}
+			int sum = 0;
+			for (auto& ite : results) {
+				DrawFormatString(0, i * 16, Color::CYAN, "%d,", ite);
+				i++;
+				sum += ite;
+			}
+			DrawFormatString(0, i * 16, Color::CYAN, "%d", sum);
+			DrawFormatString(100, 16, Color::CYAN, "%f", Time::GetFPS());
+
 		}
 	}
 

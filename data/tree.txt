@@ -1,18 +1,23 @@
 root
+|-----RLyeh::DicePair
 |-----Scene
 |        |-----RLyeh::SceneTitle
-|        |-----DiceScene
+|        |-----RLyeh::DiceScene
 |        end_of_node
 |        
 |-----ObjBase
 |        |-----UIObject
 |        |-----Object
-|        |        |-----DiceD8
-|        |        |-----DiceD6
-|        |        |-----DiceD4
-|        |        |-----DiceD20
-|        |        |-----DiceD12
-|        |        |-----DiceD10
+|        |        |-----RLyeh::DiceBase
+|        |        |        |-----RLyeh::DiceD8
+|        |        |        |-----RLyeh::DiceD6
+|        |        |        |-----RLyeh::DiceD4
+|        |        |        |-----RLyeh::DiceD20
+|        |        |        |-----RLyeh::DiceD12
+|        |        |        |-----RLyeh::DiceD10
+|        |        |        end_of_node
+|        |        |        
+|        |        |-----RLyeh::InputManager
 |        |        end_of_node
 |        |        
 |        end_of_node

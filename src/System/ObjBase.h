@@ -45,6 +45,9 @@ public:
 		Enemy,
 		Stage,
 		UI,
+		GameManager,
+
+		__TagMax,
 	};
 	TAG tag = Untaged;
 	std::string name = "EmptyObject";

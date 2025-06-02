@@ -323,7 +323,7 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 		std::vector<physx::PxVec3> vertices;
 		for (int i = 0; i < ref_poly_.VertexNum; i++) {
 			VECTOR vertex = ref_poly_.Vertexs[i].Position;
-			vertices.push_back(Vector3(vertex.x, vertex.y, vertex.z));
+			vertices.push_back(Vector3(vertex.x, -vertex.z, vertex.y));
 
 		}
 

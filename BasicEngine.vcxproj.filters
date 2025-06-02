@@ -64,24 +64,6 @@
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\DiceD4.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\DiceD6.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\DiceD8.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\DiceD10.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\DiceD12.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\DiceD20.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\System\ModelManager.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -108,8 +90,17 @@
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\Camera.cpp" />
-    <ClCompile Include="src\Game\Scene\SceneTitle.cpp" />
-    <ClCompile Include="src\Game\Scene\DiceScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Scenes\DiceScene.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD10.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD12.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD20.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD4.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD6.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD8.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceBase.cpp" />
+    <ClCompile Include="src\Game\Managers\InputManager.cpp" />
+    <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -178,24 +169,6 @@
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\DiceD20.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\DiceD4.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\DiceD6.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\DiceD8.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\DiceD10.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\DiceD12.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\System\ModelManager.h">
       <Filter>System</Filter>
     </ClInclude>
@@ -228,8 +201,17 @@
       <Filter>shader</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\Camera.h" />
-    <ClInclude Include="src\Game\Scene\SceneTitle.h" />
-    <ClInclude Include="src\Game\Scene\DiceScene.h" />
+    <ClInclude Include="src\Game\Scenes\SceneTitle.h" />
+    <ClInclude Include="src\Game\Scenes\DiceScene.h" />
+    <ClInclude Include="src\Game\Objects\DiceD10.h" />
+    <ClInclude Include="src\Game\Objects\DiceD12.h" />
+    <ClInclude Include="src\Game\Objects\DiceD20.h" />
+    <ClInclude Include="src\Game\Objects\DiceD4.h" />
+    <ClInclude Include="src\Game\Objects\DiceD6.h" />
+    <ClInclude Include="src\Game\Objects\DiceD8.h" />
+    <ClInclude Include="src\Game\Objects\DiceBase.h" />
+    <ClInclude Include="src\Game\Managers\InputManager.h" />
+    <ClInclude Include="src\Game\Utilitys\DicePair.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
