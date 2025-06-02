@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "ObjBase.h"
+#include "System/Object.h"
 namespace RLyeh {
 
 	class InputManager :
-		public Object
+		public GameObject
 	{
 		InputManager();
 		USING_SUPER(InputManager);

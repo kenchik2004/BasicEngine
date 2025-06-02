@@ -21,7 +21,7 @@ namespace RLyeh {
 		auto rb = AddComponent<RigidBody>();
 		//static_cast<physx::PxRigidDynamic*>(rb->GetBody())->setAngularDamping(2.0f);
 		rb->AddTorque(Vector3((float)(GetRand(800) - 400), (float)(GetRand(800) - 400), (float)(GetRand(800) - 400)));
-		rb->AddForce(Vector3((float)GetRand(50) - 25, -GetRand(20), (float)GetRand(50) - 25), ForceMode::VelocityCange);
+		rb->AddForce(Vector3((float)GetRand(50) - 25, (float)-GetRand(20), (float)GetRand(50) - 25), ForceMode::VelocityCange);
 		auto col = AddComponent<ConvexMeshCollider>();
 		rb->mass = 5;
 		return 0;

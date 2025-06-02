@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "ObjBase.h"
+#include "System/Object.h"
 
 namespace RLyeh {
 
 	class DiceBase :
-		public Object
+		public GameObject
 	{
 	public:
 		USING_SUPER(DiceBase);

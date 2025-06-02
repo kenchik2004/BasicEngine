@@ -19,7 +19,7 @@ namespace RLyeh {
 	int DiceScene::Init()
 	{
 		GetPhysicsScene()->addActor(*physx::PxCreatePlane(
-			*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, -0.05),
+			*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 1, 0, -0.05f),
 			*Material::Wool_Default)
 		);
 		GetPhysicsScene()->addActor(*physx::PxCreatePlane(
@@ -42,7 +42,7 @@ namespace RLyeh {
 			*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, -1, 4),
 			*Material::Wool_Default)
 		);
-		auto tray = SceneManager::Object::Create<Object>(shared_from_this());
+		auto tray = SceneManager::Object::Create<GameObject>(shared_from_this());
 		tray->AddComponent<RigidBody>();
 		tray->transform->scale = { 5,5,5 };
 		tray->transform->position = { 0,3,0 };

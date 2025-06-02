@@ -5,9 +5,9 @@ root
 |        |-----RLyeh::DiceScene
 |        end_of_node
 |        
-|-----ObjBase
+|-----Object
 |        |-----UIObject
-|        |-----Object
+|        |-----GameObject
 |        |        |-----RLyeh::DiceBase
 |        |        |        |-----RLyeh::DiceD8
 |        |        |        |-----RLyeh::DiceD6

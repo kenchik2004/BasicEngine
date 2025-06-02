@@ -2,7 +2,7 @@
 #include "InputManager.h"
 
 namespace RLyeh {
-	InputManager::InputManager() :Object()
+	InputManager::InputManager() :GameObject()
 	{
 		tag = TAG::GameManager;
 		name = "InputManager";
