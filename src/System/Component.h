@@ -3,7 +3,7 @@
 struct CompStat {
 
 	friend class Component;
-	friend class ObjBase;
+	friend class Object;
 	enum class STATUS :u32 {
 		INITIALIZED = 0,
 		ACTIVE = 1 << 1,
@@ -15,10 +15,10 @@ private:
 	int priority = 0;
 	std::string class_name;
 };
-USING_PTR(ObjBase);
+USING_PTR(Object);
 class Component :public std::enable_shared_from_this<Component>
 {
-	friend class ObjBase;
+	friend class Object;
 private:
 public:
 
@@ -27,7 +27,7 @@ public:
 	USING_SUPER(Component);
 	CompStat status;
 
-	ObjBaseWP owner;
+	ObjectWP owner;
 
 	template <class T>
 	inline void Construct() {

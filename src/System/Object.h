@@ -4,8 +4,8 @@
 
 struct ObjStat {
 	friend class Scene;
-	friend class ObjBase;
 	friend class Object;
+	friend class GameObject;
 	friend class UIObject;
 public:
 	enum OBJ_TYPE {
@@ -21,23 +21,23 @@ public:
 
 	SBit <STATUS> status_bit;
 private:
-	std::string class_name = "ObjBase";
+	std::string class_name = "Object";
 	OBJ_TYPE obj_type = NORMAL;
 	int priority = 0;
 };
 
 USING_PTR(Component);
 USING_PTR(Transform);
-USING_PTR(ObjBase);
+USING_PTR(Object);
 USING_PTR(Scene);
-class ObjBase :public std::enable_shared_from_this<ObjBase>
+class Object :public std::enable_shared_from_this<Object>
 {
 	friend class Scene;
 	friend class SceneManager;
 public:
-	virtual ~ObjBase() {}
+	virtual ~Object() {}
 
-	USING_SUPER(ObjBase);
+	USING_SUPER(Object);
 	ObjStat status;
 	enum TAG {
 		Untaged,
@@ -55,7 +55,7 @@ public:
 private:
 
 
-	template <class T>
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Object*>, int> = 0>
 	inline void Construct(SceneP owner_scene) {
 		auto this_class = std::static_pointer_cast<T>(shared_from_this());
 		this_class->status.status_bit.on(ObjStat::STATUS::INITIALIZED);
@@ -80,7 +80,8 @@ public:
 		dirty_priority_components.push_back(who);
 	}
 
-	template <class T, typename... Args> SafeSharedPtr<T> AddComponent(Args&& ...args) {
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0, typename... Args>
+	SafeSharedPtr<T> AddComponent(Args&& ...args) {
 		auto comp = make_safe_shared<T>(std::forward<Args>(args)...);
 		try {
 			comp->owner = SafeSharedPtr(shared_from_this());
@@ -94,7 +95,8 @@ public:
 		}
 		return comp;
 	}
-	template <class T> SafeSharedPtr<T> GetComponent() {
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0> 
+	SafeSharedPtr<T> GetComponent() {
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
 				if (auto pick_comp = SafeDynamicCast<T>(comp)) {
@@ -103,7 +105,8 @@ public:
 		}
 		return nullptr;
 	}
-	template <class T> std::vector<SafeSharedPtr<T>> GetComponents() {
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0>
+	std::vector<SafeSharedPtr<T>> GetComponents() {
 		std::vector<SafeSharedPtr<T>> vec(0);
 		if (!GetComponent<T>())
 			return vec;
@@ -196,12 +199,12 @@ public:
 	inline virtual void Exit() {}
 };
 
-USING_PTR(Object);
-class Object :public ObjBase {
+USING_PTR(GameObject);
+class GameObject :public Object {
 public:
-	USING_SUPER(Object);
-	Object();
-	Object(std::string name_);
+	USING_SUPER(GameObject);
+	GameObject();
+	GameObject(std::string name_);
 	void DebugDraw() override;
 
 
@@ -209,7 +212,7 @@ public:
 
 
 USING_PTR(UIObject);
-class UIObject :public ObjBase {
+class UIObject :public Object {
 public:
 	USING_SUPER(UIObject);
 	UIObject();

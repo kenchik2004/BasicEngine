@@ -1,5 +1,5 @@
 ﻿#include "precompile.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include "Component.h"
 
 

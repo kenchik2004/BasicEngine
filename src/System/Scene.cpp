@@ -1,6 +1,6 @@
 ﻿#include "precompile.h"
 #include "System/Scene.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include <algorithm>
 
 
@@ -48,7 +48,7 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 	physics_scene->lockWrite();// PhysX のスレッドをロック
 
 	//以降、Hit処理などに入らないようuserDataを解放して、nullptrにしておく
-	auto wp = static_cast<SafeWeakPtr<ObjBase>*>(actor->userData);
+	auto wp = static_cast<SafeWeakPtr<Object>*>(actor->userData);
 	actor->userData = nullptr;
 	if (wp)
 		delete wp;
@@ -77,13 +77,13 @@ void Scene::DeleteShape(physx::PxShape* shape)
 
 void Scene::Destroy()
 {
-	ObjBaseWPVec w_vec;
+	ObjectWPVec w_vec;
 	for (auto& ite : objects)
 		w_vec.push_back(ite);
 	for (auto& obj : w_vec) {
 		if (!obj.lock())
 			continue;
-		DestroyObject(obj.lock());
+		DestroyGameObject(obj.lock());
 	}
 	objects.clear();
 	for (auto& ite : leak_objects) {
@@ -116,7 +116,7 @@ void Scene::DestroyPhysics()
 	physics_scene = nullptr;
 }
 
-void Scene::MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where) {
+void Scene::MoveGameObjectPtrFromThis(ObjectP move_object, SceneP to_where) {
 	for (auto pick_obj = objects.begin(); pick_obj != objects.end(); pick_obj++) {
 		if (move_object == *pick_obj)
 		{
@@ -129,17 +129,17 @@ void Scene::MoveObjectPtrFromThis(ObjBaseP move_object, SceneP to_where) {
 	}
 }
 
-void Scene::SyncObjectsPriority()
+void Scene::SyncGameObjectsPriority()
 {
 
 	if (dirty_priority_objects.empty()) return;
 
 	// 1) dirty_priority_objects を優先度順に並べ替える
 	std::sort(dirty_priority_objects.begin(), dirty_priority_objects.end(),
-		[](ObjBaseP a, ObjBaseP b) { return a->GetPriority() < b->GetPriority(); });
+		[](ObjectP a, ObjectP b) { return a->GetPriority() < b->GetPriority(); });
 
 	// 2) まとめて objects へ挿入
-	for (ObjBaseP& obj : dirty_priority_objects)
+	for (ObjectP& obj : dirty_priority_objects)
 	{
 		if (obj->status.status_bit.is(ObjStat::STATUS::REMOVED))
 			continue;
@@ -149,24 +149,24 @@ void Scene::SyncObjectsPriority()
 
 		// 2‑2) 優先度に合った場所を二分探索で探す
 		auto pos = std::upper_bound(objects.begin(), objects.end(), obj,
-			[](ObjBaseP a, ObjBaseP b) { return a->GetPriority() < b->GetPriority(); });
+			[](ObjectP a, ObjectP b) { return a->GetPriority() < b->GetPriority(); });
 
 		objects.insert(pos, obj);  // ここに差し込む
 	}
 	dirty_priority_objects.clear();
 }
 
-void Scene::DestroyObject(ObjBaseP destroy_obj) {
+void Scene::DestroyGameObject(ObjectP destroy_obj) {
 	if (objects.size() <= 0)
 		return;
 	if (IsInSimulation()) {
-		AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjBaseWP(destroy_obj)]()
+		AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjectWP(destroy_obj)]()
 			{if (this_.lock() && obj.lock())
-			this_.lock()->DestroyObject(obj.lock());
+			this_.lock()->DestroyGameObject(obj.lock());
 			});
 		return;
 	}
-	ObjBaseWP obj_w;
+	ObjectWP obj_w;
 	if (auto obj = std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), destroy_obj); obj != dirty_priority_objects.end())
 	{
 		dirty_priority_objects.erase(obj);

@@ -1,22 +1,22 @@
 ﻿#include "precompile.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include "System/Scene.h"
 #include <algorithm>
 
 
 
-Object::Object()
+GameObject::GameObject()
 {
 	status.obj_type = ObjStat::NORMAL;
 }
 
-Object::Object(std::string name_)
+GameObject::GameObject(std::string name_)
 {
 	status.obj_type = ObjStat::NORMAL;
 	name = name_;
 }
 
-void Object::DebugDraw()
+void GameObject::DebugDraw()
 {
 	DrawLine3D(cast(transform->position), cast(transform->position + transform->AxisX()), Color::BLUE);
 	DrawCone3D(cast(transform->position + transform->AxisX()), cast(transform->position + transform->AxisX() * 0.7f), 0.05f, 8, Color::BLUE, Color::BLUE, true);
@@ -31,7 +31,7 @@ UIObject::UIObject()
 	status.obj_type = ObjStat::UI; tag = UI; SetPriority(2000);
 }
 
-void ObjBase::SyncComponentsPriority()
+void Object::SyncComponentsPriority()
 {
     if (dirty_priority_components.empty()) return;
 
@@ -57,5 +57,5 @@ void ObjBase::SyncComponentsPriority()
     dirty_priority_components.clear();
 }
 
-void ObjBase::SetPriority(int prio)
+void Object::SetPriority(int prio)
 { scene->SetObjPriority(prio, shared_from_this()); }

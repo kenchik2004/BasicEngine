@@ -62,7 +62,7 @@ public:
 	static inline SceneP GetDontDestoryOnLoadScene() { return another_scenes[0]; }
 
 	//特定のシーンを取得
-	template<class T> static inline SafeSharedPtr<T> GetScene(bool include_another = false)
+	template<class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0> static inline SafeSharedPtr<T> GetScene(bool include_another = false)
 	{
 		ClassTypeInfo<T>& info = T::info;
 
@@ -89,7 +89,7 @@ public:
 		return current_scene;
 	}
 
-	template<class T> static inline void Change(SafeSharedPtr<T> scene)
+	template<class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0 > static inline void Change(SafeSharedPtr<T> scene)
 	{
 		//シーンの切り替え
 		//カレントシーンがいないならそのままロード
@@ -111,7 +111,7 @@ public:
 	}
 
 	//特定のシーンを完全に破棄
-	template <class T> static inline void Destroy(SafeSharedPtr<T> destroy_scene) {
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0 > static inline void Destroy(SafeSharedPtr<T> destroy_scene) {
 
 
 		//シーンを検索
@@ -144,7 +144,7 @@ public:
 	}
 
 	//シーンをロード(作成)
-	template<class T, class...Args> static inline SafeSharedPtr<T> Load(SafeSharedPtr<T> ptr = nullptr, Args&&...args)
+	template<class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0, class...Args> static inline SafeSharedPtr<T> Load(SafeSharedPtr<T> ptr = nullptr, Args&&...args)
 	{
 		//シーンの作成(いたらロードの必要なし)
 		if (SafeSharedPtr<T> scene = GetScene<T>()) {
@@ -175,7 +175,7 @@ public:
 
 		return SafeStaticCast<T>(scene);
 	}
-	template <class T, class... Args> static inline SafeSharedPtr<T> LoadAsAnother(Args&&... args) {
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0, class... Args> static inline SafeSharedPtr<T> LoadAsAnother(Args&&... args) {
 		//シーンの作成(いたらロードの必要なし)
 		if (SafeSharedPtr<T> scene = GetScene<T>()) {
 			//見つかったシーンのポインタを返す
@@ -201,16 +201,16 @@ public:
 	public:
 
 		//オブジェクトの作成(シーン指定可)
-		template<class T, class...Args>
+		template<class T, std::enable_if_t<std::is_convertible_v<T*, ::Object*>, int> = 0, class...Args>
 		static inline SafeSharedPtr<T> Create(SceneP target_scene = nullptr, Args&&...args)
 		{
 			if (!current_scene && !target_scene)
 				return nullptr;
 			SafeSharedPtr<T> obj;
 			if (target_scene)
-				obj = target_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
+				obj = target_scene->CreateGameObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
 			else
-				obj = current_scene->CreateObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
+				obj = current_scene->CreateGameObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
 
 			obj->Init();
 
@@ -218,14 +218,14 @@ public:
 		}
 
 		//オブジェクトの作成(名付け)
-		template<class T, class...Args>
+		template<class T, std::enable_if_t<std::is_convertible_v<T*, ::Object*>, int> = 0, class...Args>
 		static inline SafeSharedPtr<T> Create(std::string_view name_, Args&&...args)
 		{
 			//カレントシーンがいないなら何もせずリターン
 			if (!current_scene)
 				return nullptr;
 			//カレントシーンにオブジェクト作成を依頼
-			SafeSharedPtr<T> obj = current_scene->CreateObject<T>(name_, std::forward<Args>(args)...);
+			SafeSharedPtr<T> obj = current_scene->CreateGameObject<T>(name_, std::forward<Args>(args)...);
 			//作成したオブジェクトをその場で初期化
 			obj->Init();
 
@@ -235,7 +235,7 @@ public:
 
 
 		//オブジェクト取得(シーン指定可)
-		template<class T> static inline SafeSharedPtr<T> Get(SceneP target_scene = nullptr) {
+		template<class T, std::enable_if_t<std::is_convertible_v<T*, ::Object*>, int> = 0> static inline SafeSharedPtr<T> Get(SceneP target_scene = nullptr) {
 
 			//カレントシーンもターゲットシーンもいない場合、nullptrを返す
 			if (!current_scene && !target_scene)
@@ -247,34 +247,34 @@ public:
 			if (target_scene)
 			{
 				//そのシーンからオブジェクトを検索する
-				obj = target_scene->GetObjectPtr<T>();
+				obj = target_scene->GetGameObjectPtr<T>();
 
 				return obj;
 			}
 			//指定がない場合はカレントシーンから検索
-			obj = current_scene->GetObjectPtr<T>();
+			obj = current_scene->GetGameObjectPtr<T>();
 			return obj;
 		}
 
 		//オブジェクトをタグから検索
-		template<class T> static inline SafeSharedPtr<T> GetWithTag(ObjBase::TAG tag) {
+		template<class T, std::enable_if_t<std::is_convertible_v<T*, ::Object*>, int> = 0> static inline SafeSharedPtr<T> GetWithTag(::Object::TAG tag) {
 			//カレントシーンがいないならnullptrを返す
 			if (!current_scene)
 				return nullptr;
 			//カレントシーンからオブジェクトを検索
-			SafeSharedPtr<T> obj = current_scene->GetObjectPtr<T>(tag);
+			SafeSharedPtr<T> obj = current_scene->GetGameObjectPtr<T>(tag);
 
 			//見つかったオブジェクトを返す
 			return obj;
 		}
 
 		//オブジェクトを名前から検索
-		template<class T> static inline SafeSharedPtr<T> Get(std::string_view name_) {
+		template<class T, std::enable_if_t<std::is_convertible_v<T*, ::Object*>, int> = 0> static inline SafeSharedPtr<T> Get(std::string_view name_) {
 			//カレントシーンがいないならnullptrを返す
 			if (!current_scene)
 				return nullptr;
 			//カレントシーンからオブジェクトを検索
-			SafeSharedPtr<T> obj = current_scene->GetObjectPtr<T>(name_);
+			SafeSharedPtr<T> obj = current_scene->GetGameObjectPtr<T>(name_);
 
 			//見つかったオブジェクトを返す
 			return obj;
@@ -282,7 +282,7 @@ public:
 
 
 		//同じ型のオブジェクトをまとめて取得
-		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArray() {
+		template<class T, std::enable_if_t<std::is_convertible_v<T*, ::Object*>, int> = 0> static inline std::vector<SafeSharedPtr<T>> GetArray() {
 
 			//空っぽの配列を用意
 			std::vector<SafeSharedPtr<T>> vec(0);
@@ -291,7 +291,7 @@ public:
 				return vec;
 
 			//カレントシーンから、まとめて検索
-			vec = current_scene->GetObjectPtrVec<T>();
+			vec = current_scene->GetGameObjectPtrVec<T>();
 
 			//見つかったものを返す
 			return vec;
@@ -299,7 +299,7 @@ public:
 
 
 		//同じ型のオブジェクトをまとめて検索
-		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArrayWithTag(ObjBase::TAG tag) {
+		template<class T> static inline std::vector<SafeSharedPtr<T>> GetArrayWithTag(::Object::TAG tag) {
 
 			//空っぽの配列を用意
 			std::vector<SafeSharedPtr<T>> vec(0);
@@ -308,37 +308,37 @@ public:
 				return vec;
 
 			//カレントシーンからまとめて検索
-			vec = current_scene->GetObjectPtrVec<T>(tag);
+			vec = current_scene->GetGameObjectPtrVec<T>(tag);
 
 			//見つかったものを返す
 			return vec;
 		}
 
 		//オブジェクトを削除
-		static inline void Destory(ObjBaseP destroy_obj) {
+		static inline void Destory(ObjectP destroy_obj) {
 			//カレントシーンがいないなら何もしない
 			if (!current_scene)
 				return;
 
 			//カレントシーンからオブジェクトを削除
-			current_scene->DestroyObject(destroy_obj);
+			current_scene->DestroyGameObject(destroy_obj);
 			//削除後、参照を削除
 			destroy_obj.reset();
 		}
 		//オブジェクトを削除(シーン指定あり)
-		static inline void Destory(SceneP target_scene, ObjBaseP destroy_obj) {
+		static inline void Destory(SceneP target_scene, ObjectP destroy_obj) {
 			//シーンがいないなら何もしない(そもそも大問題)
 			if (!target_scene)
 				return;
 
 			//カレントシーンからオブジェクトを削除
-			target_scene->DestroyObject(destroy_obj);
+			target_scene->DestroyGameObject(destroy_obj);
 			//削除後、参照を削除
 			destroy_obj.reset();
 		}
 
 		//シーン切り替え時に破棄しないオブジェクトを登録(デフォルト裏シーンに所有権譲渡)
-		static void DontDestroyOnLoad(ObjBaseP obj, SceneP from_where);
+		static void DontDestroyOnLoad(ObjectP obj, SceneP from_where);
 	};
 
 

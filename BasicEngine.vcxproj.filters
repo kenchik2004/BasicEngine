@@ -10,7 +10,7 @@
     <ClCompile Include="src\System\Time.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\ObjBase.cpp">
+    <ClCompile Include="src\System\Object.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Scene.cpp">
@@ -115,7 +115,7 @@
     <ClInclude Include="src\precompile.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\ObjBase.h">
+    <ClInclude Include="src\System\Object.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Scene.h">

@@ -1,7 +1,7 @@
 ﻿#include "precompile.h"
 #include "..\PhysX\PhysX-5.5.1\include\cooking\PxCooking.h"
 #include "PhysicsManager.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include <System/Components/Collider.h>
 
 using namespace physx;

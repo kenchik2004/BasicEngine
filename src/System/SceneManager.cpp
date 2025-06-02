@@ -2,7 +2,7 @@
 #include "System/SceneManager.h"
 #include "System/Scene.h"
 #include "System/DontDestroyOnLoadScene.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include "System/Components/ModelRenderer.h"
 #include "algorithm"
 
@@ -39,7 +39,7 @@ void SceneManager::PreUpdate()
 	{
 		if (another_scene->objects.size() > 1) {
 #ifdef SORT
-			another_scene->SyncObjectsPriority();
+			another_scene->SyncGameObjectsPriority();
 #else
 			for (int i = 0; i < another_scene->objects.size() - 1; i++) {
 				for (int j = i + 1; j < another_scene->objects.size(); j++) {
@@ -74,10 +74,10 @@ void SceneManager::PreUpdate()
 		catch (Exception& ex) {
 			ex.Show();
 		}
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -112,7 +112,7 @@ void SceneManager::PreUpdate()
 		return;
 	if (current_scene->objects.size() > 1) {
 #ifdef SORT
-		current_scene->SyncObjectsPriority();
+		current_scene->SyncGameObjectsPriority();
 #else
 		for (int i = 0; i < current_scene->objects.size() - 1; i++) {
 			for (int j = i + 1; j < current_scene->objects.size(); j++) {
@@ -142,12 +142,12 @@ void SceneManager::PreUpdate()
 	}
 
 	current_scene->PreUpdate();
-	ObjBaseWPVec objs;
-	for (auto& obj : current_scene->GetObjectPtrVec<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : current_scene->GetGameObjectPtrVec<::Object>())
 		objs.push_back(obj);
 
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -193,11 +193,11 @@ void SceneManager::Update()
 	{
 		another_scene->Update();
 
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
 
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 
 			if (!obj.lock())
 				return;
@@ -228,11 +228,11 @@ void SceneManager::Update()
 	catch (Exception& ex) {
 		ex.Show();
 	}
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -287,10 +287,10 @@ void SceneManager::LateUpdate()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->LateUpdate();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -312,11 +312,11 @@ void SceneManager::LateUpdate()
 	if (!current_scene)
 		return;
 	current_scene->LateUpdate();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -360,10 +360,10 @@ void SceneManager::PostUpdate()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PostUpdate();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -385,11 +385,11 @@ void SceneManager::PostUpdate()
 	if (!current_scene)
 		return;
 	current_scene->PostUpdate();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -434,10 +434,10 @@ void SceneManager::PrePhysics()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PrePhysics();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -458,11 +458,11 @@ void SceneManager::PrePhysics()
 	if (!current_scene)
 		return;
 	current_scene->PrePhysics();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -504,10 +504,10 @@ void SceneManager::Physics()
 {
 	for (auto& another_scene : another_scenes)
 	{
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -531,11 +531,11 @@ void SceneManager::Physics()
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -581,10 +581,10 @@ void SceneManager::PostPhysics()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PostPhysics();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -605,11 +605,11 @@ void SceneManager::PostPhysics()
 	if (!current_scene)
 		return;
 	current_scene->PostPhysics();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -653,10 +653,10 @@ void SceneManager::PreDraw()
 	{
 
 		another_scene->PreDraw();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -678,11 +678,11 @@ void SceneManager::PreDraw()
 	if (!current_scene)
 		return;
 	current_scene->PreDraw();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -727,10 +727,10 @@ void SceneManager::Draw()
 	{
 
 		another_scene->Draw();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -753,11 +753,11 @@ void SceneManager::Draw()
 		return;
 	}
 	current_scene->Draw();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -801,10 +801,10 @@ void SceneManager::LateDraw()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->LateDraw();
-		ObjBaseWPVec objs;
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>())
+		ObjectWPVec objs;
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
-		std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+		std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 			if (!obj.lock())
 				return;
 			if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -827,11 +827,11 @@ void SceneManager::LateDraw()
 	if (!current_scene)
 		return;
 	current_scene->LateDraw();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		if (obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
@@ -887,11 +887,11 @@ void SceneManager::DebugDraw()
 	SetLightEnable(false);
 	//===============================//
 	current_scene->DebugDraw();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		obj.lock()->DebugDraw();
@@ -931,11 +931,11 @@ void SceneManager::LateDebugDraw()
 {
 	if (!current_scene) return;
 	current_scene->LateDebugDraw();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 #ifdef FOR_EACH
-	std::for_each(objs.begin(), objs.end(), [](ObjBaseWP& obj) {
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj.lock())
 			return;
 		obj.lock()->LateDebugDraw();
@@ -974,8 +974,8 @@ void SceneManager::PostDraw()
 	if (!current_scene)
 		return;
 	current_scene->PostDraw();
-	ObjBaseWPVec objs;
-	for (auto& obj : Object::GetArray<ObjBase>())
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
 		objs.push_back(obj);
 	for (auto& obj : objs) {
 		if (!obj.lock())
@@ -1000,7 +1000,7 @@ void SceneManager::PostDraw()
 void SceneManager::Exit()
 {
 	if (current_scene) {
-		for (auto& obj : Object::GetArray<ObjBase>()) {
+		for (auto& obj : Object::GetArray<::Object>()) {
 
 			while (auto comp = obj->GetComponent<Component>()) {
 				comp->RemoveThisComponent();
@@ -1029,7 +1029,7 @@ void SceneManager::Exit()
 	}
 
 	for (auto& another_scene : another_scenes) {
-		for (auto& obj : another_scene->GetObjectPtrVec<ObjBase>()) {
+		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>()) {
 
 			while (auto comp = obj->GetComponent<Component>()) {
 				comp->RemoveThisComponent();
@@ -1052,7 +1052,7 @@ void SceneManager::Exit()
 	another_scenes.clear();
 }
 
-void SceneManager::Object::DontDestroyOnLoad(ObjBaseP obj, SceneP from_where)
+void SceneManager::Object::DontDestroyOnLoad(ObjectP obj, SceneP from_where)
 {
 	SafeStaticCast<DontDestroyOnLoadScene>(another_scenes[0])->DontDestroyOnLoad(obj, from_where);
 }
