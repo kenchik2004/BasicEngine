@@ -5,11 +5,13 @@
 
 #define CUR_ANIMTIME_MAX FLT_MAX
 
+USING_PTR(Animator);
 class Animator :
 	public Component
 {
 public:
 	USING_SUPER(Animator);
+	void Construct() override;
 	int Init() override;
 	void Update() override;
 	void Exit() override;
@@ -31,10 +33,7 @@ public:
 	bool IsPlaying();
 	void SetAnimation(std::string_view name, int index = 0, std::string_view new_name = "");
 	void SetAnimation(SafeSharedPtr<Animation> anim);
-	static inline void Load(std::string_view path, std::string_view name)
-	{
-		ModelManager::LoadAsAnimation(path, name);
-	}
+	static void Load(std::string_view path, std::string_view name);
 
 	//----------------------------------------------------------------------------------
 

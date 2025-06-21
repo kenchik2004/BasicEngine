@@ -29,9 +29,9 @@ void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
 		int cache_index = ptr->model_cache->size();
 		auto name = ptr->m_source->name;
 		auto path = ptr->m_source->path;
+		ptr->model_cache->push_back(std::move(ptr->m_source));
 		(*(ptr->m_name))[name].index = cache_index;
 		(*(ptr->m_path))[path].index = cache_index;
-		ptr->model_cache->push_back(std::move(ptr->m_source));
 		loading_count--;
 		delete ptr;
 		};
@@ -94,9 +94,12 @@ SafeSharedPtr<Model> ModelManager::CloneModelByName(std::string_view name, std::
 		model = make_safe_shared<Model>();
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
+		while (resource->second.index < -1) {}
 		model->handle = MV1DuplicateModel(model_chache[resource->second.index]->handle);
 		model->name = new_name == "" ? model_chache[resource->second.index]->name : new_name;
 		model->original = model_chache[resource->second.index].raw_unique().get();
+		model->default_shader_ps = default_shader_ps.raw_unique().get();
+		model->default_shader_vs = default_shader_vs.raw_unique().get();
 	}
 
 	return model;
@@ -114,6 +117,8 @@ SafeSharedPtr<Model> ModelManager::CloneModelByPath(std::string_view path, std::
 		model->handle = MV1DuplicateModel(model_chache[resource->second.index]->handle);
 		model->name = new_name == "" ? model_chache[resource->second.index]->name : new_name;
 		model->original = model_chache[resource->second.index].raw_unique().get();
+		model->default_shader_ps = default_shader_ps.raw_unique().get();
+		model->default_shader_vs = default_shader_vs.raw_unique().get();
 	}
 
 	return model;
@@ -157,8 +162,8 @@ SafeSharedPtr<Animation> ModelManager::CloneAnimByPath(std::string_view path, in
 
 void ModelManager::Init()
 {
-	default_shader_ps = make_safe_unique<ShaderPs>("data/shader/SimpleShader.fx");
-	default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 7);
+	//default_shader_ps = make_safe_unique<ShaderPs>("data/shader/ps_model.fx");
+	//default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
 }
 
 void ModelManager::Exit()
@@ -172,6 +177,7 @@ void ModelManager::Exit()
 	a_path.clear();
 	default_shader_ps.reset();
 	default_shader_vs.reset();
+#ifndef PACKAGE_BUILD
 	if (Model::instance > 0) {
 		std::string msg = typeid(Model).name();
 		throw(MemoryLeakException(msg.c_str(), DEFAULT_EXCEPTION_PARAM));
@@ -180,6 +186,7 @@ void ModelManager::Exit()
 		std::string msg = typeid(Animation).name();
 		throw(MemoryLeakException(msg.c_str(), DEFAULT_EXCEPTION_PARAM));
 	}
+#endif
 
 }
 
@@ -195,8 +202,10 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 {
 	if (!convex_mesh) {
 		PxCookingParams params(PhysicsManager::GetPhysicsInstance()->getTolerancesScale());
+#ifndef PACKAGE_BUILD
 		if (handle < 0)
 			throw(Exception("凸メッシュ作成に失敗しました:モデルデータが無効です。モデルパスが有効か確認してください。", DEFAULT_EXCEPTION_PARAM));
+#endif
 		GetPolygon();
 		PxConvexMeshDesc  desc;
 		// 頂点データ取得
@@ -205,7 +214,7 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 		for (int i = 0; i < ref_poly_.VertexNum; i++) {
 
 			VECTOR vertex = ref_poly_.Vertexs[i].Position;
-			Vector3 vert = Vector3(vertex.x, -vertex.z, vertex.y);
+			Vector3 vert = Vector3(vertex.x, vertex.y, vertex.z);
 			vertices.push_back(vert);
 			ref_poly_.Vertexs[i].Position = VGet(vert.x, vert.y, vert.z);
 
@@ -287,7 +296,7 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 		desc.flags |= PxConvexFlag::eCHECK_ZERO_AREA_TRIANGLES;
 		desc.flags |= PxConvexFlag::eFAST_INERTIA_COMPUTATION;
 
-#ifndef NDEBUG
+#ifndef PACKAGE_BUILD
 		if (!desc.isValid())
 			throw(Exception("ERROR!!DESC_INVALID", DEFAULT_EXCEPTION_PARAM));
 #endif
@@ -295,16 +304,19 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 		PxDefaultMemoryOutputStream write_buffer;
 		bool status{ PxCookConvexMesh(params, desc, write_buffer) };
 
-#ifndef NDEBUG
+#ifndef PACKAGE_BUILD
 		if (!status)
 			throw(Exception("ERROR!!STATUS_INVALID", DEFAULT_EXCEPTION_PARAM));
+
 #endif
 
 		PxDefaultMemoryInputData read_buffer(write_buffer.getData(), write_buffer.getSize());
 		convex_mesh = PhysicsManager::GetPhysicsInstance()->createConvexMesh(read_buffer);
 		Time::ResetTime();
+#ifndef PACKAGE_BUILD
 		if (!convex_mesh)
 			throw(Exception("ERROR!!MESH_INVALID", DEFAULT_EXCEPTION_PARAM));
+#endif
 
 	}
 
@@ -352,14 +364,15 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 		desc.triangles.data = indices.data();
 		desc.flags = physx::PxMeshFlags();
 
-#ifndef NDEBUG
+#ifndef PACKAGE_BUILD
 		if (!desc.isValid())
 			throw(Exception("ERROR!!DESC_INVALID", DEFAULT_EXCEPTION_PARAM));
+
 #endif
 
 		physx::PxDefaultMemoryOutputStream write_buffer;
 		bool status{ PxCookTriangleMesh(params,desc, write_buffer) };
-#ifndef NDEBUG
+#ifndef PACKAGE_BUILD
 		if (!status)
 			throw(Exception("ERROR!!STATUS_INVALID", DEFAULT_EXCEPTION_PARAM));
 #endif
@@ -367,7 +380,7 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 		physx::PxDefaultMemoryInputData read_buffer(write_buffer.getData(), write_buffer.getSize());
 		triangle_mesh = PhysicsManager::GetPhysicsInstance()->createTriangleMesh(read_buffer);
 		Time::ResetTime();
-#ifndef NDEBUG
+#ifndef PACKAGE_BUILD
 		if (!triangle_mesh)
 			throw(Exception("ERROR!!MESH_INVALID", DEFAULT_EXCEPTION_PARAM));
 #endif
@@ -449,7 +462,7 @@ void Model::Draw()
 
 					// シェーダーがない場合はオリジナルシェーダー利用を無効化
 					bool enable_shader = (handle_vs != -1) && (handle_ps != -1);
-					//MV1SetUseOrigShader(enable_shader);
+					MV1SetUseOrigShader(enable_shader);
 					SetUseVertexShader(handle_vs);
 					SetUsePixelShader(handle_ps);
 				}
@@ -503,6 +516,6 @@ void Animation::ResetCallBack(std::string_view method_name)
 	auto ite = method_names.find(name);
 	if (ite == method_names.end())
 		return;
-	call_backs.erase(call_backs.begin() + ite->second-1);
+	call_backs.erase(call_backs.begin() + ite->second - 1);
 	method_names.erase(ite);
 }

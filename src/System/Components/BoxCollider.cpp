@@ -1,4 +1,4 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include <System/Components/RigidBody.h>
 #include "BoxCollider.h"
 #include <System/Components/ModelRenderer.h>
@@ -7,12 +7,12 @@ using namespace physx;
 
 int BoxCollider::Init()
 {
-	rigidbody = owner.lock()->GetComponent<RigidBody>();
-	if (!rigidbody.lock()) {
+	rigidbody = owner->GetComponent<RigidBody>();
+	if (!rigidbody) {
 		RemoveThisComponent();
 		return -1;
 	}	
-	auto p_scene = owner.lock()->GetScene()->GetPhysicsScene();
+	auto p_scene = owner->GetScene()->GetPhysicsScene();
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
@@ -20,13 +20,13 @@ int BoxCollider::Init()
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 
-	rigidbody.lock()->GetBody()->attachShape(*shape);
+	rigidbody->GetBody()->attachShape(*shape);
 	return 0;
 }
 
 void BoxCollider::PrePhysics()
 {
-	rigidbody.lock()->GetBody()->detachShape(*shape);
+	rigidbody->GetBody()->detachShape(*shape);
 
 
 	PxTransform trns = MakeCollisionTransform();
@@ -38,12 +38,12 @@ void BoxCollider::PrePhysics()
 
 
 
-	rigidbody.lock()->GetBody()->attachShape(*shape);
+	rigidbody->GetBody()->attachShape(*shape);
 }
 
 void BoxCollider::DebugDraw()
 {
-	auto body = rigidbody.lock()->GetBody();
+	auto body = rigidbody->GetBody();
 	physx::PxTransform trns = body->getGlobalPose();
 	physx::PxTransform trns2 = shape->getLocalPose();
 	mat4x4 mat(trns * trns2);

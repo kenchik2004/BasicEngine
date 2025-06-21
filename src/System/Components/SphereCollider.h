@@ -1,5 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Collider.h"
+
+USING_PTR(SphereCollider);
 class SphereCollider :
     public Collider
 {

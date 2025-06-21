@@ -5,6 +5,11 @@
 #include "System/ModelManager.h"
 
 
+void Animator::Construct()
+{
+	status.status_bit.on(CompStat::STATUS::SINGLE);
+}
+
 int Animator::Init()
 {
 	if (auto m = owner.lock()->GetComponent<ModelRenderer>())
@@ -31,11 +36,16 @@ void Animator::SetAnimation(SafeSharedPtr<Animation> anim)
 	animation.push_back(anim);
 }
 
+void Animator::Load(std::string_view path, std::string_view name)
+{
+	ModelManager::LoadAsAnimation(path, name);
+}
+
 void Animator::Update()
 {
 	if (!model)
 		return;
-	if (model.lock()->GetModelHandle() < 0)
+	if (model->GetModelHandle() < 0)
 		return;
 	anim_time += Time::RealDeltaTime() * 60 * anim_speed;
 	if (current_index == -1)
@@ -65,7 +75,7 @@ void Animator::Play(std::string_view name, bool loop, float start_time)
 {
 	if (!model)
 		return;
-	if (model.lock()->GetModelHandle() < 0)
+	if (model->GetModelHandle() < 0)
 		return;
 	SafeSharedPtr<Animation> select = nullptr;
 	for (auto& ite : animation) {
@@ -106,7 +116,7 @@ void Animator::Stop()
 {
 	if (!model || !current_anim)
 		return;
-	if (model.lock()->GetModelHandle() < 0)
+	if (model->GetModelHandle() < 0)
 		return;
 	MV1DetachAnim(model->GetModelHandle(), current_index);
 	current_index = -1;

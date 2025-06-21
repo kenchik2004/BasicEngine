@@ -3,22 +3,24 @@
 struct CompStat {
 
 	friend class Component;
-	friend class ObjBase;
+	friend class Object;
 	enum class STATUS :u32 {
-		INITIALIZED = 0,
+		CONSTRUCTED = 0,
+		INITIALIZED = 1,
 		ACTIVE = 1 << 1,
 		DRAW = 1 << 2,
 		REMOVED = 1 << 3,
+		SINGLE = 1 << 4,
 	};
 	SBit<STATUS> status_bit;
 private:
-	int priority = 0;
+	unsigned int priority = 0;
 	std::string class_name;
 };
-USING_PTR(ObjBase);
+USING_PTR(Object);
 class Component :public std::enable_shared_from_this<Component>
 {
-	friend class ObjBase;
+	friend class Object;
 private:
 public:
 
@@ -27,17 +29,21 @@ public:
 	USING_SUPER(Component);
 	CompStat status;
 
-	ObjBaseWP owner;
+	ObjectWP owner;
 
-	template <class T>
-	inline void Construct() {
-		auto this_class = std::static_pointer_cast<T>(shared_from_this());
-		this_class->status.status_bit.on(CompStat::STATUS::INITIALIZED);
-		this_class->status.status_bit.on(CompStat::STATUS::ACTIVE);
-		this_class->status.status_bit.on(CompStat::STATUS::DRAW);
-		this_class->status.class_name = typeid(T).name();
-	};
-	void SetPriority(int prio);	inline int GetPriority() { return status.priority; }
+	inline void ConstructBase() {
+		//こっちは必ずやる
+		status.status_bit.on(CompStat::STATUS::CONSTRUCTED);
+		status.status_bit.on(CompStat::STATUS::INITIALIZED);
+		status.status_bit.on(CompStat::STATUS::ACTIVE);
+		status.status_bit.on(CompStat::STATUS::DRAW);
+		status.class_name = info.ClassName();
+		//こっちはユーザーがカスタマイズできる
+		Construct();
+	}
+	inline virtual void Construct() {};
+	void SetPriority(unsigned int prio);	
+	inline unsigned int GetPriority() { return status.priority; }
 	void RemoveThisComponent();
 	//-----------------------------
 	// Initブロック(初期化処理)

@@ -2,6 +2,21 @@
 #include "Exception.h"
 #include "assert.h"
 #include <codecvt>
+#include <deque>
+
+
+void Log(std::string log) {
+	static std::deque<std::string> log_lines;
+
+	log_lines.emplace_back(log);
+	if (log_lines.size() > 1000) // 履歴保持数制限
+		log_lines.pop_front();
+//	ImGui::Begin("console");
+	for (auto& log : log_lines) {
+		ImGui::TextColored(ImVec4(1, 0, 0, 1), ShiftJISToUTF8(log).c_str());
+	}
+//	ImGui::End();
+}
 
 Exception::Exception(const char* main_message, const char* file_name, int line, const char* func_name)
 {
@@ -20,9 +35,11 @@ void Exception::Show()
 
 	printfDx(message.c_str());
 	printfDx("\n");
-	std::wstring wstr = Str2Wstr(message);
-
+//#ifndef PACKAGE_BUILD
+	//Log(message);
+//#endif
 #ifndef NDEBUG
+	std::wstring wstr = Str2Wstr(message);
 	if (is_assert)
 		_wassert(wstr.c_str(), __FILEW__, __LINE__);
 #else

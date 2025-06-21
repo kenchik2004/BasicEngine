@@ -5,6 +5,14 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Package|Win32">
+      <Configuration>Package</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Package|x64">
+      <Configuration>Package</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -19,22 +27,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="imgui\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="SceneShader.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
-    <ClCompile Include="src\Game\DiceD10.cpp" />
-    <ClCompile Include="src\Game\DiceD12.cpp" />
-    <ClCompile Include="src\Game\DiceD20.cpp" />
-    <ClCompile Include="src\Game\DiceD4.cpp" />
-    <ClCompile Include="src\Game\DiceD6.cpp" />
-    <ClCompile Include="src\Game\DiceD8.cpp" />
-    <ClCompile Include="src\Game\PlaneObject.cpp" />
-    <ClCompile Include="src\Game\SampleAttack.cpp" />
-    <ClCompile Include="src\Game\SampleCutIn.cpp" />
-    <ClCompile Include="src\Game\SampleObject.cpp" />
-    <ClCompile Include="src\Game\SceneSample3.cpp" />
-    <ClCompile Include="src\Game\SceneSample.cpp" />
-    <ClCompile Include="src\Game\SceneSample2.cpp" />
-    <ClCompile Include="src\Game\SceneShader.cpp" />
+    <ClCompile Include="src\Game\Managers\InputManager.cpp" />
+    <ClCompile Include="src\Game\Objects\CardBase.cpp" />
+    <ClCompile Include="src\Game\Objects\CardDoman.cpp" />
+    <ClCompile Include="src\Game\Objects\CardFist.cpp" />
+    <ClCompile Include="src\Game\Objects\CardShinsoku.cpp" />
+    <ClCompile Include="src\Game\Objects\CardUnpu.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD10.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD12.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD20.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD4.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD6.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceD8.cpp" />
+    <ClCompile Include="src\Game\Objects\DiceBase.cpp" />
+    <ClCompile Include="src\Game\Scenes\DiceScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\GameCreating_Kadai\SceneAme.cpp" />
+    <ClCompile Include="src\Game\Scenes\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
     <ClCompile Include="src\System\AudioManager.cpp" />
     <ClCompile Include="src\System\Color.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
@@ -42,6 +62,7 @@
     <ClCompile Include="src\System\Components\AudioListener.cpp" />
     <ClCompile Include="src\System\Components\AudioPlayer.cpp" />
     <ClCompile Include="src\System\Components\BoxCollider.cpp" />
+    <ClCompile Include="src\System\Components\Button.cpp" />
     <ClCompile Include="src\System\Components\Camera.cpp" />
     <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
     <ClCompile Include="src\System\Components\Collider.cpp" />
@@ -50,18 +71,26 @@
     <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
     <ClCompile Include="src\System\Components\RigidBody.cpp" />
     <ClCompile Include="src\System\Components\SphereCollider.cpp" />
+    <ClCompile Include="src\System\Components\Text.cpp" />
     <ClCompile Include="src\System\Components\Transform.cpp" />
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp" />
     <ClCompile Include="src\System\Exception.cpp" />
     <ClCompile Include="src\System\FileWatcher.cpp" />
+    <ClCompile Include="src\System\ImGui_.cpp" />
+    <ClCompile Include="src\System\IniFileManager.cpp" />
     <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
     <ClCompile Include="src\System\ModelManager.cpp" />
-    <ClCompile Include="src\System\ObjBase.cpp" />
+    <ClCompile Include="src\System\Object.cpp" />
+    <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
+    <ClCompile Include="src\System\Objects\CameraObject.cpp" />
+    <ClCompile Include="src\System\Objects\TextObject.cpp" />
     <ClCompile Include="src\System\PhysicsManager.cpp" />
+    <ClCompile Include="src\System\Random.cpp" />
     <ClCompile Include="src\System\Scene.cpp" />
     <ClCompile Include="src\System\SceneManager.cpp" />
     <ClCompile Include="src\System\Shader.cpp" />
+    <ClCompile Include="src\System\TextureManager.cpp" />
     <ClCompile Include="src\System\Time.cpp" />
     <ClCompile Include="src\System\typedef.cpp" />
   </ItemGroup>
@@ -69,31 +98,48 @@
     <ClInclude Include="data\shader\dxlib_ps.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="data\shader\dxlib_vs_model.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="imgui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="imgui\backends\imgui_impl_dx9.h" />
+    <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="SceneShader.h" />
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
-    <ClInclude Include="src\Game\DiceD10.h" />
-    <ClInclude Include="src\Game\DiceD12.h" />
-    <ClInclude Include="src\Game\DiceD20.h" />
-    <ClInclude Include="src\Game\DiceD4.h" />
-    <ClInclude Include="src\Game\DiceD6.h" />
-    <ClInclude Include="src\Game\DiceD8.h" />
-    <ClInclude Include="src\Game\PlaneObject.h" />
-    <ClInclude Include="src\Game\SampleAttack.h" />
-    <ClInclude Include="src\Game\SampleCutIn.h" />
-    <ClInclude Include="src\Game\SampleObject.h" />
-    <ClInclude Include="src\Game\SceneSample3.h" />
-    <ClInclude Include="src\Game\SceneSample.h" />
-    <ClInclude Include="src\Game\SceneSample2.h" />
-    <ClInclude Include="src\Game\SceneShader.h" />
+    <ClInclude Include="src\Game\Managers\InputManager.h" />
+    <ClInclude Include="src\Game\Objects\CardBase.h" />
+    <ClInclude Include="src\Game\Objects\CardDoman.h" />
+    <ClInclude Include="src\Game\Objects\CardFist.h" />
+    <ClInclude Include="src\Game\Objects\CardShinsoku.h" />
+    <ClInclude Include="src\Game\Objects\CardUnpu.h" />
+    <ClInclude Include="src\Game\Objects\DiceD10.h" />
+    <ClInclude Include="src\Game\Objects\DiceD12.h" />
+    <ClInclude Include="src\Game\Objects\DiceD20.h" />
+    <ClInclude Include="src\Game\Objects\DiceD4.h" />
+    <ClInclude Include="src\Game\Objects\DiceD6.h" />
+    <ClInclude Include="src\Game\Objects\DiceD8.h" />
+    <ClInclude Include="src\Game\Objects\DiceBase.h" />
+    <ClInclude Include="src\Game\Scenes\DiceScene.h" />
+    <ClInclude Include="src\Game\Scenes\GameCreating_Kadai\SceneAme.h" />
+    <ClInclude Include="src\Game\Scenes\SceneTitle.h" />
+    <ClInclude Include="src\Game\Utilitys\DicePair.h" />
     <ClInclude Include="src\precompile.h" />
     <ClInclude Include="src\System\AudioManager.h" />
     <ClInclude Include="src\System\Color.h" />
@@ -102,6 +148,7 @@
     <ClInclude Include="src\System\Components\AudioListener.h" />
     <ClInclude Include="src\System\Components\AudioPlayer.h" />
     <ClInclude Include="src\System\Components\BoxCollider.h" />
+    <ClInclude Include="src\System\Components\Button.h" />
     <ClInclude Include="src\System\Components\Camera.h" />
     <ClInclude Include="src\System\Components\CapsuleCollider.h" />
     <ClInclude Include="src\System\Components\Collider.h" />
@@ -110,18 +157,26 @@
     <ClInclude Include="src\System\Components\ModelRenderer.h" />
     <ClInclude Include="src\System\Components\RigidBody.h" />
     <ClInclude Include="src\System\Components\SphereCollider.h" />
+    <ClInclude Include="src\System\Components\Text.h" />
     <ClInclude Include="src\System\Components\Transform.h" />
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h" />
     <ClInclude Include="src\System\Exception.h" />
     <ClInclude Include="src\System\FileWatcher.h" />
+    <ClInclude Include="src\System\ImGui_.h" />
+    <ClInclude Include="src\System\IniFileManager.h" />
     <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\Main.h" />
     <ClInclude Include="src\System\ModelManager.h" />
-    <ClInclude Include="src\System\ObjBase.h" />
+    <ClInclude Include="src\System\Object.h" />
+    <ClInclude Include="src\System\Objects\ButtonObject.h" />
+    <ClInclude Include="src\System\Objects\CameraObject.h" />
+    <ClInclude Include="src\System\Objects\TextObject.h" />
     <ClInclude Include="src\System\PhysicsManager.h" />
+    <ClInclude Include="src\System\Random.h" />
     <ClInclude Include="src\System\Scene.h" />
     <ClInclude Include="src\System\SceneManager.h" />
     <ClInclude Include="src\System\Shader.h" />
+    <ClInclude Include="src\System\TextureManager.h" />
     <ClInclude Include="src\System\Time.h" />
     <ClInclude Include="src\System\typedef.h" />
   </ItemGroup>
@@ -129,26 +184,34 @@
     <FxCompile Include="data\shader\ps_shadow.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="data\shader\SimpleShader.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="data\shader\vs_model.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="data\shader\vs_shadow.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -172,6 +235,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Package|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -179,6 +249,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Package|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
@@ -196,10 +273,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Package|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Package|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -207,6 +290,9 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -217,14 +303,19 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Package|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEFAULT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -238,10 +329,31 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEFAULT_RELEASE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include;imgui</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>PACKAGE_BUILD;NDEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include;imgui</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -255,7 +367,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEFAULT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -279,9 +391,34 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEFAULT_RELEASE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include;imgui</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Package|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>PACKAGE_BUILD;NDEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include;imgui</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
