@@ -1,7 +1,9 @@
 ﻿#include "Main.h"
 #include "System/SceneManager.h"
 #include <fstream>
-
+#include "System/IniFileManager.h"
+#include "System/ImGui_.h"
+#include <System/Components/Camera.h>
 //#define DEBUG_WINDOW
 //#define USE_DEBUG_DRAW
 //#define FULL_SCREEN
@@ -22,6 +24,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 		PostQuitMessage(0);
 		break;
 	case WM_MOVING:
+	case WM_SIZE:
 		//ウィンドウ移動中は時飛ばしを行う(Physicsやアップデート処理の暴走を防ぐため)
 		Time::ResetTime();
 		break;
@@ -35,6 +38,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 	switch (msg)
 	{
 	case WM_MOVING:
+	case WM_SIZE:
 		//ウィンドウ移動中は時飛ばしを行う(Physicsやアップデート処理の暴走を防ぐため)
 		Time::ResetTime();
 		break;
@@ -47,6 +51,8 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 //---------------------------------------------------------------------------------
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
+	//もうUTF-8しか使わん!SHIFT_JISはクソ!!
+	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
 	//==================================//
 #ifdef DEBUG_WINDOW
@@ -56,14 +62,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #endif
 	SRand((unsigned int)time(nullptr));
 	SetOutApplicationLogValidFlag(FALSE);
-	ChangeWindowMode(TRUE);
+
+	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/test.ini");
+	ChangeWindowMode(!not_full_screen);
+
 #ifdef FULL_SCREEN
 	//ChangeWindowMode(false);
 #endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
-	SetMainWindowText("メインウィンドウ");
+	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "メインウィンドウ", "data/test.ini");
+	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
-	SetWindowSizeChangeEnableFlag(FALSE, FALSE);
+	//SetWindowStyleMode(4);
+	//SetWindowSizeChangeEnableFlag(true, true);
 	SetHookWinProc(DxWndProc);
 	SetDoubleStartValidFlag(FALSE);
 	SetAlwaysRunFlag(TRUE);
@@ -75,6 +86,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	if (DxLib_Init() == -1)	return -1;
 
 	SetWindowSizeChangeEnableFlag(true, false);
+
+
+	bool show_mouse = FileSystem::IniFileManager::GetBool("StartConfig", "show_mouse", true, "data/test.ini");
+
+	SetMouseDispFlag(show_mouse);
 
 #ifdef DEBUG_WINDOW
 
@@ -95,13 +111,22 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Input::Init();
 	PhysicsManager::Init();
 	SceneManager::Init();
-
+#if 0
+	ImGuiInit(false);
+#endif
 	//描画のFPSを設定
-	Time::SetDrawFPSMAX(240);
+	int d_fps = FileSystem::IniFileManager::GetInt("StartConfig", "draw_fps", 60, "data/test.ini");
+	Time::SetDrawFPSMAX(d_fps);
+
 	//内部処理のFPSを設定
-	Time::SetFPSMAX(166);
-	Time::SetFixedFPSMAX(50);
-	Time::SetTimeScale(1);
+	int fps = FileSystem::IniFileManager::GetInt("StartConfig", "update_fps", 60, "data/test.ini");
+	Time::SetFPSMAX(fps);
+
+	int fix_fps = FileSystem::IniFileManager::GetInt("StartConfig", "fixed_fps", 50, "data/test.ini");
+	Time::SetFixedFPSMAX(fix_fps);
+
+	int time_scale = FileSystem::IniFileManager::GetInt("StartConfig", "time_scale", 1, "data/test.ini");
+	Time::SetTimeScale(time_scale);
 
 
 	SetCameraNearFar(0.1f, 3000.0f);
@@ -113,13 +138,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	SetCameraPositionAndTarget_UpVecY(float3(0, 0, 0), float3(0, 0, 1));
 
+	SetUseSetDrawScreenSettingReset(false);
 
 	//===============================================//
 
-
-
-	//初期化
-	//GameInit();
+	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "start_scene", "SceneSample", "data/test.ini");
+	auto start_scene = CreateInstanceFromName<Scene>(start_scene_name);
+	SceneManager::Load<Scene>(start_scene);
 
 	while (TRUE)
 	{
@@ -144,24 +169,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//=======================//
 			Time::Update();
 			Input::Update();
-
+#if 0
+			ImGuiUpdate();
+#endif
 			//アップデート
 			//GameUpdate();
 			SceneManager::PreUpdate();
 			SceneManager::Update();
 
-			if (!SceneManager::GetCurrentScene() && Input::GetKeyDown(KeyCode::Return)) {
 
-				SafeSharedPtr<void> p = CreateInstanceFromName<Scene>("RLyeh::SceneTitle");
-				if (p) {
-					auto ptr = SafeStaticCast<Scene>(p);
-					SceneManager::Load<Scene>(ptr);
-				}
-			}
 			SceneManager::LateUpdate();
 			SceneManager::PostUpdate();
 			bool phys = false;
-			while (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD())
+			double real_delta = Time::RealDeltaTimeD();
+			double fixed_max = Time::GetFixedDeltaTimeMAXD();
+			double max = (fixed_max > real_delta ? fixed_max : real_delta);
+			//PCのスペック次第では実際に出ているFPSよりも物理更新を行おうとするので、
+			//FPSが物理更新頻度を下回った場合はFPSを基準に計算頻度を決める
+			while (Time::FixedDeltaTimeD() >= max)
 			{
 				//物理
 				SceneManager::PrePhysics();
@@ -179,17 +204,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			if (phys)
 				Time::ResetTime();
 
+			bool imgui_drawed = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());
 			//描画
-			if (Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD())
+			if (!imgui_drawed)
 			{
 
 
 				ClearDrawScreen();
-				SceneManager::PreDraw();
 				SceneManager::Draw();
-				SceneManager::LateDraw();
-
-
 				//GameRender();
 #ifdef DEBUG_WINDOW
 				//書き込みを行うウィンドウを、メインウィンドウに設定
@@ -209,10 +231,45 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				//書き込みを行うウィンドウを、デバッグウィンドウに設定
 				SetScreenFlipTargetWindow(window[0]);
 #endif
+#if 0
+				ID3D11Texture2D* backBufferTex = reinterpret_cast<ID3D11Texture2D*>(const_cast<void*>(GetUseDirect3D11BackBufferTexture2D()));
+				ID3D11ShaderResourceView* g_BackBufferSRV = nullptr;
+				ID3D11Device* device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // DxLibから取得
+
+				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Texture2D.MipLevels = 1;
+				HRESULT hr = device->CreateShaderResourceView(backBufferTex, &srvDesc, &g_BackBufferSRV);
+				if (FAILED(hr)) {
+					// エラー処理
+					PostQuitMessage(0);
+				}
+				else {
+					//かっちょいいのやります。ImGuiの中で描画するンゴ
+					ImGui::Begin("Game View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
+					auto size = ImGui::GetWindowSize();
+					auto real_size = ImVec2(SCREEN_W, SCREEN_H);
+					ImVec2 scale = size / real_size;
+					scale = scale.x < scale.y ? ImVec2(scale.x, scale.x) : ImVec2(scale.y, scale.y);
+					ImGui::Image((ImTextureID)g_BackBufferSRV, real_size * scale); // 解像度は画面サイズに応じて
+					ImGui::End();
+				}
+#endif
+				//本来のImGuiDrawの位置はここ
+				//なんか最後に描画したものだけImGuiに描画領域が吸われるのでとりあえず画面外に何か書き込み
+#if 0
+				ImGuiDraw();
+#endif
+				//ImGuiの中でドローするなら、こっちは呼ばなくていい
 				ScreenFlip();
 				Time::FixDrawFPS();
 				//============//
 			}
+#if 0
+			else     //ImGuiだけは毎フレーム書かなきゃ怒られるので、強制的にドロー
+				ImGuiDraw();
+#endif
 			//PostDrawする
 			SceneManager::PostDraw();
 
@@ -223,11 +280,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		catch (Exception& ex) {
 			ex.Show();
+			//ImGuiDraw();
 			goto MAIN_LOOP;
 
 		}
 
 	}
+#ifdef PACKAGE_BUILD
+	std::quick_exit(0);
+	ImGuiExit();
+#endif
 	//終了
 	try {
 		SceneManager::Exit();
@@ -246,7 +308,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	timeEndPeriod(1);
 	DxLib::DxLib_End();
 	std::ofstream f("data/tree.txt");
-	std::string start_scene = "SceneSample";
 	if (!f.fail()) {
 
 

@@ -12,7 +12,20 @@
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/MeshCollider.h"
+#include"System/Components/Camera.h"
+#include <System/IniFileManager.h>
+#include "Game/Objects/CardBase.h"
+#include "Game/Objects/CardFist.h"
 
+namespace {
+	std::array<std::string, 5> card_name = {
+		"CardBase",
+		"CardFist",
+		"CardShinsoku",
+		"CardDoman",
+		"CardUnpu"
+	};
+}
 
 namespace RLyeh {
 
@@ -45,21 +58,24 @@ namespace RLyeh {
 		auto tray = SceneManager::Object::Create<GameObject>(shared_from_this());
 		tray->AddComponent<RigidBody>();
 		tray->transform->scale = { 5,5,5 };
-		tray->transform->position = { 0,3,0 };
+		tray->transform->position = { 0,-0.05f,0 };
 		tray->transform->AddRotation(Vector3(0, 90, 0));
 
 		auto model = tray->AddComponent<ModelRenderer>();
 		model->SetModel("Tray");
-		model->pos = { 0,-3,0 };
-		model->scale = { 0.01f,0.01f,0.01f };
-		MV1SetTextureGraphHandle(model->GetModelHandle(), 0, tray_texture, true);
 		tray->AddComponent<MeshCollider>();
+		camera = SceneManager::Object::Create<GameObject>(shared_from_this());
+		auto cam = camera->AddComponent<Camera>();
+		cam->camera_near = 0.1f;
+		cam->camera_far = 1000;
+		camera->transform->position = { 0,8,-5 };
+		camera->transform->SetAxisZ(Vector3(0, -8, 5).getNormalized());
+		CreateGameObjectFromPtr<Object>(CreateInstanceFromName<GameObject>("RLyeh::" + card_name[GetRand(4)]), "Card");
 		return 0;
 	}
 
 	void DiceScene::Load()
 	{
-		texture[0] = LoadGraph("data/dice/D4.png");
 		texture[1] = LoadGraph("data/dice/D6.png");
 		texture[2] = LoadGraph("data/dice/D8.png");
 		texture[3] = LoadGraph("data/dice/D10.png");
@@ -72,9 +88,8 @@ namespace RLyeh {
 		ModelManager::LoadAsModel("data/dice/D10.mv1", "D10");
 		ModelManager::LoadAsModel("data/dice/D12.mv1", "D12");
 		ModelManager::LoadAsModel("data/dice/D20.mv1", "D20");
-		ModelManager::LoadAsModel("data/dice/Tray.mv1", "Tray");
+		ModelManager::LoadAsModel("data/dice/DiceTray.mv1", "Tray");
 
-		screen = MakeScreen(SCREEN_W, SCREEN_H, true);
 	}
 
 	void DiceScene::Roll(int first, int second)
@@ -84,7 +99,7 @@ namespace RLyeh {
 		switch (second) {
 		case 4:
 			for (int i = 0; i < first; i++) {
-				auto obj = SceneManager::Object::Create<DiceD4>(shared_from_this(), texture[0]);
+				auto obj = SceneManager::Object::Create<DiceD4>(shared_from_this());
 				obj->transform->position = { 0.1f * (GetRand(50) - 25),8, 0.1f * (GetRand(50) - 25) };
 				DicePair pair(DicePair::D4, obj);
 				dices.push_back(std::move(pair));
@@ -110,6 +125,7 @@ namespace RLyeh {
 			for (int i = 0; i < first; i++) {
 				auto obj = SceneManager::Object::Create<DiceD10>(shared_from_this(), texture[3]);
 				obj->transform->position = { 0.1f * (GetRand(50) - 25),8, 0.1f * (GetRand(50) - 25) };
+				MV1SetMaterialDifColor(obj->GetComponent<ModelRenderer>()->GetModelHandle(), 0, Color::RED);
 				DicePair pair(DicePair::D10, obj);
 				dices.push_back(std::move(pair));
 			}
@@ -137,6 +153,11 @@ namespace RLyeh {
 				for (int i = 0; i < 2; i++) {
 
 					auto obj = SceneManager::Object::Create<DiceD10>(shared_from_this(), texture[3]);
+					if (i == 0)
+						MV1SetMaterialDifColor(obj->GetComponent<ModelRenderer>()->GetModelHandle(), 0, Color::RED);
+					else
+						MV1SetMaterialDifColor(obj->GetComponent<ModelRenderer>()->GetModelHandle(), 0, Color::BLUE);
+
 					obj->transform->position = { 0.1f * (GetRand(50) - 25),8, 0.1f * (GetRand(50) - 25) };
 					pair.pair[i] = obj;
 				}
@@ -174,8 +195,10 @@ namespace RLyeh {
 		std::vector<int> results;
 		//ダイスがあるならいいが、1D3などはダイスが存在しないので、予め計算した結果から持ってくる
 		if (!dices.empty())
-			for (auto& ite : dices)
+			for (auto& ite : dices) {
 				results.push_back(ite.Result());
+
+			}
 		else {
 			for (auto& ite : results_out_of_dices)
 				results.push_back(std::move(ite));
@@ -191,24 +214,41 @@ namespace RLyeh {
 
 	void DiceScene::Draw()
 	{
-		SetDrawScreen(screen);
-		SetCameraPositionAndTarget_UpVecY({ 0,8,-5 }, { 0,0,0 });
-		SetCameraNearFar(0.1f, 1000);
-		ClearDrawScreen();
+		if (Input::GetKey(KeyCode::Up))
+			camera->transform->AddRotation(Quaternion(DEG2RAD(Time::DrawDeltaTime() * -10), { 1,0,0 }));
+		if (Input::GetKey(KeyCode::Down))
+			camera->transform->AddRotation(Quaternion(DEG2RAD(Time::DrawDeltaTime() * 10), { 1,0,0 }));
+		//	if (Input::GetKeyDown(KeyCode::Return))
+			//	camera->transform->AddRotation(Quaternion(DEG2RAD(180), { 0,1,0 }));
+
+		if (Input::GetKey(KeyCode::Left))
+			camera->transform->AddRotation(Quaternion(DEG2RAD(Time::DrawDeltaTime() * -10), { 0,1,0 }));
+		if (Input::GetKey(KeyCode::Right))
+			camera->transform->AddRotation(Quaternion(DEG2RAD(Time::DrawDeltaTime() * 10), { 0,1,0 }));
+		if (Input::GetKey(KeyCode::E))
+			camera->transform->position += Time::DrawDeltaTime() * camera->transform->AxisY() * 5;
+		if (Input::GetKey(KeyCode::Q))
+			camera->transform->position += Time::DrawDeltaTime() * camera->transform->AxisY() * -5;
+		if (Input::GetKey(KeyCode::W))
+			camera->transform->position += Time::DrawDeltaTime() * camera->transform->AxisZ() * 5;
+		if (Input::GetKey(KeyCode::S))
+			camera->transform->position += Time::DrawDeltaTime() * -camera->transform->AxisZ() * 5;
+		if (Input::GetKey(KeyCode::D))
+			camera->transform->position += Time::DrawDeltaTime() * camera->transform->AxisX() * 5;
+		if (Input::GetKey(KeyCode::A))
+			camera->transform->position += Time::DrawDeltaTime() * camera->transform->AxisX() * -5;
+
+
 	}
 
 	void DiceScene::OnDrawFinish()
 	{
-		SetDrawScreen(DX_SCREEN_BACK);
-		SetCameraPositionAndTarget_UpVecY({ 0,5,-5 }, { 0,0,0 });
-		SetCameraNearFar(0.1f, 1000);
 	}
 
 	void DiceScene::UnLoad()
 	{
 		for (int i = 0; i < 6; i++)
 			DeleteGraph(texture[i]);
-		DeleteGraph(screen);
 		DeleteGraph(tray_texture);
 	}
 

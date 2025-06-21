@@ -7,7 +7,7 @@ namespace RLyeh {
 	{
 	public:
 		USING_SUPER(DiceD4);
-		DiceD4(int texture);
+		DiceD4();
 	};
 
 }

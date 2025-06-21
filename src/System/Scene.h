@@ -3,6 +3,7 @@
 USING_PTR(Object);
 USING_PTR(AudioListener);
 USING_PTR(Scene);
+USING_PTR(Camera);
 struct SceneStat {
 	friend class Scene;
 	std::string ClassName() { return class_name; }
@@ -17,9 +18,12 @@ private:
 public:
 
 	Scene() { physics_scene = PhysicsManager::AddScene(); }
-	inline void SetObjPriority(int new_priority, ObjectP who) {
+	inline void SetObjPriority(unsigned int new_priority, ObjectP who) {
+		unsigned int parent_prio = who->transform->parent ? who->transform->parent->GetPriority() : 0;
+		new_priority += parent_prio;
 		who->status.priority = new_priority;
-		dirty_priority_objects.push_back(who);
+		if (std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), who) != dirty_priority_objects.end())
+			dirty_priority_objects.push_back(who);
 	}
 	enum class LOADING_STATUS :unsigned char {
 		LOADING,
@@ -99,10 +103,11 @@ public:
 	inline void AddFunctionAfterSimulation(const std::function<void()> function) { waiting_functions.push_back(function); }
 	void MoveGameObjectPtrFromThis(ObjectP move_object, SceneP to_where);
 
-	void SetCurrentAudioListener(ComponentP listener) { current_audio_listener = listener; }
-	ComponentWP GetCurrentAudioListener() { return current_audio_listener; }
-	void SetCurrentCamera(ComponentP camera) { current_camera = camera; }
-	ComponentWP GetCurrentCamera() { return current_camera; }
+	void SetCurrentAudioListener(AudioListenerP listener) { current_audio_listener = listener; }
+	AudioListenerWP GetCurrentAudioListener() { return current_audio_listener; }
+	void SetCurrentCamera(CameraP camera) { current_camera = camera; }
+	CameraWP GetCurrentCamera() { return current_camera; }
+	CameraWP& GetCurrentCameraRef() { return current_camera; }
 
 
 private:
@@ -114,8 +119,8 @@ private:
 	std::vector<physx::PxShape*> waiting_remove_shapes;
 	ObjectWPVec leak_objects;
 	void SyncGameObjectsPriority();
-	ComponentWP current_audio_listener;
-	ComponentWP current_camera;
+	AudioListenerWP current_audio_listener;
+	CameraWP current_camera;
 
 protected:
 
@@ -123,19 +128,19 @@ protected:
 	inline SafeSharedPtr<T> CreateGameObject(std::string_view name_, Args&&... args)
 	{
 		auto obj = make_safe_shared<T>(std::forward<Args>(args)...);
-		obj->Construct<T>(SafeSharedPtr(shared_from_this()));
+		obj->Construct(SafeSharedPtr(shared_from_this()));
 		dirty_priority_objects.push_back(obj);
 		objects.push_back(obj);
-
 		if (!GetGameObjectPtr<Object>(name_)) {
 			obj->name = name_.data();
+			obj->Init();
 			return obj;
 		}
 
 		int i = 1;
 		while (true) {
 			std::string name(name_);
-			name += std::to_string(i);
+			name += '_' + std::to_string(i);
 			if (!GetGameObjectPtr<Object>(name)) {
 				obj->name = name;
 				break;
@@ -143,9 +148,39 @@ protected:
 			i++;
 		};
 
+		obj->Init();
 		return obj;
 	}
+	template<class T>
+	inline SafeSharedPtr<T> CreateGameObjectFromPtr(ObjectP obj, std::string_view name_)
+	{
+		//登録済みは流石にできないのであきらめろ...(MoveGameObjectPtrFromThisを使ってください)
+		if (obj->status.status_bit.is(ObjStat::STATUS::CONSTRUCTED))
+			return nullptr;
+		obj->Construct(SafeSharedPtr(shared_from_this()));
+		dirty_priority_objects.push_back(obj);
+		objects.push_back(obj);
 
+		if (!GetGameObjectPtr<Object>(name_)) {
+			obj->name = name_.data();
+			obj->Init();
+			return obj;
+		}
+
+		int i = 1;
+		while (true) {
+			std::string name(name_);
+			name += '_' + std::to_string(i);
+			if (!GetGameObjectPtr<Object>(name)) {
+				obj->name = name;
+				break;
+			}
+			i++;
+		};
+
+		obj->Init();
+		return obj;
+	}
 	template<class T> inline SafeSharedPtr<T> GetGameObjectPtr() {
 		for (auto& obj : objects) {
 			if (!obj->status.status_bit.is(ObjStat::STATUS::REMOVED))

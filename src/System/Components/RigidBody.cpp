@@ -2,13 +2,17 @@
 #include "RigidBody.h"
 
 using namespace physx;
+void RigidBody::Construct()
+{
+	status.status_bit.on(CompStat::STATUS::SINGLE);
+}
 int RigidBody::Init()
 {
 
-	auto p_scene = owner.lock()->GetScene()->GetPhysicsScene();
+	auto p_scene = owner->GetScene()->GetPhysicsScene();
 	body
 		= PhysicsManager::GetPhysicsInstance()->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
-	body->userData = new SafeWeakPtr<Object>(owner.lock()->shared_from_this());
+	body->userData = new SafeWeakPtr<Object>(owner->shared_from_this());
 
 	p_scene->addActor(*body);
 	if (is_kinematic)
@@ -23,7 +27,7 @@ int RigidBody::Init()
 
 void RigidBody::PrePhysics()
 {
-	auto& owner_trns = owner.lock()->transform;
+	auto& owner_trns = owner->transform;
 	PxTransform trns(owner_trns->position + owner_trns->rotation.rotate(pos), owner_trns->rotation * rot);
 	body->setGlobalPose(trns);
 	if (body->is<PxRigidDynamic>()) {
@@ -47,10 +51,10 @@ void RigidBody::PrePhysics()
 
 void RigidBody::PostPhysics()
 {
-	auto& owner_trns = owner.lock()->transform;
+	auto& owner_trns = owner->transform;
 	auto trns = body->getGlobalPose();
-	owner.lock()->transform->SetPosition(trns.p - trns.q.rotate(Vector3(pos)));
-	owner.lock()->transform->SetRotation(trns.q);
+	owner->transform->SetPosition(trns.p - trns.q.rotate(Vector3(pos)));
+	owner->transform->SetRotation(trns.q);
 	if (is_kinematic)
 		return;
 	if (auto rig_body = body->is<PxRigidDynamic>()) {
@@ -72,7 +76,7 @@ void RigidBody::DebugDraw()
 void RigidBody::Exit()
 {
 
-	owner.lock()->GetScene()->DeleteActor(body);
+	owner->GetScene()->DeleteActor(body);
 	body = nullptr;
 }
 
@@ -86,12 +90,12 @@ void RigidBody::AddForce(Vector3 force, ForceMode force_mode)
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), force, force_mode]() {
-		if (!wp.lock())
+		if (!wp)
 			return;
-		if (wp.lock()->is_kinematic)
+		if (wp->is_kinematic)
 			return;
-		if (static_cast<SafeWeakPtr<Object>*>(wp.lock()->body->userData)->lock())
-			static_cast<PxRigidDynamic*>(wp.lock()->body)->addForce(force, static_cast<PxForceMode::Enum>(force_mode));
+		if (static_cast<SafeWeakPtr<Object>*>(wp->body->userData))
+			static_cast<PxRigidDynamic*>(wp->body)->addForce(force, static_cast<PxForceMode::Enum>(force_mode));
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
 
@@ -107,12 +111,12 @@ void RigidBody::AddTorque(Vector3 torque, ForceMode force_mode)
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), torque, force_mode]() {
-		if (!wp.lock())
+		if (!wp)
 			return;
-		if (wp.lock()->is_kinematic)
+		if (wp->is_kinematic)
 			return;
-		if (static_cast<SafeWeakPtr<Object>*>(wp.lock()->body->userData)->lock())
-			static_cast<PxRigidDynamic*>(wp.lock()->body)->addTorque(torque, static_cast<PxForceMode::Enum>(force_mode));
+		if (static_cast<SafeWeakPtr<Object>*>(wp->body->userData))
+			static_cast<PxRigidDynamic*>(wp->body)->addTorque(torque, static_cast<PxForceMode::Enum>(force_mode));
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
 }
@@ -129,13 +133,13 @@ void RigidBody::AddForceAtPosition(Vector3 force, Vector3 world_position, ForceM
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), force, world_position, force_mode]() {
-		if (!wp.lock())
+		if (!wp)
 			return;
-		if (wp.lock()->is_kinematic)
+		if (wp->is_kinematic)
 			return;
-		if (static_cast<SafeWeakPtr<Object>*>(wp.lock()->body->userData)->lock()) {
-			static_cast<PxRigidDynamic*>(wp.lock()->body)->addForce(force, static_cast<PxForceMode::Enum>(force_mode));
-			static_cast<PxRigidDynamic*>(wp.lock()->body)->addTorque((world_position - wp.lock()->body->getGlobalPose().p).cross(force), static_cast<PxForceMode::Enum>(force_mode));
+		if (static_cast<SafeWeakPtr<Object>*>(wp->body->userData)) {
+			static_cast<PxRigidDynamic*>(wp->body)->addForce(force, static_cast<PxForceMode::Enum>(force_mode));
+			static_cast<PxRigidDynamic*>(wp->body)->addTorque((world_position - wp->body->getGlobalPose().p).cross(force), static_cast<PxForceMode::Enum>(force_mode));
 		}
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
@@ -157,25 +161,25 @@ void RigidBody::SetVelocity(Vector3 velocity_)
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this())), velocity_]() {
-		if (!wp.lock())
+		if (!wp)
 			return;
-		if (wp.lock()->is_kinematic)
+		if (wp->is_kinematic)
 			return;
-		if (auto owner_obj = static_cast<SafeWeakPtr<Object>*>(wp.lock()->body->userData)->lock())
-			if (wp.lock()->body->is<PxRigidDynamic>())
-				static_cast<PxRigidDynamic*>(wp.lock()->body)->setLinearVelocity(velocity_);
+		if (auto owner_obj = static_cast<SafeWeakPtr<Object>*>(wp->body->userData))
+			if (wp->body->is<PxRigidDynamic>())
+				static_cast<PxRigidDynamic*>(wp->body)->setLinearVelocity(velocity_);
 		};
 	SceneManager::GetCurrentScene()->AddFunctionAfterSimulation(lambda);
 }
 
 void RigidBody::ChangeToStatic()
 {
-	owner.lock()->GetScene()->DeleteActor(body);
-	auto scene = owner.lock()->GetScene();
+	owner->GetScene()->DeleteActor(body);
+	auto scene = owner->GetScene();
 	auto p_scene = scene->GetPhysicsScene();
 	body
 		= PhysicsManager::GetPhysicsInstance()->createRigidStatic(physx::PxTransform(physx::PxIdentity));
-	body->userData = new SafeWeakPtr<Object>(owner.lock()->shared_from_this());
+	body->userData = new SafeWeakPtr<Object>(owner->shared_from_this());
 
 	p_scene->addActor(*body);
 }

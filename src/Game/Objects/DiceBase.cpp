@@ -10,17 +10,17 @@ namespace RLyeh {
 	int DiceBase::Init()
 	{
 		auto mod = AddComponent<ModelRenderer>();
-		transform->scale = { 0.5f,0.5f,0.5f };
+		//transform->scale = { 0.5f,0.5f,0.5f };
 		mod->SetModel(model_name);
 		MV1SetTextureGraphHandle(mod->GetModelHandle(), 0, handle, true);
-		mod->scale = { 0.01f,0.01f,0.01f };
+		//mod->scale = { 0.01f,0.01f,0.01f };
 		transform->position = Vector3((GetRand(100) - 50) * 0.1f, 1.6f, (GetRand(100) - 50) * 0.1f);
 		transform->rotation = Quaternion(DEG2RAD(GetRand(360)), Vector3((GetRand(10) - 5) * 0.1f, (GetRand(10) - 5) * 0.1f, (GetRand(10) - 5) * 0.1f).getNormalized());
 
 
 		auto rb = AddComponent<RigidBody>();
 		//static_cast<physx::PxRigidDynamic*>(rb->GetBody())->setAngularDamping(2.0f);
-		rb->AddTorque(Vector3((float)(GetRand(800) - 400), (float)(GetRand(800) - 400), (float)(GetRand(800) - 400)));
+		rb->AddTorque(Vector3((float)(GetRand(800) - 400), (float)(GetRand(800) - 400), (float)(GetRand(800) - 400)),ForceMode::VelocityCange);
 		rb->AddForce(Vector3((float)GetRand(50) - 25, (float)-GetRand(20), (float)GetRand(50) - 25), ForceMode::VelocityCange);
 		auto col = AddComponent<ConvexMeshCollider>();
 		rb->mass = 5;

@@ -6,11 +6,7 @@ USING_PTR(DontDestroyOnLoadScene);
 class SceneManager final
 {
 
-
-	//===============================//
-	//デバッグ用ボックス(SooS提供)のハンドル
-	static SafeSharedPtr<Model> debug_box;
-	//===============================//
+	static SafeSharedPtr<Model> debug_box;	//!< デバッグ用ボックス(SooS提供)のハンドル
 
 public:
 	//-----------------------------
@@ -29,12 +25,12 @@ public:
 	static void Physics();			//<物理更新
 	static void PostPhysics();		//<物理後更新
 
+
 	//-----------------------------
 
 	//-----------------------------
 	// Updateブロック(更新前後処理)
 	//-----------------------------
-
 	static void PreUpdate();		//<前更新
 	static void Update();			//<更新
 	static void LateUpdate();		//<遅延更新
@@ -46,9 +42,10 @@ public:
 	// Drawブロック(描画前後処理)
 	//-----------------------------
 
-	static void PreDraw();			//<前描画もしくは描画前更新
+private:
+	static void DrawCycleForOneScene(SceneP scene);		//!< 1シーンに対して一括でPreDraw,Draw,LateDrawを行うので使いまわし用の関数
+public:
 	static void Draw();				//<描画
-	static void LateDraw();			//<遅延描画
 	static void DebugDraw();		//<デバッグ描画
 	static void LateDebugDraw();	//<後デバッグ描画
 
@@ -159,7 +156,7 @@ public:
 			return SafeSharedPtr<T>(nullptr);
 		//(いなかったら、ロードの必要あり)
 		SafeSharedPtr<Scene> scene;
-		//ただし、CreateInstance等でnewされた生ポがあれば、そいつをmake_sharedせず直接Sharedに渡して登録する
+		//ただし、CreateInstance等でnewされたポインタがあれば、そいつをmake_sharedせず直接Sharedに渡して登録する
 		if (ptr)
 			scene = SafeStaticCast<Scene>(ptr);
 		else
@@ -175,6 +172,7 @@ public:
 
 		return SafeStaticCast<T>(scene);
 	}
+	//裏シーンをロード
 	template <class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0, class... Args> static inline SafeSharedPtr<T> LoadAsAnother(Args&&... args) {
 		//シーンの作成(いたらロードの必要なし)
 		if (SafeSharedPtr<T> scene = GetScene<T>()) {
@@ -212,7 +210,6 @@ public:
 			else
 				obj = current_scene->CreateGameObject<T>(typeid(T).name() + 6, std::forward<Args>(args)...);
 
-			obj->Init();
 
 			return obj;
 		}
@@ -227,7 +224,7 @@ public:
 			//カレントシーンにオブジェクト作成を依頼
 			SafeSharedPtr<T> obj = current_scene->CreateGameObject<T>(name_, std::forward<Args>(args)...);
 			//作成したオブジェクトをその場で初期化
-			obj->Init();
+
 
 			//初期化後のオブジェクトを返す
 			return obj;
@@ -342,6 +339,7 @@ public:
 	};
 
 
+	static std::vector<std::function<void()>> func_on_loop_finish;
 private:
 	static ScenePVec scenes;			//!<作成済みシーンの配列
 	static ScenePVec another_scenes;	//!<裏シーンの配列

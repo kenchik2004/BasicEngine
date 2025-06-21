@@ -13,17 +13,19 @@ public:
 		UI,
 	};
 	enum struct STATUS :u32 {
-		INITIALIZED = 0,
+		CONSTRUCTED = 0,
+		INITIALIZED = 1,
 		ACTIVE = 1 << 1,
 		DRAW = 1 << 2,
 		REMOVED = 1 << 3,
 	};
 
 	SBit <STATUS> status_bit;
+	const OBJ_TYPE& Type() const { return obj_type; }
 private:
 	std::string class_name = "Object";
 	OBJ_TYPE obj_type = NORMAL;
-	int priority = 0;
+	unsigned int priority = 10;
 };
 
 USING_PTR(Component);
@@ -55,19 +57,20 @@ public:
 private:
 
 
-	template <class T, std::enable_if_t<std::is_convertible_v<T*, Object*>, int> = 0>
 	inline void Construct(SceneP owner_scene) {
-		auto this_class = std::static_pointer_cast<T>(shared_from_this());
-		this_class->status.status_bit.on(ObjStat::STATUS::INITIALIZED);
-		this_class->status.status_bit.on(ObjStat::STATUS::ACTIVE);
-		this_class->status.status_bit.on(ObjStat::STATUS::DRAW);
-		this_class->status.class_name = typeid(T).name();
-		this_class->transform = this_class->AddComponent<Transform>();
-		this_class->scene = owner_scene;
+		status.status_bit.on(ObjStat::STATUS::CONSTRUCTED);
+		status.status_bit.on(ObjStat::STATUS::INITIALIZED);
+		status.status_bit.on(ObjStat::STATUS::ACTIVE);
+		status.status_bit.on(ObjStat::STATUS::DRAW);
+		status.class_name = info.ClassName();
+		transform = AddComponent<Transform>();
+		scene = owner_scene;
 	};
 
 
 	void SyncComponentsPriority();
+	bool CheckForSingleComponent(ComponentP comp);
+
 
 	ComponentPVec components;
 	ComponentPVec dirty_priority_components;
@@ -75,9 +78,10 @@ private:
 
 
 public:
-	void SetComponentPriority(int prio, ComponentP who) {
+	void SetComponentPriority(unsigned int prio, ComponentP who) {
 		who->status.priority = prio;
-		dirty_priority_components.push_back(who);
+		if (std::find(dirty_priority_components.begin(), dirty_priority_components.end(), who) != dirty_priority_components.end())
+			dirty_priority_components.push_back(who);
 	}
 
 	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0, typename... Args>
@@ -85,7 +89,10 @@ public:
 		auto comp = make_safe_shared<T>(std::forward<Args>(args)...);
 		try {
 			comp->owner = SafeSharedPtr(shared_from_this());
-			comp->Construct<T>();
+			comp->ConstructBase();
+			if (!CheckForSingleComponent(comp))
+				return nullptr;
+
 			dirty_priority_components.push_back(comp);
 			components.push_back(comp);
 			comp->Init();
@@ -95,7 +102,30 @@ public:
 		}
 		return comp;
 	}
-	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0> 
+
+	//登録前のコンポーネントであれば、ここからも登録できる(CreateInstanceしたものなど)
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0>
+	SafeSharedPtr<T> AddComponentFromPtr(SafeSharedPtr<T> component) {
+		auto comp = SafeStaticCast<Component>(component);
+		if (comp->status.status_bit.is(CompStat::STATUS::CONSTRUCTED))
+			return nullptr;
+		try {
+			comp->owner = SafeSharedPtr(shared_from_this());
+			comp->ConstructBase();
+			if (!CheckForSingleComponent(comp))
+				return nullptr;
+
+			dirty_priority_components.push_back(comp);
+			components.push_back(comp);
+			comp->Init();
+		}
+		catch (Exception& ex) {
+			ex.Show();
+		}
+		return component;
+	}
+
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0>
 	SafeSharedPtr<T> GetComponent() {
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
@@ -120,6 +150,10 @@ public:
 	}
 
 	void RemoveComponent(ComponentP remove_comp) {
+
+		//if (remove_comp == transform)
+	//		return;
+
 		ComponentWP comp_wp;
 		if (auto comp = std::find(dirty_priority_components.begin(), dirty_priority_components.end(), remove_comp); comp != dirty_priority_components.end())
 		{
@@ -128,8 +162,8 @@ public:
 		for (auto comp = components.begin(); comp != components.end();) {
 			comp_wp = (*comp);
 			if (comp_wp.lock() == remove_comp) {
-				comp_wp.lock()->Exit();
-				comp_wp.lock()->status.status_bit.on(CompStat::STATUS::REMOVED);
+				comp_wp->Exit();
+				comp_wp->status.status_bit.on(CompStat::STATUS::REMOVED);
 				comp = components.erase(comp);
 				remove_comp.reset();
 				break;
@@ -139,7 +173,7 @@ public:
 		}
 	}
 
-	inline void SetPriority(int prio);
+	inline void SetPriority(unsigned int prio);
 	inline int GetPriority() { return status.priority; }
 	inline SceneP GetScene() { return scene; }
 
@@ -212,8 +246,45 @@ public:
 
 
 USING_PTR(UIObject);
-class UIObject :public Object {
+class UIObject : public Object
+{
 public:
 	USING_SUPER(UIObject);
+
 	UIObject();
+	int          Init() override;
+	void          PreUpdate() override;
+	void          Update() override;
+	void          PreDraw() override final;
+	void          LateDraw() override final;
+	virtual unsigned int& BackGroundColor() { return back_ground_color; }
+	virtual bool& UseBackGround() { return use_back_color; }
+
+	inline const Vector3& GetDrawPos() { return draw_pos; }
+	enum ANCHOR_TYPE
+	{
+		LEFT_TOP,
+		CENTER_TOP,
+		RIGHT_TOP,
+		LEFT_MIDDLE,
+		CENTER,
+		RIGHT_MIDDLE,
+		LEFT_BOTTOM,
+		CENTER_BOTTOM,
+		RIGHT_BOTTOM
+	};
+	inline ANCHOR_TYPE& AnchorType() { return anchor_type; }
+	inline ANCHOR_TYPE& CanvasAnchorType() { return canvas_anchor_type; }
+
+
+
+protected:
+	int          draw_priolity = 0;
+	bool         use_back_color = false;
+	unsigned int back_ground_color = Color::GRAY;
+	Vector3       anchor_point;
+	Vector3       canvas_anchor_point;
+	Vector3       draw_pos;
+	ANCHOR_TYPE  anchor_type = CENTER;
+	ANCHOR_TYPE  canvas_anchor_type = CENTER;
 };

@@ -42,10 +42,14 @@ namespace RLyeh {
 				return pair[0]->selected_number + 1;
 			//2つのうち1つを十の位,もう一つを一の位として扱う
 			int number = 0;
-			number += pair[0]->selected_number * 10;
-			number += pair[1]->selected_number;
-			//ここでできた数字は0~99のため、+1する
-			return number + 1;
+			number += (pair[0]->selected_number + 1) * 10;
+			number += (pair[1]->selected_number + 1) % 10;
+			//ここでできた数値は10~109なので、100で割った余りで一旦0~99とする
+			number %= 100;
+			//0,0の組み合わせのみ100と扱う
+			if (number == 0)
+				number = 100;
+			return number;
 			break;
 		}
 		return 0;

@@ -5,46 +5,37 @@ namespace Input {
 
 	char key_buffer[256];
 	char key_buffer_prev[256];
-	int key_frame[256];
-	int mouse_l_frame;
-	int mouse_r_frame;
+	unsigned int mouse_buffer;
+	unsigned int mouse_buffer_prev;
 
-	int mouse_x;
-	int mouse_y;
-	int mouse_x_prev;
-	int mouse_y_prev;
+	Vector2 mouse_pos(0.0f, 0.0f);
+	Vector2 mouse_pos_prev(0.0f, 0.0f);
+
 
 	void Init()
 	{
 		for (int i = 0; i < 256; i++) {
-			key_frame[i] = 0;
+			key_buffer[i] = 0;
+			key_buffer_prev[i] = 0;
 		}
-		mouse_l_frame = 0;
-		mouse_r_frame = 0;
+		mouse_buffer = 0;
+		mouse_buffer_prev = 0;
+
 	}
 
 	void Update()
 	{
 
-		mouse_x_prev = mouse_x;
-		mouse_y_prev = mouse_y;
-		memcpy(key_buffer_prev,key_buffer,256);
+		mouse_pos_prev = mouse_pos;
+		memcpy(key_buffer_prev, key_buffer, sizeof(char) * 256);
+		mouse_buffer_prev = mouse_buffer;
 
 		GetHitKeyStateAll(key_buffer);
+		mouse_buffer = 0;
+		mouse_buffer |= GetMouseInput();
 
-		for (int i = 0; i < 256; i++) {
-			if (key_buffer[i])	key_frame[i]++;
-			else				key_frame[i] = 0;
-		}
 
-		if (CheckMouseInput(MOUSE_INPUT_LEFT))	mouse_l_frame++;
-		else										mouse_l_frame = 0;
 
-		if (CheckMouseInput(MOUSE_INPUT_RIGHT))	mouse_r_frame++;
-		else										mouse_r_frame = 0;
-
-		mouse_x = GetMouseX();
-		mouse_y = GetMouseY();
 	}
 
 	//---------------------------------------------------------------------------------
@@ -52,22 +43,22 @@ namespace Input {
 	//---------------------------------------------------------------------------------
 	bool GetKeyDown(KeyCode key)
 	{
-		return key_frame[(unsigned char)key] == 1;
+		return key_buffer[(unsigned char)key] == 1 && key_buffer_prev[(unsigned char)key] == 0;
 	}
 	//---------------------------------------------------------------------------------
 	//	キーが押されているかどうかを取得する
 	//---------------------------------------------------------------------------------
-	
+
 	bool GetKey(KeyCode key)
 	{
-		return DxLib::CheckHitKey((unsigned char)key);
+		return key_buffer[(unsigned char)key] == 1 && key_buffer_prev[(unsigned char)key] == 1;
 	}
 
 	//---------------------------------------------------------------------------------
 	//	キーが離された瞬間を取得する
 	//---------------------------------------------------------------------------------
 	bool GetKeyUp(KeyCode key) {
-		return key_buffer[(unsigned char)key] == 0 && key_buffer[(unsigned char)key] != key_buffer_prev[(unsigned char)key];
+		return key_buffer[(unsigned char)key] == 0 && key_buffer_prev[(unsigned char)key] == 1;
 	}
 	//---------------------------------------------------------------------------------
 	//	マウスが押されているかを取得する
@@ -82,46 +73,37 @@ namespace Input {
 	//---------------------------------------------------------------------------------
 	//	マウスが押された瞬間を取得する
 	//---------------------------------------------------------------------------------
-	bool PushMouseInput(int button)
+	bool GetMouseButtonDown(MouseButton button)
 	{
-		if (button & MOUSE_INPUT_LEFT) {
-			if (mouse_l_frame == 1) {
-				return true;
-			}
-		}
-		if (button & MOUSE_INPUT_RIGHT) {
-			if (mouse_r_frame == 1) {
-				return true;
-			}
-		}
-		return false;
+		return mouse_buffer & (unsigned char)button & (~mouse_buffer_prev);
+	}
+	bool GetMouseButtonRepeat(MouseButton button)
+	{
+		return mouse_buffer_prev & mouse_buffer & (unsigned char)button;
+	}
+	bool GetMouseButtonUp(MouseButton button)
+	{
+		return mouse_buffer_prev & (~mouse_buffer) & (unsigned char)button;
 	}
 	//---------------------------------------------------------------------------------
 	//	マウスの座標を取得する
 	//---------------------------------------------------------------------------------
-	int GetMouseX()
+
+	Vector2 GetMousePosition()
 	{
 		int mouse_x;
 		int mouse_y;
 		GetMousePoint(&mouse_x, &mouse_y);
-		return mouse_x;
+		return Vector2(static_cast<float>(mouse_x), static_cast<float>(mouse_y));
 	}
-	int GetMouseY()
-	{
-		int mouse_x;
-		int mouse_y;
-		GetMousePoint(&mouse_x, &mouse_y);
-		return mouse_y;
-	}
+
+
 	//---------------------------------------------------------------------------------
 	//	マウスの移動量を取得する
 	//---------------------------------------------------------------------------------
-	int GetMouseMoveX()
+	Vector2 GetMouseDelta()
 	{
-		return mouse_x - mouse_x_prev;
+		return mouse_pos - mouse_pos_prev;
 	}
-	int GetMouseMoveY()
-	{
-		return mouse_y - mouse_y_prev;
-	}
+
 }

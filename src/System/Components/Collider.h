@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "System/Component.h"
 
 USING_PTR(RigidBody);
+USING_PTR(Collider);
 class Collider :
 	public Component
 {

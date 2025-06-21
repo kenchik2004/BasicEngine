@@ -22,8 +22,8 @@ namespace RLyeh {
 		void Draw() override;
 		void OnDrawFinish() override;
 		void UnLoad() override;
+		GameObjectWP camera;
 		int texture[6] = { 0 };
-		int screen = -1;
 		int tray_texture = -1;
 		std::vector<DicePair> dices = std::vector<DicePair>(0);
 	};

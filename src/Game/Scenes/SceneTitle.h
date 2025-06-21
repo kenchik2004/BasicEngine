@@ -15,7 +15,7 @@ namespace RLyeh {
 		void UnLoad() override;
 		SafeSharedPtr<AudioClip> bgm = nullptr;
 		DiceSceneWP dice_scene;
-		int title_img = -1;
+		SafeSharedPtr<Texture> title_img = nullptr;
 		std::vector<int> results;
 	};
 }

@@ -8,14 +8,14 @@ using namespace physx;
 
 int MeshCollider::Init()
 {
-	rigidbody = owner.lock()->GetComponent<RigidBody>();
-	if (!rigidbody.lock()) {
+	rigidbody = owner->GetComponent<RigidBody>();
+	if (!rigidbody) {
 		RemoveThisComponent();
 		return -1;
 	}
-	rigidbody.lock()->ChangeToStatic();
-	model = owner.lock()->GetComponent<ModelRenderer>();
-	if (model.lock() && rigidbody.lock())
+	rigidbody->ChangeToStatic();
+	model = owner->GetComponent<ModelRenderer>();
+	if (model && rigidbody)
 		AttachToModel();
 	return 0;
 }
@@ -24,16 +24,16 @@ void MeshCollider::PrePhysics()
 {
 	if (!shape)
 		return;
-	rigidbody.lock()->GetBody()->detachShape(*shape);
+	rigidbody->GetBody()->detachShape(*shape);
 
 	PxTransform trns = MakeCollisionTransform();
-	mesh.scale = owner.lock()->transform->scale;
+	mesh.scale = owner->transform->scale;
 	shape->setGeometry(mesh);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
 	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setLocalPose(trns);
 
-	rigidbody.lock()->GetBody()->attachShape(*shape);
+	rigidbody->GetBody()->attachShape(*shape);
 }
 
 void MeshCollider::DebugDraw()
@@ -41,11 +41,11 @@ void MeshCollider::DebugDraw()
 	if (!ref_poly_)
 		return;
 
-	auto trns = rigidbody.lock()->GetBody()->getGlobalPose();
+	auto trns = rigidbody->GetBody()->getGlobalPose();
 	for (int i = 0; i < ref_poly_->PolygonNum; i++) {
-		Vector3 p0 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[0]].Position) * owner.lock()->transform->scale.x;
-		Vector3 p1 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[1]].Position) * owner.lock()->transform->scale.x;
-		Vector3 p2 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[2]].Position) * owner.lock()->transform->scale.x;
+		Vector3 p0 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[0]].Position) * owner->transform->scale.x;
+		Vector3 p1 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[1]].Position) * owner->transform->scale.x;
+		Vector3 p2 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[2]].Position) * owner->transform->scale.x;
 		p0 = trns.q.rotate(p0);
 		p1 = trns.q.rotate(p1);
 		p2 = trns.q.rotate(p2);
@@ -63,31 +63,33 @@ void MeshCollider::DebugDraw()
 
 void MeshCollider::Update()
 {
-	if (model.lock() && !attached)
+	if (model && !attached)
 		AttachToModel();
 }
 
 void MeshCollider::AttachToModel()
 {
-	if (!model.lock())
-		model = owner.lock()->GetComponent<ModelRenderer>();
-	if (attached || !model.lock() || !rigidbody.lock())
+	if (!model)
+		model = owner->GetComponent<ModelRenderer>();
+	if (attached || !model|| !rigidbody)
 		return;
-	if (!model.lock()->IsLoaded())
+	if (!model->IsLoaded())
 		return;
 
 
 
 	try {
-		auto triangle_mesh = model.lock()->model->GetTriangleMesh();
-		ref_poly_ = model.lock()->model->GetPolygon();
+		auto triangle_mesh = model->model->GetTriangleMesh();
+		ref_poly_ = model->model->GetPolygon();
 		mesh.triangleMesh = triangle_mesh;
 		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Concrete_Default);
+#ifndef PACKAGE_BUILD
 		if (!shape)
 			throw(Exception("トライアングルメッシュ作成に失敗しました。メッシュデータが無効です。モデルが有効なものか再確認してください", DEFAULT_EXCEPTION_PARAM));
+#endif
 
 		shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
-		rigidbody.lock()->GetBody()->attachShape(*shape);
+		rigidbody->GetBody()->attachShape(*shape);
 	}
 	catch (Exception& ex) {
 		ex.Show();

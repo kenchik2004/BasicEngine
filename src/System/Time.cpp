@@ -287,7 +287,8 @@ namespace Time {
 	//物理更新FPSの最大値を設定
 	void SetFixedFPSMAX(const double& max)
 	{
-		fixed_fps_max = max;
+		fixed_fps_max = max > fps_max ? fps_max : max;
+
 		//FIXED_FPSの最大値が1を下回るとゼロ除算が起こったりいろいろと危険なので、例外スロー
 		if (fixed_fps_max < 1)
 		{

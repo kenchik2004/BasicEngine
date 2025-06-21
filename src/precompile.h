@@ -10,6 +10,7 @@
 #include <vector>
 #include <array>
 #include <functional>
+#include <algorithm>
 #include "chrono"
 
 #pragma warning (disable : 4819)
@@ -36,11 +37,14 @@
 #include "System/Exception.h"
 #include "System/typedef.h"
 #include <DxLib.h>
+#include "System/ImGui_.h"
 #include "float2.h"
 #include "float3.h"
 #include "System/Input.h"
 #include "System/Time.h"
+#include"System/Random.h"
 #include "System/PhysicsManager.h"
+#include "System/TextureManager.h"
 #include "System/ModelManager.h"
 #include "System/AudioManager.h"
 #include "System/Component.h"

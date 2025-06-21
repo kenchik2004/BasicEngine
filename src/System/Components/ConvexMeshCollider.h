@@ -4,6 +4,7 @@
 
 
 USING_PTR(ModelRenderer);
+USING_PTR(ConvexMeshCollider);
 class ConvexMeshCollider :
 	public Collider
 {

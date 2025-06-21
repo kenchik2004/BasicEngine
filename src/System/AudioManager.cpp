@@ -18,7 +18,7 @@ void AudioManager::Load(std::string_view path, std::string_view name, bool use_3
 	auto call_back = [](int handle, void* data) {
 		auto ptr = reinterpret_cast<PtrToCacheAndAudioData*>(data);
 		ptr->audio_source->is_loaded = true;
-		int cache_index = ptr->cache->size();
+		size_t cache_index = ptr->cache->size();
 		auto name = ptr->audio_source->name;
 		auto path = ptr->audio_source->path;
 		(*(ptr->name_map))[name].index = cache_index;
@@ -112,7 +112,9 @@ void AudioManager::Exit()
 	paths.clear();
 	if (AudioClip::instance > 0) {
 		std::string msg = typeid(AudioClip).name();
+#ifndef PACKAGE_BUILD
 		throw(MemoryLeakException(msg.c_str(), DEFAULT_EXCEPTION_PARAM));
+#endif
 	}
 }
 

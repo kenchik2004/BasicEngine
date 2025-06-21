@@ -11,10 +11,12 @@ enum ForceMode {		//力を加えるモード
 	VelocityCange = physx::PxForceMode::eVELOCITY_CHANGE,	//重さを無視した速度の変化(m/s)
 	Acceleration = physx::PxForceMode::eACCELERATION,		//重さを無視した加速度の変化(m/s^2)
 };
+USING_PTR(RigidBody);
 class RigidBody :public Component
 {
 public:
 	USING_SUPER(RigidBody);
+	void Construct() override;
 	int Init() override;
 	void PrePhysics() override;
 	void PostPhysics() override;

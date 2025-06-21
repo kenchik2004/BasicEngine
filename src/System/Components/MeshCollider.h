@@ -3,6 +3,7 @@
 
 
 USING_PTR(ModelRenderer);
+USING_PTR(MeshCollider);
 class MeshCollider :
 	public Collider
 {

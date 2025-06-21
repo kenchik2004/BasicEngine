@@ -4,6 +4,11 @@
 
 
 
+void AudioListener::Construct()
+{
+	status.status_bit.on(CompStat::STATUS::SINGLE);
+}
+
 int AudioListener::Init()
 {
 	if (!GetCurrentListener())
@@ -21,10 +26,10 @@ void AudioListener::PreDraw()
 void AudioListener::SetCurrentListener()
 {
 	auto current_listener = SceneManager::GetCurrentScene()->GetCurrentAudioListener();
-	if (current_listener.lock())
+	if (current_listener)
 		SafeStaticCast<AudioListener>(current_listener.lock())->is_current_listener = false;
 	is_current_listener = true;
-	SceneManager::GetCurrentScene()->SetCurrentAudioListener(shared_from_this());
+	SceneManager::GetCurrentScene()->SetCurrentAudioListener(std::static_pointer_cast<AudioListener>(shared_from_this()));
 }
 
 SafeSharedPtr<AudioListener> AudioListener::GetCurrentListener()

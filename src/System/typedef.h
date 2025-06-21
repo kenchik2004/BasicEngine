@@ -1,11 +1,10 @@
 ﻿#pragma once
-#include "System/Color.h"
-#include "source_location"
-#include <any>
 
-#define PI 3.1415926535f			//円周率
-#define DEG2RAD(deg) deg*PI/180		//オイラー角->ラジアン角の変換
-#define RAD2DEG(rad) rad*180/PI		//ラジアン角->オイラー角の変換
+constexpr float PI = 3.1415926535f;		//円周率
+constexpr float p = PI / 180;			//円周率/180(Euler->Radian)
+constexpr float p_ = 180 / PI;			//180/円周率(Radian->Euler)
+#define DEG2RAD(deg) deg*p		//オイラー角->ラジアン角の変換
+#define RAD2DEG(rad) rad*p_		//ラジアン角->オイラー角の変換
 
 
 #define NON_COPYABLE(CLASS)										\
@@ -41,6 +40,8 @@ using Quaternion = physx::PxQuat;
 using mat3x3 = physx::PxMat33;
 using mat4x4 = physx::PxMat44;
 
+#include "System/Color.h"
+
 template <class T>
 class SafeUniquePtr {
 	std::unique_ptr<T> u_p = nullptr;
@@ -65,16 +66,20 @@ public:
 	}
 
 	T* operator->() const {
+#ifndef PACKAGE_BUILD
 		if (!u_p) {
 			throw NullptrException("もう知らん!ぬるぽ!");
 		}
+#endif
 		return u_p.get();
 	}
 
 	T& operator*() const {
+#ifndef PACKAGE_BUILD
 		if (!u_p) {
 			throw NullptrException("もう知らん!ぬるぽ!");
 		}
+#endif
 		return *u_p;
 	}
 	operator bool() const { return u_p != nullptr; }
@@ -107,9 +112,11 @@ public:
 	template <typename U = T>
 	typename std::enable_if<!std::is_void<U>::value, U&>::type
 		operator*() const {
+#ifndef PACKAGE_BUILD
 		if (!s_p) {
 			throw NullptrException("もう知らん!ぬるぽ!");
 		}
+#endif
 		return *s_p;
 	}
 
@@ -117,9 +124,11 @@ public:
 	template <typename U = T>
 	typename std::enable_if<!std::is_void<U>::value, U*>::type
 		operator->() const {
+#ifndef PACKAGE_BUILD
 		if (!s_p) {
 			throw NullptrException("もう知らん!ぬるぽ!");
 		}
+#endif
 		return s_p.get();
 	}
 
@@ -156,8 +165,10 @@ public:
 	~SafeWeakPtr() { w_p.reset(); }
 	SafeWeakPtr(const std::shared_ptr<T>& p) : w_p(p) {}
 	SafeWeakPtr(SafeSharedPtr<T> p) : w_p(p.raw_shared()) {}
+	SafeWeakPtr(nullptr_t) { w_p.reset(); }
 	void operator=(SafeSharedPtr<T> p) { w_p = p.raw_shared(); }
 	void operator=(SafeWeakPtr<T> p) { w_p = p.raw_weak(); }
+	void operator=(nullptr_t) { w_p.reset(); }
 
 
 	// 基底クラスへの暗黙変換コンストラクタ
@@ -167,22 +178,27 @@ public:
 	}
 
 	std::shared_ptr<T> operator->() const {
-		auto lock = w_p.lock();
-		if (!lock)
+#ifndef PACKAGE_BUILD
+		if (w_p.expired())
 			throw NullptrException("もう知らん!ぬるぽ!");
+#endif
+		auto lock = w_p.lock();
 		return lock;
 	}
 
 	T& operator*() const {
-		if (!w_p.lock()) {
+
+#ifndef PACKAGE_BUILD
+		if (w_p.expired()) {
 			throw NullptrException("もう知らん!ぬるぽ!");
 		}
+#endif
 		return *(w_p.lock());
 	}
-	explicit operator bool() const { return w_p.lock() != nullptr; }
+	explicit operator bool() const { return !w_p.expired(); }
 
-	bool operator==(std::nullptr_t) const { return !w_p.lock(); }
-	bool operator!=(std::nullptr_t) const { return w_p.lock() != nullptr; }
+	bool operator==(std::nullptr_t) const { return !w_p.expired(); }
+	bool operator!=(std::nullptr_t) const { return w_p.expired(); }
 
 	template<typename U>
 	bool operator==(const SafeWeakPtr<U>& other) const {
@@ -394,6 +410,12 @@ private:
 std::wstring Str2Wstr(std::string in);			//通常stringをワイドstringに変換
 std::string WStr2Str(std::wstring in);			//ワイドstringを通常stringに変換
 
+std::wstring Str2WstrU8(std::string in);
+
+
+std::string WStr2StrU8(std::wstring in);
+
+std::string ShiftJISToUTF8(const std::string& shiftJisStr);
 
 //(旧仕様ではnewしていたので無視しちゃダメだったが、shared_ptr管理にしたことで無視してもよくなったのでは...?)
 [[nodiscard]] SafeSharedPtr<void> CreateInstanceFromName(std::string_view name, TypeInfo& type = TypeInfo::Root());
