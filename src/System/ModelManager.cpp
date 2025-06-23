@@ -65,9 +65,9 @@ void ModelManager::LoadAsAnimation(std::string_view path, std::string_view name)
 		int cache_index = ptr->anim_cache->size();
 		auto name = ptr->a_source->name;
 		auto path = ptr->a_source->path;
+		ptr->anim_cache->push_back(std::move(ptr->a_source));
 		(*(ptr->a_name))[name].index = cache_index;
 		(*(ptr->a_path))[path].index = cache_index;
-		ptr->anim_cache->push_back(std::move(ptr->a_source));
 		loading_count--;
 		delete ptr;
 		};
@@ -94,7 +94,7 @@ SafeSharedPtr<Model> ModelManager::CloneModelByName(std::string_view name, std::
 		model = make_safe_shared<Model>();
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
-		while (resource->second.index < -1) {}
+		while (resource->second.index < 0) {}
 		model->handle = MV1DuplicateModel(model_chache[resource->second.index]->handle);
 		model->name = new_name == "" ? model_chache[resource->second.index]->name : new_name;
 		model->original = model_chache[resource->second.index].raw_unique().get();
@@ -114,6 +114,7 @@ SafeSharedPtr<Model> ModelManager::CloneModelByPath(std::string_view path, std::
 		model = make_safe_shared<Model>();
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
+		while (resource->second.index < 0) {}
 		model->handle = MV1DuplicateModel(model_chache[resource->second.index]->handle);
 		model->name = new_name == "" ? model_chache[resource->second.index]->name : new_name;
 		model->original = model_chache[resource->second.index].raw_unique().get();
@@ -162,8 +163,8 @@ SafeSharedPtr<Animation> ModelManager::CloneAnimByPath(std::string_view path, in
 
 void ModelManager::Init()
 {
-	//default_shader_ps = make_safe_unique<ShaderPs>("data/shader/ps_model.fx");
-	//default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
+	default_shader_ps = make_safe_unique<ShaderPs>("data/shader/ps_model.fx");
+	default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
 }
 
 void ModelManager::Exit()
