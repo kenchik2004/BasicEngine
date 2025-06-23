@@ -35,7 +35,10 @@ public:
 
 	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
-
+	inline bool RayCast(const Ray& ray, RayCastInfo& info) {
+		physics_scene->raycast(ray.position, ray.direction, ray.length, info);
+		return info.hasAnyHits();
+	}
 	//TODO GameObjectから所属シーンへのポインタにアクセスできる機構の作成
 
 	friend class SceneManager;

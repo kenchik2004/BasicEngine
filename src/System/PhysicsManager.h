@@ -1,16 +1,24 @@
-#pragma once
+ï»¿#pragma once
+
+using RayCastInfo = physx::PxRaycastBuffer;
+class Ray {
+public:
+	Vector3 position;
+	Vector3 direction;
+	float length;
+};
 class PhysicsManager
 {
 	static physx::PxDefaultAllocator m_defaultAllocator;
-	// ƒGƒ‰[—p‚ÌƒR[ƒ‹ƒoƒbƒN‚ÅƒGƒ‰[“à—e‚ª“ü‚Á‚Ä‚é
+	// ã‚¨ãƒ©ãƒ¼æ™‚ç”¨ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§ã‚¨ãƒ©ãƒ¼å†…å®¹ãŒå…¥ã£ã¦ã‚‹
 	static physx::PxDefaultErrorCallback m_defaultErrorCallback;
-	// ãˆÊƒŒƒxƒ‹‚ÌSDK(PxPhysics‚È‚Ç)‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚·‚éÛ‚É•K—v
+	// ä¸Šä½ãƒ¬ãƒ™ãƒ«ã®SDK(PxPhysicsãªã©)ã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹éš›ã«å¿…è¦
 	static physx::PxFoundation* m_pFoundation;
-	// ÀÛ‚É•¨—‰‰Z‚ğs‚¤
+	// å®Ÿéš›ã«ç‰©ç†æ¼”ç®—ã‚’è¡Œã†
 	static physx::PxPhysics* m_pPhysics;
-	// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğ‚Ç‚¤ˆ—‚·‚é‚©‚Ìİ’è‚Åƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ìİ’è‚à‚Å‚«‚é
+	// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ã©ã†å‡¦ç†ã™ã‚‹ã‹ã®è¨­å®šã§ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã®è¨­å®šã‚‚ã§ãã‚‹
 	static physx::PxDefaultCpuDispatcher* m_pDispatcher;
-	// PVD‚Æ’ÊM‚·‚éÛ‚É•K—v
+	// PVDã¨é€šä¿¡ã™ã‚‹éš›ã«å¿…è¦
 	static physx::PxPvd* m_pPvd;
 	static std::vector<physx::PxScene*> scenes;
 public:
@@ -37,7 +45,7 @@ class HitCallBack : public physx::PxSimulationEventCallback {
 	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
 	void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count) override;
 
-	// g‚í‚È‚¢ŠÖ”‚Í‹óÀ‘•
+	// ä½¿ã‚ãªã„é–¢æ•°ã¯ç©ºå®Ÿè£…
 	void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override {}
 	void onWake(physx::PxActor**, physx::PxU32) override {}
 	void onSleep(physx::PxActor**, physx::PxU32) override {}
