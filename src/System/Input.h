@@ -85,6 +85,16 @@ enum struct KeyCode : unsigned char {
 	At = (0x91),
 	Colon = (0x92),
 };
+enum struct MouseButton :unsigned char {
+	ButtonLeft = 0x0001,
+	ButtonRight = 0x0002,
+	ButtonMiddle = 0x0004,
+	Button4 = 0x0008,
+	Button5 = 0x0010,
+	Button6 = 0x0020,
+	Button7 = 0x0040,
+	Button8 = 0x0080,
+};
 namespace Input
 {
 	void Init();
@@ -92,11 +102,10 @@ namespace Input
 	bool GetKeyDown(KeyCode key);
 	bool GetKey(KeyCode key);
 	bool GetKeyUp(KeyCode key);
-	bool CheckMouseInput(int button = MOUSE_INPUT_LEFT | MOUSE_INPUT_RIGHT);
-	bool PushMouseInput(int button = MOUSE_INPUT_LEFT | MOUSE_INPUT_RIGHT);
-	int GetMouseX();
-	int GetMouseY();
-	int GetMouseMoveX();
-	int GetMouseMoveY();
+	bool GetMouseButtonDown(MouseButton button);
+	bool GetMouseButtonRepeat(MouseButton button);
+	bool GetMouseButtonUp(MouseButton button);
+	Vector2 GetMousePosition();
+	Vector2 GetMouseDelta();
 };
 

@@ -1,16 +1,18 @@
 ﻿#include "precompile.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include "Component.h"
 
 
 
-void Component::SetPriority(int prio)
+void Component::SetPriority(unsigned int prio)
 {
-	owner->SetComponentPriority(prio, shared_from_this());
+	if (owner)
+		owner->SetComponentPriority(prio, shared_from_this());
 }
 
 
 void Component::RemoveThisComponent()
 {
-	owner.lock()->RemoveComponent(shared_from_this());
+	if (owner)
+		owner->RemoveComponent(shared_from_this());
 }

@@ -1,50 +1,51 @@
 root
+|-----RLyeh::DicePair
 |-----Scene
+|        |-----RLyeh::SceneTitle
+|        |-----AmeGame::SceneAme
+|        |-----RLyeh::DiceScene
 |        |-----SceneShader
-|        |-----SceneSample2
-|        |-----SceneSample
-|        |-----SceneSample3
 |        end_of_node
 |        
-|-----ObjBase
+|-----Object
 |        |-----UIObject
-|        |-----Object
-|        |        |-----SampleObject
-|        |        |-----PlaneObject
-|        |        |-----DiceD8
-|        |        |-----DiceD6
-|        |        |-----DiceD4
-|        |        |-----DiceD20
-|        |        |-----DiceD12
-|        |        |-----DiceD10
+|        |        |-----TextObject
+|        |        |-----ButtonObject
+|        |        end_of_node
+|        |        
+|        |-----GameObject
+|        |        |-----CameraObject
+|        |        |-----RLyeh::DiceBase
+|        |        |        |-----RLyeh::DiceD8
+|        |        |        |-----RLyeh::DiceD6
+|        |        |        |-----RLyeh::DiceD4
+|        |        |        |-----RLyeh::DiceD20
+|        |        |        |-----RLyeh::DiceD12
+|        |        |        |-----RLyeh::DiceD10
+|        |        |        end_of_node
+|        |        |        
+|        |        |-----RLyeh::CardBase
+|        |        |        |-----RLyeh::CardUnpu
+|        |        |        |-----RLyeh::CardShinsoku
+|        |        |        |-----RLyeh::CardFist
+|        |        |        |-----RLyeh::CardDoman
+|        |        |        end_of_node
+|        |        |        
+|        |        |-----RLyeh::InputManager
 |        |        end_of_node
 |        |        
 |        end_of_node
 |        
 |-----Component
-|        |-----HogeComp
-|        |        |-----FugaComp
-|        |        |        |-----FooComp
-|        |        |        |        |-----PiyoComp
-|        |        |        |        end_of_node
-|        |        |        |        
-|        |        |        end_of_node
-|        |        |        
-|        |        |-----Hoge::FugaComp
-|        |        |        |-----Hoge::FooComp
-|        |        |        end_of_node
-|        |        |        
-|        |        end_of_node
-|        |        
 |        |-----AudioPlayer
-|        |-----SampleCutIn
 |        |-----Animator
-|        |-----SampleAttack
+|        |-----Text
+|        |-----Button
 |        |-----Collider
 |        |        |-----SphereCollider
-|        |        |-----MeshCollider
 |        |        |-----BoxCollider
 |        |        |-----CapsuleCollider
+|        |        |-----MeshCollider
 |        |        |-----ConvexMeshCollider
 |        |        end_of_node
 |        |        

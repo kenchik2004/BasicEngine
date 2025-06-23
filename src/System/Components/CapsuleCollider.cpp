@@ -1,4 +1,4 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include <System/Components/RigidBody.h>
 #include "System/Components/CapsuleCollider.h"
 #include "System/Components/ModelRenderer.h"
@@ -6,25 +6,25 @@
 using namespace physx;
 int CapsuleCollider::Init()
 {
-	rigidbody = owner.lock()->GetComponent<RigidBody>();
-	if (!rigidbody.lock()) {
+	rigidbody = owner->GetComponent<RigidBody>();
+	if (!rigidbody) {
 		RemoveThisComponent();
 		return -1;
 	}
-	auto p_scene = owner.lock()->GetScene()->GetPhysicsScene();
+	auto p_scene = owner->GetScene()->GetPhysicsScene();
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxCapsuleGeometry(radius, height * 0.5f),
 		*Material::Metal_Default);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
-	rigidbody.lock()->GetBody()->attachShape(*shape);
+	rigidbody->GetBody()->attachShape(*shape);
 	return 0;
 }
 
 void CapsuleCollider::PrePhysics()
 {
-	auto body = rigidbody.lock()->GetBody();
+	auto body = rigidbody->GetBody();
 	body->detachShape(*shape);
 
 	PxTransform trns = MakeCollisionTransform();
@@ -38,7 +38,7 @@ void CapsuleCollider::PrePhysics()
 
 void CapsuleCollider::DebugDraw()
 {
-	auto body = rigidbody.lock()->GetBody();
+	auto body = rigidbody->GetBody();
 	physx::PxTransform trns = body->getGlobalPose();
 	physx::PxTransform trns2 = shape->getLocalPose();
 	float3 capsule_start;

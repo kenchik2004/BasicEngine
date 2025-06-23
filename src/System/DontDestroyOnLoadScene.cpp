@@ -1,9 +1,8 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "DontDestroyOnLoadScene.h"
-#include "Game/SceneSample.h"
 
 
-void DontDestroyOnLoadScene::DontDestroyOnLoad(ObjBaseP object, SceneP from_where)
+void DontDestroyOnLoadScene::DontDestroyOnLoad(ObjectP object, SceneP from_where)
 {
-	from_where->MoveObjectPtrFromThis(object, shared_from_this());
+	from_where->MoveGameObjectPtrFromThis(object, shared_from_this());
 }

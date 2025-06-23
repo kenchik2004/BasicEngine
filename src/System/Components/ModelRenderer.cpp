@@ -3,6 +3,12 @@
 #include "System/Components/MeshCollider.h"
 #include "System/ModelManager.h"
 
+void ModelRenderer::Construct()
+{
+	status.status_bit.on(CompStat::STATUS::SINGLE);
+	SetPriority(5);
+}
+
 int ModelRenderer::Init()
 {
 	return 0;
@@ -29,21 +35,21 @@ void ModelRenderer::LateUpdate()
 {
 	if (!model)
 		return;
-	mat4x4 mat(CastPhysXQuat(owner.lock()->transform->rotation * rot));
-	mat.scale(Vector4(owner.lock()->transform->scale, 1));
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation * rot));
+	mat.scale(Vector4(owner->transform->scale, 1));
 	mat.scale(Vector4(scale, 1));
-	mat.setPosition(owner.lock()->transform->position + rot.rotate(pos));
+	mat.setPosition(owner->transform->position + rot.rotate(pos));
 	MV1SetMatrix(model->handle, cast(mat));
 }
 
-void ModelRenderer::PreDraw()
+void ModelRenderer::PostPhysics()
 {
 	if (!model)
 		return;
-	mat4x4 mat(CastPhysXQuat(owner.lock()->transform->rotation * rot));
-	mat.scale(Vector4(owner.lock()->transform->scale, 1));
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation * rot));
+	mat.scale(Vector4(owner->transform->scale, 1));
 	mat.scale(Vector4(scale, 1));
-	mat.setPosition(owner.lock()->transform->position + owner.lock()->transform->rotation.rotate(rot.rotate(pos)));
+	mat.setPosition(owner->transform->position + owner->transform->rotation.rotate(rot.rotate(pos)));
 
 	MV1SetMatrix(model->handle, cast(mat));
 
@@ -67,7 +73,7 @@ void ModelRenderer::DebugDraw()
 {
 	if (!model)
 		return;
-	if (owner.lock()->GetComponent<MeshCollider>())
+	if (owner->GetComponent<MeshCollider>())
 		return;
 	MV1SetWireFrameDrawFlag(model->handle, true);
 	MV1DrawModel(model->handle);

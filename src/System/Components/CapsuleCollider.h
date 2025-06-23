@@ -1,5 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Collider.h"
+
+USING_PTR(CapsuleCollider);
 class CapsuleCollider :
     public Collider
 {

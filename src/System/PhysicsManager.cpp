@@ -1,27 +1,27 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "..\PhysX\PhysX-5.5.1\include\cooking\PxCooking.h"
 #include "PhysicsManager.h"
-#include "System/ObjBase.h"
+#include "System/Object.h"
 #include <System/Components/Collider.h>
 
 using namespace physx;
-// PhysX‚Ì‰Šú‰»‚É•K—v‚ÈƒR[ƒ‹ƒoƒbƒN
-// ƒƒ‚ƒŠŠm•Û—p‚ÌƒR[ƒ‹ƒoƒbƒN‚Åƒƒ‚ƒŠ‚ÌŠm•Û‚Æ‰ğ•ú‚ğs‚¤
+// PhysXã®åˆæœŸåŒ–ã«å¿…è¦ãªã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+// ãƒ¡ãƒ¢ãƒªç¢ºä¿ç”¨ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã¨è§£æ”¾ã‚’è¡Œã†
 PxDefaultAllocator PhysicsManager::m_defaultAllocator;
-// ƒGƒ‰[—p‚ÌƒR[ƒ‹ƒoƒbƒN‚ÅƒGƒ‰[“à—e‚ª“ü‚Á‚Ä‚é
+// ã‚¨ãƒ©ãƒ¼æ™‚ç”¨ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§ã‚¨ãƒ©ãƒ¼å†…å®¹ãŒå…¥ã£ã¦ã‚‹
 PxDefaultErrorCallback PhysicsManager::m_defaultErrorCallback;
-// ãˆÊƒŒƒxƒ‹‚ÌSDK(PxPhysics‚È‚Ç)‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚·‚éÛ‚É•K—v
+// ä¸Šä½ãƒ¬ãƒ™ãƒ«ã®SDK(PxPhysicsãªã©)ã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹éš›ã«å¿…è¦
 PxFoundation* PhysicsManager::m_pFoundation = nullptr;
-// ÀÛ‚É•¨—‰‰Z‚ğs‚¤
+// å®Ÿéš›ã«ç‰©ç†æ¼”ç®—ã‚’è¡Œã†
 PxPhysics* PhysicsManager::m_pPhysics = nullptr;
-// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğ‚Ç‚¤ˆ—‚·‚é‚©‚Ìİ’è‚Åƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ìİ’è‚à‚Å‚«‚é
+// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ã©ã†å‡¦ç†ã™ã‚‹ã‹ã®è¨­å®šã§ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã®è¨­å®šã‚‚ã§ãã‚‹
 PxDefaultCpuDispatcher* PhysicsManager::m_pDispatcher = nullptr;
-// PVD‚Æ’ÊM‚·‚éÛ‚É•K—v
+// PVDã¨é€šä¿¡ã™ã‚‹éš›ã«å¿…è¦
 PxPvd* PhysicsManager::m_pPvd = nullptr;
-// ƒV[ƒ“‚Ì”z—ñ
+// ã‚·ãƒ¼ãƒ³ã®é…åˆ—
 std::vector<physx::PxScene*> PhysicsManager::scenes(0);
 
-// ƒ}ƒeƒŠƒAƒ‹‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
+// ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 physx::PxMaterial* Material::Metal_Default = nullptr;
 physx::PxMaterial* Material::Rubber_Default = nullptr;
 physx::PxMaterial* Material::Wood_Default = nullptr;
@@ -32,7 +32,7 @@ physx::PxMaterial* Material::Asphalt_Default = nullptr;
 physx::PxMaterial* Material::Wool_Default = nullptr;
 physx::PxMaterial* Material::Paper_Default = nullptr;
 
-// ƒR[ƒ‹ƒoƒbƒNƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
+// ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 HitCallBack hit_callback;
 
 
@@ -71,34 +71,38 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 void PhysicsManager::Init()
 {
 	if (!(m_pFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator, m_defaultErrorCallback))) {
-		throw Exception("PhysX‚Ì‰Šú‰»‚É¸”s‚µ‚Ü‚µ‚½B", DEFAULT_EXCEPTION_PARAM);
+#ifndef PACKAGE_BUILD
+		throw Exception("PhysXã®åˆæœŸåŒ–ã«å¤±æ•—ã—ã¾ã—ãŸã€‚", DEFAULT_EXCEPTION_PARAM);
+#endif
 	}
-	// PVD‚ÆÚ‘±‚·‚éİ’è
+	// PVDã¨æ¥ç¶šã™ã‚‹è¨­å®š
 	if (m_pPvd = physx::PxCreatePvd(*m_pFoundation)) {
-		// PVD‘¤‚ÌƒfƒtƒHƒ‹ƒgƒ|[ƒg‚Í5425
+		// PVDå´ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒãƒ¼ãƒˆã¯5425
 		physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 
 		int try_num = 0;
-		//3‰ñ‚Ù‚Ç‚·
+		//3å›ã»ã©è©¦ã™
 		while (try_num < 3) {
-			//PVD‚Æ‚ÌÚ‘±‚ğ‚İ‚é
+			//PVDã¨ã®æ¥ç¶šã‚’è©¦ã¿ã‚‹
 			bool success = m_pPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 			if (success)
 				break;
-			//‘Ê–Ú‚È‚ç­‚µ‘Ò‚Á‚Ä‚©‚çÄ“x‚İ‚é
+			//é§„ç›®ãªã‚‰å°‘ã—å¾…ã£ã¦ã‹ã‚‰å†åº¦è©¦ã¿ã‚‹
 			Sleep(10);
 			try_num++;
 		}
 	}
-	// Physics‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»
+	// Physicsã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–
 	if (!(m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, physx::PxTolerancesScale(), true, m_pPvd))) {
-		throw(Exception("PhysX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚É¸”s‚µ‚Ü‚µ‚½B", DEFAULT_EXCEPTION_PARAM));
+#ifndef PACKAGE_BUILD
+		throw(Exception("PhysXã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚", DEFAULT_EXCEPTION_PARAM));
+#endif
 	}
-	// Šg’£‹@”\—p
+	// æ‹¡å¼µæ©Ÿèƒ½ç”¨
 	if (!PxInitExtensions(*m_pPhysics, m_pPvd)) {
 		return (void)false;
 	}
-	// ˆ—‚Ég‚¤ƒXƒŒƒbƒh‚ğw’è‚·‚é
+	// å‡¦ç†ã«ä½¿ã†ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’æŒ‡å®šã™ã‚‹
 	m_pDispatcher = physx::PxDefaultCpuDispatcherCreate(16);
 	physx::PxSceneDesc scene_desc(m_pPhysics->getTolerancesScale());
 	scene_desc.simulationEventCallback = &hit_callback;
@@ -117,7 +121,7 @@ void PhysicsManager::Init()
 
 void PhysicsManager::Exit()
 {
-	//Šg’£‹@”\‚ğg‚í‚È‚­‚·‚é
+	//æ‹¡å¼µæ©Ÿèƒ½ã‚’ä½¿ã‚ãªãã™ã‚‹
 	PxCloseExtensions();
 	for (auto& ite : scenes) {
 		ite->release();
@@ -145,8 +149,8 @@ void PhysicsManager::Exit()
 
 physx::PxScene* PhysicsManager::AddScene()
 {
-	// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚·‚é‹óŠÔ‚Ì’PˆÊ‚ÅActor‚Ì’Ç‰Á‚È‚Ç‚ğ‚±‚±‚Ås‚¤
-	// ‹óŠÔ‚Ìİ’è
+	// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹ç©ºé–“ã®å˜ä½ã§Actorã®è¿½åŠ ãªã©ã‚’ã“ã“ã§è¡Œã†
+	// ç©ºé–“ã®è¨­å®š
 	physx::PxSceneDesc scene_desc(m_pPhysics->getTolerancesScale());
 	scene_desc.gravity = physx::PxVec3(0, -9.81f, 0);
 
@@ -161,9 +165,9 @@ physx::PxScene* PhysicsManager::AddScene()
 
 	physx::PxScene* scene = nullptr;
 
-	// ‹óŠÔ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»
+	// ç©ºé–“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–
 	scene = (m_pPhysics->createScene(scene_desc));
-	// PVD‚Ì•\¦İ’è
+	// PVDã®è¡¨ç¤ºè¨­å®š
 
 	physx::PxPvdSceneClient* pvd_client;
 	if (pvd_client = scene->getScenePvdClient()) {
@@ -194,31 +198,31 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 	for (physx::PxU32 i = 0; i < nbPairs; i++)
 	{
 		PxContactPair contact = pairs[i];
-		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_FOUND) // Õ“Ë‚ª”­¶‚µ‚½‚Æ‚«
+		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_FOUND) // è¡çªãŒç™ºç”Ÿã—ãŸã¨ã
 		{
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
 			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
-			//SafeWeakPtr‚Ö‚Ìƒ|ƒCƒ“ƒ^‚É‚·‚é‚±‚Æ‚ÅAuserData‚ªnullptr‚É‚È‚Á‚Ä‚¢‚½‚èAshared_ptr‚ª‰ğ•ú‚³‚ê‚Ä‚¢‚Ä‚àƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚È‚¢
+			//SafeWeakPtrã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«ã™ã‚‹ã“ã¨ã§ã€userDataãŒnullptrã«ãªã£ã¦ã„ãŸã‚Šã€shared_ptrãŒè§£æ”¾ã•ã‚Œã¦ã„ã¦ã‚‚ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒãªã„
 			if (wp_a && wp_b) {
-				//ƒqƒbƒg‚ÉAƒIƒuƒWƒFƒNƒg‚ğÁ‚µ‚¿‚á‚¤‚¨ƒoƒJ‚¿‚á‚ñ‚½‚¿‚ª‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚Å
-				//‚ ‚ç‚©‚¶‚ßlock‚µ‚ÄƒR[ƒ‹ƒoƒbƒN“à‚Å‰ğ•ú‚³‚ê‚È‚¢‚æ‚¤‚É‚µ‚Ä‚¨‚­
+				//ãƒ’ãƒƒãƒˆæ™‚ã«ã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¶ˆã—ã¡ã‚ƒã†ãŠãƒã‚«ã¡ã‚ƒã‚“ãŸã¡ãŒã„ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã®ã§
+				//ã‚ã‚‰ã‹ã˜ã‚lockã—ã¦ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å†…ã§è§£æ”¾ã•ã‚Œãªã„ã‚ˆã†ã«ã—ã¦ãŠã
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner.lock()->OnCollisionEnter(hit_info0); // ƒIƒuƒWƒFƒNƒgA‚Ìƒqƒbƒg”­¶ŠÖ”‚ğŒÄ‚Ô
+					sp_a->owner->OnCollisionEnter(hit_info0); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ãƒ’ãƒƒãƒˆç™ºç”Ÿé–¢æ•°ã‚’å‘¼ã¶
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner.lock()->OnCollisionEnter(hit_info1); // ƒIƒuƒWƒFƒNƒgB‚Ìƒqƒbƒg”­¶ŠÖ”‚ğŒÄ‚Ô
+					sp_b->owner->OnCollisionEnter(hit_info1); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ãƒ’ãƒƒãƒˆç™ºç”Ÿé–¢æ•°ã‚’å‘¼ã¶
 				}
 
 			}
 		}
 
-		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // Õ“Ë‚ª‘±‚¯‚Ä”­¶‚µ‚½‚Æ‚«
+		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // è¡çªãŒç¶šã‘ã¦ç™ºç”Ÿã—ãŸã¨ã
 		{
 
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
@@ -230,16 +234,16 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner.lock()->OnCollisionStay(hit_info0); // ƒIƒuƒWƒFƒNƒgA‚ÌƒqƒbƒgŒp‘±ŠÖ”‚ğŒÄ‚Ô
+					sp_a->owner->OnCollisionStay(hit_info0); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ãƒ’ãƒƒãƒˆç¶™ç¶šé–¢æ•°ã‚’å‘¼ã¶
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner.lock()->OnCollisionStay(hit_info1); // ƒIƒuƒWƒFƒNƒgB‚ÌƒqƒbƒgŒp‘±ŠÖ”‚ğŒÄ‚Ô
+					sp_b->owner->OnCollisionStay(hit_info1); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ãƒ’ãƒƒãƒˆç¶™ç¶šé–¢æ•°ã‚’å‘¼ã¶
 				}
 			}
 		}
 
-		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_LOST) // Õ“Ë‚ªI—¹‚µ‚½‚Æ‚«
+		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_LOST) // è¡çªãŒçµ‚äº†ã—ãŸã¨ã
 		{
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
 			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
@@ -250,11 +254,11 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner.lock()->OnCollisionExit(hit_info0); // ƒIƒuƒWƒFƒNƒgA‚ÌƒqƒbƒgI—¹ŠÖ”‚ğŒÄ‚Ô
+					sp_a->owner->OnCollisionExit(hit_info0); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ãƒ’ãƒƒãƒˆçµ‚äº†é–¢æ•°ã‚’å‘¼ã¶
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner.lock()->OnCollisionExit(hit_info1); // ƒIƒuƒWƒFƒNƒgB‚ÌƒqƒbƒgI—¹ŠÖ”‚ğŒÄ‚Ô
+					sp_b->owner->OnCollisionExit(hit_info1); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ãƒ’ãƒƒãƒˆçµ‚äº†é–¢æ•°ã‚’å‘¼ã¶
 				}
 			}
 		}
@@ -267,11 +271,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 	for (physx::PxU32 i = 0; i < count; i++)
 	{
 		PxTriggerPair contact = pairs[i];
-		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_FOUND) // Õ“Ë‚ª”­¶‚µ‚½‚Æ‚«
+		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_FOUND) // è¡çªãŒç™ºç”Ÿã—ãŸã¨ã
 		{
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
 			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
-			//SafeWeakPtr‚Ö‚Ìƒ|ƒCƒ“ƒ^‚É‚·‚é‚±‚Æ‚ÅAuserData‚ªnullptr‚É‚È‚Á‚Ä‚¢‚½‚èAshared_ptr‚ª‰ğ•ú‚³‚ê‚Ä‚¢‚Ä‚àƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚È‚¢
+			//SafeWeakPtrã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«ã™ã‚‹ã“ã¨ã§ã€userDataãŒnullptrã«ãªã£ã¦ã„ãŸã‚Šã€shared_ptrãŒè§£æ”¾ã•ã‚Œã¦ã„ã¦ã‚‚ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒãªã„
 			if (wp_a && wp_b) {
 
 				auto sp_a = wp_a->lock();
@@ -280,17 +284,17 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner.lock()->OnTriggerEnter(hit_info0); // ƒIƒuƒWƒFƒNƒgA‚ÌƒgƒŠƒK[”­¶ŠÖ”‚ğŒÄ‚Ô
+					sp_a->owner->OnTriggerEnter(hit_info0); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ãƒˆãƒªã‚¬ãƒ¼ç™ºç”Ÿé–¢æ•°ã‚’å‘¼ã¶
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner.lock()->OnTriggerEnter(hit_info1); // ƒIƒuƒWƒFƒNƒgB‚ÌƒgƒŠƒK[”­¶ŠÖ”‚ğŒÄ‚Ô
+					sp_b->owner->OnTriggerEnter(hit_info1); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ãƒˆãƒªã‚¬ãƒ¼ç™ºç”Ÿé–¢æ•°ã‚’å‘¼ã¶
 				}
 
 			}
 		}
 
-		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // Õ“Ë‚ª‘±‚¯‚Ä”­¶‚µ‚½‚Æ‚«
+		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_PERSISTS) // è¡çªãŒç¶šã‘ã¦ç™ºç”Ÿã—ãŸã¨ã
 		{
 
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
@@ -302,16 +306,16 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner.lock()->OnTriggerStay(hit_info0); // ƒIƒuƒWƒFƒNƒgA‚ÌƒgƒŠƒK[Œp‘±ŠÖ”‚ğŒÄ‚Ô
+					sp_a->owner->OnTriggerStay(hit_info0); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ãƒˆãƒªã‚¬ãƒ¼ç¶™ç¶šé–¢æ•°ã‚’å‘¼ã¶
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner.lock()->OnTriggerStay(hit_info1); // ƒIƒuƒWƒFƒNƒgB‚ÌƒgƒŠƒK[Œp‘±ŠÖ”‚ğŒÄ‚Ô
+					sp_b->owner->OnTriggerStay(hit_info1); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ãƒˆãƒªã‚¬ãƒ¼ç¶™ç¶šé–¢æ•°ã‚’å‘¼ã¶
 				}
 			}
 		}
 
-		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_LOST) // Õ“Ë‚ªI—¹‚µ‚½‚Æ‚«
+		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_LOST) // è¡çªãŒçµ‚äº†ã—ãŸã¨ã
 		{
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));
 			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairs[i].otherShape->userData));
@@ -322,11 +326,11 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
-					sp_a->owner.lock()->OnTriggerExit(hit_info0); // ƒIƒuƒWƒFƒNƒgA‚ÌƒgƒŠƒK[I—¹ŠÖ”‚ğŒÄ‚Ô
+					sp_a->owner->OnTriggerExit(hit_info0); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ãƒˆãƒªã‚¬ãƒ¼çµ‚äº†é–¢æ•°ã‚’å‘¼ã¶
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
-					sp_b->owner.lock()->OnTriggerExit(hit_info1); // ƒIƒuƒWƒFƒNƒgB‚ÌƒgƒŠƒK[I—¹ŠÖ”‚ğŒÄ‚Ô
+					sp_b->owner->OnTriggerExit(hit_info1); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ãƒˆãƒªã‚¬ãƒ¼çµ‚äº†é–¢æ•°ã‚’å‘¼ã¶
 				}
 			}
 		}

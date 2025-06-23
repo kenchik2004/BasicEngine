@@ -25,8 +25,44 @@ std::string WStr2Str(std::wstring in)
 	WideCharToMultiByte(CP_ACP, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed, NULL, NULL);
 	return out;
 }
+//通常stringをワイドstring(UTF-8)に変換
+std::wstring Str2WstrU8(std::string in)
+{
+	// 変換に必要なサイズを取得
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, in.c_str(), static_cast<int>(in.size()), NULL, 0);
+	// 変換先のwchar_t配列を作成
+	std::wstring out(size_needed, 0);
+	// 変換を実行
+	MultiByteToWideChar(CP_UTF8, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed);
+	return out;
+}
 
-void* CreateInstanceFromName(std::string_view name,TypeInfo& type)
+//ワイドstringを通常string(UTF-8)に変換
+std::string WStr2StrU8(std::wstring in)
+{
+
+	// 変換に必要なサイズを取得
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, in.c_str(), static_cast<int>(in.size()), NULL, 0, NULL, NULL);
+	// 変換先のwchar_t配列を作成
+	std::string out(size_needed, 0);
+	// 変換を実行
+	WideCharToMultiByte(CP_UTF8, 0, in.c_str(), static_cast<int>(in.size()), &out[0], size_needed, NULL, NULL);
+	return out;
+}
+std::string ShiftJISToUTF8(const std::string& shiftJisStr) {
+	// Shift_JIS → UTF-16（ワイド文字）
+	int wideLen = MultiByteToWideChar(932, 0, shiftJisStr.c_str(), -1, nullptr, 0);
+	std::wstring wideStr(wideLen, L'\0');
+	MultiByteToWideChar(932, 0, shiftJisStr.c_str(), -1, &wideStr[0], wideLen);
+
+	// UTF-16 → UTF-8
+	int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	std::string utf8Str(utf8Len, '\0');
+	WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &utf8Str[0], utf8Len, nullptr, nullptr);
+
+	return utf8Str;
+}
+SafeSharedPtr<void> CreateInstanceFromName(std::string_view name,TypeInfo& type)
 {
 	std::string class_name(name);
 	const TypeInfo& base_type = type;

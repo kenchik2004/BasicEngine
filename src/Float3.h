@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
 //---------------------------------------------------------------------------------
-//	float3 ƒNƒ‰ƒXi x y z ‚ª‚ ‚éƒNƒ‰ƒXj
+//	float3 ã‚¯ãƒ©ã‚¹ï¼ˆ x y z ãŒã‚ã‚‹ã‚¯ãƒ©ã‚¹ï¼‰
 //---------------------------------------------------------------------------------
 class float3
 {
@@ -10,54 +10,62 @@ public:
 	float	y;
 	float	z;
 
-	float3();									//	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	float3();									//	ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	float3(float x, float y, float z);
 	float3(VECTOR v);
 	float3(Vector3 v);
 
-	void clear();								//	ƒ[ƒ‰Šú‰»
-	void set(float x, float y, float z);		//	’l‚ÌƒZƒbƒg
+	void clear();								//	ã‚¼ãƒ­åˆæœŸåŒ–
+	void set(float x, float y, float z);		//	å€¤ã®ã‚»ãƒƒãƒˆ
 	void set(float3& v);
 
-	float GetLength();							//	’·‚³æ“¾
-	void normalize();							//	³‹K‰»
-	float3 normalized();						//	³‹K‰»‚³‚ê‚½ƒxƒNƒgƒ‹‚Ìæ“¾
-	void SetLength(float length);				//	’·‚³İ’è
+	float GetLength();							//	é•·ã•å–å¾—
+	void normalize();							//	æ­£è¦åŒ–
+	float3 normalized();						//	æ­£è¦åŒ–ã•ã‚ŒãŸãƒ™ã‚¯ãƒˆãƒ«ã®å–å¾—
+	void SetLength(float length);				//	é•·ã•è¨­å®š
 
-	float3& operator = (const float3& v);	//	= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float3& operator = (const VECTOR& v);	//	= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float3& operator = (const Vector3& v);	//	= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+	float3& operator = (const float3& v);	//	= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	float3& operator = (const VECTOR& v);	//	= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	float3& operator = (const Vector3& v);	//	= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 
-	float3& operator += (const float3& v);	//	+= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float3& operator -= (const float3& v);	//	-= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float3& operator *= (const float f);		//	*= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float3& operator /= (const float f);		//	/= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+	float3& operator += (const float3& v);	//	+= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	float3& operator -= (const float3& v);	//	-= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	float3& operator *= (const float f);		//	*= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	float3& operator /= (const float f);		//	/= æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 	operator VECTOR() { VECTOR v; v.x = this->x; v.y = this->y;	v.z = this->z;	return v; }
 	operator Vector3() { Vector3 v; v.x = this->x; v.y = this->y;	v.z = this->z;	return v; }
 };
 
-//	+ ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	+ æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 float3 operator + (const float3& v1, const float3& v2);
-//	- ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	- æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 float3 operator - (const float3& v1, const float3& v2);
-//	* ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	* æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 float3 operator * (const float3& v, const float f);
-//	/ ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	/ æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 float3 operator / (const float3& v, const float f);
 
-//	‚Q‚Â‚Ì float3 ‚Ì‹——£‚ğ‹‚ß‚é
+//	ï¼’ã¤ã® float3 ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
 float GetFloat3Distance(float3& pos1, float3& pos2);
-//	‚Q‚Â‚Ì float3 ‚Ì“àÏ‚ğ‹‚ß‚é
+//	ï¼’ã¤ã® float3 ã®å†…ç©ã‚’æ±‚ã‚ã‚‹
 float GetFloat3Dot(float3& v1, float3& v2);
-//	‚Q‚Â‚Ì float3 ‚ÌŠOÏ‚ğ‹‚ß‚é
+//	ï¼’ã¤ã® float3 ã®å¤–ç©ã‚’æ±‚ã‚ã‚‹
 float3 GetFloat3Cross(float3& v1, float3& v2);
-//	float3 ‚ğ MATRIX ‚Å•ÏŠ·‚µ‚½‚à‚Ì‚ğ•Ô‚·
+//	float3 ã‚’ MATRIX ã§å¤‰æ›ã—ãŸã‚‚ã®ã‚’è¿”ã™
 float3 GetFloat3VTransform(float3& v, MATRIX& mat);
-//	float3‚ÌƒxƒNƒgƒ‹‚ğ•½–Êã‚É“Š‰e
+//	float3ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¹³é¢ä¸Šã«æŠ•å½±
 float3 ProjectOnPlane(float3 vec, float3 plane_normal);
 inline float3 cast(const Vector3& vec) {
 	float3 vec_ = vec;
 	return vec_;
+}
+inline Vector3 operator/(const Vector3& base, const Vector3& denuminator)
+{
+	Vector3 f_;
+	f_.x = physx::PxAbs(denuminator.x) > FLT_EPSILON ? 1.0f / denuminator.x : 0;	// 3é …æ¼”ç®—å­ã§ã€å‡¦ç†ã‚’æ°—æŒã¡ç¨‹åº¦è»½ãã™ã‚‹
+	f_.y = physx::PxAbs(denuminator.y) > FLT_EPSILON ? 1.0f / denuminator.y : 0;
+	f_.z = physx::PxAbs(denuminator.z) > FLT_EPSILON ? 1.0f / denuminator.z : 0;
+	return Vector3(base.x * f_.x, base.y * f_.y, base.z * f_.z);
 }
 inline float3 cast(const VECTOR& vec) {
 	float3 vec_ = vec;
@@ -81,12 +89,12 @@ inline mat4x4 cast(const MATRIX& mat)
 		Vector4(mat.m[3][0], mat.m[3][1], mat.m[3][2], mat.m[3][3])
 	);
 }
-// PhysX‚Ö‚Ìó‚¯“n‚µ—p•ÏŠ·
+// PhysXã¸ã®å—ã‘æ¸¡ã—ç”¨å¤‰æ›
 inline Vector3 CastPhysXVec(const float3& v) {
 	return Vector3(v.x, v.y, -v.z);
 }
 
-// PhysX‚Ö‚Ìó‚¯“n‚µ—p•ÏŠ·
+// PhysXã¸ã®å—ã‘æ¸¡ã—ç”¨å¤‰æ›
 inline Quaternion CastPhysXQuat(const Quaternion& q) {
 	return Quaternion(-q.x, -q.y, -q.z, q.w);
 }
@@ -101,15 +109,15 @@ inline mat4x4 CastPhysXMat(const mat4x4& mat) {
 
 inline Vector3 QuaternionToEuler(const Quaternion& q) {
 	// Roll (X-axis rotation)
-	float roll = atan2(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+	float roll = RAD2DEG(physx::PxAtan2(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y)));
 
 	// Pitch (Y-axis rotation)
-	float pitch = asin(2.0f * (q.w * q.y - q.z * q.x));
+	float pitch = RAD2DEG(physx::PxAsin(2.0f * (q.w * q.y - q.z * q.x)));
 
 	// Yaw (Z-axis rotation)
-	float yaw = atan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z));
+	float yaw = RAD2DEG(physx::PxAtan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z)));
 
-	return Vector3(roll, pitch, yaw);  // X, Y, Z ‚É‘Î‰‚·‚éƒIƒCƒ‰[Šp‚ğ•Ô‚·
+	return Vector3(roll, pitch, yaw);  // X, Y, Z ã«å¯¾å¿œã™ã‚‹ã‚ªã‚¤ãƒ©ãƒ¼è§’ã‚’è¿”ã™
 }
 inline Quaternion Inverse(Quaternion q) {
 	if (fabsf(q.magnitudeSquared()) < FLT_EPSILON)
@@ -118,4 +126,32 @@ inline Quaternion Inverse(Quaternion q) {
 	float invnorm = 1.0f / q.magnitudeSquared();
 	return Quaternion(-q.x * invnorm, -q.y * invnorm, -q.z * invnorm, q.w * invnorm);
 
+}
+
+inline Vector3 Lerp(const Vector3& start, const  Vector3& end, const float& t) {
+	Vector3 lerp_v;
+	float t_ = physx::PxClamp(t, 0.0f, 1.0f);
+	lerp_v.x = physx::PxLerp(start.x, end.x, t_);
+	lerp_v.y = physx::PxLerp(start.y, end.y, t_);
+	lerp_v.z = physx::PxLerp(start.z, end.z, t_);
+	return lerp_v;
+}
+inline Vector3 LerpUnClamped(const Vector3& start, const  Vector3& end, const float& t) {
+	Vector3 lerp_v;
+	lerp_v.x = physx::PxLerp(start.x, end.x, t);
+	lerp_v.y = physx::PxLerp(start.y, end.y, t);
+	lerp_v.z = physx::PxLerp(start.z, end.z, t);
+	return lerp_v;
+}
+inline Quaternion Slerp(const Quaternion& start, const Quaternion& end, const float& t) {
+	Quaternion slerp_q;
+	slerp_q = physx::PxSlerp(t, start, end);
+	return slerp_q;
+}
+
+inline Quaternion EulerToQuaternion(const Vector3& euler) {
+	Quaternion qx = Quaternion(DEG2RAD(euler.x), Vector3(1, 0, 0));
+	Quaternion qy = Quaternion(DEG2RAD(euler.y), Vector3(0, 1, 0));
+	Quaternion qz = Quaternion(DEG2RAD(euler.z), Vector3(0, 0, 1));
+	return qx * qy * qz;
 }
