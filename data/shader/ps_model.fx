@@ -128,10 +128,12 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	// テクスチャカラーを読み込み
 	//------------------------------------------------------------
     float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
+#if 1
+    output.color0_ = textureColor;
+    return output;
+#endif
     float shadow = 0.0;
 #if 1
-    //output.color0_ = textureColor;
-    //return output;
     float4 lightSpace = mul(float4(input.world_position_.xyz, 1.0f), mat_light_view_);
     lightSpace.xyz /= lightSpace.w;
     float2 UV = lightSpace.xy * float2(0.5, -0.5) + 0.5;
@@ -143,17 +145,17 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
         for (int x = -2; x <= 2; ++x)
         {
             {
-                static const float bias = 0.9;
+                static const float bias = 0.00001;
                 
                // uint rand = XorShift(x + y * 5);
                 
-                float2 offset = float2(x, y) * 0.002; // * rand;
+                float2 offset = float2(x, y) * 0.0002; // * rand;
                
-                float sample = ShadowMap0Texture.Sample(ShadowMap0Sampler, UV + offset).r;
+                float4 sample = ShadowMap0Texture.Sample(ShadowMap0Sampler, UV + offset);
     
    //output.color0_ = float4(sample.rrr * 2, 1);
     //return output;
-    float mapDepth = DecodeFloatBilinear(sample);
+                float mapDepth = DecodeFloatBilinear(sample);
 	
 
 
