@@ -18,7 +18,7 @@ public:
 	void SetModel(std::string_view name_, std::string_view new_name_ = "");
 	void Update() override;
 	void LateUpdate() override;
-	void PreDraw() override;
+	void PostPhysics() override;
 	void Exit() override;
 	void Draw() override;
 	void DebugDraw() override;

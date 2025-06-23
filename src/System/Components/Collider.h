@@ -9,6 +9,7 @@ class Collider :
 public:
 	USING_SUPER(Collider);
 	bool is_trigger = false;
+	void Construct() override;
 	int Init() override;
 	void Exit() override;
 	Vector3 position = { 0,0,0 };

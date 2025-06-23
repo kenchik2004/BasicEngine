@@ -6,6 +6,7 @@
 void ModelRenderer::Construct()
 {
 	status.status_bit.on(CompStat::STATUS::SINGLE);
+	SetPriority(5);
 }
 
 int ModelRenderer::Init()
@@ -41,7 +42,7 @@ void ModelRenderer::LateUpdate()
 	MV1SetMatrix(model->handle, cast(mat));
 }
 
-void ModelRenderer::PreDraw()
+void ModelRenderer::PostPhysics()
 {
 	if (!model)
 		return;

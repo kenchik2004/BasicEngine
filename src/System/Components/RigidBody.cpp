@@ -5,6 +5,7 @@ using namespace physx;
 void RigidBody::Construct()
 {
 	status.status_bit.on(CompStat::STATUS::SINGLE);
+	SetPriority(0);
 }
 int RigidBody::Init()
 {

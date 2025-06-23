@@ -4,6 +4,10 @@
 #include <System/Components/ModelRenderer.h>
 
 using namespace physx;
+void Collider::Construct()
+{
+	SetPriority(1);
+}
 int Collider::Init()
 {
 	rigidbody = owner->GetComponent<RigidBody>();
@@ -63,7 +67,7 @@ PxTransform Collider::MakeCollisionTransform()
 				float3 frame_pos = MV1GetFramePosition(model->GetModelHandle(), model_attach_index);
 				mat4x4 frame_mat = MV1GetFrameLocalWorldMatrix(model->GetModelHandle(), model_attach_index, true);
 				physx::PxTransform t(frame_mat);
-				frame_pos -= owner->transform->position;
+				frame_pos -= cast(MV1GetPosition(model->GetModelHandle()));
 				Quaternion q = Inverse(owner->transform->rotation);
 				pos = q.rotate(frame_pos);
 				rot = q * t.q;
