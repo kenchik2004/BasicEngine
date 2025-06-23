@@ -5,7 +5,14 @@
 #include "dxlib_ps.h"
 
 // 定数バッファは b0～b14 まで利用可能
-
+uint XorShift(uint seed)
+{
+    uint x = seed;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    return x;
+}
 cbuffer CameraInfo : register(b11)
 {
     matrix mat_view_; //!< ビュー行列
@@ -121,8 +128,8 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	// テクスチャカラーを読み込み
 	//------------------------------------------------------------
     float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
-    float shadow = 1.0;
-#if 0
+    float shadow = 0.0;
+#if 1
     //output.color0_ = textureColor;
     //return output;
     float4 lightSpace = mul(float4(input.world_position_.xyz, 1.0f), mat_light_view_);
@@ -132,25 +139,38 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 
 
     float shadowDepth = lightSpace.z;
-
-    float4 sample = ShadowMap0Texture.Sample(ShadowMap0Sampler, UV);
+    for (int y = -2; y <= 2; ++y)
+        for (int x = -2; x <= 2; ++x)
+        {
+            {
+                static const float bias = 0.9;
+                
+               // uint rand = XorShift(x + y * 5);
+                
+                float2 offset = float2(x, y) * 0.002; // * rand;
+               
+                float sample = ShadowMap0Texture.Sample(ShadowMap0Sampler, UV + offset).r;
     
    //output.color0_ = float4(sample.rrr * 2, 1);
     //return output;
     float mapDepth = DecodeFloatBilinear(sample);
+	
 
-    float bias = 0.000085;
-    shadow = (shadowDepth > mapDepth + bias) ? 0.4 : 1.0;
 
+                shadow += (shadowDepth > mapDepth + bias) ? 0.0 : 1.0;
+
+            }
+        }
+    shadow *= 1.0f / 25.0f;
     shadow = all(UV >= 0 && UV <= 1 && shadowDepth > 0) ? shadow : 1.0;
 		
 	// アルファテスト
     if (textureColor.a < 0.5)
         discard;
 #endif
-#if 0
+#if 1
 	// リニア化 sRGBのテクスチャ → Linearのテクスチャ
-    textureColor.rgb = pow(textureColor.rgb, 2.2);
+    textureColor.rgb = pow(abs(textureColor.rgb), 2.2);
 #endif
     float3 albedo = textureColor.rgb;
 	
@@ -191,15 +211,15 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	// 最小値～最大値に収める
 	
 	
-	
+#if 0
 	//-------------------------------------------------------------
 	// フォグ表現
 	//-------------------------------------------------------------
-    float ratio = saturate(distance * 0.001);
+    float ratio = saturate(distance * 0.005);
     output.color0_.rgb = lerp(output.color0_.rgb, float3(0.4, 0.6, 1), ratio);
 	
     int2 position = int2(input.position_.xy); // 画面上のピクセル位置
-
+#endif
 	//-------------------------------------------------------------
 	// CRTスキャンライン表現
 	//-------------------------------------------------------------
@@ -244,6 +264,8 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     float metallic = 0.9; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
 	
     float3 specularColor = lerp(float3(0.04, 0.04, 0.04), albedo, metallic);
+
+   // shadow = max(shadow, NdotL);
     //output.color0_ = float4(specularColor, 1);
     //return output;
 #if 1
@@ -344,7 +366,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	// pow べき乗
 	// pow(n, x);	nのx乗
-    output.color0_.rgb = pow(output.color0_.rgb, 1.0 / 2.2);
+    output.color0_.rgb = pow(abs(output.color0_.rgb), 1.0 / 2.2);
     output.color0_.rgb *= shadow;
 #endif
 	

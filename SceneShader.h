@@ -21,5 +21,6 @@ class SceneShader :
 
 	int model[2];
 	SafeSharedPtr<Texture> shadow_map = nullptr;
+	ID3D11SamplerState* d3d_shadow_sampler = nullptr;
 };
 

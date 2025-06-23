@@ -3,12 +3,12 @@
 #include "SceneShader.h"
 #include "System/Components/Camera.h"
 
-Vector3 light_pos = { 0, 1000, -3000 };
+Vector3 light_pos = { 0, 30, -100 };
 Vector3 light_look = { 0, 0, 0 };
 Vector3 light_up = { 0, 1, 0 };
-constexpr float sh_size = 4096;
+constexpr float sh_size = 2048;
 const Vector2 shadowmap_size = { sh_size, sh_size }; //!< シャドウマップのサイズ
-Vector2 shadowmap_xy = { 200,200 };
+Vector2 shadowmap_xy = { 20,20 };
 int const_buffer = -1;
 int cam_const_buffer = -1;
 int shadow_const_buffer = -1;
@@ -97,6 +97,22 @@ int SceneShader::Init()
 	const_buffer = CreateShaderConstantBuffer(sizeof(LightInfo));
 	shadow_const_buffer = CreateShaderConstantBuffer(sizeof(LightInfo));
 	cam_const_buffer = CreateShaderConstantBuffer(sizeof(CameraInfo));
+	ID3D11Device* d3d_device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device()));
+	D3D11_SAMPLER_DESC desc
+	{
+	D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR,
+	D3D11_TEXTURE_ADDRESS_CLAMP,
+	D3D11_TEXTURE_ADDRESS_CLAMP,
+	D3D11_TEXTURE_ADDRESS_CLAMP,
+	0.0f,
+	1,
+	D3D11_COMPARISON_NEVER,
+		{1.0f,1.0f,1.0f,1.0f},
+	-FLT_MAX,
+	FLT_MAX
+
+	};
+	d3d_device->CreateSamplerState(&desc, &d3d_shadow_sampler);
 
 	model[0] = MV1LoadModel("data/Player.mv1");
 	model[1] = MV1LoadModel("data/Stage/SwordBout/Stage00.mv1");
@@ -108,9 +124,10 @@ int SceneShader::Init()
 	SetDrawValidGraphCreateZBufferFlag(true);
 	SetCreateDrawValidGraphZBufferBitDepth(32);
 	shadow_map = TextureManager::Create("shadow_map", static_cast<int>(shadowmap_size.x), static_cast<int>(shadowmap_size.y));
+
 	MV1SetPosition(model[0], VGet(0, 1.1f, 0));
 	MV1SetPosition(model[1], VGet(0, -45, 0));
-	MV1SetScale(model[0], VGet(0.5f, 0.5f, 0.5f));
+	MV1SetScale(model[0], VGet(0.05f, 0.05f, 0.05f));
 #endif
 	obj = SceneManager::Object::Create<Object>();
 	obj->transform->position = { 0,5,-5 };
@@ -125,6 +142,11 @@ int SceneShader::Init()
 
 void SceneShader::Update()
 {
+	if (Input::GetKey(KeyCode::Space))
+	{
+		int a = SaveDrawValidGraphToJPEG(shadow_map->GetHandle(), 0, 0, static_cast<int>(shadowmap_size.x), static_cast<int>(shadowmap_size.y), reinterpret_cast<const char*>(u8"data/shadow_map.jpg"));
+		a++;
+	}
 	if (Input::GetKey(KeyCode::F)) {
 		//TextureManager::Load("data/title.jpg", "title");
 		SafeSharedPtr<Texture> tex;
@@ -135,7 +157,7 @@ void SceneShader::Update()
 		MV1SetTextureGraphHandle(model[0], 3, tex->GetHandle(), true);
 
 	}
-	light_pos = Quaternion(DEG2RAD(Time::DeltaTime() * 10), Vector3(0, 1, 0).getNormalized()).rotate(light_pos);
+	//light_pos = Quaternion(DEG2RAD(Time::DeltaTime() * 10), Vector3(0, 1, 0).getNormalized()).rotate(light_pos);
 
 	if (Input::GetKey(KeyCode::Up))
 		obj->transform->AddRotation(Quaternion(DEG2RAD(Time::DeltaTime() * -45), { 1,0,0 }));
@@ -358,16 +380,13 @@ void SceneShader::Draw()
 #endif
 	DxLib::DrawFormatString(0, 0, Color::RED, "FPS:%.1f", Time::GetFPS());
 
-	if (Input::GetKeyDown(KeyCode::Space))
-	{
-		SaveDrawValidGraph(shadow_map->GetHandle(), 0, 0, static_cast<int>(shadowmap_size.x), static_cast<int>(shadowmap_size.y), "data/shadow_map.png");
-	}
+
 
 }
 
 void SceneShader::Exit()
 {
-	return;
+	d3d_shadow_sampler->Release();
 	shader_ps.reset();
 	shader_vs.reset();
 	DeleteShaderConstantBuffer(const_buffer);
@@ -376,4 +395,5 @@ void SceneShader::Exit()
 	for (int i = 0; i < 2; i++)
 		MV1DeleteModel(model[i]);
 	shadow_map.reset();
+	return;
 }
