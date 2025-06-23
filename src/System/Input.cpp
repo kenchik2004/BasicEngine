@@ -27,6 +27,7 @@ namespace Input {
 	{
 
 		mouse_pos_prev = mouse_pos;
+		mouse_pos = GetMousePosition();
 		memcpy(key_buffer_prev, key_buffer, sizeof(char) * 256);
 		mouse_buffer_prev = mouse_buffer;
 
