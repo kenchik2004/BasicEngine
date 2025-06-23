@@ -7,6 +7,8 @@
 #include "System/Components/MeshCollider.h"
 #include "System/Objects/ButtonObject.h"
 #include "System/Objects/TextObject.h"
+#include "System/Shader.h"
+#include "System/Components/Camera.h"
 
 /*
  長い岩1
@@ -40,6 +42,8 @@
 102,102,102
 */
 
+
+
 inline std::string u8str(const char8_t* str) {
 	return std::string(reinterpret_cast<const char*>(str));
 }
@@ -49,8 +53,6 @@ struct Ame {
 	float reflect_timer = 0;
 };
 
-using 零指定 = nullptr_t;
-零指定 零 = nullptr;
 
 namespace AmeGame
 {
@@ -69,7 +71,9 @@ namespace AmeGame
 	};
 	void SceneAme::Load()
 	{
-		ModelManager::LoadAsModel("data/Stage/Gensokyo/Gensokyo.mv1", "field");
+
+		ModelManager::LoadAsModel("data/Stage/Sky_Dome.mv1", "sky");
+		ModelManager::LoadAsModel("data/Stage/Gensokyo/Gensokyo1.mv1", "field");
 		ModelManager::LoadAsModel("data/Stage/HakureiShrine/HakureiShrine.mv1", "shrine");
 		ModelManager::LoadAsModel("data/Stage/SwordBout/nagai_iwa.mv1", "long_rock");
 		ModelManager::LoadAsModel("data/Stage/SwordBout/dekai_iwa.mv1", "huge_rock");
@@ -93,6 +97,8 @@ namespace AmeGame
 	}
 	int SceneAme::Init()
 	{
+
+
 		if (!CheckForLoading())
 			return 0;
 
@@ -139,6 +145,14 @@ namespace AmeGame
 		camera->transform->SetChild(camera_->transform);
 		camera_->transform->local_position = { 0,-0.5f,0 };
 		camera->transform->position = { 900,20,-350 };
+
+
+		auto stage = SceneManager::Object::Create<Object>();
+		auto model = stage->AddComponent<ModelRenderer>();
+		model->SetModel("sky");
+		camera->transform->SetChild(stage->transform); //ステージをシーンのルートに配置
+		stage->transform->local_position = { 0,0,0 };
+		stage->transform->scale = { 3,3,3 };
 		camera = camera_;
 		for (auto& ame_ : ame)
 		{
@@ -167,18 +181,12 @@ namespace AmeGame
 	{
 		if (!CheckForLoading())
 			return;
-		if (Input::GetKey(KeyCode::Left)) {
-			camera->transform->parent->AddRotation(Quaternion(DEG2RAD(Time::DeltaTime() * -45), { 0, 1, 0 }));
-		}
-		if (Input::GetKey(KeyCode::Right)) {
-			camera->transform->parent->AddRotation(Quaternion(DEG2RAD(Time::DeltaTime() * 45), { 0, 1, 0 }));
-		}
-		if (Input::GetKey(KeyCode::Up)) {
-			camera->transform->local_rotation *= (Quaternion(DEG2RAD(Time::DeltaTime() * -45), { 1, 0, 0 }));
-		}
-		if (Input::GetKey(KeyCode::Down)) {
-			camera->transform->local_rotation *= (Quaternion(DEG2RAD(Time::DeltaTime() * 45), { 1, 0, 0 }));
-		}
+		auto mouse_ = Input::GetMouseDelta();
+		camera->transform->parent->AddRotation(Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.x), { 0, 1, 0 }));
+
+		if ((camera->transform->local_rotation * (Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.y), { 1, 0, 0 }))).rotate({ 0,0,1 }).dot({ 0,0,1 }) > 0.9f)
+			camera->transform->local_rotation *= (Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.y), { 1, 0, 0 }));
+
 		auto cam_parent = camera->transform->parent.lock();
 		auto rb = cam_parent->owner->GetComponent<RigidBody>();
 		if (cam_parent) {
@@ -233,23 +241,31 @@ namespace AmeGame
 		Vector3 cam_pos = camera->transform->position;
 		for (auto& ame_ : ame)
 		{
-			physx::PxRaycastBuffer ray;
+			RayCastInfo info;
+			Ray ray{
+				.position = ame_.position,
+				.direction = ame_.dir,
+				.length = 1.0f - ame_.reflect_timer,
+			};
+			physx::PxClamp(ray.length, 0.0f, 1.0f);
 			if (ame_.position.y - cam_pos.y < 20)
-				GetPhysicsScene()->raycast(ame_.position, ame_.dir, 1, ray);
-			if (ame_.position.y - cam_pos.y < -5 || ame_.reflect_timer > 1.0f)
+				RayCast(ray, info);
+			if (ame_.position.y < -5 || ame_.reflect_timer > 1.0f)
 			{
 				ame_.position = Random::Position(cam_pos + Vector3(-40, 20, -40), cam_pos + Vector3(40, 40, 40));
 				ame_.reflect_timer = 0;
 				ame_.dir = { 0,-1,0 };
 			}
-			if (ray.hasBlock) {
-				ame_.dir = ray.block.normal;
-				ame_.position = ray.block.position;
+			if (info.hasBlock) {
+				ame_.dir = info.block.normal;
+				ame_.position = info.block.position;
 				ame_.reflect_timer += Time::DeltaTime();
 			}
 			DrawLine3D(cast(ame_.position), cast(ame_.position + ame_.dir * (1.0f - ame_.reflect_timer)), Color::BLUE);
 		}
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+
 	}
 
 	void SceneAme::LateDraw()
@@ -272,6 +288,11 @@ namespace AmeGame
 			DrawFormatString(10, SCREEN_H - 70, Color::WHITE, "Press W/A/S/D to move camera");
 			DrawFormatString(10, SCREEN_H - 90, Color::WHITE, "Press Space to jump");
 		}
+	}
+
+	void SceneAme::UnLoad()
+	{
+
 	}
 
 	bool SceneAme::CheckForLoading()

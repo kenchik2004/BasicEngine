@@ -20,6 +20,7 @@ namespace AmeGame {
 		void Draw() override;
 		//! @brief シーンの描画
 		void LateDraw() override;
+		void UnLoad() override;
 
 		SafeSharedPtr<Texture> rain_texture; //!< 雨のテクスチャ
 		GameObjectWP camera;
