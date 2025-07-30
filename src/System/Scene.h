@@ -19,10 +19,10 @@ public:
 
 	Scene() { physics_scene = PhysicsManager::AddScene(); }
 	inline void SetObjPriority(unsigned int new_priority, ObjectP who) {
-		unsigned int parent_prio = who->transform->parent ? who->transform->parent->GetPriority() : 0;
+		unsigned int parent_prio = who->transform->parent ? who->transform->parent->owner->GetPriority() : 0;
 		new_priority += parent_prio;
 		who->status.priority = new_priority;
-		if (std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), who) != dirty_priority_objects.end())
+		if (std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), who) == dirty_priority_objects.end())
 			dirty_priority_objects.push_back(who);
 	}
 	enum class LOADING_STATUS :unsigned char {
@@ -120,6 +120,7 @@ private:
 	std::vector<std::function<void()>> waiting_functions;
 	std::vector<physx::PxActor*> waiting_remove_actors;
 	std::vector<physx::PxShape*> waiting_remove_shapes;
+	//std::vector<std::function<void()>> draw_calls;//ドローコールをキャッシュしておく設計
 	ObjectWPVec leak_objects;
 	void SyncGameObjectsPriority();
 	AudioListenerWP current_audio_listener;

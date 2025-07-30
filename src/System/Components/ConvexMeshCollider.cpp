@@ -24,14 +24,14 @@ void ConvexMeshCollider::PrePhysics()
 {
 	if (!shape)
 		return;
-	rigidbody->GetBody()->detachShape(*shape);
+	//rigidbody->GetBody()->detachShape(*shape);
 
 	mesh.scale = owner->transform->scale;
 	shape->setGeometry(mesh);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
 	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 
-	rigidbody->GetBody()->attachShape(*shape);
+	//rigidbody->GetBody()->attachShape(*shape);
 }
 
 void ConvexMeshCollider::DebugDraw()
@@ -83,7 +83,7 @@ void ConvexMeshCollider::AttachToModel()
 		ref_poly_ = model->model->GetPolygon();
 		PxConvexMesh* convex_mesh = model->model->GetConvexMesh();
 		mesh.convexMesh = convex_mesh;
-		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Concrete_Default);
+		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Default, true);
 #ifndef PACKAGE_BUILD
 		if (!shape)
 			throw(Exception("凸メッシュ作成に失敗しました。メッシュデータが無効です。三角メッシュを試す、モデルが有効なものか再確認する等を試してみてください", DEFAULT_EXCEPTION_PARAM));

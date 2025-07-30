@@ -11,11 +11,13 @@ void Log(std::string log) {
 	log_lines.emplace_back(log);
 	if (log_lines.size() > 1000) // 履歴保持数制限
 		log_lines.pop_front();
-//	ImGui::Begin("console");
+#if 0
+	//	ImGui::Begin("console");
 	for (auto& log : log_lines) {
 		ImGui::TextColored(ImVec4(1, 0, 0, 1), ShiftJISToUTF8(log).c_str());
 	}
-//	ImGui::End();
+	//	ImGui::End();
+#endif
 }
 
 Exception::Exception(const char* main_message, const char* file_name, int line, const char* func_name)
@@ -35,9 +37,9 @@ void Exception::Show()
 
 	printfDx(message.c_str());
 	printfDx("\n");
-//#ifndef PACKAGE_BUILD
-	//Log(message);
-//#endif
+	//#ifndef PACKAGE_BUILD
+		//Log(message);
+	//#endif
 #ifndef NDEBUG
 	std::wstring wstr = Str2Wstr(message);
 	if (is_assert)

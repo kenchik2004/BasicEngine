@@ -35,6 +35,16 @@ std::vector<CharToken> parseTextWithTags(const std::string& input, Color def_col
 
 		// UTF-8 文字を1文字ずつ取得
 		unsigned char c = static_cast<unsigned char>(input[i]);
+		if (input.length() > i + 1)
+			if (input[i] == '\\' && input[i + 1] == 'n') {
+				c = '\n';
+				CharToken char_token;
+				char_token.utf8_char += c;
+				char_token.color = current_color;
+				tokens.push_back(char_token);
+				i += 2;
+				continue;
+			}
 		size_t char_len = 1;
 		if ((c & 0x80) == 0x00) char_len = 1;
 		else if ((c & 0xE0) == 0xC0) char_len = 2;
@@ -68,7 +78,7 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 		for (size_t i = 0; i < draw_char_num; ++i) {
 			const auto& token = tokens[i];
 
-			if (token.utf8_char.c_str()[0] == '\\' || token.utf8_char.c_str()[0] == '\n') {
+			if (token.utf8_char.c_str()[0] == '\n') {
 				x = (int)draw_box_pos.x;
 				y += font_size;
 				continue;
@@ -77,10 +87,16 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 				x = (int)draw_box_pos.x;
 				y += font_size;
 			}
-			if (y + font_size >= max_y)
+			if (y >= max_y)
 				break;
+			int wid;
+
+			ChangeFont(ShiftJISToUTF8(font).c_str());
+			wid = GetDrawFormatStringWidth(token.utf8_char.c_str());
 			DrawFormatString(x, y, token.color, token.utf8_char.c_str());
-			x += font_size; // または固定幅
+			ChangeFont("");
+
+			x += wid; // または固定幅
 
 		}
 		draw_char_num += Time::DrawDeltaTime() * speed;
@@ -171,7 +187,7 @@ void Text::LateDraw()
 
 		break;
 	case AUTO:
-		DrawAutoString(text, draw_pos, scale, draw_char_num, txt_color, 30);
+		DrawAutoString(text, draw_pos, scale, draw_char_num, txt_color, text_speed);
 		break;
 	}
 

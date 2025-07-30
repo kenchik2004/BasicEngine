@@ -25,14 +25,14 @@ void AudioListener::PreDraw()
 
 void AudioListener::SetCurrentListener()
 {
-	auto current_listener = SceneManager::GetCurrentScene()->GetCurrentAudioListener();
+	auto current_listener = owner->GetScene()->GetCurrentAudioListener();
 	if (current_listener)
 		SafeStaticCast<AudioListener>(current_listener.lock())->is_current_listener = false;
 	is_current_listener = true;
-	SceneManager::GetCurrentScene()->SetCurrentAudioListener(std::static_pointer_cast<AudioListener>(shared_from_this()));
+	owner->GetScene()->SetCurrentAudioListener(std::static_pointer_cast<AudioListener>(shared_from_this()));
 }
 
 SafeSharedPtr<AudioListener> AudioListener::GetCurrentListener()
 {
-	return SafeStaticCast<AudioListener>(SceneManager::GetCurrentScene()->GetCurrentAudioListener().lock());
+	return SafeStaticCast<AudioListener>(owner->GetScene()->GetCurrentAudioListener().lock());
 }

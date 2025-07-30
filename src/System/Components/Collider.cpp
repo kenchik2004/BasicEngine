@@ -19,8 +19,7 @@ int Collider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxSphereGeometry(),
-		*Material::Metal_Default);
-	shape->setMaterials(&Material::Wool_Default, 0);
+		*Material::Default);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 	rigidbody->GetBody()->attachShape(*shape);
@@ -46,6 +45,13 @@ void Collider::AttachToModel(int attach_index)
 		return;
 	attach_to_model = true;
 	model_attach_index = attach_index;
+}
+
+void Collider::SetMaterial(physx::PxMaterial* new_mat)
+{
+	if (!shape || !new_mat)
+		return;
+	shape->setMaterials(&new_mat, 1);
 }
 
 void Collider::SetLayer(Layer layer)

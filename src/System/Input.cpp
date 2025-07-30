@@ -98,6 +98,12 @@ namespace Input {
 		return Vector2(static_cast<float>(mouse_x), static_cast<float>(mouse_y));
 	}
 
+	void SetMousePosition(Vector2 new_pos, bool reset_delta) {
+		SetMousePoint(new_pos.x, new_pos.y);
+		mouse_pos = GetMousePosition();
+		if (reset_delta)
+			mouse_pos_prev = mouse_pos;
+	}
 
 	//---------------------------------------------------------------------------------
 	//	マウスの移動量を取得する

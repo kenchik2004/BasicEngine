@@ -15,7 +15,7 @@ int SphereCollider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxSphereGeometry(radius),
-		*Material::Metal_Default);
+		*Material::Default, true);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 
@@ -26,7 +26,6 @@ int SphereCollider::Init()
 
 void SphereCollider::PrePhysics()
 {
-	rigidbody->GetBody()->detachShape(*shape);
 
 	PxTransform trns = MakeCollisionTransform();
 	shape->setGeometry(PxSphereGeometry(radius));
@@ -34,9 +33,6 @@ void SphereCollider::PrePhysics()
 	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setLocalPose(trns);
 
-
-
-	rigidbody->GetBody()->attachShape(*shape);
 }
 
 void SphereCollider::DebugDraw()

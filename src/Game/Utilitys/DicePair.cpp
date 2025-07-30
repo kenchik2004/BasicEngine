@@ -1,6 +1,6 @@
 ﻿#include "precompile.h"
 #include "DicePair.h"
-#include "Game/Objects/DiceBase.h"
+#include "Game/Objects/RLyeh/Dices/DiceBase.h"
 #include "System/Components/RigidBody.h"
 
 

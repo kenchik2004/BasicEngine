@@ -11,12 +11,12 @@ int BoxCollider::Init()
 	if (!rigidbody) {
 		RemoveThisComponent();
 		return -1;
-	}	
+	}
 	auto p_scene = owner->GetScene()->GetPhysicsScene();
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
-		*Material::Metal_Default);
+		*Material::Default, true);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 
@@ -26,7 +26,6 @@ int BoxCollider::Init()
 
 void BoxCollider::PrePhysics()
 {
-	rigidbody->GetBody()->detachShape(*shape);
 
 
 	PxTransform trns = MakeCollisionTransform();
@@ -38,7 +37,6 @@ void BoxCollider::PrePhysics()
 
 
 
-	rigidbody->GetBody()->attachShape(*shape);
 }
 
 void BoxCollider::DebugDraw()

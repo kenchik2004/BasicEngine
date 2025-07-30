@@ -22,7 +22,7 @@ void Camera::PreDraw()
 {
 	if (is_current_camera)
 	{
-		SetDrawScreen(my_screen->GetHandle());
+		int a=SetDrawScreen(my_screen->GetHandle());
 		ClearDrawScreen();
 	}
 	PrepareCamera();

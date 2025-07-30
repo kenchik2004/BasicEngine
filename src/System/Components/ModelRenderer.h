@@ -28,6 +28,7 @@ public:
 	}
 
 	const int GetModelHandle() { return model ? model->handle : -1; }
+	void OverrideTexture(SafeSharedPtr<Texture>texture, int material_index);
 	bool IsLoaded() { return model ? model->handle >= 0 : false; }
 
 	std::string model_name = "";
@@ -40,9 +41,9 @@ public:
 
 	//モデルコンポーネントが管理するべきもの
 	SafeSharedPtr<Model> model;
-	Vector3 pos = { 0,0,0 };
-	Quaternion rot = { 0,0,0,1 };
-	Vector3 scale = { 1,1,1 };
+	//Vector3 pos = { 0,0,0 };
+	//Quaternion rot = { 0,0,0,1 };
+	//Vector3 scale = { 1,1,1 };
 
 
 

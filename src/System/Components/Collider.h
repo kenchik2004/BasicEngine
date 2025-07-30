@@ -16,7 +16,7 @@ public:
 	Quaternion rotation = { 0,0,0,1 };
 	RigidBodyP GetRigidBody() { return rigidbody.lock(); }
 	void AttachToModel(int attach_index);
-
+	void SetMaterial(physx::PxMaterial* new_mat);
 	enum Layer :physx::PxU32 {
 		Default = 1,
 		Wepon = 1 << 1,

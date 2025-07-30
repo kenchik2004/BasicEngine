@@ -32,23 +32,16 @@ class Texture {
 
 	std::string name;		//!< テクスチャ名
 	int handle = -1;		//!< テクスチャハンドル
-	bool made_from_source = false;	//!< テクスチャソースから作成されたかどうか(trueはロード、falseはmake)
 public:
 	//! デフォルトコンストラクタ
 	Texture() = default;
 
-	//! @brief コピーする場合は名前をコピー・ハンドルはテクスチャハンドルはクローンを作成
-	Texture(const Texture& other) {
-		name = other.name;
-		int x = 0, y = 0;
-		GetGraphSize(other.handle, &x, &y);					//! テクスチャのサイズを取得
-		handle = DerivationGraph(0, 0, x, y, other.handle);	//! それを基に、元データからテクスチャデータをクローン
-		made_from_source = true;
-	}
+	//! @brief コピーは禁止
+	Texture(const Texture& other) = delete;
 
 	//! @brief 削除と同時にハンドルも開放
 	~Texture() {
-		if (handle >= 0 && made_from_source)
+		if (handle >= 0)
 			DeleteGraph(handle);			//! 有効かつ元テクスチャがあるなら、テクスチャハンドルを削除
 	}
 

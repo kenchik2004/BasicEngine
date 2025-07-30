@@ -4,6 +4,8 @@
 //----------------------------------------------------------------------------
 #include "dxlib_ps.h"
 
+
+static const float PI = 3.14159265359;
 // 定数バッファは b0～b14 まで利用可能
 uint XorShift(uint seed)
 {
@@ -13,6 +15,70 @@ uint XorShift(uint seed)
     x ^= x << 5;
     return x;
 }
+float rand(float2 co)
+{
+    return frac(sin(dot(co, float2(12.9898, 78.233))) * 43758.5453);
+}
+
+float InterleavedGradientNoise(float2 position_screen)
+{
+    float3 magic = magic = float3(0.06711056f, 0.00583715f, 52.9829189f);
+    return frac(magic.z * frac(dot(position_screen, magic.xy)));
+
+}
+
+float2 VogelDiscSample(int index, int numSamples, float angleBias = 0.0)
+{
+    const float GOLDEN_ANGLE = 2.399963229728653;
+    float theta = GOLDEN_ANGLE * float(index) + angleBias;
+    float r = sqrt((float(index) + 0.5) / float(numSamples));
+    return sin(float2(theta + PI / 2.0, theta)) * r;
+    
+}
+
+float3 VisualizeError(float2 shadowCoord, float2 shadowMapSize)
+{
+    static const float3 values[] =
+    {
+        float3(0.0f, 1.0f / 7.75f, 1.0f / 7.75f),
+        float3(1.0f / 7.75f, 1.0f / 3.25f, 1.0f / 3.25f - 1.0f / 7.75f),
+        float3(1.0f / 3.25f, 1.0f, 1.0f - 1.0f / 3.25f),
+        float3(1.0f, 3.25f, 1.0f),
+        float3(3.25f, 7.75f, 3.25f),
+        float3(7.75f, 10.0f, 7.75f),
+    };
+    static const float3 colors[] =
+    {
+        float3(0.2f, 0.0f, 0.0f),
+        float3(1.0f, 0.2f, 0.0f),
+        float3(1.0f, 1.0f, 0.0f),
+        float3(0.0f, 1.0f, 0.0f),
+        float3(0.3f, 0.8f, 1.0f),
+        float3(0.0f, 0.0f, 1.0f),
+        float3(0.0f, 0.0f, 0.2f),
+    };
+    float2 ds = shadowMapSize.x * ddx(shadowCoord);
+    float2 dt = shadowMapSize.y * ddy(shadowCoord);
+    float error = max(length(ds + dt), length(ds - dt));
+    float3 result = (float3) 1.0f;
+    [unroll]
+    for (int i = 0; i < 6; i++)
+    {
+        if (error >= values[i].x && error <= values[i].y)
+        {
+            result = lerp(colors[i], colors[i + 1], (error - values[i].x / values[i].z));
+            break;
+
+        }
+        else
+        {
+            result = colors[6];
+        }
+    }
+    return result;
+
+}
+
 cbuffer CameraInfo : register(b11)
 {
     matrix mat_view_; //!< ビュー行列
@@ -39,17 +105,7 @@ struct VS_OUTPUT_MODEL
 
 typedef VS_OUTPUT_MODEL PS_INPUT_MODEL;
 
-//==============================================================
-//デコード
-//==============================================================
-float DecodeFloatBilinear(float4 rgba)
-{
-    uint r = (uint) (rgba.r * 255.0 + 0.5);
-    uint g = (uint) (rgba.g * 255.0 + 0.5);
-    uint b = (uint) (rgba.b * 255.0 + 0.5);
-    uint value = r + (g << 8) + (b << 16);
-    return (float) value / 16777215.0;
-}
+
 
 
 
@@ -59,12 +115,11 @@ float DecodeFloatBilinear(float4 rgba)
 TextureCube IBL_Diffuse : register(t14);
 TextureCube IBL_Specular : register(t15);
 
+SamplerComparisonState shadow_sampler : register(s13);
 
 
 
 
-
-static const float PI = 3.14159265359;
 
 // GGX スペキュラーモデル (Trowbridge Reitz)
 // エネルギー保存則(Normalized distribution function) / 微細表面(microfacet)
@@ -128,55 +183,62 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	// テクスチャカラーを読み込み
 	//------------------------------------------------------------
     float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
-#if 1
+#if 0
     output.color0_ = textureColor;
     return output;
 #endif
-    float shadow = 0.0;
 #if 1
+    float shadow = 0.0;
     float4 lightSpace = mul(float4(input.world_position_.xyz, 1.0f), mat_light_view_);
     lightSpace.xyz /= lightSpace.w;
     float2 UV = lightSpace.xy * float2(0.5, -0.5) + 0.5;
     //UV.y = 1.0 - UV.y;
-
+    //output.color0_ = float4(VisualizeError(UV, float2(1024, 1024)), 1);
+    //return output;
+    float thetaBias = InterleavedGradientNoise(input.position_.xy) * 2.0f * PI;
+    //float thetaBias = rand(input.position_.xy) * 2.0f * PI;
 
     float shadowDepth = lightSpace.z;
-    for (int y = -2; y <= 2; ++y)
-        for (int x = -2; x <= 2; ++x)
-        {
+    int sampleNum = 8;
+    for (int i = 0; i < sampleNum; i++)
+    {
             {
-                static const float bias = 0.00001;
+            static const float bias = 0.00015;
                 
                // uint rand = XorShift(x + y * 5);
-                
-                float2 offset = float2(x, y) * 0.0002; // * rand;
+            float2 offset = VogelDiscSample(i, sampleNum, thetaBias) * (1.0 / 512.0);
                
-                float4 sample = ShadowMap0Texture.Sample(ShadowMap0Sampler, UV + offset);
-    
-   //output.color0_ = float4(sample.rrr * 2, 1);
-    //return output;
-                float mapDepth = DecodeFloatBilinear(sample);
+            //output.color0_ = float4(sample.rgb, 1);
+            //float sample = ShadowMap0Texture.Sample(ShadowMap0Sampler, UV + offset).r;
+            float sample = ShadowMap0Texture.SampleCmp(shadow_sampler, UV + offset, bias).r;
+           // return output;
+            float mapDepth = sample;
 	
 
 
-                shadow += (shadowDepth > mapDepth + bias) ? 0.0 : 1.0;
+            shadow += (shadowDepth > mapDepth + bias) ? 0.0 : 1.0;
 
-            }
         }
-    shadow *= 1.0f / 25.0f;
+    }
+    shadow *= 1.0f / sampleNum;
     shadow = all(UV >= 0 && UV <= 1 && shadowDepth > 0) ? shadow : 1.0;
-		
+    //shadow = 1;
+#else
+    float shadow = 1.0;
+#endif
 	// アルファテスト
     if (textureColor.a < 0.5)
         discard;
-#endif
 #if 1
 	// リニア化 sRGBのテクスチャ → Linearのテクスチャ
-    textureColor.rgb = pow(abs(textureColor.rgb), 2.2);
+    textureColor.rgb = pow((textureColor.rgb), 2.2);
 #endif
     float3 albedo = textureColor.rgb;
 	
     output.color0_ = textureColor * input.diffuse_;
+#if 0
+    return output;
+#endif
 	
 	
 #if 1
@@ -217,7 +279,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	//-------------------------------------------------------------
 	// フォグ表現
 	//-------------------------------------------------------------
-    float ratio = saturate(distance * 0.005);
+    float ratio = saturate(distance * 0.01);
     output.color0_.rgb = lerp(output.color0_.rgb, float3(0.4, 0.6, 1), ratio);
 	
     int2 position = int2(input.position_.xy); // 画面上のピクセル位置
@@ -255,6 +317,9 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 
     float3 lightColor = light_color_.rgb * light_color_.a; // 光源の明るさ, 色
+#if 0
+    lightColor = float3(0, 0, 0);
+#endif
 
     float NdotL = saturate(dot(N, L)) + 0.000001;
     float NdotV = saturate(dot(N, V)) + 0.000001;
@@ -263,7 +328,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     float LdotH = saturate(dot(L, H)) + 0.000001;
 	
     float roughness = 0.5; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
-    float metallic = 0.9; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
+    float metallic = 0.0; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
 	
     float3 specularColor = lerp(float3(0.04, 0.04, 0.04), albedo, metallic);
 
@@ -277,7 +342,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	// Lambert 拡散反射光モデル
     //float diffuse = max(0, dot(N, L));
     const float Kd = 1.0 / PI;
-    float3 diffuse = lightColor * (saturate(dot(N, L)) * Kd);
+    float3 diffuse = lightColor * (saturate(min(NdotL, shadow)) * Kd);
 #endif
 	//-------------------------------------------------------------
 	// specular (スペキュラー) = 鏡面反射光
@@ -368,7 +433,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	// pow べき乗
 	// pow(n, x);	nのx乗
-    output.color0_.rgb = pow(abs(output.color0_.rgb), 1.0 / 2.2);
+    output.color0_.rgb = pow((output.color0_.rgb), 1.0 / 2.2);
     output.color0_.rgb *= shadow;
 #endif
 	

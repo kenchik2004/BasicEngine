@@ -163,8 +163,8 @@ SafeSharedPtr<Animation> ModelManager::CloneAnimByPath(std::string_view path, in
 
 void ModelManager::Init()
 {
-	default_shader_ps = make_safe_unique<ShaderPs>("data/shader/ps_model.fx");
-	default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
+	//default_shader_ps = make_safe_unique<ShaderPs>("data/shader/ps_model.fx");
+	//default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
 }
 
 void ModelManager::Exit()
@@ -208,16 +208,18 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 			throw(Exception("凸メッシュ作成に失敗しました:モデルデータが無効です。モデルパスが有効か確認してください。", DEFAULT_EXCEPTION_PARAM));
 #endif
 		GetPolygon();
+
 		PxConvexMeshDesc  desc;
 		// 頂点データ取得
 		std::vector<PxVec3> vertices;
+		auto meshroot_mat = MV1GetFrameBaseLocalMatrix(handle, 0);
 #if 1
 		for (int i = 0; i < ref_poly_.VertexNum; i++) {
 
-			VECTOR vertex = ref_poly_.Vertexs[i].Position;
+			VECTOR vertex = VTransform(ref_poly_.Vertexs[i].Position, meshroot_mat);
 			Vector3 vert = Vector3(vertex.x, vertex.y, vertex.z);
 			vertices.push_back(vert);
-			ref_poly_.Vertexs[i].Position = VGet(vert.x, vert.y, vert.z);
+			ref_poly_.Vertexs[i].Position = vertex;
 
 		}
 #if 0
@@ -331,13 +333,13 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 		params.midphaseDesc = physx::PxMeshMidPhase::eBVH34;
 		GetPolygon();
 		physx::PxTriangleMeshDesc desc;
-		int meshNum = MV1GetMeshNum(handle);
+		auto meshroot_mat = MV1GetFrameBaseLocalMatrix(handle, 0);
 		// 頂点データ取得
 		std::vector<physx::PxVec3> vertices;
 		for (int i = 0; i < ref_poly_.VertexNum; i++) {
-			VECTOR vertex = ref_poly_.Vertexs[i].Position;
+			VECTOR vertex = VTransform(ref_poly_.Vertexs[i].Position, meshroot_mat);
 			vertices.push_back(Vector3(vertex.x, vertex.y, vertex.z));
-
+			ref_poly_.Vertexs[i].Position = vertex;
 		}
 
 		desc.points.count = static_cast<physx::PxU32>(vertices.size());
@@ -425,6 +427,8 @@ Model::Model()
 
 void Model::Draw()
 {
+	bool write_z = MV1GetOpacityRate(handle) < 1.0f;
+	DxLib::SetWriteZBuffer3D(write_z);
 	//フレーム(リグ)単位でメッシュを描画
 	for (s32 frame_index = 0; frame_index < MV1GetFrameNum(handle); frame_index++)
 	{
@@ -475,6 +479,7 @@ void Model::Draw()
 		}
 	}
 	MV1SetUseOrigShader(false);
+	DxLib::SetWriteZBuffer3D(true);
 }
 
 void Animation::Update(float anim_timer)

@@ -29,29 +29,30 @@ int SceneManager::Init()
 	//===============================//
 
 	//裏シーンの配列の0番目は必ずここで作成するシーンが入っている
-	auto defaultdontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
-	defaultdontdestroyonload_scene->Construct();
-	another_scenes[0] = defaultdontdestroyonload_scene;
+	auto default_dontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
+	default_dontdestroyonload_scene->Construct();
+	another_scenes[0] = default_dontdestroyonload_scene;
 
 	return 0;
 }
 
 void SceneManager::PreUpdate()
 {
-
+	//全ての裏シーンに対してPreUpdate
 	for (auto& another_scene : another_scenes)
 	{
+		//先に、オブジェクトの優先度の同期を行う
 		if (another_scene->objects.size() > 1) {
 			another_scene->SyncGameObjectsPriority();
 
-			Time::ResetTime();
 		}
+		//次に、オブジェクト毎にコンポーネントの優先度の同期を行う
 		for (auto& obj : another_scene->objects) {
 			if (obj->components.size() > 1) {
 				obj->SyncComponentsPriority();
-				Time::ResetTime();
 			}
 		}
+		//全て終わった後にシーンのPreUpdate
 		try {
 			another_scene->PreUpdate();
 
@@ -59,15 +60,22 @@ void SceneManager::PreUpdate()
 		catch (Exception& ex) {
 			ex.Show();
 		}
+
+		//オブジェクトとコンポーネントのPreUpdate
+		//オブジェクトが多くなると、vectorの再確保が多くなり、パフォーマンスが落ちるので、reserveで事前に確保しておく
 		ObjectWPVec objs;
 		objs.reserve(100);
 		ComponentWPVec comps;
 		objs.reserve(100);
+		//シーンのオブジェクトを取得
 		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>())
 			objs.push_back(obj);
+		//オブジェクト毎にPreUpdateを行う
 		std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+			//オブジェクトがnullptrなら何もしない
 			if (!obj)
 				return;
+			//オブジェクトのステータスがアクティブならPreUpdateを行う
 			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
 				try {
 					obj->PreUpdate();
@@ -75,10 +83,16 @@ void SceneManager::PreUpdate()
 				catch (Exception& ex) {
 					ex.Show();
 				}
+				//オブジェクトのコンポーネントを取得
 				for (auto& comp : obj.lock()->components) {
 					comps.push_back(comp);
 				}
+				//コンポーネント毎にPreUpdateを行う
 				std::for_each(comps.begin(), comps.end(), [&obj](ComponentWP& comp) {
+					//コンポーネントがnullptrなら何もしない
+					if (!comp)
+						return;
+					//コンポーネントのステータスがアクティブならPreUpdateを行う
 					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE)) {
 						try {
 							comp->PreUpdate();
@@ -89,50 +103,68 @@ void SceneManager::PreUpdate()
 					}
 					});
 			}
+			//コンポーネントの配列をクリア
 			comps.clear();
 			});
+		//PreUpdateが終わったら、シーンのPreUpdateFinishを呼ぶ
 		another_scene->OnPreUpdateFinish();
 	}
 
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
+	//カレントシーンのオブジェクトの優先度を同期
 	if (current_scene->objects.size() > 1) {
 		current_scene->SyncGameObjectsPriority();
-		Time::ResetTime();
 	}
+	//カレントシーンのオブジェクト毎にコンポーネントの優先度を同期
 	for (auto& obj : current_scene->objects) {
 		if (obj->components.size() > 1) {
 			obj->SyncComponentsPriority();
-			Time::ResetTime();
 		}
 	}
 
+	//カレントシーンのPreUpdateを呼ぶ
 	current_scene->PreUpdate();
+
+	//オブジェクトとコンポーネントのPreUpdate
+	//オブジェクトが多くなると、vectorの再確保が多くなり、パフォーマンスが落ちるので、reserveで事前に確保しておく
 	ObjectWPVec objs;
 	ComponentWPVec comps;
 	objs.reserve(100);
 	comps.reserve(100);
+
+	//カレントシーンのオブジェクトを取得
 	for (auto& obj : current_scene->GetGameObjectPtrVec<::Object>())
 		objs.push_back(obj);
 
+	//オブジェクト毎にPreUpdateを行う
 	std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+		//オブジェクトがnullptrなら何もしない
 		if (!obj)
 			return;
+		//オブジェクトのステータスがアクティブならPreUpdateを行う
 		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
+			//オブジェクトのPreUpdateを行う
 			obj->PreUpdate();
+			//オブジェクトのコンポーネントを取得
 			for (auto& comp : obj->components) {
 				comps.push_back(comp);
 			}
+			//コンポーネント毎にPreUpdateを行う
 			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->PreUpdate();
+				//コンポーネントがnullptrなら何もしない
+				if (!comp)
+					return;
+				//コンポーネントのステータスがアクティブならPreUpdateを行う
+				if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
+					comp->PreUpdate();
 				});
 		}
+		//コンポーネントの配列をクリア
 		comps.clear();
 		});
-
+	//PreUpdateが終わったら、カレントシーンのPreUpdateFinishを呼ぶ
 	current_scene->OnPreUpdateFinish();
 }
 

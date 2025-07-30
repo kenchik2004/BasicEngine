@@ -35,10 +35,10 @@ void ModelRenderer::LateUpdate()
 {
 	if (!model)
 		return;
-	mat4x4 mat(CastPhysXQuat(owner->transform->rotation * rot));
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation));
 	mat.scale(Vector4(owner->transform->scale, 1));
-	mat.scale(Vector4(scale, 1));
-	mat.setPosition(owner->transform->position + rot.rotate(pos));
+	//mat.scale(Vector4(scale, 1));
+	mat.setPosition(owner->transform->position);
 	MV1SetMatrix(model->handle, cast(mat));
 }
 
@@ -46,10 +46,10 @@ void ModelRenderer::PostPhysics()
 {
 	if (!model)
 		return;
-	mat4x4 mat(CastPhysXQuat(owner->transform->rotation * rot));
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation));
 	mat.scale(Vector4(owner->transform->scale, 1));
-	mat.scale(Vector4(scale, 1));
-	mat.setPosition(owner->transform->position + owner->transform->rotation.rotate(rot.rotate(pos)));
+	//mat.scale(Vector4(scale, 1));
+	mat.setPosition(owner->transform->position);
 
 	MV1SetMatrix(model->handle, cast(mat));
 
@@ -78,6 +78,14 @@ void ModelRenderer::DebugDraw()
 	MV1SetWireFrameDrawFlag(model->handle, true);
 	MV1DrawModel(model->handle);
 	MV1SetWireFrameDrawFlag(model->handle, false);
+}
+
+void ModelRenderer::OverrideTexture(SafeSharedPtr<Texture> texture,int material_index)
+{
+	if (!texture||!model)
+		return;
+	MV1SetTextureGraphHandle(model->handle, material_index, texture->GetHandle(), false);
+
 }
 
 

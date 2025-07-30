@@ -54,13 +54,14 @@ class HitCallBack : public physx::PxSimulationEventCallback {
 
 
 struct Material {
-	static physx::PxMaterial* Metal_Default;
-	static physx::PxMaterial* Rubber_Default;
-	static physx::PxMaterial* Wood_Default;
-	static physx::PxMaterial* Plastic_Default;
-	static physx::PxMaterial* Glass_Default;
-	static physx::PxMaterial* Concrete_Default;
-	static physx::PxMaterial* Asphalt_Default;
-	static physx::PxMaterial* Wool_Default;
-	static physx::PxMaterial* Paper_Default;
+	static physx::PxMaterial* Default;
+	static physx::PxMaterial* Metal;
+	static physx::PxMaterial* Rubber;
+	static physx::PxMaterial* Wood;
+	static physx::PxMaterial* Plastic;
+	static physx::PxMaterial* Glass;
+	static physx::PxMaterial* Concrete;
+	static physx::PxMaterial* Asphalt;
+	static physx::PxMaterial* Wool;
+	static physx::PxMaterial* Paper;
 };

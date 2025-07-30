@@ -1,8 +1,8 @@
 root
+|-----CharacterStatus
 |-----RLyeh::DicePair
 |-----Scene
 |        |-----RLyeh::SceneTitle
-|        |-----AmeGame::SceneAme
 |        |-----RLyeh::DiceScene
 |        |-----SceneShader
 |        end_of_node
@@ -37,14 +37,14 @@ root
 |        end_of_node
 |        
 |-----Component
-|        |-----AudioPlayer
-|        |-----Animator
 |        |-----Text
 |        |-----Button
+|        |-----AudioPlayer
+|        |-----Animator
 |        |-----Collider
 |        |        |-----SphereCollider
-|        |        |-----BoxCollider
 |        |        |-----CapsuleCollider
+|        |        |-----BoxCollider
 |        |        |-----MeshCollider
 |        |        |-----ConvexMeshCollider
 |        |        end_of_node

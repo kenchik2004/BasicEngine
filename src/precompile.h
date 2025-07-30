@@ -37,7 +37,7 @@
 #include "System/Exception.h"
 #include "System/typedef.h"
 #include <DxLib.h>
-#include "System/ImGui_.h"
+//#include "System/ImGui_.h"
 #include "float2.h"
 #include "float3.h"
 #include "System/Input.h"

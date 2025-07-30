@@ -20,6 +20,7 @@ public:
 	inline Vector3& BoxSize() { return text_box_size; }
 	inline Vector3& BoxPos() { return text_box_pos; }
 	inline int& FontSize() { return font_size; }
+	inline void  SetFont(std::string_view font_name) { font = font_name; }
 	inline void           ResetDrawChar() { draw_char_num = 0; }
 	enum ALIGNMENT
 	{
@@ -30,10 +31,12 @@ public:
 	};
 	inline void SetAlignment(ALIGNMENT alignment_) { alignment = alignment_; }
 
+	float text_speed = 1.0f;
 private:
 	void DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_box_size, float& draw_char_num, Color def_color, float speed);
 	std::string   text = "TEXT";
 	std::vector<CharToken> tokens;
+	std::string font = "";
 	ALIGNMENT     alignment = MIDDLE;
 	float         draw_char_num;
 	Vector3       text_box_pos = { 0,0,0 };

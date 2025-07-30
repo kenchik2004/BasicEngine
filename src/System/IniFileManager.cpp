@@ -37,7 +37,7 @@ namespace FileSystem {
 		char str[128];
 		GetPrivateProfileStringA(section.data(), key.data(), std::to_string(default_).c_str(), str, 128, path.c_str());
 		std::string str_ = str;
-		if (std::all_of(&str_[0], &str_[str_.size() - 1], [](auto& a) {return (a >= '0' && a <= '9') || a == '.'; }))
+		if (std::all_of(&str_[0], &str_[str_.size() - 1], [](auto& a) {return (a >= '0' && a <= '9') || a == '-' || a == '.'; }))
 			value = std::stof(str);
 		return value;
 	}
@@ -66,9 +66,9 @@ namespace FileSystem {
 		}
 		if (vec.size() > 2)
 			vec.erase(vec.begin() + 2, vec.end());
-		float vec2[2] = { default_.x,default_.y};
+		float vec2[2] = { default_.x,default_.y };
 		for (int i = 0; i < vec.size(); i++)
-			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '.'; }))
+			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '-' || a == '.'; }))
 				vec2[i] = std::stof(vec[i]);
 		value.x = vec2[0];
 		value.y = vec2[1];
@@ -101,7 +101,7 @@ namespace FileSystem {
 			vec.erase(vec.begin() + 3, vec.end());
 		float vec3[3] = { default_.x,default_.y,default_.z };
 		for (int i = 0; i < vec.size(); i++)
-			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '.'; }))
+			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '-' || a == '.'; }))
 				vec3[i] = std::stof(vec[i]);
 		value.x = vec3[0];
 		value.y = vec3[1];
@@ -135,7 +135,7 @@ namespace FileSystem {
 			vec.erase(vec.begin() + 4, vec.end());
 		float vec3[4] = { default_.x,default_.y,default_.z,default_.w };
 		for (int i = 0; i < vec.size(); i++)
-			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '.'; }))
+			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '-' || a == '.'; }))
 				vec3[i] = std::stof(vec[i]);
 		value.x = vec3[0];
 		value.y = vec3[1];
@@ -171,7 +171,7 @@ namespace FileSystem {
 			vec.erase(vec.begin() + 4, vec.end());
 		float quat[4] = { default_.x,default_.y,default_.z,default_.w };
 		for (int i = 0; i < vec.size(); i++)
-			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '.'; }))
+			if (std::all_of(&vec[i][0], &vec[i].back(), [](auto& a) {return (a >= '0' && a <= '9') || a == '-' || a == '.'; }))
 				quat[i] = std::stof(vec[i]);
 		value.x = quat[0];
 		value.y = quat[1];

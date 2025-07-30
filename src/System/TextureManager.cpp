@@ -30,9 +30,9 @@ void TextureManager::Load(std::string_view path, std::string_view name)
 		int cache_index = ptr->cache->size();
 		auto name = ptr->texture_source->name;
 		auto path = ptr->texture_source->path;
+		ptr->cache->push_back(std::move(ptr->texture_source));
 		(*(ptr->name_map))[name].index = cache_index;
 		(*(ptr->path_map))[path].index = cache_index;
-		ptr->cache->push_back(std::move(ptr->texture_source));
 		loading_count--;
 		delete ptr;
 		};
@@ -84,6 +84,7 @@ SafeSharedPtr<Texture> TextureManager::CloneByName(std::string_view name, std::s
 		texture = make_safe_shared<Texture>();
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
+		while (resource->second.index < 0) {}
 		int x = 0, y = 0;
 		GetGraphSize(cache[resource->second.index]->handle, &x, &y);
 
@@ -120,9 +121,8 @@ SafeSharedPtr<Texture> TextureManager::CloneByName(std::string_view name, std::s
 		//もしコピーができないなら、無理にコピーしない
 		//空っぽのままおいておく
 		texture->name = new_name == "" ? cache[resource->second.index]->name : new_name;
-		texture->made_from_source = true; // コピー元のテクスチャソースから作成されたことを示す
 
-	}                    // ← 終了マーカー
+	}                   
 	return texture;
 }
 
@@ -135,11 +135,11 @@ SafeSharedPtr<Texture> TextureManager::CloneByPath(std::string_view path, std::s
 		texture = make_safe_shared<Texture>();
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
+		while (resource->second.index < 0) {}
 		int x = 0, y = 0;
 		GetGraphSize(cache[resource->second.index]->handle, &y, &y);
 		texture->handle = DerivationGraph(0, 0, x, y, cache[resource->second.index]->handle);
 		texture->name = new_name == "" ? cache[resource->second.index]->name : new_name;
-		texture->made_from_source = true; // コピー元のテクスチャソースから作成されたことを示す
 
 	}
 	return texture;

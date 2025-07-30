@@ -106,6 +106,7 @@ namespace Input
 	bool GetMouseButtonRepeat(MouseButton button);
 	bool GetMouseButtonUp(MouseButton button);
 	Vector2 GetMousePosition();
+	void SetMousePosition(Vector2 new_pos, bool reset_delta = true);
 	Vector2 GetMouseDelta();
 };
 

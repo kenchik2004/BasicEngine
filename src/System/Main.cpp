@@ -35,6 +35,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 }
 constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+
 	switch (msg)
 	{
 	case WM_MOVING:
@@ -51,6 +52,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 //---------------------------------------------------------------------------------
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
+	
 	//もうUTF-8しか使わん!SHIFT_JISはクソ!!
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
@@ -105,7 +107,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetDrawScreen(DX_SCREEN_BACK);
 	SetTransColor(255, 0, 255);
 	srand(GetNowCount() % RAND_MAX);
-	SetWindowPosition(0, 0);
+	//SetWindowPosition(0, 0);
 
 	Time::Init();
 	Input::Init();

@@ -26,6 +26,7 @@ private:
 	std::string class_name = "Object";
 	OBJ_TYPE obj_type = NORMAL;
 	unsigned int priority = 10;
+	unsigned int draw_priority = 10;
 };
 
 USING_PTR(Component);
@@ -174,7 +175,7 @@ public:
 	}
 
 	inline void SetPriority(unsigned int prio);
-	inline int GetPriority() { return status.priority; }
+	inline unsigned int GetPriority() { return status.priority; }
 	inline SceneP GetScene() { return scene; }
 
 

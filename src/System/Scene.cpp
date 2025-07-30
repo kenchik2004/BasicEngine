@@ -18,7 +18,8 @@ void Scene::Physics()
 	in_simulation = true;
 	physics_scene->simulate(Time::FixedDeltaTime() * physics_timescale);
 	//シミュレーションを待つ
-	physics_scene->fetchResults(true);
+	while (!physics_scene->fetchResults(false)) {}
+
 	in_simulation = false;
 	//処理待ち関数の呼び出し
 	for (auto& func : waiting_functions) {
@@ -196,6 +197,11 @@ void Scene::SyncGameObjectsPriority()
 	std::sort(dirty_priority_objects.begin(), dirty_priority_objects.end(),
 		[](ObjectP a, ObjectP b) { return a->GetPriority() < b->GetPriority(); });
 
+	std::vector<unsigned int> priority_vec;
+	for (const ObjectP& obj : objects)
+	{
+		priority_vec.push_back(obj->GetPriority());
+	}
 	// 2) まとめて objects へ挿入
 	for (ObjectP& obj : dirty_priority_objects)
 	{
@@ -203,15 +209,23 @@ void Scene::SyncGameObjectsPriority()
 			continue;
 		// 2‑1) 古い場所を消す（同じポインタ重複を防ぐ）
 		auto cur = std::find(objects.begin(), objects.end(), obj);
-		if (cur != objects.end()) objects.erase(cur);
+		if (cur != objects.end()) {
+			int index = std::distance(objects.begin(), cur);
+			priority_vec.erase(priority_vec.begin() + std::distance(objects.begin(), cur));
+			objects.erase(cur);
+		}
 
+	}
+	for (ObjectP& obj : dirty_priority_objects)
+	{
 		// 2‑2) 優先度に合った場所を二分探索で探す
-		auto pos = std::upper_bound(objects.begin(), objects.end(), obj,
-			[](ObjectP a, ObjectP b) { return a->GetPriority() < b->GetPriority(); });
+		auto pos = std::upper_bound(priority_vec.begin(), priority_vec.end(), obj->GetPriority());
 
-		objects.insert(pos, obj);  // ここに差し込む
+		objects.insert(objects.begin() + std::distance(priority_vec.begin(), pos), obj);  // ここに差し込む
+		priority_vec.insert(pos, obj->GetPriority());
 	}
 	dirty_priority_objects.clear();
+	//Time::ResetTime();
 }
 
 void Scene::DestroyGameObject(ObjectP destroy_obj) {

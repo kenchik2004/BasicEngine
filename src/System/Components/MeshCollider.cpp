@@ -24,7 +24,6 @@ void MeshCollider::PrePhysics()
 {
 	if (!shape)
 		return;
-	rigidbody->GetBody()->detachShape(*shape);
 
 	PxTransform trns = MakeCollisionTransform();
 	mesh.scale = owner->transform->scale;
@@ -32,8 +31,6 @@ void MeshCollider::PrePhysics()
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
 	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
 	shape->setLocalPose(trns);
-
-	rigidbody->GetBody()->attachShape(*shape);
 }
 
 void MeshCollider::DebugDraw()
@@ -71,7 +68,7 @@ void MeshCollider::AttachToModel()
 {
 	if (!model)
 		model = owner->GetComponent<ModelRenderer>();
-	if (attached || !model|| !rigidbody)
+	if (attached || !model || !rigidbody)
 		return;
 	if (!model->IsLoaded())
 		return;
@@ -82,7 +79,7 @@ void MeshCollider::AttachToModel()
 		auto triangle_mesh = model->model->GetTriangleMesh();
 		ref_poly_ = model->model->GetPolygon();
 		mesh.triangleMesh = triangle_mesh;
-		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Concrete_Default);
+		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Default,true);
 #ifndef PACKAGE_BUILD
 		if (!shape)
 			throw(Exception("トライアングルメッシュ作成に失敗しました。メッシュデータが無効です。モデルが有効なものか再確認してください", DEFAULT_EXCEPTION_PARAM));
