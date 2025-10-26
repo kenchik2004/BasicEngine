@@ -139,7 +139,7 @@ cbuffer cbD3D11_CONST_BUFFER_PS_BASE : register(b1)
     DX_D3D11_PS_CONST_BUFFER_BASE DxLib_Base;
 };
 
-cbuffer cbBE_PS_CONST_BUFFER_DEFAULT : register(b2)
+cbuffer cbBE_PS_CONST_BUFFER_DEFAULT : register(b4)
 {
     BE_PS_CONST_BUFFER_DEFAULT BE_Default;
 }

@@ -21,7 +21,6 @@ root
 |        |        
 |        |-----GameObject
 |        |        |-----SampleMovingCharacter
-|        |        |-----DebugCameraObject
 |        |        |-----CameraObject
 |        |        |-----Sample::SampleAnimationObject
 |        |        |-----Sample::DiceBase

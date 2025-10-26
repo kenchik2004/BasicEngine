@@ -160,7 +160,7 @@ PS_OUTPUT GUWAGUWA_SHADER(PS_INPUT psin)
 PS_OUTPUT main(PS_INPUT psin)
 {
     PS_OUTPUT psout = FLAME_SHADER(psin);
-    
+    psout.color0_ = float4(0, 0, 0, 0);
     return psout;
     
    

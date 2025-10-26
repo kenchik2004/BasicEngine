@@ -144,7 +144,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     float3 V = normalize(eye_position_ - input.world_position_);
 	
 	
-    float3 light = float3(0, 1, 0); // ライトのポジション
+    float3 light = float3(0, 1, -1); // ライトのポジション
 	
     float3 L = normalize(light);
 	
@@ -217,7 +217,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 		
 		
 		// 影を薄くする
-        shadow = shadow * 0.5 + 0.5; // 0%～100% → 50%～100%
+        shadow = shadow * 0.9 + 0.1; // 0%～100% → 50%～100%
 		
     }
 	
