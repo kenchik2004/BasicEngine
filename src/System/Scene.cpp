@@ -272,3 +272,28 @@ void Scene::DestroyGameObject(ObjectP destroy_obj) {
 	}
 
 }
+#if 0
+void Scene::DestroyGameObject(ObjectP& destroy_obj) {
+	if (objects.size() <= 0)
+		return;
+	if (IsInSimulation()) {
+		AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjectWP(destroy_obj)]()
+			{if (this_ && obj)
+			this_->DestroyGameObject(obj.lock());
+			});
+		return;
+	}
+	if (auto obj = std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), destroy_obj); obj != dirty_priority_objects.end())
+	{
+		dirty_priority_objects.erase(obj);
+	}
+	if (auto obj = std::find(objects.begin(), objects.end(), destroy_obj); obj != objects.end();) {
+			destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
+			destroy_obj.reset();
+			(*obj).reset();
+		}
+	}
+
+}
+
+#endif

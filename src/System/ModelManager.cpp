@@ -1,6 +1,7 @@
 ﻿#include "precompile.h"
 #include "ModelManager.h"
 #include "System/Shader.h"
+#include "System/MaterialManager.h"
 
 using namespace physx;
 
@@ -10,8 +11,9 @@ std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::m_na
 std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::m_path;
 std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::a_name;
 std::unordered_map<std::string, ModelManager::IndexAndHandle>	ModelManager::a_path;
-SafeUniquePtr<ShaderPs> ModelManager::default_shader_ps = nullptr;
-SafeUniquePtr<ShaderVs> ModelManager::default_shader_vs = nullptr;
+
+static SafeSharedPtr<Texture> ibl_diffuse;
+static SafeSharedPtr<Texture> ibl_specular;
 
 
 void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
@@ -25,7 +27,6 @@ void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
 	model->path = path_key;
 	auto&& call_back = [](int mv1_handle, void* data) {
 		auto ptr = reinterpret_cast<PtrToCacheAndModelData*>(data);
-		ptr->m_source->is_loaded = true;
 		int cache_index = ptr->model_cache->size();
 		auto name = ptr->m_source->name;
 		auto path = ptr->m_source->path;
@@ -61,8 +62,8 @@ void ModelManager::LoadAsAnimation(std::string_view path, std::string_view name)
 	anim->path = path_key;
 	auto call_back = [](int mv1_handle, void* data) {
 		auto ptr = reinterpret_cast<PtrToCacheAndModelData*>(data);
-		ptr->a_source->is_loaded = true;
 		int cache_index = ptr->anim_cache->size();
+
 		auto name = ptr->a_source->name;
 		auto path = ptr->a_source->path;
 		ptr->anim_cache->push_back(std::move(ptr->a_source));
@@ -95,11 +96,14 @@ SafeSharedPtr<Model> ModelManager::CloneModelByName(std::string_view name, std::
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
 		while (resource->second.index < 0) {}
+		if (!model_chache[resource->second.index]->is_initialized)
+			model_chache[resource->second.index]->Init();
 		model->handle = MV1DuplicateModel(model_chache[resource->second.index]->handle);
 		model->name = new_name == "" ? model_chache[resource->second.index]->name : new_name;
 		model->original = model_chache[resource->second.index].raw_unique().get();
-		model->default_shader_ps = default_shader_ps.raw_unique().get();
-		model->default_shader_vs = default_shader_vs.raw_unique().get();
+		for (int i = 0; i < model->original->materials.size(); i++)
+			model->materials.push_back(model->original->materials[i]);
+
 	}
 
 	return model;
@@ -115,11 +119,11 @@ SafeSharedPtr<Model> ModelManager::CloneModelByPath(std::string_view path, std::
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
 		while (resource->second.index < 0) {}
+		if (!model_chache[resource->second.index]->is_initialized)
+			model_chache[resource->second.index]->Init();
 		model->handle = MV1DuplicateModel(model_chache[resource->second.index]->handle);
 		model->name = new_name == "" ? model_chache[resource->second.index]->name : new_name;
 		model->original = model_chache[resource->second.index].raw_unique().get();
-		model->default_shader_ps = default_shader_ps.raw_unique().get();
-		model->default_shader_vs = default_shader_vs.raw_unique().get();
 	}
 
 	return model;
@@ -134,6 +138,7 @@ SafeSharedPtr<Animation> ModelManager::CloneAnimByName(std::string_view name, in
 		anim = make_safe_shared<Animation>();
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
+		while (resource->second.index < 0) {}
 		anim->handle = MV1DuplicateModel(anim_chache[resource->second.index]->handle);
 		anim->total_time = MV1GetAnimTotalTime(anim->handle, index);
 		anim->name = new_name == "" ? anim_chache[resource->second.index]->name : new_name;
@@ -163,8 +168,12 @@ SafeSharedPtr<Animation> ModelManager::CloneAnimByPath(std::string_view path, in
 
 void ModelManager::Init()
 {
-	//default_shader_ps = make_safe_unique<ShaderPs>("data/shader/ps_model.fx");
-	//default_shader_vs = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
+	MaterialManager::Init();
+	SetGraphBlendScalingFilterMode(true);
+	//--------------------------
+	ibl_diffuse = make_safe_shared<Texture>(LoadGraph("data/IBL/iblDiffuseHDR.dds"));
+	ibl_specular = make_safe_shared<Texture>(LoadGraph("data/IBL/iblSpecularHDR.dds"));
+	//--------------------------
 }
 
 void ModelManager::Exit()
@@ -176,8 +185,11 @@ void ModelManager::Exit()
 	m_path.clear();
 	a_name.clear();
 	a_path.clear();
-	default_shader_ps.reset();
-	default_shader_vs.reset();
+	//--------------------------
+	ibl_diffuse.reset();
+	ibl_specular.reset();
+	//--------------------------
+	MaterialManager::Release();
 #ifndef PACKAGE_BUILD
 	if (Model::instance > 0) {
 		std::string msg = typeid(Model).name();
@@ -191,8 +203,47 @@ void ModelManager::Exit()
 
 }
 
+void ModelSource::Init()
+{
+	if (is_initialized)
+		return;
+	int mat_count = MV1GetMaterialNum(handle);
+	if (mat_count <= 0)
+		mat_count = 1;
+	materials.resize(mat_count);
+
+	//DxLib内のテクスチャキャッシュからテクスチャを取得
+	for (int i = 0; i < materials.size(); i++) {
+		materials[i] = MaterialManager::CreateMaterial(name + "_Material" + std::to_string(i));
+		int dif_index = MV1GetMaterialDifMapTexture(handle, i);
+		int norm_index = MV1GetMaterialNormalMapTexture(handle, i);
+		int spec_index = MV1GetMaterialSpcMapTexture(handle, i);
+		if (dif_index >= 0) {
+			int tex_handle = MV1GetTextureGraphHandle(handle, dif_index);
+			auto mat_tex_diffuse = make_safe_shared<Texture>(tex_handle);
+			materials[i]->SetTexture(mat_tex_diffuse, Material::TextureType::Diffuse);
+		}
+		if (norm_index >= 0) {
+			int tex_handle = MV1GetTextureGraphHandle(handle, norm_index);
+			auto mat_tex_norm = make_safe_shared<Texture>(tex_handle);
+			materials[i]->SetTexture(mat_tex_norm, Material::TextureType::Normal);
+		}
+		if (spec_index >= 0) {
+			int tex_handle = MV1GetTextureGraphHandle(handle, spec_index);
+			auto mat_tex_spec = make_safe_shared<Texture>(tex_handle);
+			materials[i]->SetTexture(mat_tex_spec, Material::TextureType::Specular);
+
+		}
+
+	}
+	is_initialized = true;
+}
+
 MV1_REF_POLYGONLIST* ModelSource::GetPolygon()
 {
+	if (!is_initialized)
+		Init();
+
 	if (!polygons_loaded) {
 		MV1SetupReferenceMesh(handle, -1, false);
 		ref_poly_ = MV1GetReferenceMesh(handle, -1, false);
@@ -201,6 +252,8 @@ MV1_REF_POLYGONLIST* ModelSource::GetPolygon()
 
 physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 {
+	if (!is_initialized)
+		Init();
 	if (!convex_mesh) {
 		PxCookingParams params(PhysicsManager::GetPhysicsInstance()->getTolerancesScale());
 #ifndef PACKAGE_BUILD
@@ -256,7 +309,6 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 			PxU32 idx0 = ref_poly_.Polygons[i].VIndex[0];
 			PxU32 idx1 = ref_poly_.Polygons[i].VIndex[1];
 			PxU32 idx2 = ref_poly_.Polygons[i].VIndex[2];
-
 			indices.push_back(idx0);
 			indices.push_back(idx1);
 			indices.push_back(idx2);
@@ -328,6 +380,9 @@ physx::PxConvexMesh* ModelSource::GetOrCreateConvexMesh()
 
 physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 {
+	if (!is_initialized)
+		Init();
+
 	if (!triangle_mesh) {
 		physx::PxCookingParams params(PhysicsManager::GetPhysicsInstance()->getTolerancesScale());
 		params.midphaseDesc = physx::PxMeshMidPhase::eBVH34;
@@ -394,17 +449,6 @@ physx::PxTriangleMesh* ModelSource::GetOrCreateTriangleMesh()
 	return triangle_mesh;
 }
 
-void Model::SetShader(Shader* pixel, Shader* vertex)
-{
-	shader_ps = pixel;
-	shader_vs = vertex;
-}
-
-void Model::SetDefaultShader(Shader* pixel, Shader* vertex)
-{
-	default_shader_ps = pixel ? pixel : default_shader_ps;
-	default_shader_vs = vertex ? vertex : default_shader_vs;
-}
 
 physx::PxConvexMesh* Model::GetConvexMesh()
 {
@@ -419,17 +463,22 @@ physx::PxTriangleMesh* Model::GetTriangleMesh()
 Model::Model()
 {
 	instance++;
-	default_shader_ps = nullptr;
-	default_shader_vs = nullptr;
-	shader_ps = nullptr;
-	shader_vs = nullptr;
 }
 
-void Model::Draw()
-{
+void Model::Draw() {
+	//マテリアルが指定されていない場合、通常の描画を行う
+	if (materials.size() == 0) {
+		MV1DrawModel(handle);
+		return;
+	}
+	if (Input::GetKey(KeyCode::B)) {
+	}
 	bool write_z = MV1GetOpacityRate(handle) < 1.0f;
-	DxLib::SetWriteZBuffer3D(write_z);
-	//フレーム(リグ)単位でメッシュを描画
+	ID3D11DeviceContext* context = reinterpret_cast<ID3D11DeviceContext*>(const_cast<void*>(GetUseDirect3D11DeviceContext()));
+	SetUseTextureToShader(14, *ibl_diffuse.get());
+	SetUseTextureToShader(15, *ibl_specular.get());
+	//	DxLib::SetWriteZBuffer3D(write_z);
+		//フレーム(リグ)単位でメッシュを描画
 	for (s32 frame_index = 0; frame_index < MV1GetFrameNum(handle); frame_index++)
 	{
 		//フレームのメッシュ数を取得
@@ -449,6 +498,24 @@ void Model::Draw()
 
 				//トライアングルリストが使用しているマテリアルのインデックスを取得
 				auto material_index = MV1GetTriangleListUseMaterial(handle, tlist);
+
+				//マテリアルが指定されている場合、マテリアルに応じたシェーダーで描画する
+				Material* cur_material = nullptr;
+				if (material_index < materials.size())
+					cur_material = materials[material_index];
+				else if (materials.size() > 0)
+					cur_material = materials[materials.size() - 1];
+
+				ShaderVs* shader_vs;
+				ShaderPs* shader_ps;
+				//マテリアルが指定されていない場合、デフォルトマテリアルを使用
+				if (!cur_material)
+					cur_material = MaterialManager::GetDefaultMat3D();
+
+				{
+					shader_ps = cur_material->GetPixelShader();
+					shader_vs = cur_material->GetVertexShader();
+				}
 				//--------------------------------------------------
 				// シェーダーバリエーションを選択
 				//--------------------------------------------------
@@ -460,32 +527,56 @@ void Model::Draw()
 				// トライアングルリストを描画
 				//--------------------------------------------------
 
-				if (default_shader_ps && default_shader_vs) {
+				if (shader_ps && shader_vs) {
 
-					int handle_vs = shader_vs ? shader_vs->variant(variant_vs) : default_shader_vs->variant(variant_vs);
-					int handle_ps = shader_ps ? *shader_ps : *default_shader_ps;
+					int handle_vs = shader_vs->variant(variant_vs);
+					int handle_ps = *shader_ps;
 
 					// シェーダーがない場合はオリジナルシェーダー利用を無効化
 					bool enable_shader = (handle_vs != -1) && (handle_ps != -1);
-					MV1SetUseOrigShader(enable_shader);
+					DxLib::MV1SetUseOrigShader(enable_shader);
 					SetUseVertexShader(handle_vs);
 					SetUsePixelShader(handle_ps);
+					// マテリアルのテクスチャをセット
+					for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
+						auto texture = cur_material->GetTexture(static_cast<Material::TextureType>(i));
+						auto texture_srv = cur_material->GetTexture(static_cast<Material::TextureType>(i))->Srv();
+						if (texture) {
+							SetUseTextureToShader(i, *texture.get());
+						}
+						else {
+							SetUseTextureToShader(i, -1);
+						}
+					}
+
 				}
 
+				SetDrawMode(DX_DRAWMODE_BILINEAR);
 				//トライアングルリストを描画
 				MV1DrawTriangleList(handle, tlist);
+
 			}
 
 		}
+
+		for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
+			SetUseTextureToShader(i, -1);
+		}
 	}
-	MV1SetUseOrigShader(false);
+	DxLib::MV1SetUseOrigShader(false);
 	DxLib::SetWriteZBuffer3D(true);
 }
 
-void Animation::Update(float anim_timer)
+void Animation::Update(float speed)
 {
+	current_time += Time::RealDeltaTime() * 60 * speed;
 	for (auto& call_back : call_backs) {
-		if (!call_back.is_executed && anim_timer > call_back.ex_frame)
+		//コールバックを実行する条件
+		//1.コールバックがまだ実行されていない
+		//2.スピードによって再生・逆再生が変わるので、正なら2a、負なら2bの条件を見る
+		//2a.現在のフレームが実行フレームより前か(順再生なので、指定フレームよりも大きい数字で実行)
+		//2b.現在のフレームが実行フレームよりも後か(逆再生なので指定フレームより若い数字で実行)
+		if (!call_back.is_executed && (speed > 0 ? (current_time >= call_back.ex_frame) : (current_time <= call_back.ex_frame)))
 		{
 			call_back.is_executed = true;
 			if (call_back.function)
@@ -501,16 +592,19 @@ void Animation::InitCallBacks()
 	}
 }
 
-void Animation::SetCallBack(const std::function<void()>& call_back, float execute_frame, std::string_view method_name)
+void Animation::SetCallBack(std::function<void()>& call_back, float execute_frame, std::string_view method_name)
 {
 	std::string name(method_name);
 	auto it = method_names.find(name);
-	if (it != method_names.end())
-		return;
 	AnimationCallBack anim_call_back;
 	anim_call_back.function = std::move(call_back);
 	anim_call_back.ex_frame = execute_frame;
 	anim_call_back.is_executed = false;
+	//すでに存在するメソッド名の場合、上書きする(大抵同じ名前で登録する場合は実行フレームの変更が目的だろう)
+	if (it != method_names.end()) {
+		call_backs[it->second - 1] = std::move(anim_call_back);
+		return;
+	}
 	call_backs.push_back(std::move(anim_call_back));
 	method_names[name] = call_backs.size();
 

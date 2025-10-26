@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "System/Utils/Material.h"
 
 
 class Shader;
@@ -9,12 +10,14 @@ class ModelSource {
 	std::string path;
 	std::string name;
 	int handle = -1;
-	bool is_loaded = false;
+	bool is_initialized = false;
 	physx::PxConvexMesh* convex_mesh = nullptr;
 	physx::PxTriangleMesh* triangle_mesh = nullptr;
 	MV1_REF_POLYGONLIST ref_poly_{};
 	bool polygons_loaded = false;
+	std::vector<Material*> materials = std::vector<Material*>(0);
 public:
+	void Init();
 	MV1_REF_POLYGONLIST* GetPolygon();
 	physx::PxConvexMesh* GetOrCreateConvexMesh();
 	physx::PxTriangleMesh* GetOrCreateTriangleMesh();
@@ -27,7 +30,6 @@ class AnimSource {
 	std::string name;
 	int handle = -1;
 	int index = -1;
-	bool is_loaded = false;
 public:
 	~AnimSource() { MV1DeleteModel(handle); }
 };
@@ -40,17 +42,12 @@ class Model {
 	std::string name;
 	int handle = -1;
 	ModelSource* original = nullptr;
+	std::vector<Material*> materials = std::vector<Material*>(0);
 
 	static inline int instance = 0;
-	//TO_DO! シェーダーのポインタはこいつに持たせる(特にトゥーンなどで複数ある場合)
-	Shader* shader_ps = nullptr;
-	Shader* default_shader_ps = nullptr;
-	Shader* shader_vs = nullptr;
-	Shader* default_shader_vs = nullptr;
+
 
 public:
-	void SetShader(Shader* pixel = nullptr, Shader* vertex = nullptr);
-	void SetDefaultShader(Shader* pixel = nullptr, Shader* vertex = nullptr);
 	MV1_REF_POLYGONLIST* GetPolygon() { return original->GetPolygon(); }
 	physx::PxConvexMesh* GetConvexMesh();
 	physx::PxTriangleMesh* GetTriangleMesh();
@@ -58,8 +55,6 @@ public:
 	Model(const Model& other) {
 		name = other.name;
 		handle = other.handle;
-		SetShader(other.shader_ps, other.shader_vs);
-		SetDefaultShader(other.default_shader_ps, other.default_shader_vs);
 		instance++;
 	}
 	~Model() {
@@ -76,7 +71,10 @@ class Animation {
 	std::string name;
 	int handle = -1;
 	int index = -1;
+	int attached_index = -1;
 	float total_time = 0;
+	float current_time = 0;
+	float blend_rate = 0.0f;
 	struct AnimationCallBack {
 		float ex_frame = 0;
 		std::function<void()> function = nullptr;
@@ -93,9 +91,9 @@ public:
 		total_time = other.total_time;
 		instance++;
 	}
-	void Update(float anim_timer);
+	void Update(float speed = 1.0f);
 	void InitCallBacks();
-	void SetCallBack(const std::function<void()>& call_back, float execute_frame, std::string_view method_name);
+	void SetCallBack(std::function<void()>& call_back, float execute_frame, std::string_view method_name);
 	void ResetCallBack(std::string_view method_name);
 	~Animation() { MV1DeleteModel(handle); instance--; }
 };
@@ -113,7 +111,7 @@ public:
 		int index = -1;
 		int handle = -1;
 	};
-	static inline int loading_count = 0;
+	static inline std::atomic<int> loading_count = 0;
 	struct PtrToCacheAndModelData {
 		std::vector<SafeUniquePtr<ModelSource>>* model_cache = nullptr;
 		std::vector<SafeUniquePtr<AnimSource>>* anim_cache = nullptr;
@@ -137,8 +135,6 @@ public:
 	static inline const int GetLoadingCount() { return loading_count; }
 	static void Init();
 	static void Exit();
-	static SafeUniquePtr<ShaderPs> default_shader_ps;
-	static SafeUniquePtr<ShaderVs> default_shader_vs;
 
 
 

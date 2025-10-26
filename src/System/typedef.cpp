@@ -62,7 +62,20 @@ std::string ShiftJISToUTF8(const std::string& shiftJisStr) {
 
 	return utf8Str;
 }
-SafeSharedPtr<void> CreateInstanceFromName(std::string_view name,TypeInfo& type)
+// UTF-8 から Shift_JIS への変換関数
+std::string UTF8ToShiftJIS(const std::string& utf8Str) {
+	// UTF-8 → UTF-16（ワイド文字）
+	int wideLen = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
+	std::wstring wideStr(wideLen, L'\0');
+	MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], wideLen);
+	// UTF-16 → Shift_JIS
+	int shiftJisLen = WideCharToMultiByte(932, 0, wideStr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	std::string shiftJisStr(shiftJisLen, '\0');
+	WideCharToMultiByte(932, 0, wideStr.c_str(), -1, &shiftJisStr[0], shiftJisLen, nullptr, nullptr);
+	return shiftJisStr;
+}
+
+SafeSharedPtr<void> CreateInstanceFromName(std::string_view name, TypeInfo& type)
 {
 	std::string class_name(name);
 	const TypeInfo& base_type = type;

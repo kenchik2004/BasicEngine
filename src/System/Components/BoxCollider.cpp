@@ -16,7 +16,7 @@ int BoxCollider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
-		*Material::Default, true);
+		*PhysicMaterial::Default, true);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 

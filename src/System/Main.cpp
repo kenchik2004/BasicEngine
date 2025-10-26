@@ -4,9 +4,14 @@
 #include "System/IniFileManager.h"
 #include "System/ImGui_.h"
 #include <System/Components/Camera.h>
+#include <System/Utils/Render.h>
 //#define DEBUG_WINDOW
 //#define USE_DEBUG_DRAW
 //#define FULL_SCREEN
+
+//#define SECONDARY
+int SCREEN_W=1920;
+int SCREEN_H=1080;
 
 std::string window_classname[1] =
 {
@@ -67,18 +72,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/test.ini");
 	ChangeWindowMode(!not_full_screen);
+	SCREEN_W = FileSystem::IniFileManager::GetInt("StartConfig", "screen_width", 1920, "data/test.ini");
+	SCREEN_H = FileSystem::IniFileManager::GetInt("StartConfig", "screen_height", 1080, "data/test.ini");
 
 #ifdef FULL_SCREEN
 	//ChangeWindowMode(false);
 #endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
+	SetZBufferBitDepth(32);
 	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "メインウィンドウ", "data/test.ini");
 	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
 	//SetWindowStyleMode(4);
 	//SetWindowSizeChangeEnableFlag(true, true);
 	SetHookWinProc(DxWndProc);
-	SetDoubleStartValidFlag(FALSE);
+	SetDoubleStartValidFlag(true);
 	SetAlwaysRunFlag(TRUE);
 	SetWaitVSyncFlag(false);
 	Set3DSoundOneMetre(1.0f);
@@ -113,6 +121,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Input::Init();
 	PhysicsManager::Init();
 	SceneManager::Init();
+	RenderInit();
 #if 0
 	ImGuiInit(false);
 #endif
@@ -143,8 +152,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetUseSetDrawScreenSettingReset(false);
 
 	//===============================================//
+#ifndef SECONDARY 
 
 	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "start_scene", "SceneSample", "data/test.ini");
+#else
+	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "secondary_start_scene", "SceneSample", "data/test.ini");
+
+#endif
 	auto start_scene = CreateInstanceFromName<Scene>(start_scene_name);
 	SceneManager::Load<Scene>(start_scene);
 
@@ -290,7 +304,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	}
 #ifdef PACKAGE_BUILD
 	std::quick_exit(0);
-	ImGuiExit();
+	//ImGuiExit();
 #endif
 	//終了
 	try {
@@ -302,6 +316,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	try {
 		PhysicsManager::Exit();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
+	try {
+		RenderExit();
 	}
 	catch (Exception& ex) {
 		ex.Show();

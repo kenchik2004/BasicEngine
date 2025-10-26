@@ -1,44 +1,44 @@
 //----------------------------------------------------------------------------
 //!	@file	ps_filter_fade.fx
-//!	@brief	ãƒ•ã‚§ãƒ¼ãƒ‰ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼(ãƒ¢ã‚¶ã‚¤ã‚¯ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã¤ã)
+//!	@brief	ƒtƒF[ƒhƒtƒBƒ‹ƒ^[(ƒ‚ƒUƒCƒNƒGƒtƒFƒNƒg‚Â‚«)
 //----------------------------------------------------------------------------
-#include "dxlib_ps.h"
+#include "dxlib_ps.h.fx"
 
-// DxLibã§ã¯å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¯b4ä»¥é™ãŒè‡ªç”±ã«åˆ©ç”¨ã§ãã‚‹
+// DxLib‚Å‚Í’è”ƒoƒbƒtƒ@‚Íb4ˆÈ~‚ª©—R‚É—˜—p‚Å‚«‚é
 cbuffer FilterFadeParameter : register(b4)
 {
-    float4	resolution_;	//!< è§£åƒåº¦ [å¹…, é«˜ã•, 1.0f/å¹…, 1.0f/é«˜ã•]
-    float	alpha_;			//!< ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ãƒ«ãƒ•ã‚¡å€¤(0.0f-1.0f)
-    uint	mosaicWidth_;	//!< ãƒ¢ã‚¶ã‚¤ã‚¯ã®ãƒ”ã‚¯ã‚»ãƒ«å¹…
+    float4	resolution_;	//!< ‰ğ‘œ“x [•, ‚‚³, 1.0f/•, 1.0f/‚‚³]
+    float	alpha_;			//!< ƒtƒF[ƒhƒAƒ‹ƒtƒ@’l(0.0f-1.0f)
+    uint	mosaicWidth_;	//!< ƒ‚ƒUƒCƒN‚ÌƒsƒNƒZƒ‹•
 };
 
 
 //----------------------------------------------------------------------------
-// ãƒ¡ã‚¤ãƒ³é–¢æ•°
+// ƒƒCƒ“ŠÖ”
 //----------------------------------------------------------------------------
 PS_OUTPUT main(PS_INPUT input)
 {
 	PS_OUTPUT	output;
 
-	// ãƒ”ã‚¯ã‚»ãƒ«ä½ç½®
+	// ƒsƒNƒZƒ‹ˆÊ’u
 	uint2 position = uint2(input.position_.xy);
 	
 	//-----------------------------------------------------------
-	// è»½é‡ãƒ¢ã‚¶ã‚¤ã‚¯åŠ å·¥
+	// Œy—Êƒ‚ƒUƒCƒN‰ÁH
 	//-----------------------------------------------------------
 	position -= position % mosaicWidth_;
-	position += mosaicWidth_ / 2;		// ãƒ–ãƒ­ãƒƒã‚¯ã‚’ã‚»ãƒ³ã‚¿ãƒªãƒ³ã‚°
+	position += mosaicWidth_ / 2;		// ƒuƒƒbƒN‚ğƒZƒ“ƒ^ƒŠƒ“ƒO
 
-	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚«ãƒ©ãƒ¼ã®èª­ã¿è¾¼ã¿
-	float2	rcpResolution = resolution_.zw;		// è§£åƒåº¦ã®é€†æ•°
+	// ƒeƒNƒXƒ`ƒƒƒJƒ‰[‚Ì“Ç‚İ‚İ
+	float2	rcpResolution = resolution_.zw;		// ‰ğ‘œ“x‚Ì‹t”
 	float2	uv = float2(position) * rcpResolution;
 	float4	color = DiffuseTexture.Sample(DiffuseSampler, uv);
 
-	// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã§æš—ãã™ã‚‹
+	// ƒtƒF[ƒhƒAƒEƒg‚ÅˆÃ‚­‚·‚é
 	color.rgb *= alpha_;
 
 	output.color0_ = color;
 
-	// å‡ºåŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿”ã™
+	// o—Íƒpƒ‰ƒ[ƒ^‚ğ•Ô‚·
 	return output;
 }

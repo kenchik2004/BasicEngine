@@ -1,54 +1,54 @@
-Ôªø//----------------------------------------------------------------------------
-//!	@file	vs_model.fx
-//!	@brief	DxLib MV1„É¢„Éá„É´È†ÇÁÇπ„Ç∑„Çß„Éº„ÉÄ„Éº
 //----------------------------------------------------------------------------
-#include "dxlib_vs_model.h"
+//!	@file	vs_model.fx
+//!	@brief	DxLib MV1ÉÇÉfÉãí∏ì_ÉVÉFÅ[É_Å[
+//----------------------------------------------------------------------------
+#include "dxlib_vs_model.h.fx"
 
-// È†ÇÁÇπ„Ç∑„Çß„Éº„ÉÄ„Éº„ÅÆÂá∫Âäõ
+// í∏ì_ÉVÉFÅ[É_Å[ÇÃèoóÕ
 struct VS_OUTPUT_MODEL
 {
-    float4 position_ : SV_Position; //!< Â∫ßÊ®ô       („Çπ„ÇØ„É™„Éº„É≥Á©∫Èñì)
-    float4 curr_position_ : CURR_POSITION; //!< ÁèæÂú®„ÅÆÂ∫ßÊ®ô („Çπ„ÇØ„É™„Éº„É≥Á©∫Èñì)
-    float3 world_position_ : WORLD_POSITION; //!< „ÉØ„Éº„É´„ÉâÂ∫ßÊ®ô
-    float3 normal_ : NORMAL0; //!< Ê≥ïÁ∑ö
-    float4 diffuse_ : COLOR0; //!< Diffuse„Ç´„É©„Éº
-    float2 uv0_ : TEXCOORD0; //!< „ÉÜ„ÇØ„Çπ„ÉÅ„É£Â∫ßÊ®ô
+    float4 position_ : SV_Position; //!< ç¿ïW       (ÉXÉNÉäÅ[ÉìãÛä‘)
+    float4 curr_position_ : CURR_POSITION; //!< åªç›ÇÃç¿ïW (ÉXÉNÉäÅ[ÉìãÛä‘)
+    float3 world_position_ : WORLD_POSITION; //!< ÉèÅ[ÉãÉhç¿ïW
+    float3 normal_ : NORMAL0; //!< ñ@ê¸
+    float4 diffuse_ : COLOR0; //!< DiffuseÉJÉâÅ[
+    float2 uv0_ : TEXCOORD0; //!< ÉeÉNÉXÉ`ÉÉç¿ïW
 
 };
 
 //----------------------------------------------------------------------------
-//	„É°„Ç§„É≥Èñ¢Êï∞
+//	ÉÅÉCÉìä÷êî
 //----------------------------------------------------------------------------
 VS_OUTPUT_MODEL main(VS_INPUT_MV1 input)
 {
     VS_OUTPUT_MODEL output;
 
 	//----------------------------------------------------------
-	// È†ÇÁÇπÂ∫ßÊ®ôÂ§âÊèõ
+	// í∏ì_ç¿ïWïœä∑
 	//----------------------------------------------------------
     float3 localPosition = input.position_;
     float3x4 matWorld = DxLib_WorldMatrix(input);
 
-    float3 worldPosition = mul(matWorld, float4(localPosition, 1.0)); // „Çπ„Ç≠„Éã„É≥„Ç∞Ë®àÁÆó„ÄÇ„ÉØ„Éº„É´„ÉâÁ©∫Èñì„Å∏Â§âÊèõ
-    float3 viewPosition = mul(DxLib_ViewMatrix(), float4(worldPosition, 1.0)); // „Éì„É•„ÉºÁ©∫Èñì„Å∏Â§âÊèõ
-    output.position_ = mul(DxLib_ProjectionMatrix(), float4(viewPosition, 1.0)); // „Çπ„ÇØ„É™„Éº„É≥Á©∫Èñì„Å∏Â§âÊèõ
+    float3 worldPosition = mul(matWorld, float4(localPosition, 1.0)); // ÉXÉLÉjÉìÉOåvéZÅBÉèÅ[ÉãÉhãÛä‘Ç÷ïœä∑
+    float3 viewPosition = mul(DxLib_ViewMatrix(), float4(worldPosition, 1.0)); // ÉrÉÖÅ[ãÛä‘Ç÷ïœä∑
+    output.position_ = mul(DxLib_ProjectionMatrix(), float4(viewPosition, 1.0)); // ÉXÉNÉäÅ[ÉìãÛä‘Ç÷ïœä∑
 
     output.world_position_ = worldPosition;
 
 	//------------------------------
-	// ÁèæÂú®„ÅÆÂ∫ßÊ®ô„ÇíÂà•„Éë„É©„É°„Éº„Çø„Éº„ÅßÂá∫Âäõ
-	// (SV_Position„ÅØ„Éî„ÇØ„Çª„É´„Ç∑„Çß„Éº„ÉÄ„Éº„Åß„ÅØÂÄ§„ÅÆÊÑèÂë≥„ÅåÂ§âÂåñ„Åô„Çã„Åü„ÇÅ)
+	// åªç›ÇÃç¿ïWÇï ÉpÉâÉÅÅ[É^Å[Ç≈èoóÕ
+	// (SV_PositionÇÕÉsÉNÉZÉãÉVÉFÅ[É_Å[Ç≈ÇÕílÇÃà”ñ°Ç™ïœâªÇ∑ÇÈÇΩÇﬂ)
     output.curr_position_ = output.position_;
 
 	//----------------------------------------------------------
-	// Âá∫Âäõ„Éë„É©„É°„Éº„Çø
+	// èoóÕÉpÉâÉÅÅ[É^
 	//----------------------------------------------------------
-    output.normal_ = mul(matWorld, float4(input.normal_, 0.0)); // Ê≥ïÁ∑ö„Çí„ÉØ„Éº„É´„ÉâÁ©∫Èñì„Å∏Â§âÊèõ
-    output.diffuse_ = input.diffuse_; // Diffuse„Ç´„É©„Éº
-    output.uv0_ = input.uv0_.xy; // „ÉÜ„ÇØ„Çπ„ÉÅ„É£Â∫ßÊ®ô
+    output.normal_ = mul(matWorld, float4(input.normal_, 0.0)); // ñ@ê¸ÇÉèÅ[ÉãÉhãÛä‘Ç÷ïœä∑
+    output.diffuse_ = input.diffuse_; // DiffuseÉJÉâÅ[
+    output.uv0_ = input.uv0_.xy; // ÉeÉNÉXÉ`ÉÉç¿ïW
   	
 	//----------------------------------------------------------
-	// Âá∫Âäõ„Éë„É©„É°„Éº„Çø„ÇíËøî„Åô
+	// èoóÕÉpÉâÉÅÅ[É^Çï‘Ç∑
 	//----------------------------------------------------------
     return output;
 }

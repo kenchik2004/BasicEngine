@@ -53,7 +53,7 @@ class HitCallBack : public physx::PxSimulationEventCallback {
 };
 
 
-struct Material {
+struct PhysicMaterial {
 	static physx::PxMaterial* Default;
 	static physx::PxMaterial* Metal;
 	static physx::PxMaterial* Rubber;

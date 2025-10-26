@@ -45,7 +45,7 @@ class AudioManager
 	AudioManager(const AudioManager&) = delete;
 	~AudioManager() = default;
 public:
-	static inline int loading_count = 0;
+	static inline std::atomic<int> loading_count = 0;
 	struct IndexAndHandle {
 		int index = -1;
 		int handle = -1;

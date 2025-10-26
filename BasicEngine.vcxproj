@@ -25,36 +25,45 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Secondary|Win32">
+      <Configuration>Secondary</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Secondary|x64">
+      <Configuration>Secondary</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="SceneShader.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
-    <ClCompile Include="src\Game\Managers\InputManager.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardBase.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardDoman.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardFist.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardShinsoku.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardUnpu.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceBase.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD10.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD12.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD20.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD4.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD6.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD8.cpp" />
-    <ClCompile Include="src\Game\Scenes\RLyeh\DiceScene.cpp" />
-    <ClCompile Include="src\Game\Scenes\RLyeh\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManagerBase.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManager_Client.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardBase.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardDoman.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardFist.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardShinsoku.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardUnpu.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceBase.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD10.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD12.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD20.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD4.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD6.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD8.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\SampleAnimationObject.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\SampleMovingCharacter.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\DiceScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleAnotherScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleAnimationScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleMaterialScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleMovingScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
-    <ClCompile Include="src\Game\Utilitys\RLyeh\CharacterStatus.cpp" />
     <ClCompile Include="src\System\AudioManager.cpp" />
     <ClCompile Include="src\System\Color.cpp" />
     <ClCompile Include="src\System\Component.cpp" />
@@ -67,6 +76,7 @@
     <ClCompile Include="src\System\Components\CapsuleCollider.cpp" />
     <ClCompile Include="src\System\Components\Collider.cpp" />
     <ClCompile Include="src\System\Components\ConvexMeshCollider.cpp" />
+    <ClCompile Include="src\System\Components\ImageRenderer.cpp" />
     <ClCompile Include="src\System\Components\MeshCollider.cpp" />
     <ClCompile Include="src\System\Components\ModelRenderer.cpp" />
     <ClCompile Include="src\System\Components\RigidBody.cpp" />
@@ -76,14 +86,15 @@
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp" />
     <ClCompile Include="src\System\Exception.cpp" />
     <ClCompile Include="src\System\FileWatcher.cpp" />
-    <ClCompile Include="src\System\ImGui_.cpp" />
     <ClCompile Include="src\System\IniFileManager.cpp" />
     <ClCompile Include="src\System\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
+    <ClCompile Include="src\System\MaterialManager.cpp" />
     <ClCompile Include="src\System\ModelManager.cpp" />
     <ClCompile Include="src\System\Object.cpp" />
     <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
     <ClCompile Include="src\System\Objects\CameraObject.cpp" />
+    <ClCompile Include="src\System\Objects\ShadowMapObject.cpp" />
     <ClCompile Include="src\System\Objects\TextObject.cpp" />
     <ClCompile Include="src\System\PhysicsManager.cpp" />
     <ClCompile Include="src\System\Random.cpp" />
@@ -93,53 +104,39 @@
     <ClCompile Include="src\System\TextureManager.cpp" />
     <ClCompile Include="src\System\Time.cpp" />
     <ClCompile Include="src\System\typedef.cpp" />
+    <ClCompile Include="src\System\Utils\Material.cpp" />
+    <ClCompile Include="src\System\Utils\Render.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="data\shader\dxlib_ps.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="data\shader\dxlib_vs_model.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="imgui\backends\imgui_impl_dx11.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_dx9.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="SceneShader.h" />
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
-    <ClInclude Include="src\Game\Managers\InputManager.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardBase.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardDoman.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardFist.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardShinsoku.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardUnpu.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceBase.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD10.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD12.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD20.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD4.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD6.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD8.h" />
-    <ClInclude Include="src\Game\Scenes\RLyeh\DiceScene.h" />
-    <ClInclude Include="src\Game\Scenes\RLyeh\SceneTitle.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardBase.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardDoman.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardFist.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardShinsoku.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardUnpu.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceBase.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD10.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD12.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD20.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD4.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD6.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD8.h" />
+    <ClInclude Include="src\Game\Objects\Sample\SampleAnimationObject.h" />
+    <ClInclude Include="src\Game\Objects\Sample\SampleMovingCharacter.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\DiceScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleAnotherScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleAnimationScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleMaterialScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleMovingScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
     <ClInclude Include="src\Game\Utilitys\DicePair.h" />
-    <ClInclude Include="src\Game\Utilitys\RLyeh\CharacterStatus.h" />
     <ClInclude Include="src\precompile.h" />
     <ClInclude Include="src\System\AudioManager.h" />
     <ClInclude Include="src\System\Color.h" />
@@ -153,6 +150,7 @@
     <ClInclude Include="src\System\Components\CapsuleCollider.h" />
     <ClInclude Include="src\System\Components\Collider.h" />
     <ClInclude Include="src\System\Components\ConvexMeshCollider.h" />
+    <ClInclude Include="src\System\Components\ImageRenderer.h" />
     <ClInclude Include="src\System\Components\MeshCollider.h" />
     <ClInclude Include="src\System\Components\ModelRenderer.h" />
     <ClInclude Include="src\System\Components\RigidBody.h" />
@@ -162,14 +160,15 @@
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h" />
     <ClInclude Include="src\System\Exception.h" />
     <ClInclude Include="src\System\FileWatcher.h" />
-    <ClInclude Include="src\System\ImGui_.h" />
     <ClInclude Include="src\System\IniFileManager.h" />
     <ClInclude Include="src\System\Input.h" />
     <ClInclude Include="src\System\Main.h" />
+    <ClInclude Include="src\System\MaterialManager.h" />
     <ClInclude Include="src\System\ModelManager.h" />
     <ClInclude Include="src\System\Object.h" />
     <ClInclude Include="src\System\Objects\ButtonObject.h" />
     <ClInclude Include="src\System\Objects\CameraObject.h" />
+    <ClInclude Include="src\System\Objects\ShadowMapObject.h" />
     <ClInclude Include="src\System\Objects\TextObject.h" />
     <ClInclude Include="src\System\PhysicsManager.h" />
     <ClInclude Include="src\System\Random.h" />
@@ -179,40 +178,8 @@
     <ClInclude Include="src\System\TextureManager.h" />
     <ClInclude Include="src\System\Time.h" />
     <ClInclude Include="src\System\typedef.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="data\shader\ps_shadow.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="data\shader\SimpleShader.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="data\shader\vs_model.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="data\shader\vs_shadow.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
-    </FxCompile>
+    <ClInclude Include="src\System\Utils\Material.h" />
+    <ClInclude Include="src\System\Utils\Render.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -262,6 +229,12 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Secondary|Win32'">
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -298,14 +271,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+    <PublicIncludeDirectories>src;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <PublicModuleDirectories>src;$(PublicModuleDirectories)</PublicModuleDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+    <PublicIncludeDirectories>src;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <PublicModuleDirectories>src;$(PublicModuleDirectories)</PublicModuleDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Package|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
+    <PublicIncludeDirectories>src;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <PublicModuleDirectories>src;$(PublicModuleDirectories)</PublicModuleDirectories>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -316,6 +301,7 @@
       <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -334,6 +320,7 @@
       <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include;imgui</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -354,6 +341,7 @@
       <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include;imgui</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -376,6 +364,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -399,6 +388,7 @@
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -424,16 +414,42 @@
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>dxlib;src;PhysX/PhysX-5.5.1/include</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>DEFAULT_DEBUG;%(PreprocessorDefinitions);SECONDARY</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <FxCompile>
+      <DisableOptimizations>true</DisableOptimizations>
+    </FxCompile>
+    <FxCompile>
+      <EnableDebuggingInformation>true</EnableDebuggingInformation>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Secondary|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

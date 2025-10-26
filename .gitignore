@@ -1,3 +1,2 @@
-.vs/
-x64/
-doxygen
+.vs
+BasicEngine/x64

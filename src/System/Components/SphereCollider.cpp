@@ -15,7 +15,7 @@ int SphereCollider::Init()
 
 	shape = PhysicsManager::GetPhysicsInstance()->createShape(
 		PxSphereGeometry(radius),
-		*Material::Default, true);
+		*PhysicMaterial::Default, true);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
 	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
 

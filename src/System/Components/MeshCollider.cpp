@@ -79,7 +79,7 @@ void MeshCollider::AttachToModel()
 		auto triangle_mesh = model->model->GetTriangleMesh();
 		ref_poly_ = model->model->GetPolygon();
 		mesh.triangleMesh = triangle_mesh;
-		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *Material::Default,true);
+		shape = PhysicsManager::GetPhysicsInstance()->createShape(mesh, *PhysicMaterial::Default,true);
 #ifndef PACKAGE_BUILD
 		if (!shape)
 			throw(Exception("トライアングルメッシュ作成に失敗しました。メッシュデータが無効です。モデルが有効なものか再確認してください", DEFAULT_EXCEPTION_PARAM));

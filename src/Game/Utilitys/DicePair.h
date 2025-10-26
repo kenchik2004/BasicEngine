@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace RLyeh {
+namespace Sample {
 
 	USING_PTR(DiceBase);
 	class DicePair

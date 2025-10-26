@@ -1,47 +1,47 @@
 //----------------------------------------------------------------------------
 //!	@file	vs_3d.fx
-//!	@brief	3Dãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
+//!	@brief	3DƒvƒŠƒ~ƒeƒBƒu’¸“_ƒVƒF[ƒ_[
 //----------------------------------------------------------------------------
-#include "dxlib_vs.h"
+#include "dxlib_vs.h.fx"
 
-// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å‡ºåŠ›
+// ’¸“_ƒVƒF[ƒ_[‚Ìo—Í
 struct VS_OUTPUT_3D
 {
-	float4	position_      : SV_Position;		//!< åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-	float3	worldPosition_ : WORLD_POSITION;	//!< ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
-	float3	normal_        : NORMAL0;			//!< æ³•ç·š
-	float4	diffuse_       : COLOR0;			//!< Diffuseã‚«ãƒ©ãƒ¼
-	float2	uv0_           : TEXCOORD0;			//!< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	float4	position_      : SV_Position;		//!< À•W (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+	float3	worldPosition_ : WORLD_POSITION;	//!< ƒ[ƒ‹ƒhÀ•W
+	float3	normal_        : NORMAL0;			//!< –@ü
+	float4	diffuse_       : COLOR0;			//!< DiffuseƒJƒ‰[
+	float2	uv0_           : TEXCOORD0;			//!< ƒeƒNƒXƒ`ƒƒÀ•W
 };
 
 //----------------------------------------------------------------------------
-//	ãƒ¡ã‚¤ãƒ³é–¢æ•°
+//	ƒƒCƒ“ŠÖ”
 //----------------------------------------------------------------------------
 VS_OUTPUT_3D main(VS_INPUT_3D input)
 {
 	VS_OUTPUT_3D output;
 
 	//----------------------------------------------------------
-	// é ‚ç‚¹åº§æ¨™å¤‰æ›
+	// ’¸“_À•W•ÏŠ·
 	//----------------------------------------------------------
 	float3		localPosition = input.position_;
 	float3x4	matWorld = DxLib_Base.WorldMatrix;
 
-	float3	worldPosition = mul(matWorld              , float4(localPosition, 1.0));	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã¸å¤‰æ›
-	float3	viewPosition  = mul(DxLib_Base.ViewMatrix , float4(worldPosition, 1.0));	// ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã¸å¤‰æ›
-	output.position_ = mul(DxLib_Base.ProjectionMatrix, float4(viewPosition , 1.0));	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“ã¸å¤‰æ›
+	float3	worldPosition = mul(matWorld              , float4(localPosition, 1.0));	// ƒ[ƒ‹ƒh‹óŠÔ‚Ö•ÏŠ·
+	float3	viewPosition  = mul(DxLib_Base.ViewMatrix , float4(worldPosition, 1.0));	// ƒrƒ…[‹óŠÔ‚Ö•ÏŠ·
+	output.position_ = mul(DxLib_Base.ProjectionMatrix, float4(viewPosition , 1.0));	// ƒXƒNƒŠ[ƒ“‹óŠÔ‚Ö•ÏŠ·
 
-	output.worldPosition_ = worldPosition;	// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
-
-	//----------------------------------------------------------
-	// å‡ºåŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
-	//----------------------------------------------------------
-	output.normal_  = mul(matWorld, float4(input.normal_, 0.0));	// æ³•ç·šã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã¸å¤‰æ›
-	output.diffuse_ = input.diffuse_;								// Diffuseã‚«ãƒ©ãƒ¼
-	output.uv0_     = input.uv0_;									// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	output.worldPosition_ = worldPosition;	// ƒ[ƒ‹ƒhÀ•W
 
 	//----------------------------------------------------------
-	// å‡ºåŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿”ã™
+	// o—Íƒpƒ‰ƒ[ƒ^
+	//----------------------------------------------------------
+	output.normal_  = mul(matWorld, float4(input.normal_, 0.0));	// –@ü‚ğƒ[ƒ‹ƒh‹óŠÔ‚Ö•ÏŠ·
+	output.diffuse_ = input.diffuse_;								// DiffuseƒJƒ‰[
+	output.uv0_     = input.uv0_;									// ƒeƒNƒXƒ`ƒƒÀ•W
+
+	//----------------------------------------------------------
+	// o—Íƒpƒ‰ƒ[ƒ^‚ğ•Ô‚·
 	//----------------------------------------------------------
 	return output;
 }

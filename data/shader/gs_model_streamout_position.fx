@@ -1,20 +1,20 @@
 //----------------------------------------------------------------------------
 //!	@file	gs_model_streamout_position.fx
-//!	@brief	é ‚ç‚¹åº§æ¨™ StreamOut ã‚¸ã‚ªãƒ¡ãƒˆãƒªé ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
+//!	@brief	’¸“_À•W StreamOut ƒWƒIƒƒgƒŠ’¸“_ƒVƒF[ƒ_[
 //----------------------------------------------------------------------------
 
 //---------------------------------------------------------------
-// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å‡ºåŠ›(ã‚¸ã‚ªãƒ¡ãƒˆãƒªã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å…¥åŠ›)
+// ’¸“_ƒVƒF[ƒ_[o—Í(ƒWƒIƒƒgƒŠƒVƒF[ƒ_[“ü—Í)
 //---------------------------------------------------------------
 struct VS_OUTPUT_MODEL
 {
-	float4	position_       : SV_Position;		//!< åº§æ¨™       (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-    float4  curr_position_  : CURR_POSITION;    //!< ç¾åœ¨ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-    float4  prev_position_  : PREV_POSITION;    //!< 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-	float3	world_position_ : WORLD_POSITION;	//!< ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
-	float3	normal_         : NORMAL0;			//!< æ³•ç·š
-	float4	diffuse_        : COLOR0;			//!< Diffuseã‚«ãƒ©ãƒ¼
-	float2	uv0_            : TEXCOORD0;		//!< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	float4	position_       : SV_Position;		//!< À•W       (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+    float4  curr_position_  : CURR_POSITION;    //!< Œ»İ‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+    float4  prev_position_  : PREV_POSITION;    //!< 1ƒtƒŒ[ƒ€‘O‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+	float3	world_position_ : WORLD_POSITION;	//!< ƒ[ƒ‹ƒhÀ•W
+	float3	normal_         : NORMAL0;			//!< –@ü
+	float4	diffuse_        : COLOR0;			//!< DiffuseƒJƒ‰[
+	float2	uv0_            : TEXCOORD0;		//!< ƒeƒNƒXƒ`ƒƒÀ•W
 };
 
 struct GS_STREAMOUT
@@ -23,7 +23,7 @@ struct GS_STREAMOUT
 };
 
 //----------------------------------------------------------------------------
-//	ãƒ¡ã‚¤ãƒ³é–¢æ•°
+//	ƒƒCƒ“ŠÖ”
 //----------------------------------------------------------------------------
 [maxvertexcount(3)]
 void main(triangle VS_OUTPUT_MODEL input[3], inout TriangleStream<GS_STREAMOUT> outputStream)

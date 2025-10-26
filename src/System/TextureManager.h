@@ -3,23 +3,47 @@
 //! @brief  テクスチャ管理
 //---------------------------------------------------------------------------
 #pragma once
+#include "wrl.h"
+#include <mutex>
+//DxLibのデバイス取得はconst void*なので扱いようにメンバー変数用に先方宣言
+struct ID3D11Device;
+struct ID3D11DeviceContext;
 
 //=========================================================
 //! テクスチャの元データ
 //=========================================================
 class TextureSource {
 	friend class TextureManager;
+	friend class Texture;
 
 	std::string path;		//!< テクスチャデータの存在するパス
 	std::string name;		//!< テクスチャのデータ名
 	int handle = -1;		//!< テクスチャハンドル
-	bool is_loaded = false;	//!< ロード完了しているかどうか
+	bool is_initialized = false;	//!< 初期化完了しているかどうか
+
+
+	u32 width = 0;			//!< テクスチャの幅
+	u32 height = 0;			//!< テクスチャの高さ
+	Microsoft::WRL::ComPtr<ID3D11Resource> texture = nullptr;			//!< DirectX11のテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv = nullptr;	//!< DirectX11のシェーダリソースビュー
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = nullptr;	//!< DirectX11のレンダーターゲットビュー
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> dsv = nullptr;	//!< DirectX11のデプスステンシルビュー
 public:
+	void Init();
+
+
 	//! デストラクタ
 	//! 削除と同時にハンドルを開放
 	~TextureSource() {
-		if (handle >= 0)
-			DeleteSharingGraph(handle);
+		if (handle >= 0 && !is_initialized)
+			// もし非同期ロード中に削除された場合、LoadGraphの戻り値を待たずにDeleteGraphを呼ぶと落ちるので、ロード完了後に自動で削除するフラグを立てる
+			SetASyncLoadFinishDeleteFlag(handle);
+
+		//D3Dリソースの解放
+		texture.Reset();
+		rtv.Reset();
+		srv.Reset();
+		dsv.Reset();
 	}
 };
 
@@ -32,6 +56,16 @@ class Texture {
 
 	std::string name;		//!< テクスチャ名
 	int handle = -1;		//!< テクスチャハンドル
+	bool is_initialized = false;
+	u32 width = 0;			//!< テクスチャの幅
+	u32 height = 0;			//!< テクスチャの高さ
+	Microsoft::WRL::ComPtr<ID3D11Resource> texture = nullptr;		//!< DirectX11のテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv = nullptr;	//!< DirectX11のシェーダリソースビュー
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = nullptr;	//!< DirectX11のレンダーターゲットビュー
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> dsv = nullptr;	//!< DirectX11のデプスステンシルビュー
+
+private:
+	bool Init(ID3D11Resource* d3d_resource);
 public:
 	//! デフォルトコンストラクタ
 	Texture() = default;
@@ -39,14 +73,52 @@ public:
 	//! @brief コピーは禁止
 	Texture(const Texture& other) = delete;
 
+	//! @brief テクスチャソースからテクスチャを作成(テクスチャマネージャー専用)
+	Texture(const TextureSource& source);
+
+	//! @brief D3Dリソースからテクスチャを作成
+	Texture(ID3D11Resource* d3d_resource);
+
+	//! @brief DXLibのテクスチャハンドルからテクスチャを作成
+	Texture(int dxlib_handle);
+
+	//! @brief 指定した幅・高さ・フォーマットでテクスチャを作成
+	Texture(u32 width_, u32 height_, DXGI_FORMAT format);
+
+
+	//ゲッターセッター
+
+	u32 Width() const { return width; }		//!< テクスチャの幅を取得
+	u32 Height() const { return height; }	//!< テクスチャの高さを取得
+
+	// D3Dリソースを取得
+	inline ID3D11Resource* D3dResource() const { return texture.Get(); }
+
+	// ShaderResourceViewを取得
+	inline ID3D11ShaderResourceView* Srv() const { return srv.Get(); }
+
+	// RenderTargetViewを取得
+	inline ID3D11RenderTargetView* Rtv() const { return rtv.Get(); }
+
+	// DepthStencilViewを取得
+	inline ID3D11DepthStencilView* Dsv() const { return dsv.Get(); }
+
+	operator int();
+
 	//! @brief 削除と同時にハンドルも開放
-	~Texture() {
-		if (handle >= 0)
+	virtual ~Texture() {
+		if (handle >= 0) {
 			DeleteGraph(handle);			//! 有効かつ元テクスチャがあるなら、テクスチャハンドルを削除
+			srv.Reset();
+			return;
+
+		}
+		texture.Reset();						//! D3Dリソースの解放
+		rtv.Reset();
+		dsv.Reset();
 	}
 
-	//! @brief DxLibのドローなどに使う際のハンドルゲッター関数
-	inline int GetHandle() { return handle; }
+
 };
 
 //---------------------------------------------------------------------
@@ -55,13 +127,14 @@ public:
 //---------------------------------------------------------------------
 class TextureManager
 {
+	friend class MaterialManager;
 	TextureManager() = delete;							//!< 作成禁止
 	TextureManager(const TextureManager&) = delete;		//!< コピー禁止
 	~TextureManager() = default;						//!< もちろん削除もできない
 
 
 
-	static inline int loading_count = 0;//!< 非同期ロード中テクスチャの数
+	static inline std::atomic<int> loading_count = 0;//!< 非同期ロード中テクスチャの数
 
 
 	//! @brief	テクスチャデータのvectorのインデックスとテクスチャハンドルの構造体
@@ -89,6 +162,8 @@ class TextureManager
 
 
 public:
+	static inline ID3D11Device* Device() { return s_device; }
+	static inline ID3D11DeviceContext* Context() { return s_context; }
 
 	//! @brief  ロード処理
 	//! @param  std::string_view テクスチャのパス
@@ -96,13 +171,22 @@ public:
 	//! @details	与えられたパスを基にテクスチャを非同期でロード・キャッシュする
 	static void Load(std::string_view path, std::string_view name);
 
+
+
+	//! @brief 作成したテクスチャをキャッシュに登録する処理
+	//! @param Texture* 登録するテクスチャ
+	//!	@param std::string_view 登録するテクスチャの名前
+	//! @details	与えられたテクスチャをキャッシュに登録する(主にモデルのテクスチャをキャッシュする際に使用)
+	static void CacheLoaded(Texture* texture, std::string_view name);
+
 	//! @brief  新規テクスチャ作成処理
 	//! @param  std::string_view テクスチャにつける名前
 	//! @param  int テクスチャの幅
 	//! @param  int テクスチャの高さ
+	//! @param  DXGI_FORMAT テクスチャのフォーマット
 	//! @return		SafeSharedPtr<Texture> 作成したテクスチャのクローン
-	//! @details	与えられた縦横サイズのテクスチャ新規で作成・キャッシュする
-	static SafeSharedPtr<Texture> Create(std::string_view name, int width, int height);
+	//! @details	与えられた縦横サイズとフォーマットのテクスチャ新規で作成する
+	static SafeSharedPtr<Texture> Create(std::string_view name, int width, int height, DXGI_FORMAT format);
 
 
 	//! @brief		キャッシュされたテクスチャを名前から検索->クローンを作って取得する処理
@@ -127,5 +211,10 @@ public:
 
 	static void Init();						//初期化
 	static void Exit();						//解放等の終了処理
+
+private:
+	static ID3D11Device* s_device;
+	static ID3D11DeviceContext* s_context;
+	static std::mutex cache_mutex; // 追加: キャッシュ・マップ保護用
 };
 

@@ -20,6 +20,7 @@ public:
 	void LateUpdate() override;
 	void PostPhysics() override;
 	void Exit() override;
+	void PreDraw() override;
 	void Draw() override;
 	void DebugDraw() override;
 
@@ -28,12 +29,15 @@ public:
 	}
 
 	const int GetModelHandle() { return model ? model->handle : -1; }
-	void OverrideTexture(SafeSharedPtr<Texture>texture, int material_index);
 	bool IsLoaded() { return model ? model->handle >= 0 : false; }
 
 	std::string model_name = "";
 	std::string new_name = "";
 
+
+	bool cast_shadow = true;
+	void SetCastShadow(bool enable) { cast_shadow = enable; }
+	bool CastShadow() { return cast_shadow; }
 
 	//!<IDEA モデルは、data/modelフォルダに格納しているものすべてを、マネージャ初期化時にロードし、キャッシュしておく
 	//! ↑この場合、モデルの名前付けはどうするか...
@@ -41,6 +45,8 @@ public:
 
 	//モデルコンポーネントが管理するべきもの
 	SafeSharedPtr<Model> model;
+	void SetMaterial(Material* material, size_t index);
+	Material* GetMaterial(size_t index);
 	//Vector3 pos = { 0,0,0 };
 	//Quaternion rot = { 0,0,0,1 };
 	//Vector3 scale = { 1,1,1 };

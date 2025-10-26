@@ -22,16 +22,16 @@ PxPvd* PhysicsManager::m_pPvd = nullptr;
 std::vector<physx::PxScene*> PhysicsManager::scenes(0);
 
 // マテリアルのインスタンス
-physx::PxMaterial* Material::Default = nullptr;
-physx::PxMaterial* Material::Metal = nullptr;
-physx::PxMaterial* Material::Rubber = nullptr;
-physx::PxMaterial* Material::Wood = nullptr;
-physx::PxMaterial* Material::Plastic = nullptr;
-physx::PxMaterial* Material::Glass = nullptr;
-physx::PxMaterial* Material::Concrete = nullptr;
-physx::PxMaterial* Material::Asphalt = nullptr;
-physx::PxMaterial* Material::Wool = nullptr;
-physx::PxMaterial* Material::Paper = nullptr;
+physx::PxMaterial* PhysicMaterial::Default = nullptr;
+physx::PxMaterial* PhysicMaterial::Metal = nullptr;
+physx::PxMaterial* PhysicMaterial::Rubber = nullptr;
+physx::PxMaterial* PhysicMaterial::Wood = nullptr;
+physx::PxMaterial* PhysicMaterial::Plastic = nullptr;
+physx::PxMaterial* PhysicMaterial::Glass = nullptr;
+physx::PxMaterial* PhysicMaterial::Concrete = nullptr;
+physx::PxMaterial* PhysicMaterial::Asphalt = nullptr;
+physx::PxMaterial* PhysicMaterial::Wool = nullptr;
+physx::PxMaterial* PhysicMaterial::Paper = nullptr;
 
 // コールバッククラスのインスタンス
 HitCallBack hit_callback;
@@ -108,16 +108,16 @@ void PhysicsManager::Init()
 	physx::PxSceneDesc scene_desc(m_pPhysics->getTolerancesScale());
 	scene_desc.simulationEventCallback = &hit_callback;
 
-	Material::Default = m_pPhysics->createMaterial(0.6f, 0.6f, 0.0f);
-	Material::Metal = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
-	Material::Rubber = m_pPhysics->createMaterial(1.1f, 0.8f, 0.7f);
-	Material::Wood = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
-	Material::Plastic = m_pPhysics->createMaterial(0.4f, 0.2f, 0.3f);
-	Material::Glass = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
-	Material::Concrete = m_pPhysics->createMaterial(1.0f, 0.8f, 0.2f);
-	Material::Asphalt = m_pPhysics->createMaterial(0.8f, 0.6f, 0.3f);
-	Material::Wool = m_pPhysics->createMaterial(0.7f, 0.5f, 0.05f);
-	Material::Paper = m_pPhysics->createMaterial(0.5f, 0.4f, 0.1f);
+	PhysicMaterial::Default = m_pPhysics->createMaterial(0.6f, 0.6f, 0.0f);
+	PhysicMaterial::Metal = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
+	PhysicMaterial::Rubber = m_pPhysics->createMaterial(1.1f, 0.8f, 0.7f);
+	PhysicMaterial::Wood = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
+	PhysicMaterial::Plastic = m_pPhysics->createMaterial(0.4f, 0.2f, 0.3f);
+	PhysicMaterial::Glass = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
+	PhysicMaterial::Concrete = m_pPhysics->createMaterial(1.0f, 0.8f, 0.2f);
+	PhysicMaterial::Asphalt = m_pPhysics->createMaterial(0.8f, 0.6f, 0.3f);
+	PhysicMaterial::Wool = m_pPhysics->createMaterial(0.7f, 0.5f, 0.05f);
+	PhysicMaterial::Paper = m_pPhysics->createMaterial(0.5f, 0.4f, 0.1f);
 
 }
 
@@ -129,16 +129,16 @@ void PhysicsManager::Exit()
 		ite->release();
 	}
 
-	Material::Default->release();
-	Material::Metal->release();
-	Material::Rubber->release();
-	Material::Wood->release();
-	Material::Plastic->release();
-	Material::Glass->release();
-	Material::Concrete->release();
-	Material::Asphalt->release();
-	Material::Wool->release();
-	Material::Paper->release();
+	PhysicMaterial::Default->release();
+	PhysicMaterial::Metal->release();
+	PhysicMaterial::Rubber->release();
+	PhysicMaterial::Wood->release();
+	PhysicMaterial::Plastic->release();
+	PhysicMaterial::Glass->release();
+	PhysicMaterial::Concrete->release();
+	PhysicMaterial::Asphalt->release();
+	PhysicMaterial::Wool->release();
+	PhysicMaterial::Paper->release();
 	m_pDispatcher->release();
 	m_pPhysics->release();
 	if (m_pPvd) {

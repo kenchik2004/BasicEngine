@@ -90,41 +90,46 @@
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\Camera.cpp" />
-    <ClCompile Include="src\Game\Managers\InputManager.cpp" />
     <ClCompile Include="src\System\TextureManager.cpp" />
     <ClCompile Include="src\System\IniFileManager.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\System\ImGui_.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="src\System\Random.cpp" />
     <ClCompile Include="src\System\Objects\CameraObject.cpp" />
     <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
     <ClCompile Include="src\System\Components\Text.cpp" />
     <ClCompile Include="src\System\Components\Button.cpp" />
     <ClCompile Include="src\System\Objects\TextObject.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardBase.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardDoman.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardFist.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardShinsoku.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardUnpu.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceBase.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD4.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD6.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD8.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD10.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD12.cpp" />
-    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD20.cpp" />
-    <ClCompile Include="src\Game\Scenes\RLyeh\DiceScene.cpp" />
-    <ClCompile Include="src\Game\Scenes\RLyeh\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardBase.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardDoman.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardFist.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardShinsoku.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Cards\CardUnpu.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceBase.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD4.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD6.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD8.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD10.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD12.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD20.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\DiceScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleAnotherScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
-    <ClCompile Include="src\Game\Utilitys\RLyeh\CharacterStatus.cpp" />
-    <ClCompile Include="SceneShader.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManagerBase.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManager_Client.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
+    <ClCompile Include="src\System\Utils\Render.cpp" />
+    <ClCompile Include="src\System\Objects\ShadowMapObject.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleAnimationScene.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\SampleAnimationObject.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.cpp" />
+    <ClCompile Include="src\System\Utils\Material.cpp" />
+    <ClCompile Include="src\System\MaterialManager.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\SampleMovingCharacter.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleMovingScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleMaterialScene.cpp" />
+    <ClCompile Include="src\System\Components\ImageRenderer.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -212,55 +217,53 @@
       <Filter>System\Compnents</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\AudioListener.h" />
-    <ClInclude Include="data\shader\dxlib_ps.h">
-      <Filter>shader</Filter>
-    </ClInclude>
     <ClInclude Include="src\System\Shader.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\FileWatcher.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="data\shader\dxlib_vs_model.h">
-      <Filter>shader</Filter>
-    </ClInclude>
     <ClInclude Include="src\System\Components\Camera.h" />
-    <ClInclude Include="src\Game\Managers\InputManager.h" />
     <ClInclude Include="src\System\TextureManager.h" />
     <ClInclude Include="src\System\IniFileManager.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="src\System\ImGui_.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_dx11.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_dx9.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="src\System\Random.h" />
     <ClInclude Include="src\System\Objects\CameraObject.h" />
     <ClInclude Include="src\System\Objects\ButtonObject.h" />
     <ClInclude Include="src\System\Components\Text.h" />
     <ClInclude Include="src\System\Components\Button.h" />
     <ClInclude Include="src\System\Objects\TextObject.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardBase.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardDoman.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardFist.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardShinsoku.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardUnpu.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceBase.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD4.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD6.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD8.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD10.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD12.h" />
-    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD20.h" />
-    <ClInclude Include="src\Game\Scenes\RLyeh\DiceScene.h" />
-    <ClInclude Include="src\Game\Scenes\RLyeh\SceneTitle.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardBase.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardDoman.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardFist.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardShinsoku.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Cards\CardUnpu.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceBase.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD4.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD6.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD8.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD10.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD12.h" />
+    <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD20.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\DiceScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleAnotherScene.h" />
     <ClInclude Include="src\Game\Utilitys\DicePair.h" />
-    <ClInclude Include="src\Game\Utilitys\RLyeh\CharacterStatus.h" />
-    <ClInclude Include="SceneShader.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
+    <ClInclude Include="src\System\Utils\Render.h" />
+    <ClInclude Include="src\System\Objects\ShadowMapObject.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleAnimationScene.h" />
+    <ClInclude Include="src\Game\Objects\Sample\SampleAnimationObject.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
+    <ClInclude Include="src\System\Utils\Material.h" />
+    <ClInclude Include="src\System\MaterialManager.h" />
+    <ClInclude Include="src\Game\Objects\Sample\SampleMovingCharacter.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleMovingScene.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleMaterialScene.h" />
+    <ClInclude Include="src\System\Components\ImageRenderer.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -278,19 +281,5 @@
     <Filter Include="shader">
       <UniqueIdentifier>{9e7682ef-6479-4955-923f-a52f497c24cd}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="data\shader\SimpleShader.fx">
-      <Filter>shader</Filter>
-    </FxCompile>
-    <FxCompile Include="data\shader\vs_model.fx">
-      <Filter>shader</Filter>
-    </FxCompile>
-    <FxCompile Include="data\shader\vs_shadow.fx">
-      <Filter>shader</Filter>
-    </FxCompile>
-    <FxCompile Include="data\shader\ps_shadow.fx">
-      <Filter>shader</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

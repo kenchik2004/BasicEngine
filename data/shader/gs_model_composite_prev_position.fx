@@ -1,26 +1,26 @@
 //----------------------------------------------------------------------------
 //!	@file	gs_model_composite_prev_position.fx
-//!	@brief	é ‚ç‚¹åº§æ¨™ StreamOut ã‚¸ã‚ªãƒ¡ãƒˆãƒªé ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
+//!	@brief	’¸“_À•W StreamOut ƒWƒIƒƒgƒŠ’¸“_ƒVƒF[ƒ_[
 //----------------------------------------------------------------------------
 
 //---------------------------------------------------------------
-// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å‡ºåŠ›(ã‚¸ã‚ªãƒ¡ãƒˆãƒªã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å…¥åŠ›)
+// ’¸“_ƒVƒF[ƒ_[o—Í(ƒWƒIƒƒgƒŠƒVƒF[ƒ_[“ü—Í)
 //---------------------------------------------------------------
 struct VS_OUTPUT_MODEL
 {
-	float4	position_       : SV_Position;		//!< åº§æ¨™       (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-    float4  curr_position_  : CURR_POSITION;    //!< ç¾åœ¨ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-	float3	world_position_ : WORLD_POSITION;	//!< ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
-	float3	normal_         : NORMAL0;			//!< æ³•ç·š
-	float4	diffuse_        : COLOR0;			//!< Diffuseã‚«ãƒ©ãƒ¼
-	float2	uv0_            : TEXCOORD0;		//!< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	float4	position_       : SV_Position;		//!< À•W       (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+    float4  curr_position_  : CURR_POSITION;    //!< Œ»İ‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+	float3	world_position_ : WORLD_POSITION;	//!< ƒ[ƒ‹ƒhÀ•W
+	float3	normal_         : NORMAL0;			//!< –@ü
+	float4	diffuse_        : COLOR0;			//!< DiffuseƒJƒ‰[
+	float2	uv0_            : TEXCOORD0;		//!< ƒeƒNƒXƒ`ƒƒÀ•W
 };
 
 struct GS_OUTPUT_MODEL
 {
 	VS_OUTPUT_MODEL	vs_input;
 
-    //! 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“) â– ã“ã‚Œã‚’é ‚ç‚¹ã«åˆæˆ
+    //! 1ƒtƒŒ[ƒ€‘O‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ) ¡‚±‚ê‚ğ’¸“_‚É‡¬
     float4	prev_position_ : PREV_POSITION;
 };
 
@@ -28,19 +28,19 @@ struct GS_OUTPUT_MODEL
 //----------------------------------------------------------------------------
 // ByteAddressBuffer
 //----------------------------------------------------------------------------
-// 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®åº§æ¨™æƒ…å ±
-// float4 * é ‚ç‚¹æ•°
+// 1ƒtƒŒ[ƒ€‘O‚ÌÀ•Wî•ñ
+// float4 * ’¸“_”
 ByteAddressBuffer ScreenPosition_Prev : register(t0);
 
-// 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®åº§æ¨™ã‚’å–å¾—
-//!	@param	[in]	é ‚ç‚¹ç•ªå·
+// 1ƒtƒŒ[ƒ€‘O‚ÌÀ•W‚ğæ“¾
+//!	@param	[in]	’¸“_”Ô†
 float4 DxLib_ScreenPosition_Prev(int vertexIndex)
 {
 	return asfloat(ScreenPosition_Prev.Load4(vertexIndex * 16));
 }
 
 //----------------------------------------------------------------------------
-//	ãƒ¡ã‚¤ãƒ³é–¢æ•°
+//	ƒƒCƒ“ŠÖ”
 //----------------------------------------------------------------------------
 [maxvertexcount(3)]
 void main(triangle VS_OUTPUT_MODEL input[3], uint primitiveId: SV_PrimitiveID,  inout TriangleStream<GS_OUTPUT_MODEL> outputStream)

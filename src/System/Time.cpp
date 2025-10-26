@@ -172,7 +172,7 @@ namespace Time {
 	}
 
 	//前フレームとの実際の物理的時間差の取得(double)
-	const float RealDeltaTimeD()
+	const double RealDeltaTimeD()
 	{
 		return real_delta_time;
 	}
@@ -196,7 +196,7 @@ namespace Time {
 	}
 
 	//アプリケーション開始後のゲーム内時間の取得(float)
-	const double GetTimeFromStart()
+	const float GetTimeFromStart()
 	{
 		return (float)time;
 	}
@@ -208,7 +208,7 @@ namespace Time {
 	}
 
 	//アプリケーション開始後の現実時間の取得(float)
-	const double GetRealTimeFromStart()
+	const float GetRealTimeFromStart()
 	{
 		return (float)real_time;
 	}
@@ -357,4 +357,17 @@ namespace Time {
 	{
 		return fps;
 	}
+
+	//描画FPSの取得(float)
+	const float GetDrawFPS()
+	{
+		return (float)draw_fps;
+	}
+
+	//描画FPSの取得(double)
+	const double GetDrawFPSD()
+	{
+		return draw_fps;
+	}
+
 }

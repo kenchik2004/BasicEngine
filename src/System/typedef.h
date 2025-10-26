@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 constexpr float PI = 3.1415926535f;		//円周率
-constexpr float p = PI / 180;			//円周率/180(Euler->Radian)
-constexpr float p_ = 180 / PI;			//180/円周率(Radian->Euler)
-#define DEG2RAD(deg) deg*p		//オイラー角->ラジアン角の変換
-#define RAD2DEG(rad) rad*p_		//ラジアン角->オイラー角の変換
+constexpr float RADIAN = PI / 180;			//円周率/180(Euler->Radian)
+constexpr float EULER = 180 / PI;			//180/円周率(Radian->Euler)
+#define DEG2RAD(deg) deg*RADIAN		//オイラー角->ラジアン角の変換
+#define RAD2DEG(rad) rad*EULER		//ラジアン角->オイラー角の変換
 
 
 #define NON_COPYABLE(CLASS)										\
@@ -80,7 +80,7 @@ public:
 			throw NullptrException("もう知らん!ぬるぽ!");
 		}
 #endif
-		return *u_p;
+		return *(u_p.get());
 	}
 	operator bool() const { return u_p != nullptr; }
 	T* release() { return u_p.release(); }
@@ -90,6 +90,7 @@ public:
 
 	const std::unique_ptr<T>& raw_unique() const { return u_p; }
 	std::unique_ptr<T>& raw_unique() { return u_p; }
+	T* get() const { return u_p.get(); }
 };
 
 template <class T>
@@ -154,6 +155,7 @@ public:
 
 	const std::shared_ptr<T>& raw_shared() const { return s_p; }
 	std::shared_ptr<T>& raw_shared() { return s_p; }
+	T* get() const { return s_p.get(); }
 };
 
 template <class T, class... Args>
@@ -416,6 +418,8 @@ std::wstring Str2WstrU8(std::string in);
 std::string WStr2StrU8(std::wstring in);
 
 std::string ShiftJISToUTF8(const std::string& shiftJisStr);
+
+std::string UTF8ToShiftJIS(const std::string& utf8Str);
 
 //(旧仕様ではnewしていたので無視しちゃダメだったが、shared_ptr管理にしたことで無視してもよくなったのでは...?)
 [[nodiscard]] SafeSharedPtr<void> CreateInstanceFromName(std::string_view name, TypeInfo& type = TypeInfo::Root());

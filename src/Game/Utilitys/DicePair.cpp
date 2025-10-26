@@ -1,10 +1,10 @@
 ﻿#include "precompile.h"
 #include "DicePair.h"
-#include "Game/Objects/RLyeh/Dices/DiceBase.h"
+#include "Game/Objects/Sample/Dices/DiceBase.h"
 #include "System/Components/RigidBody.h"
 
 
-namespace RLyeh {
+namespace Sample {
 
 	//1d100とかは10面ダイス2つで一つの結果が欲しかったりするので、ダイスのペアを作る
 	DicePair::DicePair(MODE mode_, DiceBaseP x1, DiceBaseP x2)
