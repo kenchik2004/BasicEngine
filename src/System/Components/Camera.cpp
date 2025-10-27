@@ -5,9 +5,6 @@
 #include <System/Objects/ShadowMapObject.h>
 
 namespace {
-	SafeSharedPtr<Texture> gbuffer0 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
-	SafeSharedPtr<Texture> gbuffer1 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
-	SafeSharedPtr<Texture> gbuffer2 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
 
 }
 
@@ -98,16 +95,14 @@ int Camera::Init()
 
 	constant_buffer_handle = CreateShaderConstantBuffer(sizeof(CBufferCameraInfo));
 
-	if (!gbuffer0)
-		gbuffer0 = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16_FLOAT);
-	if (!gbuffer1)
-		gbuffer1 = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_SNORM);
-	if (!gbuffer2)
-		gbuffer2 = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
+	gbuffer0 = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16_FLOAT);
+	gbuffer1 = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_SNORM);
+	gbuffer2 = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
 	//if (!my_screen)
 	//	my_screen = TextureManager::CloneByName(owner->name + "camerascreen");
 	if (!GetCurrentCamera())
 		SetCurrentCamera();
+	owner->GetScene()->RegisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
 	return 0;
 }
 
@@ -116,9 +111,17 @@ void Camera::PreDraw()
 	PrepareCamera();
 	if (is_current_camera)
 	{
-		ClearColor(my_screen.raw_shared().get(), { 0,0,0,0 });
-		ClearDepth(my_screen_depth.raw_shared().get(), 1.0f);
+		ClearColor(my_screen.get(), { 0,0,0,0 });
+		ClearColor(gbuffer0.get(), { 0,0,0,0 });
+		ClearColor(gbuffer1.get(), { 0,0,0,0 });
+		ClearColor(gbuffer2.get(), { 0,0,0,0 });
+		ClearDepth(my_screen_depth.get(), 1.0f);
 	}
+}
+
+void Camera::LateDraw()
+{
+
 }
 
 void Camera::PrepareCamera()
@@ -127,8 +130,8 @@ void Camera::PrepareCamera()
 	if (is_current_camera)
 	{
 		SetCameraConstantBuffer();
-		std::array<Texture*, 4> gbuffers = {my_screen.get(), gbuffer0.get(), gbuffer1.get(), gbuffer2.get() };
-		SetRenderTarget(my_screen.raw_shared().get(), my_screen_depth.raw_shared().get());
+		std::array<Texture*, 4> gbuffers = { my_screen.get(), gbuffer0.get(), gbuffer1.get(), gbuffer2.get() };
+		//SetRenderTarget(my_screen.raw_shared().get(), my_screen_depth.raw_shared().get());
 		SetRenderTarget(4, gbuffers.data(), my_screen_depth.get());
 		SetupCamera_Perspective(DEG2RAD(perspective));
 		SetCameraPositionAndTargetAndUpVec(cast(owner_trns->position), cast(owner_trns->position + owner_trns->AxisZ()), cast(owner_trns->AxisY()));
@@ -185,6 +188,7 @@ void Camera::Exit() {
 	if (gbuffer2)
 		gbuffer2.reset();
 	DeleteShaderConstantBuffer(constant_buffer_handle);
+	owner->GetScene()->UnregisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
 }
 
 SafeSharedPtr<Camera> Camera::GetCurrentCamera()
@@ -194,6 +198,8 @@ SafeSharedPtr<Camera> Camera::GetCurrentCamera()
 	return SafeStaticCast<Camera>(owner->GetScene()->GetCurrentCamera().lock());
 }
 
+
+#if 0
 void DebugCamera::Construct()
 {
 	if (auto another = owner->GetScene()->GetDebugCamera().lock())
@@ -229,17 +235,17 @@ void DebugCamera::Update()
 		auto parent = owner->transform->parent.lock();
 		auto owner_trns = owner->transform;
 		if (Input::GetKey(KeyCode::W))
-			parent->MovePosition(owner_trns->AxisZ() * 1000 * Time::RealDeltaTime());
+			parent->position += (owner_trns->AxisZ() * 10 * Time::RealDeltaTime());
 		if (Input::GetKey(KeyCode::S))
-			parent->MovePosition(-owner_trns->AxisZ() * 1000 * Time::RealDeltaTime());
+			parent->position += (-owner_trns->AxisZ() * 10 * Time::RealDeltaTime());
 		if (Input::GetKey(KeyCode::A))
-			parent->MovePosition(-owner_trns->AxisX() * 1000 * Time::RealDeltaTime());
+			parent->position += (-owner_trns->AxisX() * 10 * Time::RealDeltaTime());
 		if (Input::GetKey(KeyCode::D))
-			parent->MovePosition(owner_trns->AxisX() * 1000 * Time::RealDeltaTime());
+			parent->position += (owner_trns->AxisX() * 10 * Time::RealDeltaTime());
 		if (Input::GetKey(KeyCode::Q))
-			parent->MovePosition(-owner_trns->AxisY() * 1000 * Time::RealDeltaTime());
+			parent->position += (-owner_trns->AxisY() * 10 * Time::RealDeltaTime());
 		if (Input::GetKey(KeyCode::E))
-			parent->MovePosition(owner_trns->AxisY() * 1000 * Time::RealDeltaTime());
+			parent->position += (owner_trns->AxisY() * 10 * Time::RealDeltaTime());
 		Vector2 mouse_move = Input::GetMouseDelta();
 		Quaternion qx = Quaternion(mouse_move.x * Time::RealDeltaTime() * 0.2f, { 0,1,0 });
 		Quaternion qy = Quaternion(mouse_move.y * Time::RealDeltaTime() * 0.2f, { 1,0,0 });
@@ -292,3 +298,4 @@ void DebugCamera::Exit()
 	}
 
 }
+#endif

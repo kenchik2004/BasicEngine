@@ -11,6 +11,8 @@ public:
 	void Update() override;
 	CameraWP camera; // カメラコンポーネント
 };
+
+#if 0
 class DebugCameraObject :
 	public GameObject
 {
@@ -21,3 +23,4 @@ public:
 	DebugCameraWP camera; // カメラコンポーネント
 	CameraWP main_camera; // メインカメラ
 };
+#endif

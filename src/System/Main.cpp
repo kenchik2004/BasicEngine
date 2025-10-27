@@ -378,7 +378,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		f.close();
 	}
-	system("pause");
+	//system("pause");
 	return 0;
 }
 

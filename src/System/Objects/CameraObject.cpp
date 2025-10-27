@@ -18,6 +18,8 @@ void CameraObject::Update()
 {
 }
 
+
+#if 0
 int DebugCameraObject::Init()
 {
 	auto child = SceneManager::Object::Create<GameObject>();
@@ -39,3 +41,4 @@ void DebugCameraObject::PostPhysics()
 			SetPriority(main_camera->GetPriority());
 	}
 }
+#endif

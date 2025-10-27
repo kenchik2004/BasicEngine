@@ -32,6 +32,7 @@ public:
 	void Construct() override;
 	int Init() override;
 	void PreDraw() override;
+	void LateDraw() override;
 	virtual void PrepareCamera();
 	void SetCameraConstantBuffer();
 	void SetCurrentCamera();
@@ -42,11 +43,16 @@ public:
 	SafeSharedPtr<Texture> my_screen = nullptr;
 	SafeSharedPtr<Texture> my_screen_depth = nullptr;
 
+	SafeSharedPtr<Texture> gbuffer0 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
+	SafeSharedPtr<Texture> gbuffer1 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
+	SafeSharedPtr<Texture> gbuffer2 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
+
 	float camera_near = 0.1f;
 	float camera_far = 2000.0f;
 	float perspective = 45.0f;
 };
 
+#if 0
 class DebugCamera :
 	public Camera
 {
@@ -58,3 +64,4 @@ public:
 	void PrepareCamera() override;
 	void Exit() override;
 };
+#endif

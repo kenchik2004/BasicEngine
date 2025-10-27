@@ -576,142 +576,156 @@ void SceneManager::PostPhysics()
 //シーン一つ一つに対してPreDraw,Draw,LateDrawを別々に呼ぶとカメラの情報が競合したり、
 //いろいろとナンセンスなのでやめた。
 void SceneManager::DrawCycleForOneScene(SceneP scene) {
-	scene->PreDraw();
+	auto current_camera = scene->GetCurrentCamera();
+	auto& active_cameras = scene->GetActiveCamerasRef();
+
+
+
 	ObjectWPVec objs;
 	ComponentWPVec comps;
+
 	objs.reserve(100);
 	comps.reserve(100);
 	for (auto& obj : scene->GetGameObjectPtrVec<::Object>())
 		objs.push_back(obj);
-	std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			obj->PreDraw();
-			for (auto& comp : obj->components) {
-				comps.push_back(comp);
-			}
-			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-						comp->PreDraw();
-				});
-		}
-		comps.clear();
-		});
-	scene->OnPreDrawFinish();
+	for (auto& cam_wp : active_cameras) {
+		if (auto cam = cam_wp.lock()) {
+			if (!cam->owner->status.status_bit.is(ObjStat::STATUS::ACTIVE))
+				continue;
+			cam->SetCurrentCamera();
 
-	scene->Draw();
-	std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			try {
-				obj->Draw();
-			}
-			catch (Exception& ex) {
-				ex.Show();
-			}
-			for (auto& comp : obj->components) {
-				comps.push_back(comp);
-			}
-			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-					{
-						try {
-							comp->Draw();
-						}
-						catch (Exception& ex) {
-							ex.Show();
-						}
+
+			scene->PreDraw();
+			std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+				if (!obj)
+					return;
+				if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
+					obj->PreDraw();
+					for (auto& comp : obj->components) {
+						comps.push_back(comp);
 					}
+					std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
+						if (comp)
+							if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
+								comp->PreDraw();
+						});
+				}
+				comps.clear();
 				});
-		}
-		comps.clear();
-		});
-	scene->OnDrawFinish();
-
-	scene->LateDraw();
-	std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			try {
-				obj->LateDraw();
-			}
-			catch (Exception& ex) {
-				ex.Show();
-			}
-			for (auto& comp : obj->components) {
-				comps.push_back(comp);
-			}
-			std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-					{
-						try {
-							comp->LateDraw();
-						}
-						catch (Exception& ex) {
-							ex.Show();
-						}
+			scene->OnPreDrawFinish();
+			scene->Draw();
+			std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+				if (!obj)
+					return;
+				if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
+					try {
+						obj->Draw();
 					}
+					catch (Exception& ex) {
+						ex.Show();
+					}
+					for (auto& comp : obj->components) {
+						comps.push_back(comp);
+					}
+					std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
+						if (comp)
+							if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
+							{
+								try {
+									comp->Draw();
+								}
+								catch (Exception& ex) {
+									ex.Show();
+								}
+							}
+						});
+				}
+				comps.clear();
 				});
+			scene->OnDrawFinish();
+
+			scene->LateDraw();
+			std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+				if (!obj)
+					return;
+				if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
+					try {
+						obj->LateDraw();
+					}
+					catch (Exception& ex) {
+						ex.Show();
+					}
+					for (auto& comp : obj->components) {
+						comps.push_back(comp);
+					}
+					std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
+						if (comp)
+							if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
+							{
+								try {
+									comp->LateDraw();
+								}
+								catch (Exception& ex) {
+									ex.Show();
+								}
+							}
+						});
+				}
+				comps.clear();
+				});
+			scene->OnLateDrawFinish();
+			if (USE_DEBUG_DRAW) {
+				//デバッグ描画を行う
+
+
+				SetUseLighting(false);
+				SetLightEnable(false);
+				scene->DebugDraw();
+				std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+					if (!obj)
+						return;
+					if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
+						obj->DebugDraw();
+						ComponentWPVec comps;
+						for (auto& comp : obj->components) {
+							comps.push_back(comp);
+						}
+						std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
+							if (comp)
+								if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
+									comp->DebugDraw();
+							});
+					}
+					comps.clear();
+					});
+				scene->OnDebugDrawFinish();
+
+				scene->LateDebugDraw();
+				std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
+					if (!obj)
+						return;
+					if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
+						obj->LateDebugDraw();
+						ComponentWPVec comps;
+						for (auto& comp : obj->components) {
+							comps.push_back(comp);
+						}
+						std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
+							if (comp)
+								if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
+									comp->LateDebugDraw();
+							});
+					}
+					comps.clear();
+					});
+				scene->OnLateDebugDrawFinish();
+			}
 		}
-		comps.clear();
-		});
-	scene->OnLateDrawFinish();
-	if (USE_DEBUG_DRAW) {
-		//デバッグ描画を行う
-
-
-		SetUseLighting(false);
-		SetLightEnable(false);
-		scene->DebugDraw();
-		std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->DebugDraw();
-				ComponentWPVec comps;
-				for (auto& comp : obj->components) {
-					comps.push_back(comp);
-				}
-				std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->DebugDraw();
-					});
-			}
-			comps.clear();
-			});
-		scene->OnDebugDrawFinish();
-
-		scene->LateDebugDraw();
-		std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->LateDebugDraw();
-				ComponentWPVec comps;
-				for (auto& comp : obj->components) {
-					comps.push_back(comp);
-				}
-				std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->LateDebugDraw();
-					});
-			}
-			comps.clear();
-			});
-		scene->OnLateDebugDrawFinish();
-
 		SetUseLighting(true);
 		SetLightEnable(true);
 		Time::ResetTime();
 	}
+	scene->SetCurrentCamera(current_camera.lock());
 	scene->PostDraw();
 	std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
 		if (!obj)
@@ -755,8 +769,8 @@ void SceneManager::Draw()
 			p->x = Time::SystemTime();
 			p->y = Time::DrawDeltaTime();
 			UpdateShaderConstantBuffer(be_default_cbuffer);
-			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_PIXEL, 2);
-			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_VERTEX, 2);
+			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_PIXEL, 4);
+			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_VERTEX, 4);
 		}
 	}
 
@@ -773,11 +787,13 @@ void SceneManager::Draw()
 	SetRenderTarget(GetBackBuffer(), GetDepthStencil());
 	if (current_scene) {
 		auto current_camera = current_scene->GetCurrentCamera();
+#if 0
 		auto debug_camera = current_scene->GetDebugCamera();
 		if (debug_camera) {
 			if (debug_camera->status.status_bit.is(CompStat::STATUS::ACTIVE))
 				current_camera = debug_camera;
 		}
+#endif
 		if (auto camera = current_camera.lock()) {
 			ClearColor(Color::GRAY);
 			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->my_screen, true);
@@ -940,7 +956,7 @@ void SceneManager::Exit()
 	//デバッグ用ボックス(SooS提供)の解放
 	debug_box.reset();
 	//===============================//
-	DeleteShaderConstantBuffer(be_default_cbuffer);
+	DxLib::DeleteShaderConstantBuffer(be_default_cbuffer);
 	be_default_cbuffer = -1;
 	try {
 		ModelManager::Exit();

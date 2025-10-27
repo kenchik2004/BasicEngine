@@ -112,9 +112,14 @@ public:
 	void SetCurrentCamera(CameraP camera) { current_camera = camera; }
 	CameraWP GetCurrentCamera() { return current_camera; }
 	CameraWP& GetCurrentCameraRef() { return current_camera; }
+#if 0
 	void SetDebugCamera(DebugCameraP camera) { debug_camera = camera; }
 	DebugCameraWP GetDebugCamera() { return debug_camera; }
 	DebugCameraWP& GetDebugCameraRef() { return debug_camera; }
+#endif
+	void RegisterActiveCamera(CameraWP camera);
+	void UnregisterActiveCamera(CameraWP camera);
+	CameraWPVec& GetActiveCamerasRef() { return active_cameras; }
 
 
 private:
@@ -129,8 +134,10 @@ private:
 	void SyncGameObjectsPriority();
 	AudioListenerWP current_audio_listener;
 	CameraWP current_camera;
+	CameraWPVec active_cameras;
+#if 0
 	DebugCameraWP debug_camera;
-
+#endif
 protected:
 
 	template<class T, typename...Args>

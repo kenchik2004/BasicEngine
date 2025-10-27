@@ -188,6 +188,26 @@ void Scene::MoveGameObjectPtrFromThis(ObjectP move_object, SceneP to_where) {
 
 }
 
+void Scene::RegisterActiveCamera(CameraWP camera)
+{
+	if (!camera)
+		return;
+	auto it = std::find(active_cameras.begin(), active_cameras.end(), camera);
+	if (it == active_cameras.end()) {
+		active_cameras.push_back(camera);
+	}
+}
+
+void Scene::UnregisterActiveCamera(CameraWP camera)
+{
+	if (!camera)
+		return;
+	auto it = std::find(active_cameras.begin(), active_cameras.end(), camera);
+	if (it != active_cameras.end()) {
+		active_cameras.erase(it);
+	}
+}
+
 void Scene::SyncGameObjectsPriority()
 {
 
@@ -288,11 +308,11 @@ void Scene::DestroyGameObject(ObjectP& destroy_obj) {
 		dirty_priority_objects.erase(obj);
 	}
 	if (auto obj = std::find(objects.begin(), objects.end(), destroy_obj); obj != objects.end();) {
-			destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
-			destroy_obj.reset();
-			(*obj).reset();
-		}
+		destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
+		destroy_obj.reset();
+		(*obj).reset();
 	}
+}
 
 }
 

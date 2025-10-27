@@ -11,8 +11,6 @@ namespace Sample {
 
 		SetPriority(19);
 		model = AddComponent<ModelRenderer>();
-		//TextureManager::Load(reinterpret_cast<const char*>(u8"data/カード/CardTexture.png"), "my_tex");
-		//auto texture = SceneManager::GetCurrentScene()->GetCurrentCameraRef();
 		if (!mytex) {
 			mytex = TextureManager::CloneByName("card_temp");
 			auto override_card_mat = MaterialManager::CreateMaterial("override_card_mat");
