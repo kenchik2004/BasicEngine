@@ -40,6 +40,7 @@ namespace NetWorkTest_Client {
 
 		float camera_distance = 20.0f;
 		float camera_rot_y = 0.0f;
+		bool input_lock = false;
 		//-----------------------------
 		//他のプレイヤー関係
 

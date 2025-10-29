@@ -13,6 +13,7 @@
 #include "System/Components/RigidBody.h"
 #include "System/Components/MeshCollider.h"
 #include "Game/Managers/LightManager.h"
+#include "System/Objects/ShadowMapObject.h"
 
 namespace NetWorkTest_Client {
 
@@ -67,7 +68,7 @@ namespace NetWorkTest_Client {
 				return;
 			}
 		}
-		auto obj = SceneManager::Object::Create<SampleMovingCharacter>("Player" + std::to_string(key), false, false);
+		auto obj = SceneManager::Object::Create<SampleMovingCharacter>("Player" + std::to_string(key), true, false);
 		list.emplace_back(key, obj);
 	}
 
@@ -299,7 +300,7 @@ namespace NetWorkTest_Client {
 
 	int NetWorkSampleScene_Client::Init()
 	{
-
+		SceneManager::Object::Create<ShadowMapObject>(u8"シャドウマップ生成オブジェクト")->SetLightDirection({ 0,-8,5 });
 		net_manager = std::make_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_CONNECT, open_port);
 		udp_network = net_manager->OpenUDPSocket(open_udp_port); // 必要に応じて UDP も開く
 		if (udp_network)
@@ -308,8 +309,11 @@ namespace NetWorkTest_Client {
 			};
 
 		player = SceneManager::Object::Create<SampleMovingCharacter>("You");
-		SceneManager::Object::Create<CameraObject>()->transform->position = { 0,10,-10 };
-
+		auto cam = SceneManager::Object::Create<CameraObject>();
+		cam->transform->position = { 0,250,-250 };
+		cam->transform->SetAxisZ({ 0,-0.5f,1.0f });
+		//cam->transform->SetParent(player->transform);
+		camera = cam;
 		net_manager->SetOnNewConnectionCallback([this](NetWork* new_connect) {
 			is_connected = true;
 			chat_network.push_back(new_connect);
@@ -360,7 +364,7 @@ namespace NetWorkTest_Client {
 		}
 
 		// テキスト送信（例: 毎フレーム送ると帯域を圧迫するため、実運用ではイベント駆動推奨）
-		if (is_connected) {
+		if (is_connected && input_lock) {
 			while (char ch = DxLib::GetInputChar(true)) {
 
 
@@ -377,7 +381,12 @@ namespace NetWorkTest_Client {
 				for (const auto& net : chat_network)
 					SendPacket(net_manager.get(), net, PACKET_TYPE_TEXT, input_text.data(), static_cast<u32>(input_text.size()));
 				input_text.clear();
+				input_lock = false;
 			}
+		}
+		else if (!input_lock && Input::GetKeyDown(KeyCode::Return)) {
+			input_lock = true;
+			DxLib::ClearInputCharBuf();
 		}
 		else {
 			while (char ch = DxLib::GetInputChar(true)) {
@@ -431,6 +440,8 @@ namespace NetWorkTest_Client {
 		if (udp_network && is_connected) {
 			PlayerData pd;
 			pd.position = player->transform->position;
+			pd.rotation = player->transform->rotation;
+			pd.state = player->movement_state;
 
 			SendPacket(net_manager.get(), udp_network, another_ip, another_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData));
 
@@ -460,7 +471,7 @@ namespace NetWorkTest_Client {
 			auto received = received_text[i];
 			auto net = chat_network[i];
 			if (!received.second.empty() && net) {
-				DxLib::DrawFormatString(100, 180 + i * 21, 0xffffff, "ID:%d< %s", received.first, received.second.c_str());
+				DxLib::DrawFormatString(100, 180 + i * 21, 0xffffff, "ID:%u< %s", received.first, received.second.c_str());
 			}
 		}
 		DrawFormatString(100, 400, 0xffffff, "You> %s", input_text.c_str());
