@@ -37,6 +37,7 @@
   <ItemGroup>
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\Managers\LightManager.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManagerBase.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManager_Client.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
@@ -110,6 +111,7 @@
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\Managers\LightManager.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
@@ -372,6 +374,7 @@
       <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -424,6 +427,7 @@
       <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
+      <Profile>false</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">

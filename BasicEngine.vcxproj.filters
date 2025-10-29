@@ -130,6 +130,7 @@
     <ClCompile Include="src\Game\Scenes\Sample\SampleMaterialScene.cpp" />
     <ClCompile Include="src\System\Components\ImageRenderer.cpp" />
     <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
+    <ClCompile Include="src\Game\Managers\LightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -264,6 +265,7 @@
     <ClInclude Include="src\Game\Scenes\Sample\SampleMaterialScene.h" />
     <ClInclude Include="src\System\Components\ImageRenderer.h" />
     <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
+    <ClInclude Include="src\Game\Managers\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
