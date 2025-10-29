@@ -14,6 +14,7 @@
 #include "System/Components/RigidBody.h"
 #include "System/Components/MeshCollider.h"
 #include "Game/Managers/LightManager.h"
+#include "System/Objects/ShadowMapObject.h"
 
 namespace NetWorkTest_Server {
 
@@ -60,7 +61,7 @@ namespace NetWorkTest_Server {
 				return;
 			}
 		}
-		auto obj = SceneManager::Object::Create<SampleMovingCharacter>("Player" + std::to_string(key), false, false);
+		auto obj = SceneManager::Object::Create<SampleMovingCharacter>("Player" + std::to_string(key), true, false);
 		list.emplace_back(key, obj);
 	}
 
@@ -302,6 +303,8 @@ namespace NetWorkTest_Server {
 
 	int NetWorkSampleScene_Server::Init()
 	{
+		SceneManager::Object::Create<ShadowMapObject>()->SetLightDirection({ 0,-8,5 });
+
 
 		//TextureManager::Load("data/player/Vampire A Lusth.fbm/Vampire_diffuse.png", "player_texture");
 		net_manager = make_safe_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_LISTEN, open_port);
@@ -361,7 +364,7 @@ namespace NetWorkTest_Server {
 
 
 		// テキスト送信（例: 毎フレーム送ると帯域を圧迫するため、実運用ではイベント駆動推奨）
-		if (!chat_network.empty()) {
+		if (!chat_network.empty() && input_lock) {
 			while (char ch = DxLib::GetInputChar(true)) {
 
 
@@ -378,7 +381,12 @@ namespace NetWorkTest_Server {
 				for (const auto& net : chat_network)
 					SendPacket(net_manager.get(), net, PACKET_TYPE_TEXT, input_text.data(), static_cast<u32>(input_text.size()));
 				input_text.clear();
+				input_lock = false;
 			}
+		}
+		else if (!input_lock && Input::GetKeyDown(KeyCode::Return)) {
+			input_lock = true;
+			DxLib::ClearInputCharBuf();
 		}
 
 		if (Input::GetKey(KeyCode::Up))
