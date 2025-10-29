@@ -13,12 +13,14 @@ public:
 	static ShaderVs* LoadVertexShader(std::string_view path, std::string_view name, int variant);
 	static Material* GetDefaultMat2D();
 	static Material* GetDefaultMat3D();
+	static Material* GetDefaultMatGBuffer();
 
 	static void Init();
 	static void UpdateShaders();
 	static void Release();
 private:
 	static inline SafeUniquePtr<ShaderPs> default_pixel_shader;
+	static inline SafeUniquePtr<ShaderPs> default_pixel_shader_gbuffer;
 	static inline SafeUniquePtr<ShaderPs> default_pixel_shader_2d;
 	static inline SafeUniquePtr<ShaderVs> default_vertex_shader;
 	static inline SafeSharedPtr<Texture> null_white;

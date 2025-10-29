@@ -9,6 +9,7 @@
 
 #include "System/MaterialManager.h"
 #include "System/Components/ImageRenderer.h"
+#include "Game/Managers/LightManager.h"
 
 
 
@@ -35,6 +36,33 @@ namespace Sample {
 		if (!CheckForLoading())
 			return Super::Init();
 
+
+
+
+		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
+		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 10,10,10 }, 0, 0, { 0,-8,5 });
+
+		auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
+		shadowmap->SetCascadeCount(4);
+		shadowmap->SetShadowMapSize(2048);
+		shadowmap->SetLightDirection({ 0, -8, 5 });
+		auto player = SceneManager::Object::Create<SampleMovingCharacter>("Player");
+		player->transform->position = { 0,10,0 };
+		auto ground = SceneManager::Object::Create<GameObject>("Ground");
+		ground->AddComponent<ModelRenderer>()->SetModel("stage");
+		ground->AddComponent<RigidBody>();
+		ground->AddComponent<MeshCollider>();
+		ground->transform->scale = { 0.05f,0.05f,0.05f };
+		ground->transform->position = { 0,-10,0 };
+		auto cam = SceneManager::Object::Create<CameraObject>();
+		cam->transform->position = { 0,7,5 };
+		cam->transform->SetAxisZ({ 0,-0.5f,-1.0f });
+		cam->camera->render_type = Camera::RenderType::Deferred;
+		//cam->transform->SetParent(player->transform);
+		camera = cam;
+		this->player = player;
+
+
 		//----------テクスチャレンダラーのテスト
 		mat = MaterialManager::CreateMaterial("override_2d");
 		mat->SetTexture(TextureManager::CloneByName("old_paper"), Material::TextureType::Diffuse);
@@ -48,26 +76,6 @@ namespace Sample {
 		render->SetMaterial(mat);
 		//-----------
 
-
-
-
-		auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
-		shadowmap->SetCascadeCount(4);
-		shadowmap->SetShadowMapSize(2048);
-		auto player = SceneManager::Object::Create<SampleMovingCharacter>("Player");
-		player->transform->position = { 0,10,0 };
-		auto ground = SceneManager::Object::Create<GameObject>("Ground");
-		ground->AddComponent<ModelRenderer>()->SetModel("stage");
-		ground->AddComponent<RigidBody>();
-		ground->AddComponent<MeshCollider>();
-		ground->transform->scale = { 0.05f,0.05f,0.05f };
-		ground->transform->position = { 0,-10,0 };
-		auto cam = SceneManager::Object::Create<CameraObject>();
-		cam->transform->position = { 0,7,5 };
-		cam->transform->SetAxisZ({ 0,-0.5f,-1.0f });
-		//cam->transform->SetParent(player->transform);
-		camera = cam;
-		this->player = player;
 		return Super::Init();
 	}
 

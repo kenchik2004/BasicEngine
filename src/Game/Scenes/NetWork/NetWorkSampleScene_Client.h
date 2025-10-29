@@ -10,8 +10,10 @@ namespace NetWorkTest_Client {
 	{
 	public:
 		USING_SUPER(NetWorkSampleScene_Client);
+		void Load() override;
 		int Init() override;
 		void Update() override;
+		void PreDraw() override;
 		void LateDraw() override;
 		void Exit() override;
 		bool is_connected = false;
@@ -32,6 +34,11 @@ namespace NetWorkTest_Client {
 		//自分のプレイヤー関係
 		std::string input_text = "";
 		GameObjectWP player;
+		GameObjectWP camera;
+
+
+		float camera_distance = 20.0f;
+		float camera_rot_y = 0.0f;
 		//-----------------------------
 		//他のプレイヤー関係
 

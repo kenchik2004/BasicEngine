@@ -206,7 +206,7 @@ void NetWorkManagerBase::CheckForNewConnect(const bool& finish_flag)
 
 		}
 		//正直、CPU負荷を下げるために少し休ませたい。よし、休ませよう
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
@@ -236,7 +236,7 @@ void NetWorkManagerBase::CheckForDisConnect(const bool& finish_flag)
 			}
 		}
 		//正直、CPU負荷を下げるために少し休ませたい。よし、休ませよう
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 

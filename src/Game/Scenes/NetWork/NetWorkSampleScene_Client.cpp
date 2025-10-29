@@ -7,8 +7,12 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include "Game/Objects/Sample/SampleAnimationObject.h"
+#include "Game/Objects/Sample/SampleMovingCharacter.h"
 #include "System/Objects/CameraObject.h"
+#include "System/Components/ModelRenderer.h"
+#include "System/Components/RigidBody.h"
+#include "System/Components/MeshCollider.h"
+#include "Game/Managers/LightManager.h"
 
 namespace NetWorkTest_Client {
 
@@ -59,7 +63,7 @@ namespace NetWorkTest_Client {
 				return;
 			}
 		}
-		auto obj = SceneManager::Object::Create<Sample::SampleAnimationObject>("Player" + std::to_string(key));
+		auto obj = SceneManager::Object::Create<SampleMovingCharacter>("Player" + std::to_string(key), false, false);
 		list.emplace_back(key, obj);
 	}
 
@@ -275,18 +279,22 @@ namespace NetWorkTest_Client {
 
 
 
-	int NetWorkSampleScene_Client::Init()
+	void NetWorkSampleScene_Client::Load()
 	{
-
 		ModelManager::LoadAsModel("data/player/model.mv1", "player_model");
 		ModelManager::LoadAsAnimation("data/player/anim_stand.mv1", "idle");
 		ModelManager::LoadAsAnimation("data/player/anim_walk.mv1", "walk");
 		ModelManager::LoadAsAnimation("data/player/anim_run.mv1", "run");
 		ModelManager::LoadAsAnimation("data/player/anim_jump.mv1", "jump");
-		ModelManager::LoadAsAnimation("data/player/anim_salute.mv1", "salute");
-		ModelManager::LoadAsAnimation("data/player/anim_aim.mv1", "aim");
-		ModelManager::LoadAsAnimation("data/player/anim_reload.mv1", "reload");
-		AudioManager::Load("data/Sound/reload.mp3", "reload_se", false);
+		ModelManager::LoadAsModel(u8"data/Stage/SwordBout/Stage00.mv1", "stage");
+		while (ModelManager::GetLoadingCount() > 0 || AudioManager::GetLoadingCount() > 0) {
+			//ロード待ち
+			DxLib::WaitTimer(10);
+		}
+	}
+
+	int NetWorkSampleScene_Client::Init()
+	{
 
 		net_manager = std::make_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_CONNECT, open_port);
 		udp_network = net_manager->OpenUDPSocket(open_udp_port); // 必要に応じて UDP も開く
@@ -295,7 +303,7 @@ namespace NetWorkTest_Client {
 			ProcessReceivedUDPBytes(reinterpret_cast<u8*>(data), length);
 			};
 
-		player = SceneManager::Object::Create<Sample::SampleAnimationObject>("You");
+		player = SceneManager::Object::Create<SampleMovingCharacter>("You");
 		SceneManager::Object::Create<CameraObject>()->transform->position = { 0,10,-10 };
 
 		net_manager->SetOnNewConnectionCallback([this](NetWork* new_connect) {
@@ -314,6 +322,16 @@ namespace NetWorkTest_Client {
 			chat_network.erase(it);
 
 			});
+
+
+		auto ground = SceneManager::Object::Create<GameObject>("Ground");
+		ground->AddComponent<ModelRenderer>()->SetModel("stage");
+		ground->AddComponent<RigidBody>();
+		ground->AddComponent<MeshCollider>();
+		ground->transform->scale = { 0.05f,0.05f,0.05f };
+		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
+		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 10,10,10 }, 0, 0, { 0,-8,5 });
+
 
 		return 0;
 	}
@@ -388,17 +406,25 @@ namespace NetWorkTest_Client {
 			}
 		}
 
+
+		if (Input::GetKey(KeyCode::Up))
+			camera_distance -= 2.0f * Time::DeltaTime();
+		if (Input::GetKey(KeyCode::Down))
+			camera_distance += 2.0f * Time::DeltaTime();
+		if (Input::GetKey(KeyCode::Left))
+			camera_rot_y -= 30.0f * Time::DeltaTime();
+		if (Input::GetKey(KeyCode::Right))
+			camera_rot_y += 30.0f * Time::DeltaTime();
+
+	}
+
+	void NetWorkSampleScene_Client::PreDraw()
+	{
+		camera->transform->position = player->transform->position + Quaternion(DEG2RAD(camera_rot_y), { 0,1,0 }).rotate(Vector3(0, 1, 1.5f).getNormalized()) * camera_distance;
+		camera->transform->SetAxisZ(player->transform->position - camera->transform->position + Vector3(0, 5, 0));
+
+
 		if (udp_network && is_connected) {
-
-			if (Input::GetKey(KeyCode::Up))
-				player->transform->position.z += 10.0f * Time::DeltaTime();
-			if (Input::GetKey(KeyCode::Down))
-				player->transform->position.z -= 10.0f * Time::DeltaTime();
-			if (Input::GetKey(KeyCode::Left))
-				player->transform->position.x -= 10.0f * Time::DeltaTime();
-			if (Input::GetKey(KeyCode::Right))
-				player->transform->position.x += 10.0f * Time::DeltaTime();
-
 			PlayerData pd;
 			pd.position = player->transform->position;
 
@@ -407,6 +433,7 @@ namespace NetWorkTest_Client {
 
 		}
 	}
+
 
 	void NetWorkSampleScene_Client::LateDraw()
 	{

@@ -2,6 +2,9 @@
 //!	@file	dxlib_ps.h
 //! @brief	DxLib用ピクセルシェーダー定義
 //---------------------------------------------------------------------------
+#ifndef DXLIB_PS_H
+#define DXLIB_PS_H
+static const float PI = 3.14159265359f;
 
 //===========================================================================
 // ピクセルシェーダーの入力(2D)
@@ -38,9 +41,6 @@ struct PS_INPUT_3D
 struct PS_OUTPUT
 {
     float4 color0_ : SV_Target0; // 色
-    float4 color1_ : SV_Target1; // 色１(マルチレンダーターゲット用)
-    float4 color2_ : SV_Target2; // 色２(マルチレンダーターゲット用)
-    float4 color3_ : SV_Target3; // 色３(マルチレンダーターゲット用)
 };
 
 
@@ -218,3 +218,5 @@ float3 Normalmap(float3 N, float3 p, float2 uv)
     float3x3 TBN = calcCotangentFrame(N, p, uv);
     return normalize(mul(texture_normal, TBN));
 }
+
+#endif // DXLIB_PS_H

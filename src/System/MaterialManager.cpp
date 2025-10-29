@@ -68,6 +68,11 @@ Material* MaterialManager::GetDefaultMat3D()
 	return materials["default_3d"].get();
 }
 
+Material* MaterialManager::GetDefaultMatGBuffer()
+{
+	return materials["default_gbuffer"].get();
+}
+
 void MaterialManager::Init()
 {
 	if (!default_pixel_shader)
@@ -76,6 +81,8 @@ void MaterialManager::Init()
 		default_vertex_shader = make_safe_unique<ShaderVs>("data/shader/vs_model.fx", 8);
 	if (!default_pixel_shader_2d)
 		default_pixel_shader_2d = make_safe_unique<ShaderPs>("data/shader/ps_texture.fx");
+	if (!default_pixel_shader_gbuffer)
+		default_pixel_shader_gbuffer = make_safe_unique<ShaderPs>("data/shader/ps_model_gbuffer.fx");
 
 	if (!null_black) {
 		null_black = make_safe_shared<Texture>(LoadGraph("data/null_black.dds"));
@@ -87,11 +94,12 @@ void MaterialManager::Init()
 		null_normal = make_safe_shared<Texture>(LoadGraph("data/null_normal.dds"));
 	}
 
-	
+
 
 	MaterialManager::CreateMaterial("default_3d");
-	auto default_2d=MaterialManager::CreateMaterial("default_2d");
+	auto default_2d = MaterialManager::CreateMaterial("default_2d");
 	default_2d->SetShaderPs(default_pixel_shader_2d.get());
+	MaterialManager::CreateMaterial("default_gbuffer")->SetShaderPs(default_pixel_shader_gbuffer.get());
 
 }
 
@@ -115,6 +123,7 @@ void MaterialManager::Release()
 	default_pixel_shader.reset();
 	default_vertex_shader.reset();
 	default_pixel_shader_2d.reset();
+	default_pixel_shader_gbuffer.reset();
 	null_black.reset();
 	null_white.reset();
 	null_normal.reset();

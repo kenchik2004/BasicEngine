@@ -58,9 +58,9 @@ void ClearStencil(const Texture* texture, u8 stencil_value);
 
 //! RenderTarget情報
 struct TargetDesc {
-    u32                                                          color_count_   = 0;
-    std::array<Texture*, D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT> color_targets_ = {};
-    Texture*                                                     depth_stencil_ = nullptr;
+	u32                                                          color_count_ = 0;
+	std::array<Texture*, D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT> color_targets_ = {};
+	Texture* depth_stencil_ = nullptr;
 };
 
 //! 現在のRenderTarget情報を取得
@@ -93,6 +93,11 @@ Texture* GetBackBuffer();
 Texture* GetDepthStencil();
 
 //@}
+
+
+//! ピクセルシェーダーを走らせてRenderTargetを塗りつぶす(事前にSRV設定必須)
+//! @param	[in]	shader_ps_handle  	カスタムのピクセルシェーダー (-1の場合は単純コピー)
+void FillRenderTarget(int shader_ps_handle);
 
 //! RenderTargetにイメージをコピー
 //!	@param	[out]	dst_render_target	出力先RenderTarget

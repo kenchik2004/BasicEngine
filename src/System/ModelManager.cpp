@@ -465,7 +465,7 @@ Model::Model()
 	instance++;
 }
 
-void Model::Draw() {
+void Model::Draw(bool to_gbuffer) {
 	//マテリアルが指定されていない場合、通常の描画を行う
 	if (materials.size() == 0) {
 		MV1DrawModel(handle);
@@ -488,6 +488,7 @@ void Model::Draw() {
 
 			//メッシュ番号を取得
 			s32 mesh = MV1GetFrameMesh(handle, frame_index, mesh_index);
+			MV1SetMeshDrawBlendMode(handle, mesh, DX_BLENDMODE_NOBLEND);
 
 			//メッシュのトライアングルリスト数を取得
 			s32 tlist_cout = MV1GetMeshTListNum(handle, mesh);
@@ -514,6 +515,8 @@ void Model::Draw() {
 
 				{
 					shader_ps = cur_material->GetPixelShader();
+					if(to_gbuffer)
+						shader_ps = MaterialManager::GetDefaultMatGBuffer()->GetPixelShader();
 					shader_vs = cur_material->GetVertexShader();
 				}
 				//--------------------------------------------------

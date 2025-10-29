@@ -249,6 +249,59 @@ Texture* GetDepthStencil()
 	return texture_depth_stencil_.get();
 }
 
+
+//----------------------------------------------------------
+//! フルスクリーン2D三角形を描画します。
+//! @see GDC'14 Vertex Shader Tricks
+//! 通常の四角形描画では三角形2枚で描画しますが、斜めのエッジ部分が2回ラスタライズされます。
+//! 無駄を省くために巨大な三角形で覆うことでこの問題を解決できます。(数%の高速化効果)
+//  A
+//  |  ＼            本来のスクリーンを△ABCで覆うと有効ピクセル部分は
+//  |      ＼        矩形ラスタライズされるようになります
+//  |          ＼
+//  +------+------+
+//  |      |      |  ＼
+//  +------+------+      ＼
+//  |      |      |          ＼
+//  B-------------+-------------C
+//----------------------------------------------------------
+void FillRenderTarget(int shader_ps_handle)
+{
+	f32 w = static_cast<f32>(SCREEN_W);    // 解像度 幅
+	f32 h = static_cast<f32>(SCREEN_H);    // 解像度 高さ
+
+	DxLib::VERTEX2DSHADER v[3]{};
+
+	// 頂点
+	v[0].pos = { 0.0f, -h, 0.0f };                  // 2D座標
+	v[0].rhw = 1.0f;                              // rhw = 1.0f 初期化は2D描画に必須
+	v[0].dif = GetColorU8(255, 255, 255, 255);    // カラー
+	v[0].u = 0.0f;                              // テクスチャ座標 U
+	v[0].v = -1.0f;                             // テクスチャ座標 V
+
+	v[1].pos = { 0.0f, h, 0.0f };                   // 2D座標
+	v[1].rhw = 1.0f;                              // rhw = 1.0f 初期化は2D描画に必須
+	v[1].dif = GetColorU8(255, 255, 255, 255);    // カラー
+	v[1].u = 0.0f;                              // テクスチャ座標 U
+	v[1].v = 1.0f;                              // テクスチャ座標 V
+
+	v[2].pos = { w * 2.0f, h, 0.0f };               // 2D座標
+	v[2].rhw = 1.0f;                              // rhw = 1.0f 初期化は2D描画に必須
+	v[2].dif = GetColorU8(255, 255, 255, 255);    // カラー
+	v[2].u = 2.0f;                              // テクスチャ座標 U
+	v[2].v = 1.0f;                              // テクスチャ座標 V
+
+	// 使用するピクセルシェーダーを設定 (2Dの場合は頂点シェーダー不要)
+	int ps = (shader_ps_handle != -1) ? shader_ps_handle : *shader_ps_texture_;
+	DxLib::SetUsePixelShader(ps);
+	{
+		// 描画
+		DxLib::DrawPrimitive2DToShader(v, 3, DX_PRIMTYPE_TRIANGLELIST);
+	}
+	// もとに戻す
+	DxLib::SetUsePixelShader(-1);
+}
+
 //---------------------------------------------------------------------------
 //! RenderTargetにイメージをコピー
 //---------------------------------------------------------------------------
@@ -263,63 +316,15 @@ void CopyToRenderTarget(Texture* dest_render_target, Texture* source_texture, in
 	SetDrawMode(DX_DRAWMODE_BILINEAR);             // テクスチャをバイリニア補間
 	SetTextureAddressMode(DX_TEXADDRESS_CLAMP);    // テクスチャを繰り返しなし
 
-	//----------------------------------------------------------
-	//! フルスクリーン2D三角形の描画
-	//! @see GDC'14 Vertex Shader Tricks
-	//! 通常の四角形描画では三角形2枚で描画しますが、斜めのエッジ部分が2回ラスタライズされます。
-	//! 無駄を省くために巨大な三角形で覆うことでこの問題を解決できます。(数%の高速化効果)
-	//  A
-	//  |  ＼            本来のスクリーンを△ABCで覆うと有効ピクセル部分は
-	//  |      ＼        矩形ラスタライズされるようになります
-	//  |          ＼
-	//  +------+------+
-	//  |      |      |  ＼
-	//  +------+------+      ＼
-	//  |      |      |          ＼
-	//  B-------------+-------------C
-	//----------------------------------------------------------
-	{
-		f32 w = static_cast<f32>(SCREEN_W);    // 解像度 幅
-		f32 h = static_cast<f32>(SCREEN_H);    // 解像度 高さ
 
-		VERTEX2DSHADER v[3]{};
-
-		// 頂点
-		v[0].pos = { 0.0f, -h, 0.0f };                  // 2D座標
-		v[0].rhw = 1.0f;                              // rhw = 1.0f 初期化は2D描画に必須
-		v[0].dif = GetColorU8(255, 255, 255, 255);    // カラー
-		v[0].u = 0.0f;                              // テクスチャ座標 U
-		v[0].v = -1.0f;                             // テクスチャ座標 V
-
-		v[1].pos = { 0.0f, h, 0.0f };                   // 2D座標
-		v[1].rhw = 1.0f;                              // rhw = 1.0f 初期化は2D描画に必須
-		v[1].dif = GetColorU8(255, 255, 255, 255);    // カラー
-		v[1].u = 0.0f;                              // テクスチャ座標 U
-		v[1].v = 1.0f;                              // テクスチャ座標 V
-
-		v[2].pos = { w * 2.0f, h, 0.0f };               // 2D座標
-		v[2].rhw = 1.0f;                              // rhw = 1.0f 初期化は2D描画に必須
-		v[2].dif = GetColorU8(255, 255, 255, 255);    // カラー
-		v[2].u = 2.0f;                              // テクスチャ座標 U
-		v[2].v = 1.0f;                              // テクスチャ座標 V
-
-
-
-		// 使用するピクセルシェーダーを設定 (2Dの場合は頂点シェーダー不要)
-		int ps = (shader_ps_handle != -1) ? shader_ps_handle : *shader_ps_texture_;
-		SetUseVertexShader(-1);
-		SetUsePixelShader(ps);
-
-		// 使用するテクスチャを設定 (slot=0)
-		SetUseTextureToShader(0, *source_texture);
-		for (int i = 1; i < 16; ++i) {
-			// 他のスロットは解除しておく
-			SetUseTextureToShader(i, -1);
-		}
-
-		// 描画
-		DrawPrimitive2DToShader(v, 3, DX_PRIMTYPE_TRIANGLELIST);
+	// 使用するテクスチャを設定 (slot=0)
+	SetUseTextureToShader(0, *source_texture);
+	for (int i = 1; i < 16; ++i) {
+		// 他のスロットは解除しておく
+		SetUseTextureToShader(i, -1);
 	}
+
+	FillRenderTarget(shader_ps_handle);
 	// 使い終わったらテクスチャ設定を解除
 	// 解除しておかないとモデル描画に影響あり。
 	SetUseTextureToShader(0, -1);

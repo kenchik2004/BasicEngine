@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 #include "System/Object.h"
 
 
 
 struct ShadowInfo {
 	//       [4]+------ --+[5]
-	//        ^|  @  ^ |
-	//      ^  |6  ^    |
+	//        ï¼|  ã€€  ï¼ |
+	//      ï¼  |6  ï¼    |
 	// [0] +-----+ [1]   +[7]
-	//     |     |   ^
+	//     |     |   ï¼
 	// [2] +-----+ [3]
 	Vector3 frustum_vertices_[8];
 
@@ -16,9 +16,9 @@ struct ShadowInfo {
 	float  far_z_;
 	float  aspect_ratio_;
 	float  fov_y_;
-	mat4x4 mat_camera_world_;    // ƒV[ƒ“‚ÌƒJƒƒ‰‚Ìƒ[ƒ‹ƒhs—ñ
+	mat4x4 mat_camera_world_;    // ã‚·ãƒ¼ãƒ³ã®ã‚«ãƒ¡ãƒ©ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
 
-	Vector4 bounding_sphere_;    // ƒoƒEƒ“ƒfƒBƒ“ƒO‹…  [xyz_]:’†SÀ•W [___w]:”¼Œa
+	Vector4 bounding_sphere_;    // ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°çƒ  [xyz_]:ä¸­å¿ƒåº§æ¨™ [___w]:åŠå¾„
 
 public:
 	void update();
@@ -31,6 +31,7 @@ class ShadowMapObject :
 	public Object
 {
 public:
+	ShadowMapObject() :Object(1) {}
 	USING_SUPER(ShadowMapObject);
 	int Init() override;
 	void PreDraw() override;
@@ -38,14 +39,14 @@ public:
 	void Exit() override;
 
 	inline void SetShadowMapSize(u32 size) {
-		//‰Šú‰»‘O‚É‚µ‚©İ’è‚Å‚«‚È‚¢
+		//åˆæœŸåŒ–å‰ã«ã—ã‹è¨­å®šã§ããªã„
 		if (is_initialized)
 			return;
 		shadow_map_size = size;
 	}
 
 	inline void SetCascadeCount(u32 count) {
-		//‰Šú‰»‘O‚É‚µ‚©İ’è‚Å‚«‚È‚¢
+		//åˆæœŸåŒ–å‰ã«ã—ã‹è¨­å®šã§ããªã„
 		if (is_initialized)
 			return;
 		cascade_count = count;
@@ -55,7 +56,7 @@ public:
 	inline u32 CascadeCount() const { return cascade_count; }
 	void RegisterModelRenderer(ModelRenderer* renderer);
 	void UnregisterModelRenderer(ModelRenderer* renderer);
-
+	void SetLightDirection(const Vector3& dir) { light_dir = dir.getNormalized(); }
 	std::vector<mat4x4> GetLightViewProjs() const { return shadowmap_view_projs; }
 
 private:
@@ -69,13 +70,13 @@ private:
 	std::vector<ModelRenderer*> model_renderers;
 
 	Vector3 shadowmap_center = { 0,0,0 };
-	Vector3 light_dir = { 1,-0.5,0 };
-	mat4x4 shadowmap_view;		//ƒ‰ƒCƒgƒrƒ…[s—ñ
-	mat4x4 shadowmap_proj;		//ƒ‰ƒCƒgƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	std::vector<mat4x4> shadowmap_view_projs; //ƒ‰ƒCƒgƒrƒ…[~ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	std::vector<ShadowInfo> shadow_infos;	//ƒJƒXƒP[ƒhƒVƒƒƒhƒEƒ}ƒbƒv—pî•ñ
+	Vector3 light_dir = { 0,-1,0 };
+	mat4x4 shadowmap_view;		//ãƒ©ã‚¤ãƒˆãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+	mat4x4 shadowmap_proj;		//ãƒ©ã‚¤ãƒˆãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	std::vector<mat4x4> shadowmap_view_projs; //ãƒ©ã‚¤ãƒˆãƒ“ãƒ¥ãƒ¼Ã—ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	std::vector<ShadowInfo> shadow_infos;	//ã‚«ã‚¹ã‚±ãƒ¼ãƒ‰ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ç”¨æƒ…å ±
 
-	//ƒVƒƒƒhƒEƒ}ƒbƒv—pƒTƒ“ƒvƒ‰[
+	//ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ç”¨ã‚µãƒ³ãƒ—ãƒ©ãƒ¼
 	ID3D11SamplerState* shadow_sampler = nullptr;
 };
 

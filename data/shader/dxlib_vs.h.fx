@@ -102,8 +102,9 @@ struct DX_D3D11_VS_CONST_BUFFER_OTHERMATRIX
 };
 
 // [DxLib] スキニングメッシュ用のワールド行列
-struct DX_D3D11_VS_CONST_BUFFER_LOCALWORLDMATRIX {
-	float4		Matrix[54 * 3];								// ワールド行列3x4
+struct DX_D3D11_VS_CONST_BUFFER_LOCALWORLDMATRIX 
+{
+	float4		Mat[54 * 3];								// ワールド行列3x4
 };
 
 // 定数バッファはDxLibがb0～b3を使用しています。

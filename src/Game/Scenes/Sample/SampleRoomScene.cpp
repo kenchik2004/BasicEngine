@@ -6,15 +6,16 @@
 #include "System/Utils/Render.h"
 #include "Game/Objects/Sample/SampleAnimationObject.h"
 #include "System/MaterialManager.h"
+#include "Game/Managers/LightManager.h"
 
 namespace Sample {
-	SafeSharedPtr<Texture> cam_cache_texture = nullptr;
-	int draw_count = 0;
 
+	std::vector<SafeSharedPtr<LightBase>> lights_in_scene;
 	void SampleRoomScene::Load()
 	{
 		loading_status = LOADING_STATUS::LOADING;
-		ModelManager::LoadAsModel(u8"data/BedRoom.mv1", "room_model");
+		ModelManager::LoadAsModel(u8"data/空色町1.52/sorairo1.52.mv1", "town_model");
+		//ModelManager::LoadAsModel(u8"data/BedRoom.mv1", "room_model");
 		ModelManager::LoadAsModel("data/player/model.mv1", "player_model");
 		ModelManager::LoadAsAnimation("data/player/anim_stand.mv1", "idle");
 		ModelManager::LoadAsAnimation("data/player/anim_walk.mv1", "walk");
@@ -30,32 +31,57 @@ namespace Sample {
 	{
 		if (!CheckForLoading())
 			return Super::Init();
-		cam_cache_texture = make_safe_shared<Texture>(800, 90, DXGI_FORMAT_R8G8B8A8_UNORM);
+
 		sub_camera_obj = SceneManager::Object::Create<CameraObject>(u8"カメラ1");
 		sub_camera_obj->transform->position = { 5.0f, 8.0f, -5.0f };
 		sub_camera_obj->transform->rotation = EulerToQuaternion({ 5.0f, -45.0f, 0.0f });
+		sub_camera_obj.lock()->status.status_bit.set(ObjStat::STATUS::ACTIVE, false);
 		camera_obj = SceneManager::Object::Create<CameraObject>(u8"カメラ");
-		SceneManager::Object::Create<ShadowMapObject>(u8"シャドウマップ");
+		camera_obj->GetComponent<Camera>()->render_type = Camera::RenderType::Deferred;
+		auto shadow_map = SceneManager::Object::Create<ShadowMapObject>(u8"シャドウマップ");
+		shadow_map->SetLightDirection({ 0, -8, 5 });
+		shadow_map->SetShadowMapSize(2048);
 		auto room = SceneManager::Object::Create<GameObject>("Room");
 		SceneManager::Object::Create<SampleAnimationObject>(u8"アニメーションオブジェクト");
-		room->AddComponent<ModelRenderer>()->SetModel("room_model");
-		room->transform->scale = { 0.05f,0.05f,0.05f };
-		room->transform->position = { 0.0f,-5.0f,0.0f };
+		auto room_model = room->AddComponent<ModelRenderer>();
+		//room_model->SetModel("room_model");
+		room_model->SetModel("town_model");
+		//room_model->cast_shadow = false;
+		room->transform->scale = { 2,2,2 };
 		room_obj = room;
+#if 1
+		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
+		for (int i = 0; i < 1000; i++) {
+			auto color = Random::Color(Color::BLACK, Color::WHITE);
+			color = color * 5.0f;
+			light_manager->AddLight(LightType::Point, Random::Position({ -1000,10.0f,-1000 }, { 1000,20.0f,0 }), color, 70, 0.5f);
+		}
+		lights_in_scene = light_manager->GetLights();
+		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 10,10,10 }, 0, 0, { 0,-8,5 });
+
+#endif
 		return Super::Init();
 	}
 
 	void SampleRoomScene::Update()
 	{
-		draw_count = 0;
 		if (!CheckForLoading())
 			return;
 		if (Input::GetKeyDown(KeyCode::P))
 		{
-			bool is_active = sub_camera_obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE);
-			sub_camera_obj.lock()->status.status_bit.set(ObjStat::STATUS::ACTIVE, !is_active);
+			//bool is_active = sub_camera_obj.lock()->status.status_bit.is(ObjStat::STATUS::ACTIVE);
+			//sub_camera_obj.lock()->status.status_bit.set(ObjStat::STATUS::ACTIVE, !is_active);
+			auto cam_comp = camera_obj->GetComponent<Camera>();
+			Camera::RenderType current_type = cam_comp->render_type;
+			cam_comp->render_type = current_type == Camera::RenderType::Deferred ? Camera::RenderType::Forward : Camera::RenderType::Deferred;
 		}
-
+		//for (auto& light : lights_in_scene)
+		//{
+		//	if (light->type == LightType::Point) {
+		//		auto p_light = static_cast<PointLight*>(light.get());
+		//		p_light->range = 5 + sinf(Time::GetTimeFromStart() * 0.2f) * 1.25f;
+		//	}
+		//}
 		if (Input::GetMouseButtonRepeat(MouseButton::ButtonRight)) {
 			auto cam_lock = camera_obj.lock();
 			auto cam_trns = cam_lock->transform;
@@ -110,84 +136,18 @@ namespace Sample {
 
 	}
 
-	void SampleRoomScene::LateDraw()
+	void SampleRoomScene::OnLateDrawFinish()
 	{
 		if (!CheckForLoading())
 		{
 			DrawString(0, 0, u8"Now Loading...", 0xff0000);
 		}
-		{
-			//カメラ映像をキャッシュ
-			auto cur_rt = GetRenderTarget();
-			SetRenderTarget(cam_cache_texture.get(), nullptr);
-			ClearColor(Color::BLACK);
-			auto cam_comp = camera_obj.lock()->GetComponent<Camera>();
-			std::array<Texture*, 5> textures = { cam_comp->my_screen.get(), cam_comp->gbuffer0.get(),cam_comp->gbuffer1.get(), cam_comp->gbuffer2.get(),cam_comp->my_screen_depth.get() };
-			for (int i = 0; i < 5; i++)
-			{
-				Vector3 draw_pos = { i * SCREEN_W * 0.2f,0,0 };
-				Vector3 scale = { SCREEN_W * 0.2f,(float)SCREEN_H,0 };
-				VERTEX2DSHADER vert[4];
-				u8 alpha_u8 = 255;
-				vert[0].pos.x = draw_pos.x;
-				vert[0].pos.y = draw_pos.y;
-				vert[0].pos.z = 0.0f;
-				vert[0].rhw = 1.0f;
-				vert[0].dif = { 255,255,255,alpha_u8 };
-				vert[0].u = 0.0f;
-				vert[0].v = 0.0f;
-				vert[1].pos.x = draw_pos.x + scale.x;
-				vert[1].pos.y = draw_pos.y;
-				vert[1].pos.z = 0.0f;
-				vert[1].rhw = 1.0f;
-				vert[1].dif = { 255,255,255,alpha_u8 };
-				vert[1].u = 1.0f;
-				vert[1].v = 0.0f;
-				vert[2].pos.x = draw_pos.x;
-				vert[2].pos.y = draw_pos.y + scale.y;
-				vert[2].pos.z = 0.0f;
-				vert[2].rhw = 1.0f;
-				vert[2].dif = { 255,255,255,alpha_u8 };
-				vert[2].u = 0.0f;
-				vert[2].v = 1.0f;
-				vert[3].pos.x = draw_pos.x + scale.x;
-				vert[3].pos.y = draw_pos.y + scale.y;
-				vert[3].pos.z = 0.0f;
-				vert[3].rhw = 1.0f;
-				vert[3].dif = { 255,255,255,alpha_u8 };
-				vert[3].u = 1.0f;
-				vert[3].v = 1.0f;
-				for (u32 i = 0; i < 16; i++)
-				{
-					SetUseTextureToShader(i, -1);
-				}
-
-				SetTexture(0, textures[i]);
-
-				SetUsePixelShader(*MaterialManager::GetDefaultMat2D()->GetPixelShader());
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
-				SetDrawMode(DX_DRAWMODE_BILINEAR);
-				DrawPrimitive2DToShader(vert, 4, DX_PRIMTYPE_TRIANGLESTRIP);
-				SetUsePixelShader(-1);
-				for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
-					SetUseTextureToShader(i, -1);
-				}
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-				SetDrawMode(DX_DRAWMODE_NEAREST);
-			}
-
-
-			SetRenderTarget(cur_rt);
-			DrawGraph(0, 0, *cam_cache_texture, FALSE);
-
-		}
-		DrawFormatString(0, 0, 0xff0000, u8"FPS:%.2f", Time::GetFPS());
+		DxLib::DrawFormatString(0, 0, 0xff0000, u8"FPS:%.2f", Time::GetFPS());
 	}
 
 	void SampleRoomScene::Exit()
 	{
 		room_obj.reset();
-		cam_cache_texture.reset();
 		Super::Exit();
 	}
 

@@ -10,6 +10,11 @@ GameObject::GameObject()
 	status.obj_type = ObjStat::NORMAL;
 }
 
+GameObject::GameObject(unsigned int prio) : Object(prio)
+{
+	status.obj_type = ObjStat::NORMAL;
+}
+
 GameObject::GameObject(std::string name_)
 {
 	status.obj_type = ObjStat::NORMAL;
@@ -76,7 +81,7 @@ void Object::SetPriority(unsigned int prio)
 }
 
 
-UIObject::UIObject() : Object()
+UIObject::UIObject() : Object(2000U)
 {
 	status.obj_type = ObjStat::UI;
 	tag = UI;
@@ -85,7 +90,6 @@ UIObject::UIObject() : Object()
 
 int UIObject::Init()
 {
-	SetPriority(2000);
 	return Super::Init();
 }
 

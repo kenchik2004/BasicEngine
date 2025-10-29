@@ -136,7 +136,7 @@ namespace Sample
 		// カメラの描画結果をテレビの画面テクスチャにコピーする
 		auto rt = GetRenderTarget();
 		SetRenderTarget(tv_screen_texture.get(), nullptr);
-		CopyToRenderTarget(tv_screen_texture.get(), GetCurrentCamera()->my_screen.get());
+		CopyToRenderTarget(tv_screen_texture.get(), GetCurrentCamera()->hdr.get());
 		SetRenderTarget(rt);
 	}
 

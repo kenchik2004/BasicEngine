@@ -6,6 +6,7 @@
 #include "System/Objects/ShadowMapObject.h"
 #include "System/Utils/Material.h"
 #include "System/MaterialManager.h"
+#include "System/Components/Camera.h"
 
 void ModelRenderer::Construct()
 {
@@ -105,8 +106,10 @@ void ModelRenderer::Draw()
 {
 	if (!model)
 		return;
-
-	model->Draw();
+	auto camera = owner->GetScene()->GetCurrentCameraRef();
+	if (!camera)
+		return;
+	model->Draw(camera->render_type == Camera::RenderType::Deferred);
 }
 
 
@@ -137,7 +140,7 @@ Material* ModelRenderer::GetMaterial(size_t index)
 	if (!model)
 		return nullptr;
 	if (index >= model->materials.size())
-	return nullptr;
+		return nullptr;
 	return model->materials[index];
 }
 

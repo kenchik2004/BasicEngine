@@ -38,6 +38,9 @@ class Object :public std::enable_shared_from_this<Object>
 	friend class Scene;
 	friend class SceneManager;
 public:
+	Object(unsigned int prio = 10) {
+		status.priority = prio;
+	}
 	virtual ~Object() {}
 
 	USING_SUPER(Object);
@@ -174,7 +177,7 @@ public:
 		}
 	}
 
-	inline void SetPriority(unsigned int prio);
+	void SetPriority(unsigned int prio);
 	inline unsigned int GetPriority() { return status.priority; }
 	inline SceneP GetScene() { return scene; }
 
@@ -239,6 +242,7 @@ class GameObject :public Object {
 public:
 	USING_SUPER(GameObject);
 	GameObject();
+	GameObject(unsigned int prio);
 	GameObject(std::string name_);
 	void DebugDraw() override;
 

@@ -796,8 +796,8 @@ void SceneManager::Draw()
 #endif
 		if (auto camera = current_camera.lock()) {
 			ClearColor(Color::GRAY);
-			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->my_screen, true);
-			//CopyToRenderTarget(GetBackBuffer(), camera->my_screen.get());
+			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->hdr, true);
+			//CopyToRenderTarget(GetBackBuffer(), camera->hdr.get());
 			a++;
 		}
 	}
@@ -1584,7 +1584,7 @@ void SceneManager::Draw()
 		}
 		if (auto camera = current_camera.lock()) {
 			ClearColor(Color::GRAY);
-			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->my_screen, true);
+			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->hdr, true);
 			a++;
 		}
 	}

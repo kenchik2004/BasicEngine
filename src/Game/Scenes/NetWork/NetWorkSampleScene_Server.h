@@ -10,13 +10,13 @@ namespace NetWorkTest_Server {
 	{
 	public:
 		USING_SUPER(NetWorkSampleScene_Server);
+		void Load() override;
 		int Init() override;
 		void Update() override;
+		void PreDraw() override;
 		void LateDraw() override;
 		void Exit() override;
 	private:
-		void OpenUDPSocket();
-		void OpenTCPSocket();
 
 
 		void ProcessReceivedUDPBytes(u8* data, size_t length);
@@ -34,8 +34,11 @@ namespace NetWorkTest_Server {
 		//自分のプレイヤー関係
 		std::string input_text = "";
 		GameObjectWP player;
+		GameObjectWP camera;
 
 
+		float camera_distance = 20.0f;
+		float camera_rot_y = 0.0f;
 
 
 		//-----------------------------

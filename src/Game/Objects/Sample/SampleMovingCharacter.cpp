@@ -24,20 +24,23 @@ int SampleMovingCharacter::Init()
 	std::function on_jump_end = [this]() {
 		is_jumping = false;
 		};
-	my_animator->SetAnimationCallBack("jump", on_jump, 0, "on_jump");
-	my_animator->SetAnimationCallBack("jump", on_jump_top, 40, "on_jump_top");
+	if (use_rigidbody) {
+		my_animator->SetAnimationCallBack("jump", on_jump, 0, "on_jump");
+		my_animator->SetAnimationCallBack("jump", on_jump_top, 40, "on_jump_top");
+	}
 	my_animator->SetAnimationCallBack("jump", on_jump_end, 80, "on_jump_end");
 
 
-
-	auto rb = AddComponent<RigidBody>();
-	rb->freeze_rotation = { 1,1,1 };
-	my_rb = rb;
-	auto col = AddComponent<CapsuleCollider>();
-	col->height = 7.5f;
-	col->radius = 1.5f;
-	col->position = { 5.4f,0,0 };
-	col->rotation = Quaternion(DEG2RAD(90), { 0,0,1 });
+	if (use_rigidbody) {
+		auto rb = AddComponent<RigidBody>();
+		rb->freeze_rotation = { 1,1,1 };
+		my_rb = rb;
+		auto col = AddComponent<CapsuleCollider>();
+		col->height = 7.5f;
+		col->radius = 1.5f;
+		col->position = { 5.4f,0,0 };
+		col->rotation = Quaternion(DEG2RAD(90), { 0,0,1 });
+	}
 
 
 	my_animator->anim_blend_time = 0.2f;
@@ -48,7 +51,8 @@ int SampleMovingCharacter::Init()
 
 void SampleMovingCharacter::Update()
 {
-
+	if (ignore_input || !use_rigidbody)
+		return;
 	Vector3 mov = { 0,0,0 };
 	if (Input::GetKey(KeyCode::W))
 	{

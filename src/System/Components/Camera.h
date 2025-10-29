@@ -40,12 +40,31 @@ public:
 	inline void SetPerspective(float perspective_) { perspective = perspective_; SetupCamera_Perspective(DEG2RAD(perspective)); }
 	inline float GetPerspective() { return perspective; }
 	SafeSharedPtr<Camera> GetCurrentCamera();
-	SafeSharedPtr<Texture> my_screen = nullptr;
-	SafeSharedPtr<Texture> my_screen_depth = nullptr;
+	SafeSharedPtr<Texture> hdr = nullptr;
+	SafeSharedPtr<Texture> depth = nullptr;
 
-	SafeSharedPtr<Texture> gbuffer0 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
-	SafeSharedPtr<Texture> gbuffer1 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
-	SafeSharedPtr<Texture> gbuffer2 = nullptr;  //!< Gバッファ0 (法線・スペキュラ強度)
+	enum class RenderType {
+		Forward,
+		Deferred,
+	};
+	RenderType render_type = RenderType::Forward;
+
+	// ■【GBufferのレイアウト】■
+//            R         G         B         A
+//       +---------+---------+---------+---------+
+// RT0   |          Albedo.rgb         |    AO   |  DXGI_FORMAT_R8G8B8A8_UNORM (Full-rate)
+//       +---------+---------+---------+---------+
+// RT1   |Normal.xyz(圧縮済み)|Roughness| Metallic|  DXGI_FORMAT_R8G8B8A8_UNORM (Full-rate)
+//       +---------+---------+---------+---------+
+// RT2   |      WorldPosition.xyz      |/////////|  DXI_FORMAT_R32G32B32A32_FLOAT (1/4-rate)
+//       +---------+---------+---------+---------+
+//
+//       +---------+---------+---------+---------+
+// Depth |                 Depth                 |  DXGI_FORMAT_D32_FLOAT
+//       +---------+---------+---------+---------+
+	static constexpr u32 GBUFFER_NUM = 4;    //!< GBufferの数
+
+	std::array<SafeSharedPtr<Texture>, GBUFFER_NUM> gbuffer_texture_;
 
 	float camera_near = 0.1f;
 	float camera_far = 2000.0f;

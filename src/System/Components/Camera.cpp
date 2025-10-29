@@ -3,9 +3,10 @@
 #include "System/Scene.h"
 #include <System/Utils/Render.h>
 #include <System/Objects/ShadowMapObject.h>
+#include <System/MaterialManager.h>
 
 namespace {
-
+	ShaderPs* ps_gbuffer_blend = nullptr;
 }
 
 
@@ -90,19 +91,24 @@ void Camera::Construct()
 
 int Camera::Init()
 {
-	my_screen = TextureManager::Create(owner->name + "camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
-	my_screen_depth = TextureManager::Create(owner->name + "camerascreendepth", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
+	hdr = TextureManager::Create(owner->name + "camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+	depth = TextureManager::Create(owner->name + "camerascreendepth", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
 
 	constant_buffer_handle = CreateShaderConstantBuffer(sizeof(CBufferCameraInfo));
 
-	gbuffer0 = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16_FLOAT);
-	gbuffer1 = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_SNORM);
-	gbuffer2 = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
-	//if (!my_screen)
-	//	my_screen = TextureManager::CloneByName(owner->name + "camerascreen");
+	gbuffer_texture_[0] = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+	gbuffer_texture_[1] = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+	gbuffer_texture_[2] = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	gbuffer_texture_[3] = TextureManager::Create("gbuffer3", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
+	//if (!hdr)
+	//	hdr = TextureManager::CloneByName(owner->name + "camerascreen");
 	if (!GetCurrentCamera())
 		SetCurrentCamera();
 	owner->GetScene()->RegisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
+
+	if (!ps_gbuffer_blend)
+		ps_gbuffer_blend = MaterialManager::LoadPixelShader("data/shader/ps_model.fx", "ps_gbuffer_blend");
+
 	return 0;
 }
 
@@ -111,16 +117,43 @@ void Camera::PreDraw()
 	PrepareCamera();
 	if (is_current_camera)
 	{
-		ClearColor(my_screen.get(), { 0,0,0,0 });
-		ClearColor(gbuffer0.get(), { 0,0,0,0 });
-		ClearColor(gbuffer1.get(), { 0,0,0,0 });
-		ClearColor(gbuffer2.get(), { 0,0,0,0 });
-		ClearDepth(my_screen_depth.get(), 1.0f);
+		switch (render_type) {
+		case RenderType::Forward:
+		{
+			SetRenderTarget(hdr.get(), depth.get());
+			ClearColor(hdr.get(), { 0,0,0,0 });
+			ClearDepth(depth.get(), 1.0f);
+		}
+		break;
+		case RenderType::Deferred:
+		{
+			for (auto& gbuffer : gbuffer_texture_)
+				ClearColor(gbuffer.get(), { 0,0,0,0 });
+			ClearDepth(gbuffer_texture_[GBUFFER_NUM - 1].get(), 1.0f);
+		}
+		}
+
 	}
 }
 
 void Camera::LateDraw()
 {
+	if (is_current_camera) {
+		if (render_type == RenderType::Deferred)
+		{
+			// GBuffer合成
+			SetRenderTarget(hdr.get(), depth.get());
+			ClearColor(hdr.get(), { 0,0,0,0 });
+			ClearDepth(depth.get(), 1.0f);
+			for (int i = 0; i < 16; i++)
+				SetUseTextureToShader(i, -1);
+
+			SetTexture(7, gbuffer_texture_[0].get());
+			SetTexture(8, gbuffer_texture_[1].get());
+			SetTexture(9, gbuffer_texture_[2].get());
+			SetTexture(10, gbuffer_texture_[3].get());
+		}
+	}
 
 }
 
@@ -130,9 +163,25 @@ void Camera::PrepareCamera()
 	if (is_current_camera)
 	{
 		SetCameraConstantBuffer();
-		std::array<Texture*, 4> gbuffers = { my_screen.get(), gbuffer0.get(), gbuffer1.get(), gbuffer2.get() };
-		//SetRenderTarget(my_screen.raw_shared().get(), my_screen_depth.raw_shared().get());
-		SetRenderTarget(4, gbuffers.data(), my_screen_depth.get());
+		switch (render_type)
+		{
+		case Camera::RenderType::Forward:
+		{
+			SetRenderTarget(hdr.get(), depth.get());
+		}
+		break;
+		case Camera::RenderType::Deferred:
+		{
+			std::array<Texture*, 3> gbuffer_texture = {
+			gbuffer_texture_[0].get(),
+			gbuffer_texture_[1].get(),
+			gbuffer_texture_[2].get()
+			};
+			SetRenderTarget(GBUFFER_NUM - 1, gbuffer_texture.data(), gbuffer_texture_[GBUFFER_NUM - 1].get());
+
+		}
+		break;
+		}
 		SetupCamera_Perspective(DEG2RAD(perspective));
 		SetCameraPositionAndTargetAndUpVec(cast(owner_trns->position), cast(owner_trns->position + owner_trns->AxisZ()), cast(owner_trns->AxisY()));
 		SetCameraNearFar(camera_near, camera_far);
@@ -161,8 +210,8 @@ void Camera::SetCameraConstantBuffer()
 
 	}
 	UpdateShaderConstantBuffer(constant_buffer_handle);
-	SetShaderConstantBuffer(constant_buffer_handle, DX_SHADERTYPE_VERTEX, 11);
-	SetShaderConstantBuffer(constant_buffer_handle, DX_SHADERTYPE_PIXEL, 11);
+	SetShaderConstantBuffer(constant_buffer_handle, DX_SHADERTYPE_VERTEX, 10);
+	SetShaderConstantBuffer(constant_buffer_handle, DX_SHADERTYPE_PIXEL, 10);
 }
 
 
@@ -178,15 +227,11 @@ void Camera::SetCurrentCamera()
 }
 
 void Camera::Exit() {
-	my_screen.reset();
-	my_screen_depth.reset();
+	hdr.reset();
+	depth.reset();
 
-	if (gbuffer0)
-		gbuffer0.reset();
-	if (gbuffer1)
-		gbuffer1.reset();
-	if (gbuffer2)
-		gbuffer2.reset();
+	for (auto& gbuffer : gbuffer_texture_)
+		gbuffer.reset();
 	DeleteShaderConstantBuffer(constant_buffer_handle);
 	owner->GetScene()->UnregisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
 }
@@ -215,8 +260,8 @@ void DebugCamera::Construct()
 
 int DebugCamera::Init()
 {
-	my_screen = TextureManager::Create(owner->name + "d_camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
-	my_screen_depth = TextureManager::Create(owner->name + "d_camerascreendepth", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
+	hdr = TextureManager::Create(owner->name + "d_camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+	depth = TextureManager::Create(owner->name + "d_camerascreendepth", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
 
 	if (!gbuffer0)
 		gbuffer0 = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16_FLOAT);
@@ -264,12 +309,12 @@ void DebugCamera::PreDraw()
 void DebugCamera::PrepareCamera()
 {
 
-	ClearColor(my_screen.raw_shared().get(), { 0,0,0,0 });
-	ClearDepth(my_screen_depth.raw_shared().get(), 1.0f);
+	ClearColor(hdr.raw_shared().get(), { 0,0,0,0 });
+	ClearDepth(depth.raw_shared().get(), 1.0f);
 	TransformP owner_trns = owner->transform;
-	std::array<Texture*, 4> gbuffers = { my_screen.get(), gbuffer0.get(), gbuffer1.get(), gbuffer2.get() };
-	SetRenderTarget(my_screen.raw_shared().get(), my_screen_depth.raw_shared().get());
-	SetRenderTarget(4, gbuffers.data(), my_screen_depth.get());
+	std::array<Texture*, 4> gbuffers = { hdr.get(), gbuffer0.get(), gbuffer1.get(), gbuffer2.get() };
+	SetRenderTarget(hdr.raw_shared().get(), depth.raw_shared().get());
+	SetRenderTarget(4, gbuffers.data(), depth.get());
 
 	SetupCamera_Perspective(DEG2RAD(perspective));
 	SetCameraPositionAndTargetAndUpVec(cast(owner_trns->position), cast(owner_trns->position + owner_trns->AxisZ()), cast(owner_trns->AxisY()));
@@ -279,8 +324,8 @@ void DebugCamera::PrepareCamera()
 void DebugCamera::Exit()
 {
 	owner->GetScene()->SetDebugCamera(nullptr);
-	my_screen.reset();
-	my_screen_depth.reset();
+	hdr.reset();
+	depth.reset();
 	if (gbuffer0)
 		gbuffer0.reset();
 	if (gbuffer1)
@@ -290,10 +335,10 @@ void DebugCamera::Exit()
 	auto targets = GetRenderTarget();
 	//もし自分のレンダーターゲットがセットされていたらデフォルトに戻す
 	if (targets.color_targets_[0]) {
-		if (targets.color_targets_[0] == my_screen.raw_shared().get())
+		if (targets.color_targets_[0] == hdr.raw_shared().get())
 		{
 			auto current = GetCurrentCamera();
-			SetRenderTarget(current->my_screen.raw_shared().get(), current->my_screen_depth.raw_shared().get());
+			SetRenderTarget(current->hdr.raw_shared().get(), current->depth.raw_shared().get());
 		}
 	}
 

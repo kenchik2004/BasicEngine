@@ -15,7 +15,7 @@ PS_OUTPUT main(PS_INPUT input)
 	float4	color = DiffuseTexture.Sample(DiffuseSampler, input.uv0_);
 
 	// 出力カラー = テクスチャカラー * ディフューズカラー
-	output.color0_ = color * input.diffuse_;
+    output.color0_ = color * input.diffuse_;
 
 	// 出力パラメータを返す
 	return output;

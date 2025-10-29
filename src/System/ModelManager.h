@@ -61,7 +61,7 @@ public:
 		MV1DeleteModel(handle);
 		instance--;
 	}
-	void Draw();
+	void Draw(bool to_gbuffer = false);
 };
 
 class Animation {

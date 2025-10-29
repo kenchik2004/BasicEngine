@@ -217,11 +217,7 @@ void Scene::SyncGameObjectsPriority()
 	std::sort(dirty_priority_objects.begin(), dirty_priority_objects.end(),
 		[](ObjectP a, ObjectP b) { return a->GetPriority() < b->GetPriority(); });
 
-	std::vector<unsigned int> priority_vec;
-	for (const ObjectP& obj : objects)
-	{
-		priority_vec.push_back(obj->GetPriority());
-	}
+
 	// 2) まとめて objects へ挿入
 	for (ObjectP& obj : dirty_priority_objects)
 	{
@@ -231,7 +227,6 @@ void Scene::SyncGameObjectsPriority()
 		auto cur = std::find(objects.begin(), objects.end(), obj);
 		if (cur != objects.end()) {
 			int index = std::distance(objects.begin(), cur);
-			priority_vec.erase(priority_vec.begin() + std::distance(objects.begin(), cur));
 			objects.erase(cur);
 		}
 
@@ -239,13 +234,29 @@ void Scene::SyncGameObjectsPriority()
 	for (ObjectP& obj : dirty_priority_objects)
 	{
 		// 2‑2) 優先度に合った場所を二分探索で探す
-		auto pos = std::upper_bound(priority_vec.begin(), priority_vec.end(), obj->GetPriority());
+		auto pos = FindInsertPositionByPriority(obj->GetPriority());
 
-		objects.insert(objects.begin() + std::distance(priority_vec.begin(), pos), obj);  // ここに差し込む
-		priority_vec.insert(pos, obj->GetPriority());
+		objects.insert(objects.begin() + pos, obj);  // ここに差し込む
 	}
 	dirty_priority_objects.clear();
 	//Time::ResetTime();
+}
+
+size_t Scene::FindInsertPositionByPriority(unsigned int priority)
+{
+
+	// 優先度に合った場所を二分探索で探す
+	// upper_bound は「指定した値より大きい最初の位置」を返す
+	// つまり、同じ優先度のものがあればその後ろに挿入される
+	auto pos = std::upper_bound(
+		objects.begin(),
+		objects.end(),
+		priority,
+		[](const unsigned int lhs, const ObjectP& rhs) {
+			return lhs < rhs->GetPriority();
+		}
+	);
+	return std::distance(objects.begin(), pos);
 }
 
 void Scene::DestroyGameObject(ObjectP destroy_obj) {

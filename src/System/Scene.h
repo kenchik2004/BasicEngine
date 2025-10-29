@@ -132,6 +132,7 @@ private:
 	//std::vector<std::function<void()>> draw_calls;//ドローコールをキャッシュしておく設計
 	ObjectWPVec leak_objects;
 	void SyncGameObjectsPriority();
+	size_t FindInsertPositionByPriority(unsigned int priority);
 	AudioListenerWP current_audio_listener;
 	CameraWP current_camera;
 	CameraWPVec active_cameras;
@@ -146,7 +147,8 @@ protected:
 		auto obj = make_safe_shared<T>(std::forward<Args>(args)...);
 		obj->Construct(SafeSharedPtr(shared_from_this()));
 		dirty_priority_objects.push_back(obj);
-		objects.push_back(obj);
+		size_t insert_pos = FindInsertPositionByPriority(obj->status.priority);
+		objects.insert(objects.begin() + insert_pos, obj);
 		if (!GetGameObjectPtr<Object>(name_)) {
 			obj->name = name_.data();
 			obj->Init();

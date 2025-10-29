@@ -6,7 +6,7 @@ public:
 	float g;
 	float b;
 	float a;
-	const float* color() const{ return &r; }
+	const float* color() const { return &r; }
 	Color() :r(0), g(0), b(0), a(1) {}
 	Color(const unsigned int uint_color) {
 		r = float((uint_color & 0xff0000) >> 16) / 255; g = float((uint_color & 0x00ff00) >> 8) / 255; b = float(uint_color & 0x0000ff) / 255; a = 1.0f;
@@ -23,6 +23,10 @@ public:
 		color |= (std::clamp((unsigned int)(b * 255), (unsigned int)0, (unsigned int)255));
 		return color;
 	}
+	Color operator* (float bias) { return { r * bias,g * bias,b * bias,a * bias }; }
+	Color operator* (Color bias) { return { r * bias.r,g * bias.g,b * bias.b,a * bias.a }; }
+	Color operator* (Vector4 bias) { return { r * bias.x,g * bias.y,b * bias.z,a * bias.w }; }
+
 	//各色のGetColorやGetColorFを使用せずに扱うための定数
 	static const Color BLACK;		//黒
 	static const Color WHITE;		//白

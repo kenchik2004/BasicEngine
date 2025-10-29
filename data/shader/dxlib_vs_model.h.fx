@@ -90,9 +90,9 @@ float4x4 DxLib_ProjectionMatrix()
 //---------------------------------------------------------------------------
 float3x4	DxLib_getSkinMatrix(in int blendIndex)
 {
-	float4	m0 = DxLib_LocalWorldMatrix.Matrix[blendIndex + 0];
-	float4	m1 = DxLib_LocalWorldMatrix.Matrix[blendIndex + 1];
-	float4	m2 = DxLib_LocalWorldMatrix.Matrix[blendIndex + 2];
+	float4	m0 = DxLib_LocalWorldMatrix.Mat[blendIndex + 0];
+	float4	m1 = DxLib_LocalWorldMatrix.Mat[blendIndex + 1];
+	float4	m2 = DxLib_LocalWorldMatrix.Mat[blendIndex + 2];
 	return float3x4(m0, m1, m2);
 }
 

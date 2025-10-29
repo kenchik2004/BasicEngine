@@ -14,6 +14,7 @@ root
 |        
 |-----Object
 |        |-----ShadowMapObject
+|        |-----LightManager
 |        |-----UIObject
 |        |        |-----TextObject
 |        |        |-----ButtonObject
@@ -39,6 +40,7 @@ root
 |        |        |        |-----Sample::CardDoman
 |        |        |        end_of_node
 |        |        |        
+|        |        |-----SampleNetWorkPlayerObject
 |        |        end_of_node
 |        |        
 |        end_of_node

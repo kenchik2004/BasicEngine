@@ -3,9 +3,10 @@
 #include "System/Components/Camera.h"
 
 class CameraObject :
-    public GameObject
+	public GameObject
 {
 public:
+	CameraObject() :GameObject(0U) {}
 	USING_SUPER(CameraObject);
 	int Init() override;
 	void Update() override;

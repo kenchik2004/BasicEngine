@@ -10,8 +10,8 @@
 //#define FULL_SCREEN
 
 //#define SECONDARY
-int SCREEN_W=1920;
-int SCREEN_H=1080;
+int SCREEN_W = 1920;
+int SCREEN_H = 1080;
 
 std::string window_classname[1] =
 {
@@ -57,7 +57,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 //---------------------------------------------------------------------------------
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
-	
+
 	//もうUTF-8しか使わん!SHIFT_JISはクソ!!
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
@@ -119,6 +119,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	Time::Init();
 	Input::Init();
+	Random::Init();
 	PhysicsManager::Init();
 	SceneManager::Init();
 	RenderInit();
@@ -145,7 +146,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	SetUseZBuffer3D(TRUE);
 	SetWriteZBuffer3D(TRUE);
-	ChangeLightTypeDir(VGet(0.8f, -1.2f, 1.0f));
+	SetLightEnable(FALSE);
 
 	SetCameraPositionAndTarget_UpVecY(float3(0, 0, 0), float3(0, 0, 1));
 

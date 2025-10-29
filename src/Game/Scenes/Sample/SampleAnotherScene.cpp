@@ -77,7 +77,7 @@ namespace Sample {
 		}
 		else {
 			//裏シーンの描画領域をこっちに持ってくる
-			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *SafeStaticCast<Camera>(dice_scene->GetCurrentCamera().lock())->my_screen, true);
+			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *SafeStaticCast<Camera>(dice_scene->GetCurrentCamera().lock())->hdr, true);
 			//とりあえず1でスキップ&結果集計
 			int i = 0;
 			int sum = 0;

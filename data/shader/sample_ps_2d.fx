@@ -2,7 +2,6 @@
 
 
 
-static const float PI = 3.14159265359;
 
 // 0.0～1.0の範囲でランダムな値を生成
 float InterleavedGradientNoise(float2 position_screen)
@@ -160,7 +159,7 @@ PS_OUTPUT GUWAGUWA_SHADER(PS_INPUT psin)
 PS_OUTPUT main(PS_INPUT psin)
 {
     PS_OUTPUT psout = FLAME_SHADER(psin);
-    psout.color0_ = float4(0, 0, 0, 0);
+    //psout.color0_ = float4(0, 0, 0, 0);
     return psout;
     
    

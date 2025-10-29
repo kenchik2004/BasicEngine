@@ -7,12 +7,13 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include "Game/Objects/Sample/SampleAnimationObject.h"
+#include "Game/Objects/Sample/SampleMovingCharacter.h"
 #include "System/Objects/CameraObject.h"
 #include "System/Utils/Material.h"
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/MeshCollider.h"
+#include "Game/Managers/LightManager.h"
 
 namespace NetWorkTest_Server {
 
@@ -54,7 +55,7 @@ namespace NetWorkTest_Server {
 				return;
 			}
 		}
-		auto obj = SceneManager::Object::Create<Sample::SampleAnimationObject>("Player" + std::to_string(key));
+		auto obj = SceneManager::Object::Create<SampleMovingCharacter>("Player" + std::to_string(key), false, false);
 		list.emplace_back(key, obj);
 	}
 
@@ -276,9 +277,8 @@ namespace NetWorkTest_Server {
 
 
 
-	int NetWorkSampleScene_Server::Init()
+	void NetWorkSampleScene_Server::Load()
 	{
-
 		ModelManager::LoadAsModel("data/player/model.mv1", "player_model");
 		ModelManager::LoadAsAnimation("data/player/anim_stand.mv1", "idle");
 		ModelManager::LoadAsAnimation("data/player/anim_walk.mv1", "walk");
@@ -287,8 +287,17 @@ namespace NetWorkTest_Server {
 		ModelManager::LoadAsAnimation("data/player/anim_salute.mv1", "salute");
 		ModelManager::LoadAsAnimation("data/player/anim_aim.mv1", "aim");
 		ModelManager::LoadAsAnimation("data/player/anim_reload.mv1", "reload");
-		ModelManager::LoadAsModel(u8"data/空色町1.52/sorairo1.52.mv1", "sorairo");
+		ModelManager::LoadAsModel(u8"data/Stage/SwordBout/Stage00.mv1", "stage");
 		AudioManager::Load("data/Sound/reload.mp3", "reload_se", false);
+		while (ModelManager::GetLoadingCount() > 0 || AudioManager::GetLoadingCount() > 0) {
+			//ロード待ち
+			DxLib::WaitTimer(10);
+		}
+	}
+
+	int NetWorkSampleScene_Server::Init()
+	{
+
 		//TextureManager::Load("data/player/Vampire A Lusth.fbm/Vampire_diffuse.png", "player_texture");
 		net_manager = make_safe_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_LISTEN, open_port);
 		udp_network = net_manager->OpenUDPSocket(open_udp_port); // 必要に応じて UDP も開く
@@ -296,12 +305,12 @@ namespace NetWorkTest_Server {
 			udp_network->on_receive = [this](void* data, size_t length) {
 			ProcessReceivedUDPBytes(reinterpret_cast<u8*>(data), length);
 			};
-		player = SceneManager::Object::Create<Sample::SampleAnimationObject>("You");
-		auto cam=SceneManager::Object::Create<CameraObject>(); 
+		player = SceneManager::Object::Create<SampleMovingCharacter>("You");
+		auto cam = SceneManager::Object::Create<CameraObject>();
 		cam->transform->position = { 0,250,-250 };
 		cam->transform->SetAxisZ({ 0,-0.5f,1.0f });
-		cam->transform->SetParent(player->transform);
-
+		//cam->transform->SetParent(player->transform);
+		camera = cam;
 		net_manager->SetOnNewConnectionCallback([this](NetWork* new_connect) {
 			chat_network.push_back(new_connect);
 			another_clients.push_back(new_connect->ip);
@@ -328,10 +337,13 @@ namespace NetWorkTest_Server {
 
 
 		auto ground = SceneManager::Object::Create<GameObject>("Ground");
-		ground->AddComponent<ModelRenderer>()->SetModel("sorairo");
+		ground->AddComponent<ModelRenderer>()->SetModel("stage");
 		ground->AddComponent<RigidBody>();
 		ground->AddComponent<MeshCollider>();
-		ground->transform->scale = { 5.0f,5.0f,5.0f };
+		ground->transform->scale = { 0.05f,0.05f,0.05f };
+		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
+		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 10,10,10 }, 0, 0, { 0,-8,5 });
+
 
 		return 0;
 	}
@@ -364,15 +376,23 @@ namespace NetWorkTest_Server {
 			}
 		}
 
+		if (Input::GetKey(KeyCode::Up))
+			camera_distance -= 2.0f * Time::DeltaTime();
+		if (Input::GetKey(KeyCode::Down))
+			camera_distance += 2.0f * Time::DeltaTime();
+		if (Input::GetKey(KeyCode::Left))
+			camera_rot_y -= 30.0f * Time::DeltaTime();
+		if (Input::GetKey(KeyCode::Right))
+			camera_rot_y += 30.0f * Time::DeltaTime();
+
+	}
+
+	void NetWorkSampleScene_Server::PreDraw()
+	{
+		camera->transform->position = player->transform->position + Quaternion(DEG2RAD(camera_rot_y), { 0,1,0 }).rotate(Vector3(0, 1, 1.5f).getNormalized()) * camera_distance;
+		camera->transform->SetAxisZ(player->transform->position - camera->transform->position + Vector3(0, 5, 0));
+
 		if (udp_network) {
-			if (Input::GetKey(KeyCode::Up))
-				player->transform->position.z += 10.0f * Time::DeltaTime();
-			if (Input::GetKey(KeyCode::Down))
-				player->transform->position.z -= 10.0f * Time::DeltaTime();
-			if (Input::GetKey(KeyCode::Left))
-				player->transform->position.x -= 10.0f * Time::DeltaTime();
-			if (Input::GetKey(KeyCode::Right))
-				player->transform->position.x += 10.0f * Time::DeltaTime();
 
 			// サーバーは接続中の全クライアントに送信 -> いわゆるブロードキャスト
 			//権威サーバ方式では、クライアントの位置情報をサーバーが集約して、全クライアントに配信する
@@ -383,7 +403,7 @@ namespace NetWorkTest_Server {
 			for (auto& pos : another_players) {
 				IPDATA sender_ip = MakeIPFromKey(pos.first);
 
-				// 自分の位置情報は送らない
+				// 相手自身の位置情報は送らない
 				std::for_each(another_players.begin(), another_players.end(),
 					[&](const auto& p) {
 						if (p.first != pos.first) {
@@ -396,7 +416,6 @@ namespace NetWorkTest_Server {
 				pd.position = player->transform->position;
 				SendPacket(net_manager.get(), udp_network, sender_ip, send_udp_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData));
 			}
-
 
 
 			//			SendPacket(udp_network, { 192,168,0,104 }, 11452, PACKET_TYPE_PLAYER_POSITION, &player_position, sizeof(Vector3));

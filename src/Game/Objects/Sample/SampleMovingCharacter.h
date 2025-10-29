@@ -8,10 +8,18 @@ class SampleMovingCharacter :
 	public GameObject
 {
 public:
+	SampleMovingCharacter() = default;
+	SampleMovingCharacter(bool ignore_input_, bool use_rigidbody_)
+	{
+		ignore_input = ignore_input_;
+		use_rigidbody = use_rigidbody_;
+	};
 	USING_SUPER(SampleMovingCharacter);
 	int Init() override;
 	void Update() override;
 	void Exit() override;
+	bool ignore_input = false;
+	bool use_rigidbody = true;
 private:
 	ModelRendererWP my_model = nullptr;
 	AnimatorWP my_animator = nullptr;

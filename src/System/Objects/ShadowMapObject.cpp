@@ -172,12 +172,16 @@ void ShadowMapObject::ShadowMapDrawBegin()
 	float camera_far_z = camera->camera_far;
 
 	const float aspect_ratio = ((float)SCREEN_W / (float)SCREEN_H);
-	std::vector<float> split_distance{ 20.0f, 100.0f, 500.0f, 1200.0f };
+	std::vector<float> split_distance =
+	{
+		50.0f,
+		200.0f,
+		600.0f,
+		1200.0f
+	};
 	if (split_distance.size() < cascade_count)
 		for (u32 i = split_distance.size(); i < cascade_count; i++)
 			split_distance.push_back(min(split_distance[i - 1] + 500, camera_far_z));
-	//light_dir.y = sinf(Time::GetTimeFromStart());
-	light_dir = { 0,8,-5 };
 	light_dir.normalize();
 	for (u32 cascade_index = 0; cascade_index < cascade_count; cascade_index++)
 	{
@@ -194,8 +198,8 @@ void ShadowMapObject::ShadowMapDrawBegin()
 		float  radius = info.bounding_sphere_.w;
 		float lite_y = 700;
 
-		Vector3 position = center + light_dir * lite_y;
-		Vector3 lookat = position - light_dir;
+		Vector3 position = center - light_dir * lite_y;
+		Vector3 lookat = position + light_dir;
 		shadowmap_view = CreateMatrix::lookAtLH(position, lookat, Vector3(0, 1, 0));
 
 		// シャドウマップの上下左右の映る範囲を計算
