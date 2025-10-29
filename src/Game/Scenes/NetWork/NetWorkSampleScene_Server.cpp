@@ -19,8 +19,11 @@ namespace NetWorkTest_Server {
 
 	static unsigned short send_port = 11452;
 	static unsigned short send_udp_port = 11453;
+
 	struct PlayerData {
 		Vector3 position;
+		Quaternion rotation;
+		u8 state;
 	};
 
 
@@ -47,11 +50,13 @@ namespace NetWorkTest_Server {
 		return ip;
 	}
 	// 送信元キーでプレイヤー座標をUpsert
-	static inline void UpsertPlayer(std::vector<std::pair<u32, SafeWeakPtr<GameObject>>>& list, IPDATA ip, const PlayerData& data) {
+	static inline void UpsertPlayer(std::vector<std::pair<u32, SafeWeakPtr<SampleMovingCharacter>>>& list, IPDATA ip, const PlayerData& data) {
 		u32 key = MakeIPKey(ip);
 		for (auto& kv : list) {
 			if (kv.first == key) {
 				kv.second->transform->position = data.position;
+				kv.second->transform->rotation = data.rotation;
+				kv.second->movement_state = data.state;
 				return;
 			}
 		}
@@ -409,11 +414,15 @@ namespace NetWorkTest_Server {
 						if (p.first != pos.first) {
 							PlayerData pd;
 							pd.position = p.second->transform->position;
+							pd.rotation = p.second->transform->rotation;
+							pd.state = p.second->movement_state;
 							SendPacket(net_manager.get(), udp_network, sender_ip, send_udp_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData), MakeIPFromKey(p.first));
 						}
 					});
 				PlayerData pd;
 				pd.position = player->transform->position;
+				pd.rotation = player->transform->rotation;
+				pd.state = player->movement_state;
 				SendPacket(net_manager.get(), udp_network, sender_ip, send_udp_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData));
 			}
 

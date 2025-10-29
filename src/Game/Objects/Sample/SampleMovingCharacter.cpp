@@ -51,7 +51,22 @@ int SampleMovingCharacter::Init()
 
 void SampleMovingCharacter::Update()
 {
-	if (ignore_input || !use_rigidbody)
+	if (ignore_input) {
+		switch (movement_state)
+		{
+		case 0:
+			my_animator->PlayIfNoSame("idle", true);
+			break;
+		case 1:
+			my_animator->PlayIfNoSame("run", true);
+			break;
+		case 2:
+			my_animator->PlayIfNoSame("jump", false, 0.0f, 0.2f, true);
+			break;
+		}
+		return;
+	}
+	if (!use_rigidbody)
 		return;
 	Vector3 mov = { 0,0,0 };
 	if (Input::GetKey(KeyCode::W))
@@ -113,6 +128,16 @@ void SampleMovingCharacter::Update()
 			my_animator->PlayIfNoSame("idle", true);
 		Vector3 vel = my_rb->velocity;
 		my_rb->velocity = Vector3(0, vel.y, 0);
+	}
+	if (is_jumping) {
+		movement_state = 2;
+		return;
+	}
+	else if (mov.magnitudeSquared() > 0.0f) {
+		movement_state = 1;
+	}
+	else {
+		movement_state = 0;
 	}
 }
 

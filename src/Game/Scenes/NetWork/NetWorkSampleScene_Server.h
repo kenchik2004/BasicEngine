@@ -3,6 +3,8 @@
 
 #include "Game/Managers/NetWorkManagerBase.h"
 
+
+USING_PTR(SampleMovingCharacter);
 namespace NetWorkTest_Server {
 
 	class NetWorkSampleScene_Server :
@@ -33,7 +35,7 @@ namespace NetWorkTest_Server {
 		//-----------------------------
 		//自分のプレイヤー関係
 		std::string input_text = "";
-		GameObjectWP player;
+		SafeWeakPtr<SampleMovingCharacter> player;
 		GameObjectWP camera;
 
 
@@ -43,7 +45,7 @@ namespace NetWorkTest_Server {
 
 		//-----------------------------
 		//他のプレイヤー関係
-		std::vector<std::pair<u32, GameObjectWP>> another_players;
+		std::vector<std::pair<u32, SampleMovingCharacterWP>> another_players;
 		std::vector<std::pair<u32, std::string>> received_text;
 		std::vector<IPDATA> another_clients;
 

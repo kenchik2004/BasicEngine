@@ -18,6 +18,7 @@ public:
 	int Init() override;
 	void Update() override;
 	void Exit() override;
+	u8 movement_state = 0; // 0:idle, 1:run, 2:jump
 	bool ignore_input = false;
 	bool use_rigidbody = true;
 private:

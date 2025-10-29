@@ -26,6 +26,8 @@ namespace NetWorkTest_Client {
 
 	struct PlayerData {
 		Vector3 position;
+		Quaternion rotation;
+		u8 state;
 	};
 
 
@@ -55,11 +57,13 @@ namespace NetWorkTest_Client {
 		return ip;
 	}
 	// 送信元キーでプレイヤー座標をUpsert
-	static inline void UpsertPlayer(std::vector<std::pair<u32, GameObjectWP>>& list, IPDATA ip, const PlayerData& data) {
+	static inline void UpsertPlayer(std::vector<std::pair<u32, SampleMovingCharacterWP>>& list, IPDATA ip, const PlayerData& data) {
 		u32 key = MakeIPKey(ip);
 		for (auto& kv : list) {
 			if (kv.first == key) {
 				kv.second->transform->position = data.position;
+				kv.second->transform->rotation = data.rotation;
+				kv.second->movement_state = data.state;
 				return;
 			}
 		}
