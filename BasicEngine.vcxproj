@@ -35,12 +35,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Components\EnemyController.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
+    <ClCompile Include="src\Game\Components\PlayerController.cpp" />
     <ClCompile Include="src\Game\Managers\LightManager.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManagerBase.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManager_Client.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\Player.cpp" />
     <ClCompile Include="src\Game\Objects\Sample\Cards\CardBase.cpp" />
     <ClCompile Include="src\Game\Objects\Sample\Cards\CardDoman.cpp" />
     <ClCompile Include="src\Game\Objects\Sample\Cards\CardFist.cpp" />
@@ -55,6 +62,7 @@
     <ClCompile Include="src\Game\Objects\Sample\Dices\DiceD8.cpp" />
     <ClCompile Include="src\Game\Objects\Sample\SampleAnimationObject.cpp" />
     <ClCompile Include="src\Game\Objects\Sample\SampleMovingCharacter.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\SceneGame.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.cpp" />
@@ -65,9 +73,30 @@
     <ClCompile Include="src\Game\Scenes\Sample\SampleMovingScene.cpp" />
     <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
-    <ClCompile Include="src\System\AudioManager.cpp" />
-    <ClCompile Include="src\System\Color.cpp" />
-    <ClCompile Include="src\System\Component.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\PlayerStateMachine.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyDamageState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyDownState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyIdleState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\IState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerClimbingState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerCombatComboState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerFallState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerIdleState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackLandState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerJumpState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerMoveState.cpp" />
+    <ClCompile Include="src\precompile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Package|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\System\Managers\AudioManager.cpp" />
+    <ClCompile Include="src\System\Utils\Audio.cpp" />
+    <ClCompile Include="src\System\Utils\Color.cpp" />
+    <ClCompile Include="src\System\Components\Component.cpp" />
     <ClCompile Include="src\System\Components\Animator.cpp" />
     <ClCompile Include="src\System\Components\AudioListener.cpp" />
     <ClCompile Include="src\System\Components\AudioPlayer.cpp" />
@@ -85,25 +114,27 @@
     <ClCompile Include="src\System\Components\Text.cpp" />
     <ClCompile Include="src\System\Components\Transform.cpp" />
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp" />
-    <ClCompile Include="src\System\Exception.cpp" />
-    <ClCompile Include="src\System\FileWatcher.cpp" />
-    <ClCompile Include="src\System\IniFileManager.cpp" />
-    <ClCompile Include="src\System\Input.cpp" />
+    <ClCompile Include="src\System\Utils\Exception.cpp" />
+    <ClCompile Include="src\System\Utils\FileWatcher.cpp" />
+    <ClCompile Include="src\System\Managers\IniFileManager.cpp" />
+    <ClCompile Include="src\System\Utils\Input.cpp" />
     <ClCompile Include="src\System\Main.cpp" />
-    <ClCompile Include="src\System\MaterialManager.cpp" />
-    <ClCompile Include="src\System\ModelManager.cpp" />
-    <ClCompile Include="src\System\Object.cpp" />
+    <ClCompile Include="src\System\Managers\MaterialManager.cpp" />
+    <ClCompile Include="src\System\Managers\ModelManager.cpp" />
+    <ClCompile Include="src\System\Objects\Object.cpp" />
     <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
     <ClCompile Include="src\System\Objects\CameraObject.cpp" />
     <ClCompile Include="src\System\Objects\ShadowMapObject.cpp" />
     <ClCompile Include="src\System\Objects\TextObject.cpp" />
-    <ClCompile Include="src\System\PhysicsManager.cpp" />
-    <ClCompile Include="src\System\Random.cpp" />
+    <ClCompile Include="src\System\Managers\PhysicsManager.cpp" />
+    <ClCompile Include="src\System\Utils\Model.cpp" />
+    <ClCompile Include="src\System\Utils\Random.cpp" />
     <ClCompile Include="src\System\Scene.cpp" />
-    <ClCompile Include="src\System\SceneManager.cpp" />
-    <ClCompile Include="src\System\Shader.cpp" />
-    <ClCompile Include="src\System\TextureManager.cpp" />
-    <ClCompile Include="src\System\Time.cpp" />
+    <ClCompile Include="src\System\Managers\SceneManager.cpp" />
+    <ClCompile Include="src\System\Utils\Shader.cpp" />
+    <ClCompile Include="src\System\Managers\TextureManager.cpp" />
+    <ClCompile Include="src\System\Utils\Texture.cpp" />
+    <ClCompile Include="src\System\Utils\Time.cpp" />
     <ClCompile Include="src\System\typedef.cpp" />
     <ClCompile Include="src\System\Utils\Material.cpp" />
     <ClCompile Include="src\System\Utils\Render.cpp" />
@@ -111,10 +142,15 @@
   <ItemGroup>
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
+    <ClInclude Include="src\Game\Components\EnemyController.h" />
+    <ClInclude Include="src\Game\Components\PlayerController.h" />
     <ClInclude Include="src\Game\Managers\LightManager.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\Enemy.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
     <ClInclude Include="src\Game\Objects\Sample\Cards\CardBase.h" />
     <ClInclude Include="src\Game\Objects\Sample\Cards\CardDoman.h" />
     <ClInclude Include="src\Game\Objects\Sample\Cards\CardFist.h" />
@@ -129,6 +165,7 @@
     <ClInclude Include="src\Game\Objects\Sample\Dices\DiceD8.h" />
     <ClInclude Include="src\Game\Objects\Sample\SampleAnimationObject.h" />
     <ClInclude Include="src\Game\Objects\Sample\SampleMovingCharacter.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\SceneGame.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />
@@ -139,10 +176,29 @@
     <ClInclude Include="src\Game\Scenes\Sample\SampleMovingScene.h" />
     <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
     <ClInclude Include="src\Game\Utilitys\DicePair.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\CatmullRomPath.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\PlayerStateMachine.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyDamageState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyDownState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyIdleState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\IState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerClimbingState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerCombatComboState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerFallState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerIdleState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackLandState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerJumpState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerMoveState.h" />
     <ClInclude Include="src\precompile.h" />
-    <ClInclude Include="src\System\AudioManager.h" />
-    <ClInclude Include="src\System\Color.h" />
-    <ClInclude Include="src\System\Component.h" />
+    <ClInclude Include="src\System\Managers\AudioManager.h" />
+    <ClInclude Include="src\System\SystemHeaders\Objects.h" />
+    <ClInclude Include="src\System\SystemHeaders\Utilitys.h" />
+    <ClInclude Include="src\System\Utils\Audio.h" />
+    <ClInclude Include="src\System\Utils\Color.h" />
+    <ClInclude Include="src\System\Components\Component.h" />
     <ClInclude Include="src\System\Components\Animator.h" />
     <ClInclude Include="src\System\Components\AudioListener.h" />
     <ClInclude Include="src\System\Components\AudioPlayer.h" />
@@ -160,25 +216,29 @@
     <ClInclude Include="src\System\Components\Text.h" />
     <ClInclude Include="src\System\Components\Transform.h" />
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h" />
-    <ClInclude Include="src\System\Exception.h" />
-    <ClInclude Include="src\System\FileWatcher.h" />
-    <ClInclude Include="src\System\IniFileManager.h" />
-    <ClInclude Include="src\System\Input.h" />
+    <ClInclude Include="src\System\Utils\Exception.h" />
+    <ClInclude Include="src\System\Utils\FileWatcher.h" />
+    <ClInclude Include="src\System\Managers\IniFileManager.h" />
+    <ClInclude Include="src\System\Utils\Input.h" />
     <ClInclude Include="src\System\Main.h" />
-    <ClInclude Include="src\System\MaterialManager.h" />
-    <ClInclude Include="src\System\ModelManager.h" />
-    <ClInclude Include="src\System\Object.h" />
+    <ClInclude Include="src\System\Managers\MaterialManager.h" />
+    <ClInclude Include="src\System\Managers\ModelManager.h" />
+    <ClInclude Include="src\System\Objects\Object.h" />
     <ClInclude Include="src\System\Objects\ButtonObject.h" />
     <ClInclude Include="src\System\Objects\CameraObject.h" />
     <ClInclude Include="src\System\Objects\ShadowMapObject.h" />
     <ClInclude Include="src\System\Objects\TextObject.h" />
-    <ClInclude Include="src\System\PhysicsManager.h" />
-    <ClInclude Include="src\System\Random.h" />
+    <ClInclude Include="src\System\Managers\PhysicsManager.h" />
+    <ClInclude Include="src\System\Utils\Model.h" />
+    <ClInclude Include="src\System\Utils\Random.h" />
     <ClInclude Include="src\System\Scene.h" />
-    <ClInclude Include="src\System\SceneManager.h" />
-    <ClInclude Include="src\System\Shader.h" />
-    <ClInclude Include="src\System\TextureManager.h" />
-    <ClInclude Include="src\System\Time.h" />
+    <ClInclude Include="src\System\Managers\SceneManager.h" />
+    <ClInclude Include="src\System\Utils\Shader.h" />
+    <ClInclude Include="src\System\SystemHeaders\Components.h" />
+    <ClInclude Include="src\System\SystemHeaders\Managers.h" />
+    <ClInclude Include="src\System\Managers\TextureManager.h" />
+    <ClInclude Include="src\System\Utils\Texture.h" />
+    <ClInclude Include="src\System\Utils\Time.h" />
     <ClInclude Include="src\System\typedef.h" />
     <ClInclude Include="src\System\Utils\Material.h" />
     <ClInclude Include="src\System\Utils\Render.h" />
@@ -271,7 +331,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
@@ -363,10 +423,12 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -389,7 +451,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -415,7 +477,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ForcedIncludeFiles>DxLib.h;precompile.h;System/Main.h</ForcedIncludeFiles>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -439,7 +501,7 @@
       <PreprocessorDefinitions>DEFAULT_DEBUG;%(PreprocessorDefinitions);SECONDARY</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

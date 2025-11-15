@@ -4,13 +4,13 @@
     <ClCompile Include="src\System\Main.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\SceneManager.cpp">
+    <ClCompile Include="src\System\Managers\SceneManager.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Time.cpp">
+    <ClCompile Include="src\System\Utils\Time.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Object.cpp">
+    <ClCompile Include="src\System\Objects\Object.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Scene.cpp">
@@ -19,7 +19,7 @@
     <ClCompile Include="src\System\Components\Transform.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Component.cpp">
+    <ClCompile Include="src\System\Components\Component.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\Float2.cpp">
@@ -28,10 +28,10 @@
     <ClCompile Include="src\Float3.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Input.cpp">
+    <ClCompile Include="src\System\Utils\Input.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Exception.cpp">
+    <ClCompile Include="src\System\Utils\Exception.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\Collider.cpp">
@@ -49,7 +49,7 @@
     <ClCompile Include="src\System\Components\RigidBody.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\PhysicsManager.cpp">
+    <ClCompile Include="src\System\Managers\PhysicsManager.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\typedef.cpp">
@@ -64,7 +64,7 @@
     <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\ModelManager.cpp">
+    <ClCompile Include="src\System\Managers\ModelManager.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\ConvexMeshCollider.cpp">
@@ -73,26 +73,26 @@
     <ClCompile Include="src\System\Components\Animator.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\Color.cpp">
+    <ClCompile Include="src\System\Utils\Color.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\AudioManager.cpp">
+    <ClCompile Include="src\System\Managers\AudioManager.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\AudioPlayer.cpp">
       <Filter>System\Compnents</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\AudioListener.cpp" />
-    <ClCompile Include="src\System\Shader.cpp">
+    <ClCompile Include="src\System\Utils\Shader.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="src\System\FileWatcher.cpp">
+    <ClCompile Include="src\System\Utils\FileWatcher.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="src\System\Components\Camera.cpp" />
-    <ClCompile Include="src\System\TextureManager.cpp" />
-    <ClCompile Include="src\System\IniFileManager.cpp" />
-    <ClCompile Include="src\System\Random.cpp" />
+    <ClCompile Include="src\System\Managers\TextureManager.cpp" />
+    <ClCompile Include="src\System\Managers\IniFileManager.cpp" />
+    <ClCompile Include="src\System\Utils\Random.cpp" />
     <ClCompile Include="src\System\Objects\CameraObject.cpp" />
     <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
     <ClCompile Include="src\System\Components\Text.cpp" />
@@ -124,28 +124,56 @@
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.cpp" />
     <ClCompile Include="src\System\Utils\Material.cpp" />
-    <ClCompile Include="src\System\MaterialManager.cpp" />
+    <ClCompile Include="src\System\Managers\MaterialManager.cpp" />
     <ClCompile Include="src\Game\Objects\Sample\SampleMovingCharacter.cpp" />
     <ClCompile Include="src\Game\Scenes\Sample\SampleMovingScene.cpp" />
     <ClCompile Include="src\Game\Scenes\Sample\SampleMaterialScene.cpp" />
     <ClCompile Include="src\System\Components\ImageRenderer.cpp" />
     <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
     <ClCompile Include="src\Game\Managers\LightManager.cpp" />
+    <ClCompile Include="src\precompile.cpp" />
+    <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
+    <ClCompile Include="src\Game\Objects\Sample\SampleAnimationObject.cpp" />
+    <ClCompile Include="src\Game\Components\PlayerController.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\Player.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\SceneGame.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\IState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\PlayerStateMachine.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerMoveState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerIdleState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerJumpState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerFallState.cpp" />
+    <ClCompile Include="src\System\Utils\Model.cpp" />
+    <ClCompile Include="src\System\Utils\Texture.cpp" />
+    <ClCompile Include="src\System\Utils\Audio.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerCombatComboState.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.cpp" />
+    <ClCompile Include="src\Game\Components\EnemyController.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyIdleState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyDamageState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyDownState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerClimbingState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackLandState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\SceneManager.h">
+    <ClInclude Include="src\System\Managers\SceneManager.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Time.h">
+    <ClInclude Include="src\System\Utils\Time.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\precompile.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Object.h">
+    <ClInclude Include="src\System\Objects\Object.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Scene.h">
@@ -154,7 +182,7 @@
     <ClInclude Include="src\System\Components\Transform.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Component.h">
+    <ClInclude Include="src\System\Components\Component.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\Float3.h">
@@ -163,13 +191,13 @@
     <ClInclude Include="src\Float2.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Input.h">
+    <ClInclude Include="src\System\Utils\Input.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\typedef.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Exception.h">
+    <ClInclude Include="src\System\Utils\Exception.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\Collider.h">
@@ -187,7 +215,7 @@
     <ClInclude Include="src\System\Components\RigidBody.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\PhysicsManager.h">
+    <ClInclude Include="src\System\Managers\PhysicsManager.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\MeshCollider.h">
@@ -199,7 +227,7 @@
     <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\ModelManager.h">
+    <ClInclude Include="src\System\Managers\ModelManager.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\ConvexMeshCollider.h">
@@ -208,26 +236,26 @@
     <ClInclude Include="src\System\Components\Animator.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\Color.h">
+    <ClInclude Include="src\System\Utils\Color.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\AudioManager.h">
+    <ClInclude Include="src\System\Managers\AudioManager.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\AudioPlayer.h">
       <Filter>System\Compnents</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\AudioListener.h" />
-    <ClInclude Include="src\System\Shader.h">
+    <ClInclude Include="src\System\Utils\Shader.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="src\System\FileWatcher.h">
+    <ClInclude Include="src\System\Utils\FileWatcher.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="src\System\Components\Camera.h" />
-    <ClInclude Include="src\System\TextureManager.h" />
-    <ClInclude Include="src\System\IniFileManager.h" />
-    <ClInclude Include="src\System\Random.h" />
+    <ClInclude Include="src\System\Managers\TextureManager.h" />
+    <ClInclude Include="src\System\Managers\IniFileManager.h" />
+    <ClInclude Include="src\System\Utils\Random.h" />
     <ClInclude Include="src\System\Objects\CameraObject.h" />
     <ClInclude Include="src\System\Objects\ButtonObject.h" />
     <ClInclude Include="src\System\Components\Text.h" />
@@ -259,13 +287,44 @@
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
     <ClInclude Include="src\System\Utils\Material.h" />
-    <ClInclude Include="src\System\MaterialManager.h" />
+    <ClInclude Include="src\System\Managers\MaterialManager.h" />
     <ClInclude Include="src\Game\Objects\Sample\SampleMovingCharacter.h" />
     <ClInclude Include="src\Game\Scenes\Sample\SampleMovingScene.h" />
     <ClInclude Include="src\Game\Scenes\Sample\SampleMaterialScene.h" />
     <ClInclude Include="src\System\Components\ImageRenderer.h" />
     <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
     <ClInclude Include="src\Game\Managers\LightManager.h" />
+    <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
+    <ClInclude Include="src\Game\Objects\Sample\SampleAnimationObject.h" />
+    <ClInclude Include="src\Game\Components\PlayerController.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\SceneGame.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\IState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\PlayerStateMachine.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerMoveState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerIdleState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerJumpState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerFallState.h" />
+    <ClInclude Include="src\System\SystemHeaders\Components.h" />
+    <ClInclude Include="src\System\SystemHeaders\Managers.h" />
+    <ClInclude Include="src\System\SystemHeaders\Objects.h" />
+    <ClInclude Include="src\System\SystemHeaders\Utilitys.h" />
+    <ClInclude Include="src\System\Utils\Model.h" />
+    <ClInclude Include="src\System\Utils\Texture.h" />
+    <ClInclude Include="src\System\Utils\Audio.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerCombatComboState.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\Enemy.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.h" />
+    <ClInclude Include="src\Game\Components\EnemyController.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyIdleState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyDamageState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyDownState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerClimbingState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\CatmullRomPath.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerJumpAttackLandState.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
