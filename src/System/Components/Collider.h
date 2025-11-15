@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Component.h"
 
 USING_PTR(RigidBody);
 USING_PTR(Collider);
@@ -18,15 +17,23 @@ public:
 	void AttachToModel(int attach_index);
 	void SetMaterial(physx::PxMaterial* new_mat);
 	enum Layer :physx::PxU32 {
+		None = 0,
 		Default = 1,
-		Wepon = 1 << 1,
-		Enemy = 1 << 2,
+		Terrain = 1 << 1,
+		Wepon = 1 << 2,
+		Enemy = 1 << 3,
+		Player = 1 << 4,
+		Vehicle = 1 << 5,
+
 		All = UINT32_MAX,
 	};
-	Layer hit_group = All;
-	Layer collision_group = Default;
 	void SetLayer(Layer layer);
+	Layer GetLayer() { return collision_group; }
+	u32 GetHitGroup() { return hit_group; }
+	void SetHitGroup(u32 hit_layer);
 protected:
+	u32 hit_group = All;
+	Layer collision_group = Default;
 	bool attach_to_model = false;
 	int model_attach_index = -1;
 	RigidBodyWP rigidbody;

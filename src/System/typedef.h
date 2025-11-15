@@ -40,7 +40,8 @@ using Quaternion = physx::PxQuat;
 using mat3x3 = physx::PxMat33;
 using mat4x4 = physx::PxMat44;
 
-#include "System/Color.h"
+
+#include "System/Utils/Exception.h"
 
 template <class T>
 class SafeUniquePtr {
@@ -61,7 +62,7 @@ public:
 
 	// 基底クラスへの暗黙変換コンストラクタ
 	template <typename U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
-	SafeUniquePtr(const SafeUniquePtr<U>& other)
+	SafeUniquePtr(SafeUniquePtr<U>&& other)
 		: u_p(std::move(other.raw_unique())) {
 	}
 

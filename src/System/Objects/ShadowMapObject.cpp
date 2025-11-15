@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "ShadowMapObject.h"
+﻿#include "ShadowMapObject.h"
 #include "System/Components/Camera.h"
 #include "System/Utils/Render.h"
 #include "System/Components/ModelRenderer.h"

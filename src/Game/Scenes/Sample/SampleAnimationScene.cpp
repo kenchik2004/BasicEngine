@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "SampleAnimationScene.h"
+﻿#include "SampleAnimationScene.h"
 #include "Game/Objects/Sample/SampleAnimationObject.h"
 #include "System/Objects/CameraObject.h"
 

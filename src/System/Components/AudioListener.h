@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Component.h"
 
 USING_PTR(AudioListener);
 class AudioListener final :
@@ -7,10 +6,12 @@ class AudioListener final :
 {
 	bool is_current_listener = false;
 public:
+	USING_SUPER(AudioListener);
 	void Construct() override;
 	int Init() override;
-	void PreDraw() override;
+	void Update() override;
 	void SetCurrentListener();
 	SafeSharedPtr<AudioListener> GetCurrentListener();
+
 };
 

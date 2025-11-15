@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "System/Components/ConvexMeshCollider.h"
+﻿#include "System/Components/ConvexMeshCollider.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/ModelRenderer.h"
 #include "fstream"
@@ -86,6 +85,8 @@ void ConvexMeshCollider::AttachToModel()
 			throw(Exception("凸メッシュ作成に失敗しました。メッシュデータが無効です。三角メッシュを試す、モデルが有効なものか再確認する等を試してみてください", DEFAULT_EXCEPTION_PARAM));
 #endif
 		shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+		shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+		shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
 		rigidbody->GetBody()->attachShape(*shape);
 	}
 	catch (Exception& ex) {

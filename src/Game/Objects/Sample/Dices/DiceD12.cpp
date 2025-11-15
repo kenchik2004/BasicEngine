@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "DiceD12.h"
+﻿#include "DiceD12.h"
 
 
 

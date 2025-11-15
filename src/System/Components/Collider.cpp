@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "Collider.h"
+﻿#include "Collider.h"
 #include <System/Components/RigidBody.h>
 #include <System/Components/ModelRenderer.h>
 
@@ -21,7 +20,9 @@ int Collider::Init()
 		PxSphereGeometry(),
 		*PhysicMaterial::Default);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
-	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
+	shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+
 	rigidbody->GetBody()->attachShape(*shape);
 
 	return 0;
@@ -58,7 +59,20 @@ void Collider::SetLayer(Layer layer)
 {
 	PxRigidActor* body = rigidbody->GetBody();
 	body->detachShape(*shape);
-	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
+	collision_group = layer;
+	shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	body->attachShape(*shape);
+}
+
+void Collider::SetHitGroup(u32 hit_layer)
+{
+
+	PxRigidActor* body = rigidbody->GetBody();
+	body->detachShape(*shape);
+	hit_group = hit_layer;
+	shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
 	body->attachShape(*shape);
 }
 

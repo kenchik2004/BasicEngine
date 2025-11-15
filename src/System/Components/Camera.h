@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Component.h"
 
 
 
@@ -21,6 +20,10 @@ namespace CreateMatrix {
 	mat4x4 perspectiveFovLH(f32 fovy, f32 aspect_ratio, f32 near_z, f32 far_z);
 }
 
+void SetUpSkyboxResources(const SafeSharedPtr<Texture>& default_texture = nullptr);
+void SetSkyboxTexture(const SafeSharedPtr<Texture>& texture);
+void ReleaseSkyboxResources();
+
 USING_PTR(Camera);
 class Camera :
 	public Component
@@ -31,7 +34,7 @@ private:
 public:
 	void Construct() override;
 	int Init() override;
-	void PreDraw() override;
+	void Draw() override;
 	void LateDraw() override;
 	virtual void PrepareCamera();
 	void SetCameraConstantBuffer();
@@ -39,6 +42,7 @@ public:
 	void Exit() override;
 	inline void SetPerspective(float perspective_) { perspective = perspective_; SetupCamera_Perspective(DEG2RAD(perspective)); }
 	inline float GetPerspective() { return perspective; }
+	void SetGbufferToSlot() const;
 	SafeSharedPtr<Camera> GetCurrentCamera();
 	SafeSharedPtr<Texture> hdr = nullptr;
 	SafeSharedPtr<Texture> depth = nullptr;

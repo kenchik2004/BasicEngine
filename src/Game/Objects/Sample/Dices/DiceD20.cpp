@@ -1,5 +1,4 @@
 ﻿
-#include "precompile.h"
 #include "DiceD20.h"
 
 namespace  Sample {

@@ -1,12 +1,10 @@
-﻿#include "precompile.h"
-#include "Camera.h"
+﻿#include "Camera.h"
 #include "System/Scene.h"
-#include <System/Utils/Render.h>
 #include <System/Objects/ShadowMapObject.h>
-#include <System/MaterialManager.h>
 
 namespace {
-	ShaderPs* ps_gbuffer_blend = nullptr;
+	SafeSharedPtr<Model> sky_dome = nullptr;
+	SafeSharedPtr<Texture> sky_texture = nullptr;
 }
 
 
@@ -72,12 +70,37 @@ namespace CreateMatrix {
 		};
 		return mat4x4(m[0], m[1], m[2], m[3]);
 	}
+	//---------------------------------------------------------------------------
+	//! [左手座標系] 投影逆行列
+	//---------------------------------------------------------------------------
+	mat4x4 InverseperspectiveFovLH(f32 fovy, f32 aspect_ratio, f32 near_z, f32 far_z)
+	{
+		f32 s = std::sinf(fovy * 0.5f);
+		f32 c = std::cosf(fovy * 0.5f);
+
+		f32 height = c / s;
+		f32 width = height / aspect_ratio;
+
+		f32 range = far_z / (far_z - near_z);
+
+
+		Vector4 m[4]{
+			{ 1.0f / width, 0.0f, 0.0f, 0.0f },
+			{ 0.0f, 1.0f / height, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, 0.0f, -1.0f / (range * near_z) },
+			{ 0.0f, 0.0f, 1.0f , 1.0f / near_z }
+		};
+		return mat4x4(m[0], m[1], m[2], m[3]);
+	}
 
 }
 
 struct CBufferCameraInfo {
 	mat4x4 view;
 	mat4x4  proj;
+	mat4x4 view_inv;
+	mat4x4  proj_inv;
+
 	Vector4 camera_pos;
 	mat4x4 mat_light_view_proj_[4];    //!< ライトのビュー投影行列
 };
@@ -100,19 +123,16 @@ int Camera::Init()
 	gbuffer_texture_[1] = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
 	gbuffer_texture_[2] = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	gbuffer_texture_[3] = TextureManager::Create("gbuffer3", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
-	//if (!hdr)
-	//	hdr = TextureManager::CloneByName(owner->name + "camerascreen");
+
 	if (!GetCurrentCamera())
 		SetCurrentCamera();
 	owner->GetScene()->RegisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
 
-	if (!ps_gbuffer_blend)
-		ps_gbuffer_blend = MaterialManager::LoadPixelShader("data/shader/ps_model.fx", "ps_gbuffer_blend");
 
 	return 0;
 }
 
-void Camera::PreDraw()
+void Camera::Draw()
 {
 	PrepareCamera();
 	if (is_current_camera)
@@ -122,6 +142,9 @@ void Camera::PreDraw()
 		{
 			SetRenderTarget(hdr.get(), depth.get());
 			ClearColor(hdr.get(), { 0,0,0,0 });
+			MV1SetPosition(sky_dome->GetHandle(), cast(owner->transform->position));
+			ClearDepth(depth.get(), 1.0f);
+			sky_dome->Draw(false);
 			ClearDepth(depth.get(), 1.0f);
 		}
 		break;
@@ -129,7 +152,11 @@ void Camera::PreDraw()
 		{
 			for (auto& gbuffer : gbuffer_texture_)
 				ClearColor(gbuffer.get(), { 0,0,0,0 });
+			MV1SetPosition(sky_dome->GetHandle(), cast(owner->transform->position));
 			ClearDepth(gbuffer_texture_[GBUFFER_NUM - 1].get(), 1.0f);
+			sky_dome->Draw(false);
+			ClearDepth(gbuffer_texture_[GBUFFER_NUM - 1].get(), 1.0f);
+
 		}
 		}
 
@@ -142,16 +169,18 @@ void Camera::LateDraw()
 		if (render_type == RenderType::Deferred)
 		{
 			// GBuffer合成
+			SetRenderTarget(nullptr, nullptr);
+			auto context = GetD3DDeviceContext();
+			// 深度バッファをコピー
+			context->CopyResource(depth->D3dResource(), gbuffer_texture_[GBUFFER_NUM - 1]->D3dResource());
+
 			SetRenderTarget(hdr.get(), depth.get());
 			ClearColor(hdr.get(), { 0,0,0,0 });
-			ClearDepth(depth.get(), 1.0f);
+
+
 			for (int i = 0; i < 16; i++)
 				SetUseTextureToShader(i, -1);
-
-			SetTexture(7, gbuffer_texture_[0].get());
-			SetTexture(8, gbuffer_texture_[1].get());
-			SetTexture(9, gbuffer_texture_[2].get());
-			SetTexture(10, gbuffer_texture_[3].get());
+			SetGbufferToSlot();
 		}
 	}
 
@@ -199,8 +228,15 @@ void Camera::SetCameraConstantBuffer()
 		auto owner_trns = owner->transform;
 		auto* cb = reinterpret_cast<CBufferCameraInfo*>(p);
 		cb->camera_pos = Vector4(owner_trns->position, 0);
-		cb->view = CreateMatrix::lookAtLH(owner_trns->position, owner_trns->AxisZ(), Vector3(0, 1, 0));
-		cb->proj = CreateMatrix::perspectiveFovLH(DEG2RAD(perspective), (float)SCREEN_W / (float)SCREEN_H, camera_near, camera_far);
+		//cb->view = CreateMatrix::lookAtLH(owner_trns->position, owner_trns->position + owner_trns->AxisZ() * 10, Vector3(0, 1, 0));
+		cb->view = mat4x4(
+			Vector4(owner_trns->AxisX(), 0),
+			Vector4(owner_trns->AxisY(), 0),
+			Vector4(owner_trns->AxisZ(), 0),
+			Vector4(owner_trns->position, 1)).inverseRT();
+		cb->proj = CreateMatrix::perspectiveFovLH(DEG2RAD(perspective), (float)hdr->Width() / (float)hdr->Height(), camera_near, camera_far);
+		cb->view_inv = cb->view.inverseRT();//CreateMatrix::lookAtLH(owner_trns->AxisZ(), owner_trns->position, Vector3(0, 1, 0));
+		cb->proj_inv = CreateMatrix::InverseperspectiveFovLH(DEG2RAD(perspective), (float)hdr->Width() / (float)hdr->Height(), camera_near, camera_far);
 		auto shadow_map = SceneManager::Object::Get<ShadowMapObject>(owner->GetScene());
 		if (shadow_map) {
 			auto light_view_projs = shadow_map->GetLightViewProjs();
@@ -234,6 +270,17 @@ void Camera::Exit() {
 		gbuffer.reset();
 	DeleteShaderConstantBuffer(constant_buffer_handle);
 	owner->GetScene()->UnregisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
+	sky_dome.reset();
+	sky_texture.reset();
+
+}
+
+void Camera::SetGbufferToSlot() const
+{
+	SetTexture(7, gbuffer_texture_[0].get());
+	SetTexture(8, gbuffer_texture_[1].get());
+	SetTexture(9, gbuffer_texture_[2].get());
+	SetTexture(10, gbuffer_texture_[3].get());
 }
 
 SafeSharedPtr<Camera> Camera::GetCurrentCamera()
@@ -344,3 +391,35 @@ void DebugCamera::Exit()
 
 }
 #endif
+
+void SetUpSkyboxResources(const SafeSharedPtr<Texture>& default_texture)
+{
+
+	ModelManager::LoadAsModel(u8"data/DebugBox/SkyDome.mv1", "sys__sky");
+	if (!default_texture) {
+		TextureManager::Load(u8"data/DebugBox/textures/night1.png", "sys__sky_texture");
+		sky_texture = TextureManager::CloneByName("sys__sky_texture");
+	}
+	else {
+		sky_texture = default_texture;
+	}
+	sky_dome = ModelManager::CloneModelByName("sys__sky");
+
+	MV1SetTextureGraphHandle(sky_dome->GetHandle(), 0, *sky_texture, false);
+	sky_dome->use_lighting = false;
+
+}
+
+void SetSkyboxTexture(const SafeSharedPtr<Texture>& texture)
+{
+	if (!texture)
+		return;
+	sky_texture = texture;
+	MV1SetTextureGraphHandle(sky_dome->GetHandle(), 0, *sky_texture, false);
+}
+
+void ReleaseSkyboxResources()
+{
+	sky_dome.reset();
+	sky_texture.reset();
+}

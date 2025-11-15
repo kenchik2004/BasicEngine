@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "NetWorkSampleScene_Server.h"
+﻿#include "NetWorkSampleScene_Server.h"
 #include <filesystem>
 #include <fstream>
 #include <mutex>
@@ -317,7 +316,7 @@ namespace NetWorkTest_Server {
 		auto cam = SceneManager::Object::Create<CameraObject>();
 		cam->transform->position = { 0,250,-250 };
 		cam->transform->SetAxisZ({ 0,-0.5f,1.0f });
-		//cam->transform->SetParent(player->transform);
+		//cam->camera->render_type = Camera::RenderType::Deferred;
 		camera = cam;
 		net_manager->SetOnNewConnectionCallback([this](NetWork* new_connect) {
 			chat_network.push_back(new_connect);

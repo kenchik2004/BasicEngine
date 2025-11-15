@@ -8,7 +8,9 @@
 cbuffer CameraInfo : register(b10)
 {
     matrix mat_view_;           //!< ビュー行列
-    matrix mat_proj_;           //!< 投影行列
+    matrix mat_proj_; //!< 投影行列
+    matrix mat_view_inv; //!< ビュー逆行列
+    matrix mat_proj_inv; //!< 投影逆行列
     float3 eye_position_;       //!< カメラの位置
     
     // シャドウ用

@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "NetWorkManagerBase.h"
+﻿#include "NetWorkManagerBase.h"
 
 
 void NetWork::Send(const void* data, size_t data_size)

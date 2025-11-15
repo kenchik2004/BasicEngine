@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "SampleMovingCharacter.h"
+﻿#include "SampleMovingCharacter.h"
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/Animator.h"
 #include "System/Components/RigidBody.h"

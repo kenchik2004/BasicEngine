@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "NetWorkSampleScene_Client.h"
+﻿#include "NetWorkSampleScene_Client.h"
 #include <filesystem>
 #include <fstream>
 #include <mutex>

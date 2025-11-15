@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Object.h"
 
 USING_PTR(RigidBody);
 USING_PTR(ModelRenderer);

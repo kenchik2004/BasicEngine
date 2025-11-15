@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "System/Component.h"
-#include "System/ModelManager.h"
 
 
 
@@ -24,9 +22,7 @@ public:
 	void Draw() override;
 	void DebugDraw() override;
 
-	static inline void Load(std::string_view path, std::string_view name) {
-		ModelManager::LoadAsModel(path, name);
-	}
+	static void Load(std::string_view path, std::string_view name);
 
 	const int GetModelHandle() { return model ? model->handle : -1; }
 	bool IsLoaded() { return model ? model->handle >= 0 : false; }

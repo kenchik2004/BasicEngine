@@ -36,8 +36,10 @@ public:
 
 	float physics_timescale = 1.0f;
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
-	inline bool RayCast(const Ray& ray, RayCastInfo& info) {
-		physics_scene->raycast(ray.position, ray.direction, ray.length, info);
+	inline bool RayCast(const Ray& ray, RayCastInfo& info,
+		const physx::PxQueryFilterData& filter_data = physx::PxQueryFilterData())
+	{
+		physics_scene->raycast(ray.position, ray.direction, ray.length, info, physx::PxHitFlag::eDEFAULT, filter_data, RaycastCallback::instance());
 		return info.hasAnyHits();
 	}
 	//TODO GameObjectから所属シーンへのポインタにアクセスできる機構の作成

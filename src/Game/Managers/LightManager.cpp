@@ -1,10 +1,4 @@
-﻿#include "precompile.h"
-#include "LightManager.h"
-#include "System/MaterialManager.h" 
-#include <System/Utils/Render.h>
-
-#include "System/Components/Camera.h"
-
+﻿#include "LightManager.h"
 
 //PointLightのバウンディングボックスをカメラ描画領域に投影する関数
 //PointLightにおいて、画面外にあるものは描画すると重くなってしまうので、
@@ -55,14 +49,16 @@ Vector4 CalculateBoundingBoxInScreen(const Vector3& light_pos, float range, cons
 
 
 
-
+ShaderPs* shader_ssao = nullptr;
 
 inline int LightManager::Init() {
 	name = "LightManager";
-	lights_cbuffer_handle = CreateShaderConstantBuffer(sizeof(LightInfo) * MAX_FORWARD_LIGHTS);
+	lights_cbuffer_handle = CreateShaderConstantBuffer(sizeof(Vector4) + sizeof(LightInfo) * MAX_FORWARD_LIGHTS);
 	light_blend_shader = MaterialManager::LoadPixelShader("data/shader/ps_light_finish.fx", "ps_light_finish");
 	specular_accumulation_texture = make_safe_shared<Texture>(SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
 	diffuse_accumulation_texture = make_safe_shared<Texture>(SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
+	if (!shader_ssao)
+		shader_ssao = MaterialManager::LoadPixelShader("data/shader/ps_ssao.fx", "ps_ssao");
 	return 0;
 }
 
@@ -140,7 +136,11 @@ void LightManager::Draw()
 	void* p = GetBufferShaderConstantBuffer(lights_cbuffer_handle);
 	if (!p)
 		return;
-	for (size_t i = 0; i < MAX_FORWARD_LIGHTS; i++) {
+	// ついでに、セットするライト数もセットしておく
+	*(reinterpret_cast<int*>(p)) = set_light_count;
+	//4バイトのint,12バイトのパディングがあるので、16バイトずらす
+	p = reinterpret_cast<Vector4*>(p) + 1;
+	for (size_t i = 0; i < set_light_count; i++) {
 		{
 			auto* cb = reinterpret_cast<LightInfo*>(p);
 			cb += i;
@@ -148,9 +148,7 @@ void LightManager::Draw()
 			if (!light)
 				break;
 			// ライト情報のセット
-			// ついでに、セットしたライト数もセットしておく
-			cb->pad = set_light_count;
-			cb->pad2 = static_cast<float>(light->type);
+			cb->type = static_cast<int>(light->type);
 			cb->position = light->position;
 			cb->color = Vector3(light->color.r, light->color.g, light->color.b);
 			if (light->type == LightType::Directional)
@@ -159,8 +157,8 @@ void LightManager::Draw()
 				cb->range = static_cast<PointLight*>(light)->range;
 		}
 	}
-	UpdateShaderConstantBuffer(lights_cbuffer_handle);
-	SetShaderConstantBuffer(lights_cbuffer_handle, DX_SHADERTYPE_PIXEL, 11);
+	DxLib::UpdateShaderConstantBuffer(lights_cbuffer_handle);
+	DxLib::SetShaderConstantBuffer(lights_cbuffer_handle, DX_SHADERTYPE_PIXEL, 11);
 }
 
 void LightManager::LateDraw()
@@ -171,6 +169,24 @@ void LightManager::LateDraw()
 	if (camera->render_type != Camera::RenderType::Deferred)
 		return;
 	auto current_rt = GetRenderTarget();
+	if constexpr (false) {
+		//--------------------------
+		//ここにSSAOを計算するコードを追加予定
+		auto& ao_buffer = camera->gbuffer_texture_[0];
+		//albedoとaoがセットされているテクスチャを引っぺがす
+		SetTexture(7, nullptr);
+		SetRenderTarget(ao_buffer.get());
+		//--------------------------
+		// AO計算をして、ao_bufferに書き込む
+		//--------------------------
+		FillRenderTarget(*shader_ssao);
+		SetRenderTarget(nullptr);
+		//--------------------------
+		SetTexture(7, ao_buffer.get());
+
+		//--------------------------
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+	}
 	ClearColor(diffuse_accumulation_texture.get(), Color::BLACK);
 	ClearColor(specular_accumulation_texture.get(), Color::BLACK);
 	std::array<Texture*, 2> rt_textures = { diffuse_accumulation_texture.get(), specular_accumulation_texture.get() };
@@ -197,9 +213,12 @@ void LightManager::LateDraw()
 		light->DrawToAccumulationBuffer();
 	}
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+
+
 	// 元に戻す
 	SetRenderTarget(current_rt);
-	// 合成
+	// 合成してカメラのHDRバッファに書き込む
 	SetTexture(21, diffuse_accumulation_texture.get());
 	SetTexture(22, specular_accumulation_texture.get());
 	FillRenderTarget(*light_blend_shader);
@@ -210,9 +229,8 @@ void LightManager::LateDraw()
 
 void LightManager::LateDebugDraw()
 {
-
+	return;
 	int canceled_light_num = 0;
-	clsDx();
 	for (auto& light : lights) {
 		if (!light)
 			continue;
@@ -275,7 +293,7 @@ void LightManager::Exit()
 
 void LightBase::Init()
 {
-	cbuffer_handle = CreateShaderConstantBuffer(sizeof(LightInfo));
+	cbuffer_handle = CreateShaderConstantBuffer(sizeof(LightInfo) + sizeof(Vector4));
 	is_initialized = true;
 	switch (type) {
 	case LightType::Directional:
@@ -298,6 +316,9 @@ void DirectionalLight::SetLightConstantBuffer()
 	void* p = GetBufferShaderConstantBuffer(cbuffer_handle);
 	if (!p)
 		return;
+	*(reinterpret_cast<int*>(p)) = 1;
+	//LightInfo構造体の前にライト数を記録するintがあるので、パディング分ずらす
+	p = reinterpret_cast<Vector4*>(p) + 1;
 	{
 		auto* cb = reinterpret_cast<LightInfo*>(p);
 		cb->position = position;
@@ -306,8 +327,8 @@ void DirectionalLight::SetLightConstantBuffer()
 		cb->range = 0.0f;
 
 	}
-	UpdateShaderConstantBuffer(cbuffer_handle);
-	SetShaderConstantBuffer(cbuffer_handle, DX_SHADERTYPE_PIXEL, 11);
+	DxLib::UpdateShaderConstantBuffer(cbuffer_handle);
+	DxLib::SetShaderConstantBuffer(cbuffer_handle, DX_SHADERTYPE_PIXEL, 11);
 }
 
 void PointLight::DrawToAccumulationBuffer()
@@ -328,15 +349,19 @@ void PointLight::SetLightConstantBuffer()
 	void* p = GetBufferShaderConstantBuffer(cbuffer_handle);
 	if (!p)
 		return;
+	*(reinterpret_cast<int*>(p)) = 1;
+	//LightInfo構造体の前にライト数を記録するintがあるので、パディング分ずらす
+	p = reinterpret_cast<Vector4*>(p) + 1;
 	{
 		auto* cb = reinterpret_cast<LightInfo*>(p);
 		cb->position = position;
 		cb->color = Vector3(color.r, color.g, color.b);
 		cb->range = range;
 		cb->direction = Vector3(0, 0, 0);
+		cb->intensity = intensity;
 
 	}
-	UpdateShaderConstantBuffer(cbuffer_handle);
-	SetShaderConstantBuffer(cbuffer_handle, DX_SHADERTYPE_PIXEL, 11);
+	DxLib::UpdateShaderConstantBuffer(cbuffer_handle);
+	DxLib::SetShaderConstantBuffer(cbuffer_handle, DX_SHADERTYPE_PIXEL, 11);
 
 }

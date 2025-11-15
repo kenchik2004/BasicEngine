@@ -1,7 +1,5 @@
 ﻿#include "Precompile.h"
 #include "System/Components/ImageRenderer.h"
-#include "System/MaterialManager.h"
-#include "System/Utils/Render.h"
 
 
 

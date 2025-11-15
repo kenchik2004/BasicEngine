@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "DicePair.h"
+﻿#include "DicePair.h"
 #include "Game/Objects/Sample/Dices/DiceBase.h"
 #include "System/Components/RigidBody.h"
 

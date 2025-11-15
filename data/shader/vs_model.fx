@@ -3,7 +3,7 @@
 //!	@brief	DxLib MV1モデル頂点シェーダー
 //----------------------------------------------------------------------------
 #include "dxlib_vs_model.h.fx"
-
+#include "camera.h.fx"
 // 頂点シェーダーの出力
 struct VS_OUTPUT_MODEL
 {
@@ -30,8 +30,8 @@ VS_OUTPUT_MODEL main(VS_INPUT_MV1 input)
     float3x4 matWorld = DxLib_WorldMatrix(input);
 
     float3 worldPosition = mul(matWorld, float4(localPosition, 1.0)); // スキニング計算。ワールド空間へ変換
-    float3 viewPosition = mul(DxLib_ViewMatrix(), float4(worldPosition, 1.0)); // ビュー空間へ変換
-    output.position_ = mul(DxLib_ProjectionMatrix(), float4(viewPosition, 1.0)); // スクリーン空間へ変換
+    float3 viewPosition = mul( float4(worldPosition, 1.0),mat_view_).xyz; // ビュー空間へ変換
+    output.position_ = mul( float4(viewPosition, 1.0),mat_proj_); // スクリーン空間へ変換
 
     output.world_position_ = worldPosition;
 

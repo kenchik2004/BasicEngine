@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "CardShinsoku.h"
+﻿#include "CardShinsoku.h"
 namespace {
 	SafeSharedPtr<Texture> mytex = nullptr;
 

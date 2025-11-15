@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "RigidBody.h"
+﻿#include "RigidBody.h"
 
 using namespace physx;
 void RigidBody::Construct()
@@ -29,14 +28,17 @@ int RigidBody::Init()
 void RigidBody::PrePhysics()
 {
 	auto& owner_trns = owner->transform;
-	PxTransform trns(owner_trns->position + owner_trns->rotation.rotate(pos), owner_trns->rotation * rot);
-	body->setGlobalPose(trns);
+	u8 cache_changed = CheckCacheChanged();
+	//位置または回転が変化している場合のみ、物理演算に反映する
+	if (cache_changed & 0b00000001 || cache_changed & 0b00000010) {
+		PxTransform trns(owner_trns->position, owner_trns->rotation);
+		body->setGlobalPose(trns);
+	}
 	if (body->is<PxRigidDynamic>()) {
 		auto rig_body = static_cast<PxRigidDynamic*>(body);
-		if (!is_kinematic) {
-			rig_body->setLinearVelocity(velocity);
-			rig_body->setAngularVelocity(angular_velocity);
-		}
+
+
+		//各種設定反映(こちらは毎フレーム反映しても問題ない)
 		rig_body->setMass(mass);
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_X, freeze_position.x);
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_LINEAR_Y, freeze_position.y);
@@ -45,23 +47,41 @@ void RigidBody::PrePhysics()
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, freeze_rotation.y);
 		rig_body->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, freeze_rotation.z);
 		rig_body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !use_gravity);
+		bool  was_kinematic = rig_body->getRigidBodyFlags().isSet(PxRigidBodyFlag::eKINEMATIC);
 		rig_body->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, is_kinematic);
+		//もし前フレームでキネマティックだったのに、今フレームでキネマティックじゃなくなった場合は起こす
+		if (!is_kinematic && was_kinematic)
+			rig_body->wakeUp();
+		//速度が変化している場合のみ、物理演算に反映する
+		if (!is_kinematic) {
+			if (cache_changed & 0b00000100)
+				rig_body->setLinearVelocity(velocity);
+			if (cache_changed & 0b00001000)
+				rig_body->setAngularVelocity(angular_velocity);
+		}
 
 	}
+	CacheCurrentData();
 }
 
 void RigidBody::PostPhysics()
 {
 	auto& owner_trns = owner->transform;
 	auto trns = body->getGlobalPose();
-	owner->transform->SetPosition(trns.p - trns.q.rotate(Vector3(pos)));
-	owner->transform->SetRotation(trns.q);
-	if (is_kinematic)
-		return;
+	u8 cache_changed = CheckCacheChanged();
+	if (!(cache_changed & 0b00000001))
+		owner_trns->SetPosition(trns.p);
+	if (!(cache_changed & 0b00000010))
+		owner_trns->SetRotation(trns.q);
 	if (auto rig_body = body->is<PxRigidDynamic>()) {
-		velocity = rig_body->getLinearVelocity();
-		angular_velocity = rig_body->getAngularVelocity();
+
+		if (!(cache_changed & 0b00000100))
+			velocity = rig_body->getLinearVelocity();
+		if (!(cache_changed & 0b00001000))
+			angular_velocity = rig_body->getAngularVelocity();
 	}
+	if (!cache_changed)
+		CacheCurrentData();
 
 }
 
@@ -183,4 +203,49 @@ void RigidBody::ChangeToStatic()
 	body->userData = new SafeWeakPtr<Object>(owner->shared_from_this());
 
 	p_scene->addActor(*body);
+}
+
+u8 RigidBody::CheckCacheChanged()
+{
+	//PhysX側では、連続したsetGlobalPose呼び出しは
+	// たとえ値が変わっていなくとも「ワープ」扱いになるため、キャッシュを持って変更があった場合のみ更新する
+	//その際も、変更があった項目のみ更新したいので、戻り値はビットフラグにする
+	//ビット0:位置変更、ビット1:回転変更、ビット2:速度変更、ビット3:角速度変更
+	//また、floatはバイナリチェックするべからずなので、Vector3とQuaternionの比較は内積<FLT_EPSILONで行う
+
+	u8 flags = 0;
+	auto& owner_trns = owner->transform;
+
+	// 位置変更チェック
+	if ((owner_trns->position - cache_pos_gl).magnitude() >= 1e-6f || (owner_trns->local_position - cache_pos_lc).magnitude() >= 1e-6f) {
+		flags |= (1 << 0);
+	}
+
+	// 回転変更チェック
+	if (1.0f - fabs(owner_trns->rotation.dot(cache_rot_gl)) >= 1e-6f || 1.0f - fabs(owner_trns->local_rotation.dot(cache_rot_lc)) >= 1e-6f) {
+		flags |= (1 << 1);
+	}
+
+	// 速度変更チェック
+	if ((velocity - cache_vel_l).magnitude() >= 1e-6f) {
+		flags |= (1 << 2);
+	}
+
+	// 角速度変更チェック
+	if ((angular_velocity - cache_vel_a).magnitude() >= 1e-6f) {
+		flags |= (1 << 3);
+	}
+
+	return flags;
+}
+
+void RigidBody::CacheCurrentData()
+{
+	auto& owner_trns = owner->transform;
+	cache_pos_gl = owner_trns->position;
+	cache_pos_lc = owner_trns->local_position;
+	cache_rot_gl = owner_trns->rotation;
+	cache_rot_lc = owner_trns->local_rotation;
+	cache_vel_l = velocity;
+	cache_vel_a = angular_velocity;
 }

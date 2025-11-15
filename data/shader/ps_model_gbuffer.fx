@@ -50,25 +50,41 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	//------------------------------------------------------------
     float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
     textureColor = saturate(textureColor);
+    textureColor.rgb = pow(textureColor.rgb, 2.2);
 	
     // アルファテスト
     if (textureColor.a < 0.5)
         discard;
 	
     float3 albedo = textureColor.rgb * input.diffuse_.rgb;
-	
-    float roughness = 0.7; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
-    float metallic = 0.3; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
-    float2 roughness_metallic = float2(roughness, metallic); //アルファブレンドが避けられないので、一つのチャンネルにまとめて格納
+    
+    
+#if 1	
+    float roughness = 0.5; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
+    float metallic = 0.5; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
+    
+    roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
+    metallic = MetallicTexture.Sample(MetallicSampler, uv).r;
+#else
+    //スペキュラマップがあるもでるはこっち
+    float3 specularColor = SpecularTexture.Sample(SpecularSampler, uv).rgb;
+    
+    // 疑似的に "metallic" を推定する（明るい＝金属っぽい）
+    float metallic = saturate(dot(specularColor, float3(0.333, 0.333, 0.333)) * 2.0);
+
+    // 疑似的に "roughness" を推定（明るいほどツルツル）
+    float roughness = 1.0 - saturate(dot(specularColor, float3(0.333, 0.333, 0.333)));
+#endif
     float ao = 1.0f;
     
     //----------------------------------------------------------
     // 出力
     //----------------------------------------------------------
     PS_OUTPUT_MRT output;
+    albedo += DxLib_Common.Material.Ambient_Emissive.rgb;
     
     output.color0_ = float4(albedo, ao);
-    output.color1_ = float4(NormalEncode(N).xy, roughness,metallic);
+    output.color1_ = float4(NormalEncode(N).xy, roughness, metallic);
     output.color2_ = float4(input.world_position_.xyz, 1.0f);
 	// 出力パラメータを返す
     return output;

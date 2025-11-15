@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "TextObject.h"
+﻿#include "TextObject.h"
 
 int TextObject::Init()
 {

@@ -6,18 +6,20 @@
 #define LIGHTING_H_FX
 #include "dxlib_ps.h.fx"
 // 定数バッファ
-struct LightInfo
+struct Light
 {
     float3 light_position_; //!< 光源の位置座標
-    float pad1;
-    float3 direction_; //!< 光源の向き
-    float pad2;
-    float3 light_color_; //!< 光源の色
     float light_range_; //!< 光源の影響範囲
+    float3 direction_; //!< 光源の向き
+    int type;
+    float3 light_color_; //!< 光源の色
+    float intensity;
 };
-cbuffer LightInfoBuffer : register(b11)
+cbuffer LightInfo : register(b11)
 {
-    LightInfo light_info_[6];
+    int light_count;
+    float3 pad;
+    Light light_info_[10];
 }
 
 

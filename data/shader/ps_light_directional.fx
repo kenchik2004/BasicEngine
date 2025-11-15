@@ -30,6 +30,12 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
     float3 V = normalize(eye_position_ - surfaceInfo.world_position_);
     float3 H = normalize(L + V);
 
+    if (surfaceInfo.depth_ == 1.0f)
+    {
+        // 背景
+        discard;
+    }
+
     //----------------------------------------------------------
     // シャドウ
     //----------------------------------------------------------
@@ -44,7 +50,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 
     
     // 疑似的に影を薄くする
-    shadow = shadow * 0.5 + 0.5;
+    //shadow = shadow * 0.5 + 0.5;
     
     //----------------------------------------------------------
     // 光源計算
@@ -68,8 +74,9 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
     // 出力
     //----------------------------------------------------------
     PS_OUTPUT_LIGHTING output;
-
-    output.diffuse_ = float4(diffuse, 1.0f);
+    
+    float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_*1;
+    output.diffuse_ = float4(diffuse + ambient, 1.0f);
     output.specular_ = float4(specular, 1.0f);
 
 	// 出力パラメータを返す

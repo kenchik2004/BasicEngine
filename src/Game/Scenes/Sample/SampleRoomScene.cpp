@@ -1,11 +1,5 @@
-﻿#include "precompile.h"
-#include "SampleRoomScene.h"
-#include "System/Components/ModelRenderer.h"
-#include "System/Objects/CameraObject.h"
-#include "System/Objects/ShadowMapObject.h"
-#include "System/Utils/Render.h"
+﻿#include "SampleRoomScene.h"
 #include "Game/Objects/Sample/SampleAnimationObject.h"
-#include "System/MaterialManager.h"
 #include "Game/Managers/LightManager.h"
 
 namespace Sample {

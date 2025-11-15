@@ -13,8 +13,8 @@ set zipFilePath2=PhysX\PhysX-5.5.1\bin\zip\Release.zip
 
 rem 実行するPowerShellのコマンドレットを組み立て
 set psCommand0=powershell -command chcp 65001
-set psCommand=powershell -NoProfile -ExecutionPolicy Unrestricted Expand-Archive -Path %zipFilePath% -DestinationPath %targetPath% -Force
-set psCommand2=powershell -NoProfile -ExecutionPolicy Unrestricted Expand-Archive -Path %zipFilePath2% -DestinationPath %targetPath% -Force
+set psCommand=powershell -NoProfile -ExecutionPolicy Unrestricted Expand-Archive -Path %zipFilePath% -DestinationPath %targetPath%
+set psCommand2=powershell -NoProfile -ExecutionPolicy Unrestricted Expand-Archive -Path %zipFilePath2% -DestinationPath %targetPath%
 
 makedir "PhysX\PhysX-5.5.1\bin\x64"
 rem PowerShellのコマンドレットを実行

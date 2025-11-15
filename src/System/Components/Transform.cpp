@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "Transform.h"
+﻿#include "Transform.h"
 #include "algorithm"
 
 void WrapAngles0_360(Vector3* euler) {
@@ -17,45 +16,61 @@ void WrapAngles0_360(Vector3* euler) {
 		euler->z -= 360;
 }
 
-void Transform::Construct()
+void Transform::CalculateTransform()
 {
-	status.status_bit.on(CompStat::STATUS::SINGLE);
-	SetPriority(0);
-}
 
-void Transform::PreDraw()
-{
 	// 親がいる場合、親によって位置、回転、スケールが変化するので、
 	// 親Transformの情報を考慮して子Transformの位置、回転、スケールを計算する
+
+	Vector3 pos_div = (position - position_prev);
+	float rot_div = rotation.dot(rotation_prev);
+	Vector3 scale_div = (scale - scale_prev);
+	bool global_position_changed = pos_div.magnitudeSquared() > (1e-6f * 1e-5f);
+	bool global_rotation_changed = (1.0f - fabs(rot_div)) > 1e-6f;
+	bool global_scale_changed = scale_div.magnitudeSquared() > (1e-6f * 1e-6f);
 	if (auto p = parent.lock()) {
 		// 親がいる場合でも、グローバルの位置情報が更新された場合、
 		// ユーザーはグローバルの変更を前提に処理を行うだろう。
 		// この場合はローカルの位置情報を更新する必要がある
 
-		Vector3 local_position_ = (p->rotation.rotate(position - p->position));// 親Transformからの相対位置を計算
-		Quaternion local_rotation_ = p->rotation.getConjugate() * rotation;	// 親Transformからの相対回転を計算
-		Vector3 local_scale_ = scale / p->scale;	// 親Transformからの相対スケールを計算
-		local_position = position == position_prev ? local_position : local_position_;
-		local_rotation = rotation == rotation_prev ? local_rotation : local_rotation_;
-		local_scale = scale == scale_prev || (scale.isZero() && !local_scale.isZero()) ? local_scale : local_scale_;
 
-		// そうでない場合、グローバル位置情報は基本的に親によって決まるので、
-		// 親Transformの情報とローカルの位置情報を考慮してグローバルの情報を書き換える
-		Vector3 position_ = p->position + p->scale.multiply(p->rotation.rotate(local_position));// 親Transformがあれば、親の位置と回転を考慮して子Transformの位置を計算
-		Quaternion rotation_ = p->rotation * local_rotation;	// 親Transformがあれば、親の回転を考慮して子Transformの回転を計算
-		Vector3 scale_ = p->scale.multiply(local_scale);	// 親Transformがあれば、親のスケールを考慮して子Transformのスケールを計算
-		position = position_;
-		rotation = rotation_;
-		scale = scale_;
+		//(p->rotation.rotate(position - p->position));// 親Transformからの相対位置を計算
 
+		// グローバル位置が変更された場合、ローカル位置を更新
+		if (global_position_changed) {
+			Vector3 local_position_ =
+			{ (parent->rotation.getBasisVector0() * parent->scale.x).dot(position - parent->position),
+					(parent->rotation.getBasisVector1() * parent->scale.y).dot(position - parent->position),
+					(parent->rotation.getBasisVector2() * parent->scale.z).dot(position - parent->position)
+			};
+			local_position = local_position_;
+		}
+		else 												// ローカル位置が変更された場合は、ローカルを元にグローバルを更新
+			position = p->position + p->scale.multiply(p->rotation.rotate(local_position));// 親Transformがあれば、親の位置と回転を考慮して子Transformの位置を計算
+
+		if (global_rotation_changed) {
+			Quaternion local_rotation_ = p->rotation.getConjugate() * rotation;	// 親Transformからの相対回転を計算
+			local_rotation = local_rotation_;
+		}
+		else
+			rotation = p->rotation * local_rotation;
+
+		if (global_scale_changed) {
+			Vector3 local_scale_ = scale / p->scale;	// 親Transformからの相対スケールを計算
+			local_scale = local_scale_;
+		}
+		else
+			scale = p->scale.multiply(local_scale);
 	}
 	else {
 		// 親Transformがない場合は、グローバルの位置情報はローカルの位置情報と同じなので、
-		// 変更された方を、そうでない方に反映する
-
-		local_position = position == position_prev ? local_position : position;
-		local_rotation = rotation == rotation_prev ? local_rotation : rotation;
-		local_scale = scale == scale_prev ? local_scale : scale;
+		// 変更された方を、そうでない方に反映する(グローバル優先)
+		if (global_position_changed)
+			local_position = position;
+		if (global_rotation_changed)
+			local_rotation = rotation;
+		if (global_scale_changed)
+			local_scale = scale;
 
 		position = local_position;	// 親Transformがない場合は、グローバル位置はローカル位置と同じ
 		rotation = local_rotation;	// 親Transformがない場合は、グローバル回転はローカル回転と同じ
@@ -66,6 +81,21 @@ void Transform::PreDraw()
 	rotation_prev = rotation;	// 前回の回転を更新
 	scale_prev = scale;	// 前回のスケールを更新
 
+}
+
+void Transform::Construct()
+{
+	status.status_bit.on(CompStat::STATUS::SINGLE);
+	SetPriority(0);
+}
+
+void Transform::PreDraw()
+{
+	CalculateTransform();
+}
+
+void Transform::PostUpdate()
+{
 }
 
 void Transform::DebugDraw()
@@ -105,7 +135,12 @@ void Transform::SetChild(TransformP new_child)
 	new_child->owner->SetPriority(new_child->owner->GetPriority());	// 親の優先度を引き継ぐためにSetPriorityを呼び出す(親がいる場合は勝手に加算されるので、今の優先度をそのまま与える)
 	Vector3 scale_ = new_child->scale;	// 親Transformからの相対スケールを計算
 	new_child->local_scale = scale_ / scale;	// 親Transformからの相対スケールを計算
-	new_child->local_position = (new_child->local_scale / scale).multiply(rotation.rotate(new_child->position - position));	// 親Transformからの相対位置を計算
+	new_child->local_position =
+	{ (rotation.getBasisVector0() * scale.x).dot(new_child->position - position),
+			(rotation.getBasisVector1() * scale.y).dot(new_child->position - position),
+			(rotation.getBasisVector2() * scale.z).dot(new_child->position - position)
+	};
+	//(new_child->local_scale / scale).multiply(rotation.rotate(new_child->position - position));	// 親Transformからの相対位置を計算
 	new_child->local_rotation = rotation.getConjugate() * new_child->rotation;	// 親Transformからの相対回転を計算
 
 	new_child->position_prev = new_child->position;

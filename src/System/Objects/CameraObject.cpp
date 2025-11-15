@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "CameraObject.h"
+﻿#include "CameraObject.h"
 #include "System/Components/Camera.h"
 
 int CameraObject::Init()

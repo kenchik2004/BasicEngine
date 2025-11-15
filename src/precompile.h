@@ -34,25 +34,18 @@
 #include <d3d11.h>
 //#include <d3dx9.h>
 
-#include "System/Exception.h"
 #include "System/typedef.h"
+#include "System/SystemHeaders/Utilitys.h" 
+#include "System/Managers/PhysicsManager.h"
+
 #include <DxLib.h>
 //#include "System/ImGui_.h"
 #include "float2.h"
 #include "float3.h"
-#include "System/Input.h"
-#include "System/Time.h"
-#include"System/Random.h"
-#include "System/PhysicsManager.h"
-#include "System/TextureManager.h"
-#include "System/ModelManager.h"
-#include "System/AudioManager.h"
-#include "System/Component.h"
-#include "System/Components/Transform.h"
-#include "System/Object.h"
-#include "System/Scene.h"
+#include "System/SystemHeaders/Components.h"
+#include "System/SystemHeaders/Objects.h"
+#include "System/SystemHeaders/Managers.h"
 #include "System/DontDestroyOnLoadScene.h"
-#include "System/SceneManager.h"
 
 
 

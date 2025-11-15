@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "System/Component.h"
-#include "System/ModelManager.h"
 
 
 #define CUR_ANIMTIME_MAX FLT_MAX
@@ -14,12 +12,14 @@ public:
 	void Construct() override;
 	int Init() override;
 	void Update() override;
+	void LateDebugDraw() override;
 	void Exit() override;
 	//----------------------------------------------------------------------------------
 	//アニメーションコンポーネントが管理するべきもの
 	float anim_speed = 1.0f;
 	float anim_blend_time = 0.5f;
 	bool anim_loop = false;
+	bool anim_paused = false;
 	bool freeze_hip_y = false;
 	SafeWeakPtr<ModelRenderer> model;
 	std::vector<SafeSharedPtr<Animation>> animation;
@@ -29,10 +29,14 @@ public:
 
 
 	void Play(std::string_view name, bool loop = false, float start_time = 0.0f, float blend_time = 0.2f, bool freeze_y = false);
+	void Pause();
+	void Resume() { anim_paused = false; }
 	void Stop();
 	void PlayIfNoSame(std::string_view name, bool loop = false, float start_time = 0.0f, float blend_time = 0.2f, bool freeze_y = false);
 	std::string_view GetCurrentAnimName();
+	float GetCurrentAnimTime();
 	bool IsPlaying();
+	bool IsPaused();
 	void SetAnimation(std::string_view name, int index = 0, std::string_view new_name = "");
 	void SetAnimation(SafeSharedPtr<Animation> anim);
 	void SetAnimationCallBack(std::string_view anim_name, std::function<void()>& call_back, float execute_frame, std::string_view method_name);

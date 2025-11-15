@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Component.h"
 
 USING_PTR(AudioPlayer);
 class AudioPlayer :
@@ -17,13 +16,16 @@ public:
 	}
 
 	void Play(float start_pos = 0, int sample_rate = -1);
-	void PreDraw() override;
+	void Update() override;
 	void Stop();
 	static void Load(std::string_view path, std::string_view name, bool use_3d = true);
 	void Exit() override;
 	int default_frequency;
 	float pitch_rate = 1.0f;
 	float radius = 200;
+	float volume = 1.0f;
 	bool loop = false;
+private:
+	Vector3 last_position = { 0,0,0 };
 };
 

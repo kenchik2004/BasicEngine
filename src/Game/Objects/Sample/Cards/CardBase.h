@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "System/Object.h"
-#include "System/Components/ModelRenderer.h"
 namespace Sample {
 	class CardBase :
 		public GameObject

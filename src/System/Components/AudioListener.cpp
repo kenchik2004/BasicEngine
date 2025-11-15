@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "AudioListener.h"
+﻿#include "AudioListener.h"
 
 
 
@@ -16,7 +15,7 @@ int AudioListener::Init()
 	return 0;
 }
 
-void AudioListener::PreDraw()
+void AudioListener::Update()
 {
 	if (is_current_listener)
 		Set3DSoundListenerPosAndFrontPosAndUpVec(cast(owner->transform->position), cast(owner->transform->position + owner->transform->AxisZ()), cast(owner->transform->AxisY()));

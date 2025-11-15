@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "CardUnpu.h"
+﻿#include "CardUnpu.h"
 
 
 namespace {

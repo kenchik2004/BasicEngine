@@ -1,14 +1,5 @@
-﻿#include "precompile.h"
-#include "SampleMovingScene.h"
+﻿#include "SampleMovingScene.h"
 #include "Game/Objects/Sample/SampleMovingCharacter.h"
-#include "System/Components/ModelRenderer.h"
-#include "System/Components/RigidBody.h"
-#include "System/Components/MeshCollider.h"
-#include "System/Objects/CameraObject.h"
-#include "System/Objects/ShadowMapObject.h"
-
-#include "System/MaterialManager.h"
-#include "System/Components/ImageRenderer.h"
 #include "Game/Managers/LightManager.h"
 
 
@@ -57,7 +48,7 @@ namespace Sample {
 		auto cam = SceneManager::Object::Create<CameraObject>();
 		cam->transform->position = { 0,7,5 };
 		cam->transform->SetAxisZ({ 0,-0.5f,-1.0f });
-		cam->camera->render_type = Camera::RenderType::Deferred;
+		//cam->camera->render_type = Camera::RenderType::Deferred;
 		//cam->transform->SetParent(player->transform);
 		camera = cam;
 		this->player = player;

@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include <System/Components/RigidBody.h>
+﻿#include <System/Components/RigidBody.h>
 #include "BoxCollider.h"
 #include <System/Components/ModelRenderer.h>
 
@@ -18,7 +17,8 @@ int BoxCollider::Init()
 		PxBoxGeometry(extension.x * 0.5f, extension.y * 0.5f, extension.z * 0.5f),
 		*PhysicMaterial::Default, true);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
-	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
+	shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
 
 	rigidbody->GetBody()->attachShape(*shape);
 	return 0;

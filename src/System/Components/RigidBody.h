@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <System/Component.h>
 struct LockFlag {
 	bool x = false;
 	bool y = false;
@@ -40,7 +39,13 @@ public:
 
 private:
 	physx::PxRigidActor* body = nullptr;
-	Vector3 pos = { 0,0,0 };
-	Quaternion rot = Quaternion(physx::PxIdentity);
+	Vector3 cache_pos_gl = { 0,0,0 };
+	Vector3 cache_pos_lc = { 0,0,0 };
+	Quaternion cache_rot_gl = Quaternion(physx::PxIdentity);
+	Quaternion cache_rot_lc = Quaternion(physx::PxIdentity);
+	Vector3 cache_vel_l = { 0,0,0 };
+	Vector3 cache_vel_a = { 0,0,0 };
+	u8 CheckCacheChanged();
+	void CacheCurrentData();
 };
 

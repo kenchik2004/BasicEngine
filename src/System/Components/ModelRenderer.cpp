@@ -1,12 +1,4 @@
-﻿#include "precompile.h"
-#include "ModelRenderer.h"
-#include "System/Components/MeshCollider.h"
-#include "System/Components/ConvexMeshCollider.h"
-#include "System/ModelManager.h"
-#include "System/Objects/ShadowMapObject.h"
-#include "System/Utils/Material.h"
-#include "System/MaterialManager.h"
-#include "System/Components/Camera.h"
+﻿#include "ModelRenderer.h"
 
 void ModelRenderer::Construct()
 {
@@ -116,13 +108,17 @@ void ModelRenderer::Draw()
 
 void ModelRenderer::DebugDraw()
 {
-	if (!model)
+	//if (!model)
 		return;
 	if (owner->GetComponent<MeshCollider>() || owner->GetComponent<ConvexMeshCollider>())
 		return;
 	MV1SetWireFrameDrawFlag(model->handle, true);
 	MV1DrawModel(model->handle);
 	MV1SetWireFrameDrawFlag(model->handle, false);
+}
+
+void ModelRenderer::Load(std::string_view path, std::string_view name) {
+	ModelManager::LoadAsModel(path, name);
 }
 
 

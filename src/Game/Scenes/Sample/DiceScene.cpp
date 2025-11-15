@@ -1,6 +1,4 @@
-﻿#include "precompile.h"
-#include "DiceScene.h"
-#include <cmath>
+﻿#include "DiceScene.h"
 
 #include "Game/Objects/Sample/Dices/DiceBase.h"
 #include "Game/Objects/Sample/Dices/DiceD4.h"
@@ -9,13 +7,9 @@
 #include "Game/Objects/Sample/Dices/DiceD10.h"
 #include "Game/Objects/Sample/Dices/DiceD12.h"
 #include "Game/Objects/Sample/Dices/DiceD20.h"
-#include "System/Components/ModelRenderer.h"
-#include "System/Components/RigidBody.h"
-#include "System/Components/MeshCollider.h"
-#include"System/Components/Camera.h"
-#include <System/IniFileManager.h>
 #include "Game/Objects/Sample/Cards/CardBase.h"
-#include <System/Objects/ShadowMapObject.h>
+
+#include <cmath>
 
 namespace {
 	std::array<std::string, 5> card_name = {

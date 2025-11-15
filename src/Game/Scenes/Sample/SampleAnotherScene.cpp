@@ -1,9 +1,5 @@
-﻿#include "precompile.h"
-#include "SampleAnotherScene.h"
+﻿#include "SampleAnotherScene.h"
 #include "Game/Scenes/Sample/DiceScene.h"
-#include "System/Components/ModelRenderer.h"
-#include <System/IniFileManager.h>
-#include <System/Components/Camera.h>
 namespace Sample {
 
 	void SampleAnotherScene::Load()
