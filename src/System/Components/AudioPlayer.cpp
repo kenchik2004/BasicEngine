@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "AudioPlayer.h"
+﻿#include "AudioPlayer.h"
 #include "RigidBody.h"
 #include "System/Components/AudioListener.h"
 void AudioPlayer::Construct()
@@ -33,14 +32,14 @@ void AudioPlayer::Play(float start_pos, int sample_rate)
 	}
 }
 
-void AudioPlayer::PreDraw()
+void AudioPlayer::Update()
 {
 	auto audio_listener = SceneManager::GetCurrentScene()->GetCurrentAudioListener();
 	if (audio && audio_listener) {
 		auto listener = audio_listener->owner.lock();
 		auto rb = listener->GetComponent<RigidBody>();
-		Vector3 vec_v_o = Vector3();
-		Vector3 vec_v_s = Vector3();
+		Vector3 vec_v_o = Vector3(0, 0, 0);
+		Vector3 vec_v_s = Vector3(0, 0, 0);
 		if (rb) {
 			vec_v_o = rb->velocity;
 		}
@@ -49,8 +48,8 @@ void AudioPlayer::PreDraw()
 			vec_v_s = rb->velocity;
 		}
 		auto vec_pos = owner->transform->position - listener->transform->position;
-		float v_o = vec_v_o.magnitude() * -vec_v_o.getNormalized().dot(vec_pos.getNormalized());
-		float v_s = vec_v_s.magnitude();
+		float v_o = vec_pos.getNormalized().dot(vec_v_o);
+		float v_s = vec_pos.getNormalized().dot(-vec_v_s);
 		float f_;
 		if (v_s < 0.01f)
 			v_s = 0.01f; //ゼロ除算を防ぐための最小値
@@ -60,9 +59,13 @@ void AudioPlayer::PreDraw()
 			frequency = 0;
 		if (frequency > 100000)
 			frequency = 44100;
+		float distance_attenuation = 1.0f - (vec_pos.magnitudeSquared() / (radius * radius));
+		//frequency = (sinf(Time::GetTimeFromStart()) + 1) * 88100;
 		SetFrequencySoundMem(frequency, audio->handle);
-		Set3DPositionSoundMem(cast(owner->transform->position), audio->handle);
-		Set3DRadiusSoundMem(radius, audio->handle);
+		ChangePanSoundMem(vec_pos.getNormalized().dot(listener->transform->AxisX()) * 255, audio->handle);
+		ChangeVolumeSoundMem(volume * 255 * distance_attenuation, audio->handle);
+		//Set3DPositionSoundMem(cast(owner->transform->position), audio->handle);
+		//Set3DRadiusSoundMem(radius, audio->handle);
 	}
 }
 

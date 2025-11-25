@@ -1,12 +1,5 @@
-﻿#include "precompile.h"
-#include "SampleAnimationObject.h"
+﻿#include "SampleAnimationObject.h"
 
-#include "System/Components/ModelRenderer.h"
-#include "System/Components/Animator.h"
-#include "System/MaterialManager.h"
-#include "System/Components/RigidBody.h"
-#include "System/Components/CapsuleCollider.h"
-#include "System/Objects/CameraObject.h"
 
 
 namespace Sample

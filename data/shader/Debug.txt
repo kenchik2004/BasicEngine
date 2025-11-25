@@ -1,0 +1,106 @@
+buffer_name: LightInfo
+slot: 11values: 
+D3D_SVC_SCALAR int light_count
+ D3D_SVC_VECTOR float3 pad
+ D3D_SVC_STRUCT Light light_info_[10]
+ 
+buffer_name: CameraInfo
+slot: 10values: 
+D3D_SVC_MATRIX_ROWS float4x4 mat_view_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_view_inv
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_inv
+ D3D_SVC_VECTOR float3 eye_position_
+ D3D_SVC_MATRIX_ROWS float4x4 light_view_proj_[4]
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_LOCALWORLDMATRIX
+slot: 3values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_LOCALWORLDMATRIX DxLib_LocalWorldMatrix
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_LOCALWORLDMATRIX
+slot: 3values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_LOCALWORLDMATRIX DxLib_LocalWorldMatrix
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_LOCALWORLDMATRIX
+slot: 3values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_LOCALWORLDMATRIX DxLib_LocalWorldMatrix
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_LOCALWORLDMATRIX
+slot: 3values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_LOCALWORLDMATRIX DxLib_LocalWorldMatrix
+ 
+buffer_name: cbD3D11_CONST_BUFFER_VS_BASE
+slot: 1values: 
+D3D_SVC_STRUCT DX_D3D11_VS_CONST_BUFFER_BASE DxLib_Base
+ 
+buffer_name: cbD3D11_CONST_BUFFER_COMMON
+slot: 0values: 
+D3D_SVC_STRUCT DX_D3D11_CONST_BUFFER_COMMON DxLib_Common
+ 
+buffer_name: CameraInfo
+slot: 10values: 
+D3D_SVC_MATRIX_ROWS float4x4 mat_view_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_view_inv
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_inv
+ D3D_SVC_VECTOR float3 eye_position_
+ D3D_SVC_MATRIX_ROWS float4x4 light_view_proj_[4]
+ 
+buffer_name: LightInfo
+slot: 11values: 
+D3D_SVC_SCALAR int light_count
+ D3D_SVC_VECTOR float3 pad
+ D3D_SVC_STRUCT Light light_info_[10]
+ 
+buffer_name: CameraInfo
+slot: 10values: 
+D3D_SVC_MATRIX_ROWS float4x4 mat_view_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_view_inv
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_inv
+ D3D_SVC_VECTOR float3 eye_position_
+ D3D_SVC_MATRIX_ROWS float4x4 light_view_proj_[4]
+ 
+buffer_name: LightInfo
+slot: 11values: 
+D3D_SVC_SCALAR int light_count
+ D3D_SVC_VECTOR float3 pad
+ D3D_SVC_STRUCT Light light_info_[10]
+ 
+buffer_name: CameraInfo
+slot: 10values: 
+D3D_SVC_MATRIX_ROWS float4x4 mat_view_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_
+ D3D_SVC_MATRIX_ROWS float4x4 mat_view_inv
+ D3D_SVC_MATRIX_ROWS float4x4 mat_proj_inv
+ D3D_SVC_VECTOR float3 eye_position_
+ D3D_SVC_MATRIX_ROWS float4x4 light_view_proj_[4]
+ 

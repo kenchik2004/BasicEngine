@@ -1,7 +1,4 @@
-﻿#include "precompile.h"
-#include "CardBase.h"
-#include "System/Components/Camera.h"
-#include "System/MaterialManager.h"
+﻿#include "CardBase.h"
 
 namespace Sample {
 	SafeSharedPtr<Texture> mytex = nullptr;

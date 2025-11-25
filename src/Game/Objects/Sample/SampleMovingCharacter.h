@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Object.h"
 
 USING_PTR(RigidBody);
 USING_PTR(ModelRenderer);
@@ -17,6 +16,7 @@ public:
 	USING_SUPER(SampleMovingCharacter);
 	int Init() override;
 	void Update() override;
+	void Draw() override;
 	void Exit() override;
 	u8 movement_state = 0; // 0:idle, 1:run, 2:jump
 	bool ignore_input = false;

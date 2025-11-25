@@ -151,11 +151,20 @@ SamplerState DiffuseSampler : register(s0); // Diffuseテクスチャサンプラー
 Texture2D DiffuseTexture : register(t0); // Diffuseテクスチャ
 
 
-SamplerState NormalSampler : register(s1); // 法線マップテクスチャ
+SamplerState NormalSampler : register(s1); // 法線マップテクスチャサンプラー
 Texture2D NormalTexture : register(t1); // 法線マップテクスチャ
 
-SamplerState SpecularMapSampler : register(s2); // スペキュラマップテクスチャ
-Texture2D SpecularMapTexture : register(t2); // スペキュラマップテクスチャ
+SamplerState SpecularSampler : register(s2); // スペキュラテクスチャサンプラー
+Texture2D SpecularTexture : register(t2); // スペキュラテクスチャ
+
+SamplerState RoughnessSampler : register(s3); // ラフネステクスチャサンプラー
+Texture2D RoughnessTexture : register(t3); // ラフネステクスチャ
+
+SamplerState MetallicSampler : register(s4); // メタリックテクスチャサンプラー
+Texture2D MetallicTexture : register(t4); // メタリックテクスチャ
+
+SamplerState EmissionSampler : register(s5); // エミッションテクスチャサンプラー
+Texture2D EmissionTexture : register(t5); // エミッションテクスチャ
 
 // t3～t6はトゥーン用テクスチャ
 
@@ -197,7 +206,7 @@ float3x3 calcCotangentFrame(float3 N, float3 p, float2 uv)
     float3 T = dp2_p * duv1.x + dp1_p * duv2.x;
     float3 B = dp2_p * duv1.y + dp1_p * duv2.y;
 
-    float inv_max = rsqrt(max(dot(T, T), dot(B, B)));
+    float inv_max = rsqrt(max(max(dot(T, T), dot(B, B)), 1e-6));
     return float3x3(T * inv_max, B * inv_max, N);
 }
 

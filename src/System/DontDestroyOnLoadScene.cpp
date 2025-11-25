@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "DontDestroyOnLoadScene.h"
+﻿#include "DontDestroyOnLoadScene.h"
 
 
 void DontDestroyOnLoadScene::DontDestroyOnLoad(ObjectP object, SceneP from_where)

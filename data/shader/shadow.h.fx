@@ -106,6 +106,7 @@ float getShadow(float4 inputPosition, float3 worldPosition)
         //float thetaBias = rand(input.position_.xy) * 2.0f * PI;
 		
         const int SAMPLE_NUM = 16; // ƒTƒ“ƒvƒŠƒ“ƒO” 
+        [unroll]
         for (int i = 0; i < SAMPLE_NUM; ++i)
         {
             float2 offset = VogelDiskSample(i, SAMPLE_NUM, thetaBias) * (1.0 / 512.0);

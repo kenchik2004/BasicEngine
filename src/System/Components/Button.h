@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <System/Component.h>
 class Button : public Component
 {
 	const Vector3 DEFAULT_BUTTON_SIZE = { 100, 50,1 };

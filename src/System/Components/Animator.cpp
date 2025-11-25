@@ -1,8 +1,6 @@
-﻿#include "precompile.h"
-#include "Animator.h"
+﻿#include "Animator.h"
 #include "ModelRenderer.h"
-#include "System/Components/MeshCollider.h"
-#include "System/ModelManager.h"
+#include "System/Managers/ModelManager.h"
 
 
 void Animator::Construct()
@@ -64,7 +62,7 @@ void Animator::Load(std::string_view path, std::string_view name)
 
 void Animator::Update()
 {
-	if (!model)
+	if (!model || anim_paused)
 		return;
 	if (model->GetModelHandle() < 0)
 		return;
@@ -91,18 +89,26 @@ void Animator::Update()
 			auto mat = MV1GetFrameBaseLocalMatrix(model->GetModelHandle(), 0);
 			//現在再生中のアニメーションの、リアルタイムのフレームの行列を取得する
 			auto anim_mat = MV1GetAttachAnimFrameLocalMatrix(model->GetModelHandle(), current_anim->attached_index, 0);
-
-			anim_mat.m[3][1] = mat.m[3][1];//Y座標だけ書き換え、あとはアニメーションの行列を使う
+			mat4x4 ijiru_mat = cast(anim_mat);
+			mat4x4 mat_c = cast(mat);
+			mat4x4 anim_mat_c = cast(anim_mat);
+			ijiru_mat[0] = Vector4(Lerp(mat_c[0].getXYZ(), anim_mat_c[0].getXYZ(), current_anim->blend_rate), 0);
+			ijiru_mat[1] = Vector4(Lerp(mat_c[1].getXYZ(), anim_mat_c[1].getXYZ(), current_anim->blend_rate), 0);
+			ijiru_mat[2] = Vector4(Lerp(mat_c[2].getXYZ(), anim_mat_c[2].getXYZ(), current_anim->blend_rate), 0);
+			ijiru_mat[3] = Vector4(Lerp(mat_c[3].getXYZ(), anim_mat_c[3].getXYZ(), current_anim->blend_rate), 1);
+			ijiru_mat[3][1] = mat.m[3][1];//Y座標だけ書き換え、あとはアニメーションの行列を使う
 			//ここで大事なのは、回転やxz座標はアニメーションの行列を使うこと
 			//全部書き換えてしまうと、腰骨が完全に固定され、ゴキブリみたいな動きになってしまう
 
-			MV1SetFrameUserLocalMatrix(model->GetModelHandle(), 0, anim_mat);
+			MV1SetFrameUserLocalMatrix(model->GetModelHandle(), 0, cast(ijiru_mat));
 		}
 	}
 	//古いアニメーションも更新する
 	for (auto& old_anim : old_anims) {
 		if (old_anim) {
-			old_anim->Update(anim_speed);
+			//古いアニメーションも更新する
+			//しかし、コールバックを呼ぶと管理がてんやわんやになるので、falseを渡す
+			old_anim->Update(anim_speed, false);
 			//アニメーションの時間を進める
 			//ループしているかどうかはこの段階では知ったこっちゃないので、とりあえず進めるだけ進める
 			old_anim->current_time = std::clamp(old_anim->current_time, 0.0f, old_anim->total_time);
@@ -140,6 +146,22 @@ void Animator::Update()
 
 }
 
+void Animator::LateDebugDraw() {
+	if (current_anim && freeze_hip_y) {
+		auto mat = MV1GetFrameBaseLocalMatrix(model->GetModelHandle(), 0);
+		//現在再生中のアニメーションの、リアルタイムのフレームの行列を取得する
+		auto anim_mat = MV1GetAttachAnimFrameLocalMatrix(model->GetModelHandle(), current_anim->attached_index, 0);
+		mat4x4 ijiru_mat = cast(anim_mat);
+		mat4x4 mat_c = cast(mat);
+		mat4x4 anim_mat_c = cast(anim_mat);
+		ijiru_mat[0] = Vector4(Lerp(mat_c[0].getXYZ(), anim_mat_c[0].getXYZ(), current_anim->blend_rate), 0);
+		ijiru_mat[1] = Vector4(Lerp(mat_c[1].getXYZ(), anim_mat_c[1].getXYZ(), current_anim->blend_rate), 0);
+		ijiru_mat[2] = Vector4(Lerp(mat_c[2].getXYZ(), anim_mat_c[2].getXYZ(), current_anim->blend_rate), 0);
+		ijiru_mat[3] = Vector4(Lerp(mat_c[3].getXYZ(), anim_mat_c[3].getXYZ(), current_anim->blend_rate), 1);
+		ijiru_mat[3][1] = mat.m[3][1];//Y座標だけ書き換え、あとはアニメーションの行列を使う
+		std::string _name = MV1GetFrameName(model->GetModelHandle(), 0);
+	}
+}
 
 void Animator::Exit()
 {
@@ -154,6 +176,8 @@ void Animator::Exit()
 
 void Animator::Play(std::string_view name, bool loop, float start_time, float blend_time, bool freeze_y)
 {
+	if (anim_paused)
+		Resume();
 	anim_blend_time = blend_time;
 	//モデルコンポーネントがない、またはモデルがロードされていなかったら処理を抜ける
 	if (!model)
@@ -200,7 +224,8 @@ void Animator::Play(std::string_view name, bool loop, float start_time, float bl
 			current_anim->blend_rate = 0.0f;
 			current_anim->InitCallBacks();
 			anim_loop = loop;
-			current_anim->Update(anim_speed);
+			//current_anim->Update(anim_speed);
+			Update();
 			return;
 		}
 		//アタッチに失敗した場合は、現在のアニメーションを変更しないので、先にアタッチを試みる
@@ -247,8 +272,9 @@ void Animator::Play(std::string_view name, bool loop, float start_time, float bl
 			select->blend_rate = 0.0f;
 			current_anim = select;
 			anim_loop = loop;
-			current_anim->Update(anim_speed);
+			//current_anim->Update(anim_speed);
 		}
+		Update();
 		return;
 	}
 
@@ -270,12 +296,19 @@ void Animator::Play(std::string_view name, bool loop, float start_time, float bl
 	}
 }
 
+void Animator::Pause()
+{
+	anim_paused = true;
+}
+
 void Animator::Stop()
 {
 	if (!model || !current_anim)
 		return;
 	if (model->GetModelHandle() < 0)
 		return;
+	if (anim_paused)
+		Resume();
 
 	//古いアニメーションを一つずつ後ろにずらしていき、一番古いものを消す
 	//現在再生中のものは一番新しいものとして突っ込む
@@ -292,14 +325,19 @@ void Animator::Stop()
 			}
 		}
 		//古いものから一つずつ後ろにずらしていく
-		for (auto old = old_anims.end() - 2; old > old_anims.begin(); old--) {
+		for (auto old = old_anims.end() - 2; old >= old_anims.begin(); old--) {
 			*(old + 1) = *old;
+			if (old == old_anims.begin()) {
+				old->reset();
+				break;
+			}
 		}
 		//現在のアニメーション古いやつの中でも一番新しいものとして突っ込む
 		old_anims[0] = current_anim;
 	}
 
 	anim_loop = false;
+	current_anim->blend_rate = 0.0f;
 	current_anim->InitCallBacks();
 	current_anim.reset();
 
@@ -328,6 +366,14 @@ std::string_view Animator::GetCurrentAnimName()
 	return "";
 }
 
+float Animator::GetCurrentAnimTime()
+{
+	//再生中のアニメーションがあれば、その現在時間を返す
+	if (current_anim && IsPlaying())
+		return current_anim->current_time / 60.0f;
+	return 0.0f;
+}
+
 bool Animator::IsPlaying()
 {
 	//アニメーションがセットされていなかったら、再生していない
@@ -336,4 +382,11 @@ bool Animator::IsPlaying()
 	//アニメーションの時間が総時間を超えていないかつ、0以上であるなら再生中とみなす
 	// (再生速度をマイナスにして逆再生もできるように)
 	return (current_anim->current_time < current_anim->total_time && current_anim->current_time >= 0);
+}
+
+bool Animator::IsPaused()
+{
+	if (!current_anim)
+		return false;
+	return anim_paused;
 }

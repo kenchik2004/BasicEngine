@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "DiceD10.h"
+﻿#include "DiceD10.h"
 
 namespace Sample {
 

@@ -1,6 +1,5 @@
-﻿#include "precompile.h"
-#include "System/Scene.h"
-#include "System/Object.h"
+﻿#include "System/Scene.h"
+#include "System/Objects/Object.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/Collider.h"
 #include <algorithm>
@@ -16,9 +15,14 @@ void Scene::Physics()
 
 	//シミュレーション
 	in_simulation = true;
-	physics_scene->simulate(Time::FixedDeltaTime() * physics_timescale);
-	//シミュレーションを待つ
-	while (!physics_scene->fetchResults(false)) {}
+	//精度向上のため、サブステップで4回に分けてシミュレーションを行う
+	double single_step_time = Time::FixedDeltaTime() * physics_timescale / 4.0;
+	for (u32 i = 0; i < 4; i++) {
+		physics_scene->simulate(single_step_time);
+		//シミュレーションを待つ
+		while (!physics_scene->fetchResults(true)) {}
+	}
+
 
 	in_simulation = false;
 	//処理待ち関数の呼び出し
@@ -282,8 +286,8 @@ void Scene::DestroyGameObject(ObjectP destroy_obj) {
 				ComponentWP comp_wp = obj_w.lock()->GetComponent<Component>();
 				obj_w->RemoveComponent(comp_wp.lock());
 				try {
-					if (comp_wp)
-						throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
+					//if (comp_wp)
+					//	throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
 				}
 				catch (Exception& ex) {
 					ex.Show();

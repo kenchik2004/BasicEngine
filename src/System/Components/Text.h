@@ -1,6 +1,5 @@
 ﻿#pragma once
 #pragma once
-#include <System/Component.h>
 
 struct CharToken {
 	std::string utf8_char;     // UTF-8 文字（1〜4バイト）

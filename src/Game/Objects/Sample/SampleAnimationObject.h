@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "System/Object.h"
 USING_PTR(ModelRenderer);
 USING_PTR(Animator);
 namespace Sample

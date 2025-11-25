@@ -1,10 +1,5 @@
 ﻿#include "Main.h"
-#include "System/SceneManager.h"
 #include <fstream>
-#include "System/IniFileManager.h"
-#include "System/ImGui_.h"
-#include <System/Components/Camera.h>
-#include <System/Utils/Render.h>
 //#define DEBUG_WINDOW
 //#define USE_DEBUG_DRAW
 //#define FULL_SCREEN

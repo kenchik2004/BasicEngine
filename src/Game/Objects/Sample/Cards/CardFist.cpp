@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "CardFist.h"
+﻿#include "CardFist.h"
 namespace {
 	SafeSharedPtr<Texture> mytex = nullptr;
 

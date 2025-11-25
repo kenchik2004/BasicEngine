@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "System/Components/RigidBody.h"
+﻿#include "System/Components/RigidBody.h"
 #include "MeshCollider.h"
 #include "System/Components/ModelRenderer.h"
 
@@ -35,6 +34,7 @@ void MeshCollider::PrePhysics()
 
 void MeshCollider::DebugDraw()
 {
+	return;
 	if (!ref_poly_)
 		return;
 
@@ -86,6 +86,8 @@ void MeshCollider::AttachToModel()
 #endif
 
 		shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
+		shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+		shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
 		rigidbody->GetBody()->attachShape(*shape);
 	}
 	catch (Exception& ex) {

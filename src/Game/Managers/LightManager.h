@@ -1,16 +1,24 @@
 ﻿#pragma once
 
+
+
+//TODO: ライトの管理をオブジェクトではなくマネージャ作成+コンポーネント化に変更する。
+//構成案：
+// LightManager(シーンごとに持たせるシステムのマネージャ)
+//		コンポーネントの持っているLight構造体vectorを持つ
+//   ├ LightComponent(各オブジェクトに持たせるコンポーネント)
+//      ├Light構造体(ライトの情報を持つ構造体、LightBase継承)
 enum class LightType :u32 {
 	Directional,
 	Point,
 };
 struct LightInfo {
-	Vector3 position;
-	float pad;
-	Vector3 direction;
-	float pad2;
-	Vector3 color;
-	float range;
+	Vector3 position; //!< 光源の位置座標
+	float range; //!< 光源の影響範囲
+	Vector3 direction; //!< 光源の向き
+	int type;			//!<ライトタイプ
+	Vector3 color; //!< 光源の色
+	float intensity;	//!< 減衰率
 
 };
 class LightBase {
@@ -34,6 +42,7 @@ class DirectionalLight :public LightBase
 {
 public:
 	Vector3 direction;
+	DirectionalLight() { type = LightType::Directional; direction = { 0,-1,0 }; }
 protected:
 	void DrawToAccumulationBuffer() override;
 	void SetLightConstantBuffer() override;
@@ -44,6 +53,7 @@ class PointLight :public LightBase
 public:
 	float intensity;
 	float range;
+	PointLight() { type = LightType::Point; intensity = 1.0f; range = 10.0f; }
 protected:
 	void DrawToAccumulationBuffer() override;
 	void SetLightConstantBuffer() override;
@@ -99,6 +109,14 @@ public:
 			light->Init();
 		light->my_manager = SafeStaticCast<LightManager>(SafeSharedPtr(shared_from_this()));
 		lights.push_back(light);
+	}
+	void RemoveLight(SafeSharedPtr<LightBase> light) {
+		if (!light)
+			return;
+		auto ite = std::find(lights.begin(), lights.end(), light);
+		if (ite != lights.end()) {
+			lights.erase(ite);
+		}
 	}
 	const std::vector<SafeSharedPtr<LightBase>>& GetLights() const {
 		return lights;

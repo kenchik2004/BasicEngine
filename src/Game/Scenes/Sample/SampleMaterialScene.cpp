@@ -1,12 +1,4 @@
-﻿#include "precompile.h"
-#include "SampleMaterialScene.h"
-#include "System/Utils/Render.h"
-#include "System/Components/Camera.h"
-#include "System/Objects/CameraObject.h"
-#include "System/Components/ModelRenderer.h"
-#include "System/Components/Animator.h"
-#include "System/MaterialManager.h"
-#include "System/Objects/ShadowMapObject.h"
+﻿#include "SampleMaterialScene.h"
 namespace Sample
 {
 	void SampleMaterialScene::Load()

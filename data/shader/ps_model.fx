@@ -33,16 +33,13 @@ TextureCube IBL_Specular : register(t15);
 //----------------------------------------------------------------------------
 PS_OUTPUT main(PS_INPUT_MODEL input)
 {
+	
     PS_OUTPUT output;
-
+	
     float2 uv = input.uv0_;
     float3 N = normalize(input.normal_); // 法線
     float3 V = normalize(eye_position_ - input.world_position_);
 	
-	
-    float3 light = light_info_[0].direction_; // ライトのポジション
-	
-    float3 L = normalize(-light);
 	
 	//------------------------------------------------------------
 	// 法線マップ
@@ -56,18 +53,17 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     textureColor = saturate(textureColor);
 	
     // アルファテスト
-    if (textureColor.a < 0.5)
+    if (textureColor.a < 0.25)
         discard;
-
 	// リニア化 sRGBのテクスチャ → Linearのテクスチャ
-    textureColor.rgb = pow(textureColor.rgb, 2.2);
+    textureColor.rgb = pow(saturate(textureColor.rgb), 2.2);
 	
     float3 albedo = textureColor.rgb;
 	
     output.color0_ = textureColor;
     //output.color0_.rgb = N; // * input.diffuse_;
     //output.color0_.a = 1;
-    //return output;
+	
 	
 	
 	
@@ -104,39 +100,55 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	
 	
-	//-------------------------------------------------------------
-	// フォグ表現
-	//-------------------------------------------------------------
-    float ratio = saturate(distance * 0.005);
-   //output.color0_.rgb = lerp(output.color0_.rgb, float3(0.4, 0.6, 1), ratio);
 	
+		
+
     int2 position = int2(input.position_.xy); // 画面上のピクセル位置
 	
-
-    
-    float3 H = normalize(L + V); // ハーフベクトル
 	
-	
-	
-
-    float3 lightColor = light_info_[0].light_color_; // 光源の明るさ, 色
     float roughness = 0.5; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
     float metallic = 0.5; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
+    roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
+    metallic = MetallicTexture.Sample(MetallicSampler, uv).r;
+
 	
-    metallic = SpecularMapTexture.Sample(SpecularMapSampler, uv).r;
+	
+	
+    float3 diffuse = float3(0, 0, 0);
+    float3 specular = float3(0, 0, 0);
+	[unroll]
+    for (int light_index = 0; light_index < light_count; light_index++)
+    {
+        float3 L;
+        float3 L_Norm;
+        L = light_info_[light_index].type == 0 ? -light_info_[light_index].direction_ : light_info_[light_index].light_position_ - input.world_position_;
+        L_Norm = normalize(L);
+        float3 H = normalize(L_Norm + V); // ハーフベクトル
+
+        float3 lightColor = light_info_[light_index].light_color_; // 光源の明るさ, 色
  
 	
 	
-    float3 diffuse;
-    float3 specular;
-	
-    lighting(lightColor,
-			 N, L, V, H,
+        float3 single_diffuse = float3(0, 0, 0);
+        float3 single_specular = float3(0, 0, 0);
+        float distance = length(L);
+        if (light_info_[light_index].type == 0 || light_info_[light_index].light_range_ > distance)
+            lighting(lightColor,
+			 N, L_Norm, V, H,
 			 roughness, metallic,
 			 albedo,
-			 diffuse, specular);
+			 single_diffuse, single_specular);
+		
+		 
+        float s = saturate(distance / light_info_[light_index].light_range_);
+        float f = light_info_[light_index].intensity; // f 1.0~4.0 (大きくすると強く減衰する)
+		// 点光源の場合の距離減衰(平行光源なら1.0のまま)
+        float attenuation = light_info_[light_index].type == 0 ? 1.0 : (1 - s * s) * (1 - s * s) / (1 + f * s);
+    
+        diffuse += single_diffuse * attenuation;
+        specular += single_specular * attenuation;
 	
-
+    }
 	
     float shadow = getShadow(input.position_, input.world_position_);
 	
@@ -173,7 +185,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	// ambient light 環境光
 	// 周辺の明るさを近似
-    float3 ambient = float3(1.0, 1.0, 1.0);
+    float3 ambient = float3(1.0, 1.0, 1.0) * 0;
 	
     output.color0_.rgb *= diffuse + ambient;
     output.color0_.rgb += specular;
@@ -192,7 +204,12 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	// pow べき乗
 	// pow(n, x);	nのx乗
-    output.color0_.rgb = pow(output.color0_.rgb, 1.0 / 2.2);
+    output.color0_.rgb = pow(saturate(output.color0_.rgb), 1.0 / 2.2);
+	//-------------------------------------------------------------
+	// フォグ表現
+	//-------------------------------------------------------------
+    float ratio = saturate(distance * 0.005);
+   // output.color0_.rgb = lerp(output.color0_.rgb, float3(0.4, 0.6, 0.8), ratio);
 	
 	
 	// 出力パラメータを返す

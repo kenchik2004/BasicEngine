@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "CardDoman.h"
+﻿#include "CardDoman.h"
 
 namespace {
 	SafeSharedPtr<Texture> mytex = nullptr;

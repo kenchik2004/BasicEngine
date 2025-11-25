@@ -1,7 +1,5 @@
 ﻿#include "Precompile.h"
 #include "System/Components/ImageRenderer.h"
-#include "System/MaterialManager.h"
-#include "System/Utils/Render.h"
 
 
 
@@ -73,6 +71,7 @@ void ImageRenderer::DrawMain()
 	}
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
+	material->GetPixelShader()->AplyConstantBuffers();
 	DrawPrimitive2DToShader(vert, 4, DX_PRIMTYPE_TRIANGLESTRIP);
 	SetUsePixelShader(-1);
 	for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {

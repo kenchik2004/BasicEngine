@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "NetWorkSampleScene.h"
+﻿#include "NetWorkSampleScene.h"
 #include "Game/Managers/NetWorkManagerBase.h"
 #include <filesystem>
 #include <fstream>

@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <System/Component.h>
 USING_PTR(UIObject);
 class ImageRenderer : public Component
 {

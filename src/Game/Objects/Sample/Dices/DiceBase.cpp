@@ -1,10 +1,5 @@
-﻿#include "precompile.h"
-#include "DiceBase.h"
+﻿#include "DiceBase.h"
 
-#include "System/Components/ModelRenderer.h"
-#include "System/Components/RigidBody.h"
-#include "System/Components/ConvexMeshCollider.h"
-#include "System/MaterialManager.h"
 
 namespace Sample {
 

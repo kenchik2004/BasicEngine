@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "RigidBody.h"
+﻿#include "RigidBody.h"
 #include "SphereCollider.h"
 #include <System/Components/ModelRenderer.h>
 
@@ -17,7 +16,12 @@ int SphereCollider::Init()
 		PxSphereGeometry(radius),
 		*PhysicMaterial::Default, true);
 	shape->userData = new SafeWeakPtr<Collider>(std::static_pointer_cast<Collider>(shared_from_this()));
-	shape->setSimulationFilterData(PxFilterData(hit_group, collision_group, 0, 0));
+	shape->setSimulationFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	shape->setQueryFilterData(PxFilterData(collision_group, hit_group, 0, 0));
+	PxTransform trns = MakeCollisionTransform();
+	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
+	shape->setLocalPose(trns);
 
 
 	rigidbody->GetBody()->attachShape(*shape);

@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-#include "SampleMovingCharacter.h"
+﻿#include "SampleMovingCharacter.h"
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/Animator.h"
 #include "System/Components/RigidBody.h"
@@ -139,6 +138,14 @@ void SampleMovingCharacter::Update()
 	else {
 		movement_state = 0;
 	}
+}
+
+void SampleMovingCharacter::Draw()
+{
+	auto shader_ps = my_model->GetMaterial(0)->GetPixelShader();
+	float red = Time::GetTimeFromStart();
+	Color color = { (sinf(red * 2.0f) + 1.0f) / 2.0f, (sinf(red * 0.7f + 2.0f) + 1.0f) / 2.0f, (sinf(red * 1.3f + 4.0f) + 1.0f) / 2.0f, 1.0f };
+	shader_ps->SetValue<Color>("SampleCB.samplecb_color", &color);
 }
 
 void SampleMovingCharacter::Exit()

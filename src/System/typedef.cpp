@@ -1,5 +1,4 @@
-﻿#include "precompile.h"
-
+﻿
 
 //通常stringをワイドstringに変換
 std::wstring Str2Wstr(std::string in)

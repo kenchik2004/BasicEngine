@@ -25,6 +25,11 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	
 	// GBufferから情報を取得
     SurfaceInfo surfaceInfo = GetSurfaceInfo(position);
+    if (surfaceInfo.depth_ == 1.0f)
+    {
+        // 背景
+        discard;
+    }
     
     float3 L = light_info_[0].light_position_ - surfaceInfo.world_position_;
     float distance = length(L);
@@ -60,9 +65,11 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
     
     
     float s = saturate(distance / light_info_[0].light_range_);
-    float f = 1.0f; // f 1.0~4.0 (大きくすると強く減衰する)
+    float f = light_info_[0].intensity; // f 1.0~4.0 (大きくすると強く減衰する)
     float attenuation = (1 - s * s) * (1 - s * s) / (1 + f * s);
     
+    float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_;
+    diffuse += ambient;
     diffuse *= attenuation;
     specular *= attenuation;
 
@@ -70,7 +77,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
     // 出力
     //----------------------------------------------------------
     PS_OUTPUT_LIGHTING output;
-
+    
     output.diffuse_ = float4(diffuse, 1.0f);
     output.specular_ = float4(specular, 1.0f);
 

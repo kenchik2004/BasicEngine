@@ -1,15 +1,17 @@
 ﻿#pragma once
-#include "System/Component.h"
 USING_PTR(Transform);
 class Transform :
 	public Component
 {
 private:
 	friend class Object;
+	friend class RigidBody;
 	TransformWPVec children; //!< 子TransformへのWeakPointerのリスト
 	Vector3 position_prev = Vector3(0, 0, 0);; //!< 前回の位置
-	Quaternion rotation_prev = Quaternion(physx::PxIdentity);; //!< 前回の回転
+	Quaternion rotation_prev = Quaternion(physx::PxIdentity); //!< 前回の回転
 	Vector3 scale_prev = Vector3(1, 1, 1); //!< 前回のスケール
+
+	void CalculateTransform();
 
 public:
 	USING_SUPER(Transform);
@@ -24,6 +26,7 @@ public:
 	TransformWP parent; //!< 親TransformへのWeakPointer
 	void Construct() override;
 	void PreDraw() override;
+	void PostUpdate() override;
 	void DebugDraw() override;
 	TransformWP GetChild(size_t index) const;
 	void SetChild(TransformP new_child);
