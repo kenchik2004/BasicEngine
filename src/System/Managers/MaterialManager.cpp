@@ -17,12 +17,14 @@ Material* MaterialManager::CreateMaterial(std::string_view name)
 	auto new_mat = make_safe_unique<Material>();
 	new_mat->name = name_key;
 	new_mat->pixel_shader = default_pixel_shader.get();
+	new_mat->pixel_shader_gbuffer = default_pixel_shader_gbuffer.get();
 	new_mat->vertex_shader = default_vertex_shader.get();
 	new_mat->SetTexture(null_white, Material::TextureType::Diffuse);
 	new_mat->SetTexture(null_black, Material::TextureType::Specular);
 	new_mat->SetTexture(null_normal, Material::TextureType::Normal);
 	new_mat->SetTexture(null_white, Material::TextureType::Roughness);
 	new_mat->SetTexture(null_black, Material::TextureType::Metalic);
+	new_mat->SetTexture(null_black, Material::TextureType::Emission);
 	auto ret = new_mat.get();
 	materials[name_key] = std::move(new_mat);
 	return ret;

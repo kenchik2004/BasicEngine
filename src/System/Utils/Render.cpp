@@ -14,10 +14,22 @@ namespace {
 	std::shared_ptr<Texture>  texture_back_buffer_;      // バックバッファ
 	std::shared_ptr<Texture>  texture_depth_stencil_;    // デフォルトのデプスステンシル
 	std::shared_ptr<ShaderPs> shader_ps_texture_;        // 通常コピー用のシェーダー
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> default_dss; // デフォルトのデプスステンシルステート
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> write_off_dss; // デプスステンシル無効ステート
 
 	TargetDesc target_desc_;    // 現在のRenderTarget情報
 
 }    // namespace
+
+void SetWriteZBufferEnable(bool enable)
+{
+	if (enable) {
+		GetD3DDeviceContext()->OMSetDepthStencilState(default_dss.Get(), 1);
+	}
+	else {
+		GetD3DDeviceContext()->OMSetDepthStencilState(write_off_dss.Get(), 1);
+	}
+}
 
 //----------------------------------------------------
 // @brief Render初期化。
@@ -33,6 +45,30 @@ bool RenderInit()
 
 	// シェーダー作成
 	shader_ps_texture_ = std::make_shared<ShaderPs>("data/Shader/ps_texture");
+	// デフォルトのデプスステンシルステート作成
+	{
+		D3D11_DEPTH_STENCIL_DESC desc{};
+		desc.DepthEnable = TRUE;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = D3D11_COMPARISON_LESS;
+		desc.StencilEnable = FALSE;
+		HRESULT hr = GetD3DDevice()->CreateDepthStencilState(&desc, default_dss.GetAddressOf());
+		if (FAILED(hr)) {
+			return false;
+		}
+	}
+	// デプスステンシル無効ステート作成
+	{
+		D3D11_DEPTH_STENCIL_DESC desc{};
+		desc.DepthEnable = FALSE;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+		desc.StencilEnable = FALSE;
+		HRESULT hr = GetD3DDevice()->CreateDepthStencilState(&desc, write_off_dss.GetAddressOf());
+		if (FAILED(hr)) {
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -45,6 +81,8 @@ void RenderExit()
 	texture_back_buffer_.reset();
 	texture_depth_stencil_.reset();
 	shader_ps_texture_.reset();
+	default_dss.Reset();
+	write_off_dss.Reset();
 }
 
 //----------------------------------------------------
@@ -233,14 +271,13 @@ void SetRenderTarget(u32 color_count, Texture** color_targets, Texture* depth_st
 //----------------------------------------------------
 // @brief テクスチャを設定。
 // ピクセルシェーダーの指定スロットにテクスチャを設定します。
-// スロット番号が 0 から 15 の範囲外の場合、設定は無視されます。
 //
 // @param[in] slot 設定するテクスチャのスロット番号
 // @param[in] texture 設定するテクスチャ
 //----------------------------------------------------
 void SetTexture(u32 slot, Texture* texture)
 {
-	if (slot <= 16 && slot > 128)
+	if (slot > 128)
 		return;
 
 	ID3D11ShaderResourceView* srv = texture ? texture->Srv() : nullptr;

@@ -127,6 +127,12 @@ void FillRenderTarget(int shader_ps_handle);
 void CopyToRenderTarget(Texture* dst_render_target, Texture* src_texture, int shader_ps_handle = -1);
 
 //----------------------------------------------------
+// @brief Zバッファ書き込み有効設定。
+// @param enable 有効化フラグ。
+//----------------------------------------------------
+void SetWriteZBufferEnable(bool enable);
+
+//----------------------------------------------------
 // @brief Render初期化。
 //----------------------------------------------------
 bool RenderInit();

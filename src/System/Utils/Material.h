@@ -30,10 +30,12 @@ public:
 		Specular, // スペキュラーテクスチャ
 		Roughness, // ラフネステクスチャ
 		Metalic, // メタリックテクスチャ
+		Emission, // エミッシブテクスチャ
 		Max, // 最大値
 	};
 private:
 	ShaderPs* pixel_shader; // ピクセルシェーダー
+	ShaderPs* pixel_shader_gbuffer; // ピクセルシェーダー(Gbuffer用)
 	ShaderVs* vertex_shader; // 頂点シェーダー
 	std::array<SafeSharedPtr<Texture>, static_cast<u32>(TextureType::Max)> textures; // テクスチャ配列
 	std::string name; // マテリアル名
@@ -41,9 +43,10 @@ private:
 public:
 	//----------------------------------------------------
 	// @brief ピクセルシェーダーを設定する。
+	// @param gbuffer Gbuffer用シェーダーかどうか。
 	// @param override_ps 設定するピクセルシェーダー。
 	//----------------------------------------------------
-	void SetShaderPs(ShaderPs* override_ps);
+	void SetShaderPs(ShaderPs* override_ps,bool gbuffer=false);
 	//----------------------------------------------------
 	// @brief 頂点シェーダーを設定する。
 	// @param override_vs 設定する頂点シェーダー。
@@ -70,6 +73,14 @@ public:
 	// @return ピクセルシェーダー。
 	//----------------------------------------------------
 	ShaderPs* GetPixelShader() { return pixel_shader; }
+
+	//----------------------------------------------------
+	// @brief ピクセルシェーダー(Gbuffer用)を取得する。
+	// @return Gbuffer用ピクセルシェーダー
+	//----------------------------------------------------
+	ShaderPs* GetGbufferPixelShader() { return pixel_shader_gbuffer; }
+
+
 	//----------------------------------------------------
 	// @brief 頂点シェーダーを取得する。
 	// @return 頂点シェーダー。

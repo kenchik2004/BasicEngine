@@ -33,17 +33,29 @@ public:
 	operator int() const;
 
 	//----------------------------------------------------
-	// @brief [DxLib] シェーダーハンドルを取得 (バリエーション指定)。
+	// @brief [DxLib] シェーダーハンドルを取得 (バリエーション指定)
 	// @param variant_index バリエーションインデックス。
 	//----------------------------------------------------
 	int variant(u32 variant_index) const;
 
 	//----------------------------------------------------
-	// @brief [DxLib] シェーダーバイトコードを取得 (バリエーション指定)。
+	// @brief [DxLib] シェーダーバイトコードを取得 (バリエーション指定)
 	// @param variant_index バリエーションインデックス。
 	//----------------------------------------------------
 	std::tuple<const void*, size_t> shader_bytecode(u32 variant_index = 0) const;
 
+	//----------------------------------------------------
+	// @brief 定数バッファの値を設定。
+	// @param name 定数バッファ内の変数名 (例: "MyBuffer.MyVariable")
+	// @param value 設定する値へのポインタ。
+	// @param variant_index バリエーションインデックス(default:0)
+	//----------------------------------------------------
+	template <typename T>
+	void SetValue(std::string_view name_, const T* value_, u32 variant_index = 0) {
+		SetValueToVariant(impl_.get(), name_, value_, sizeof(T), variant_index);
+	}
+
+	void AplyConstantBuffers(u32 variant_index = 0);
 	//----------------------------------------------------
 	// @brief ファイルパスを取得。
 	//----------------------------------------------------
@@ -57,6 +69,15 @@ public:
 private:
 	struct Impl;
 	std::shared_ptr<Impl> impl_;
+	//----------------------------------------------------
+	// @brief 定数バッファの値を設定 (バリエーション指定)
+	// @param impl シェーダー実体へのポインタ。
+	// @param name 定数バッファ内の変数名 (例: "MyBuffer.MyVariable")
+	// @param value 設定する値へのポインタ。
+	// @param class_size 値のサイズ。
+	// @param variant_index バリエーションインデックス (default: 0)
+	//----------------------------------------------------
+	static void SetValueToVariant(Impl* impl, std::string_view name_, const void* value_, size_t class_size, u32 variant_index = 0);
 };
 
 //----------------------------------------------------

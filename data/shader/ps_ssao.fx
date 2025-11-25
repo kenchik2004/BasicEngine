@@ -45,7 +45,7 @@ float4 main(PS_INPUT input) : SV_Target0
 	//半球状にサンプリングを行う
 	static const int SAMPLE_COUNT = 64;
 	[unroll]
-	for (int i = 0; i < SAMPLE_COUNT; i++)
+	for (int i = 50; i < SAMPLE_COUNT; i++)
 	{
 		float2 offset = VogelDiskSample(i, SAMPLE_COUNT, base_angle);
 		float height = rand(input.uv0_ + i);
@@ -66,18 +66,14 @@ float4 main(PS_INPUT input) : SV_Target0
 		SurfaceInfo depth_surface = GetSurfaceInfo(int2(uv * resolution));
 		float4 view_depth = mul(mat_proj_inv, float4(screen_position.xy, depth_surface.depth_, 0));
 		view_depth.xyz /= view_depth.w;
-		//view_depth.xy= view_depth.xy * float2(2, -2) + 1;
-		//screen_position.xy = screen_position.xy * float2(0.5, -0.5) + 0.5;
-		//return float4(view_depth.xyw, 1);
-		if (view_depth.w > input.position_.w)
-		{
-			static const float ao_substract = 1.0 / 64;
-			ao += ao_substract;
-		}
+		float delta = length(screen_position.w - view_depth.w);
+			ao = delta;
+			return float4(view_depth.www, 1);
+	
 	}
 
 
 
 	// 出力パラメータを返す
-	return float4(ao,0,0,ao);
+	return float4(surfaceInfo.world_position_.xyz*0.01,ao);
 }

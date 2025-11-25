@@ -92,6 +92,7 @@ public:
 
 struct PhysicMaterial {
 	static physx::PxMaterial* Default;
+	static physx::PxMaterial* ZeroFriction;
 	static physx::PxMaterial* Metal;
 	static physx::PxMaterial* Rubber;
 	static physx::PxMaterial* Wood;

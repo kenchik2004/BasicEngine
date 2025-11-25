@@ -31,7 +31,7 @@ PS_OUTPUT main(PS_INPUT input)
 	
     output.color0_ = diffuse + specular;
     
-    output.color0_.rgb = pow(output.color0_.rgb, 1.0 / 2.2);
+    output.color0_.rgb = pow(saturate(output.color0_.rgb), 1.0 / 2.2);
 
 	// 出力パラメータを返す
     return output;

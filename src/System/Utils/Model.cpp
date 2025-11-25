@@ -23,9 +23,13 @@ void ModelSource::Init()
 	//DxLib内のテクスチャキャッシュからテクスチャを取得
 	for (int i = 0; i < materials.size(); i++) {
 		materials[i] = MaterialManager::CreateMaterial(name + "_Material" + std::to_string(i)); // マテリアルを作成
+		// 各種テクスチャのインデックスを取得
 		int dif_index = MV1GetMaterialDifMapTexture(handle, i);
 		int norm_index = MV1GetMaterialNormalMapTexture(handle, i);
 		int spec_index = MV1GetMaterialSpcMapTexture(handle, i);
+		int roughness_index = MV1GetMaterialShininessMapTexture(handle, i);
+		int metallic_inex = MV1GetMaterialReflectionFactorMapTexture(handle, i);
+		int emission_index = MV1GetMaterialEmissiveMapTexture(handle, i);
 		if (dif_index >= 0) {
 			int tex_handle = MV1GetTextureGraphHandle(handle, dif_index);
 			auto mat_tex_diffuse = make_safe_shared<Texture>(tex_handle);
@@ -41,6 +45,22 @@ void ModelSource::Init()
 			auto mat_tex_spec = make_safe_shared<Texture>(tex_handle);
 			materials[i]->SetTexture(mat_tex_spec, Material::TextureType::Specular); // スペキュラーテクスチャを設定
 		}
+		if (roughness_index >= 0) {
+			int tex_handle = MV1GetTextureGraphHandle(handle, roughness_index);
+			auto mat_tex_roughness = make_safe_shared<Texture>(tex_handle);
+			materials[i]->SetTexture(mat_tex_roughness, Material::TextureType::Roughness); // ラフネステクスチャを設定
+		}
+		if (metallic_inex >= 0) {
+			int tex_handle = MV1GetTextureGraphHandle(handle, metallic_inex);
+			auto mat_tex_metallic = make_safe_shared<Texture>(tex_handle);
+			materials[i]->SetTexture(mat_tex_metallic, Material::TextureType::Metalic); // メタリックテクスチャを設定
+		}
+		if (emission_index >= 0) {
+			int tex_handle = MV1GetTextureGraphHandle(handle, emission_index);
+			auto mat_tex_emission = make_safe_shared<Texture>(tex_handle);
+			materials[i]->SetTexture(mat_tex_emission, Material::TextureType::Emission); // エミッシブテクスチャを設定
+		}
+
 	}
 	is_initialized = true; // 初期化完了
 }
@@ -232,6 +252,7 @@ void Model::Draw(bool to_gbuffer) {
 		SetUseLighting(true); // ライティングを有効化
 		return;
 	}
+	//SetWriteZBufferEnable(false);
 
 	ID3D11DeviceContext* context = reinterpret_cast<ID3D11DeviceContext*>(const_cast<void*>(GetUseDirect3D11DeviceContext())); // コンテキストを取得
 	//SetUseTextureToShader(14, *ibl_diffuse.get());
@@ -239,6 +260,11 @@ void Model::Draw(bool to_gbuffer) {
 		//フレーム(リグ)単位でメッシュを描画
 	for (s32 frame_index = 0; frame_index < MV1GetFrameNum(handle); frame_index++) // フレームごとにループ
 	{
+
+		for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
+			SetUseTextureToShader(i, -1); // テクスチャをリセット
+			//SetTexture(i, nullptr); // シェーダーのテクスチャをリセット
+		}
 		//フレームのメッシュ数を取得
 		s32 mesh_count = MV1GetFrameMeshNum(handle, frame_index);
 		for (s32 mesh_index = 0; mesh_index < mesh_count; mesh_index++) // メッシュごとにループ
@@ -267,6 +293,21 @@ void Model::Draw(bool to_gbuffer) {
 				else if (materials.size() > 0)
 					cur_material = materials[materials.size() - 1]; // 最後のマテリアルを使用
 
+
+
+				// マテリアルのテクスチャをセット
+				for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
+					auto texture = cur_material->GetTexture(static_cast<Material::TextureType>(i)); // テクスチャを取得
+					if (texture) {
+						SetUseTextureToShader(i, *texture); // テクスチャを無効化
+						//SetTexture(i, texture.get()); // シェーダーにテクスチャをセット
+					}
+					else {
+						SetUseTextureToShader(i, -1); // テクスチャを無効化
+						//SetTexture(i, nullptr); // シェーダーのテクスチャを無効化
+					}
+				}
+
 				ShaderVs* shader_vs;
 				ShaderPs* shader_ps;
 				//マテリアルが指定されていない場合、デフォルトマテリアルを使用
@@ -275,8 +316,12 @@ void Model::Draw(bool to_gbuffer) {
 
 				{
 					shader_ps = cur_material->GetPixelShader(); // ピクセルシェーダーを取得
-					if (to_gbuffer)
-						shader_ps = MaterialManager::GetDefaultMatGBuffer()->GetPixelShader(); // GBuffer 用シェーダーを取得
+					if (to_gbuffer) {
+						if (cur_material->GetGbufferPixelShader())
+							shader_ps = cur_material->GetGbufferPixelShader(); // GBuffer 用シェーダーを取得
+						else
+							shader_ps = MaterialManager::GetDefaultMatGBuffer()->GetPixelShader(); // GBuffer 用シェーダーを取得
+					}
 					shader_vs = cur_material->GetVertexShader(); // 頂点シェーダーを取得
 				}
 				//--------------------------------------------------
@@ -300,17 +345,9 @@ void Model::Draw(bool to_gbuffer) {
 					DxLib::MV1SetUseOrigShader(enable_shader); // オリジナルシェーダーの使用を設定
 					SetUseVertexShader(handle_vs); // 頂点シェーダーを設定
 					SetUsePixelShader(handle_ps); // ピクセルシェーダーを設定
-					// マテリアルのテクスチャをセット
-					for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
-						auto texture = cur_material->GetTexture(static_cast<Material::TextureType>(i)); // テクスチャを取得
-						auto texture_srv = cur_material->GetTexture(static_cast<Material::TextureType>(i))->Srv();
-						if (texture) {
-							SetUseTextureToShader(i, *texture.get()); // テクスチャを設定
-						}
-						else {
-							SetUseTextureToShader(i, -1); // テクスチャを無効化
-						}
-					}
+					shader_ps->AplyConstantBuffers(); // 定数バッファを適用
+					shader_vs->AplyConstantBuffers(); // 定数バッファを適用
+
 
 				}
 
@@ -324,10 +361,11 @@ void Model::Draw(bool to_gbuffer) {
 
 		for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
 			SetUseTextureToShader(i, -1); // テクスチャをリセット
+			//SetTexture(i, nullptr); // シェーダーのテクスチャをリセット
 		}
 	}
 	DxLib::MV1SetUseOrigShader(false); // オリジナルシェーダーを無効化
-	DxLib::SetWriteZBuffer3D(true); // Zバッファを有効化
+	SetWriteZBufferEnable(true);
 }
 
 //----------------------------------------------------

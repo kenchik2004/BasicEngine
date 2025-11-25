@@ -14,6 +14,8 @@ namespace NeonFade
 		void LateDebugDraw() override;
 		void PrePhysics() override;
 
+		void Damage(int damage);
+
 		void OnCollisionEnter(const HitInfo& hit_info);
 		void OnCollisionStay(const HitInfo& hit_info);
 		void OnCollisionExit(const HitInfo& hit_info);
@@ -28,7 +30,9 @@ namespace NeonFade
 		bool is_landed = false;
 		bool is_falling = false;
 		bool is_attacking = false;
-		bool fly = false;
+		bool is_dodging = false;
+
+		bool is_damaged = false;
 		float fall_detect_time = 0.0f;
 		constexpr static float FALL_DETECT_THRESHOLD = 0.4f;
 		bool can_climb = false;

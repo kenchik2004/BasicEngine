@@ -123,7 +123,7 @@ namespace NeonFade
 			if (player_rideon)
 				rb->velocity = { 0,0,0 };
 			else
-				rb->velocity = transform->AxisZ() * 100;
+				rb->velocity = pos_delta;
 
 			for (auto& rideon : rideon_objs) {
 				rideon->transform->position += pos_delta;

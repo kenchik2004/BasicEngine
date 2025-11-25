@@ -286,8 +286,8 @@ void Scene::DestroyGameObject(ObjectP destroy_obj) {
 				ComponentWP comp_wp = obj_w.lock()->GetComponent<Component>();
 				obj_w->RemoveComponent(comp_wp.lock());
 				try {
-					if (comp_wp)
-						throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
+					//if (comp_wp)
+					//	throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
 				}
 				catch (Exception& ex) {
 					ex.Show();

@@ -6,6 +6,26 @@
 
 namespace Sample {
 	Material* mat = nullptr;
+	class GroundObject :public GameObject {
+	private:
+		ModelRendererWP model;
+	public:
+		USING_SUPER(GroundObject);
+		int Init() override {
+
+			model = AddComponent<ModelRenderer>();
+			model->SetModel("stage");
+			AddComponent<RigidBody>();
+			AddComponent<MeshCollider>();
+			return Super::Init();
+		}
+		void Draw() override {
+			auto shader_ps = model->GetMaterial(0)->GetPixelShader();
+			Color color = { 1,1,1,1 };
+			shader_ps->SetValue<Color>("SampleCB.samplecb_color", &color);
+		}
+
+	};
 	void SampleMovingScene::Load()
 	{
 		loading_status = LOADING_STATUS::LOADING;
@@ -39,10 +59,7 @@ namespace Sample {
 		shadowmap->SetLightDirection({ 0, -8, 5 });
 		auto player = SceneManager::Object::Create<SampleMovingCharacter>("Player");
 		player->transform->position = { 0,10,0 };
-		auto ground = SceneManager::Object::Create<GameObject>("Ground");
-		ground->AddComponent<ModelRenderer>()->SetModel("stage");
-		ground->AddComponent<RigidBody>();
-		ground->AddComponent<MeshCollider>();
+		auto ground = SceneManager::Object::Create<GroundObject>("Ground");
 		ground->transform->scale = { 0.05f,0.05f,0.05f };
 		ground->transform->position = { 0,-10,0 };
 		auto cam = SceneManager::Object::Create<CameraObject>();
@@ -60,8 +77,9 @@ namespace Sample {
 		mat->SetTexture(TextureManager::CloneByName("fx_texture"), Material::TextureType::Normal);
 		auto ui = SceneManager::Object::Create<UIObject>();
 		ui->transform->position = { 0,0,0 };
-		ui->transform->scale = { 1280,720,1 };
-		ui->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+		ui->transform->scale = { 1280*0.5f,720*0.5f,1 };
+		ui->CanvasAnchorType() = UIObject::ANCHOR_TYPE::LEFT_TOP;
+		ui->AnchorType() = UIObject::ANCHOR_TYPE::LEFT_TOP;
 		auto render = ui->AddComponent<ImageRenderer>();
 		mat->SetShaderPs(MaterialManager::LoadPixelShader("data/shader/sample_ps_2d.fx", "sample_ps_2d"));
 		render->SetMaterial(mat);
@@ -102,6 +120,19 @@ namespace Sample {
 			return;
 		}
 		DrawFormatString(0, 0, 0xffffff, "FPS:%.2f", Time::GetDrawFPS());
+		float sampleparam1 = Time::GetTimeFromStart();
+		float sampleparam2 = Input::GetKey(KeyCode::P) ? 2.0f : 0.0f;
+		static float speed = 1.0f;
+		if (Input::GetKey(KeyCode::O)) {
+			speed += Time::DeltaTime();
+		}
+		if (Input::GetKey(KeyCode::L)) {
+			speed -= Time::DeltaTime();
+			if (speed < 0.0f)
+				speed = 0.0f;
+		}
+		Vector3 sampleparams = { sampleparam1,sampleparam2,speed };
+		mat->GetPixelShader()->SetValue("SampleCB.sampleparam1", &sampleparams);
 	}
 
 	void SampleMovingScene::Exit()

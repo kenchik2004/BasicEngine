@@ -11,8 +11,6 @@ namespace NeonFade
 	int Player::Init()
 	{
 		rb = AddComponent<RigidBody>();
-		rb->GetBody()->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
-		rb->GetBody()->is<physx::PxRigidDynamic>()->setSleepThreshold(0);
 
 		model = AddComponent<ModelRenderer>();
 		animator = AddComponent<Animator>();
@@ -28,6 +26,7 @@ namespace NeonFade
 		animator->SetAnimation("climb", 0);
 		animator->SetAnimation("jump_attack", 0);
 		animator->SetAnimation("back_flip", 0);
+		animator->SetAnimation("player_damage", 0);
 
 
 		rb->freeze_rotation = { 1,1,1 };
@@ -76,19 +75,17 @@ namespace NeonFade
 			cam_vector_z = cam_rot_around.rotate(cam_vector_z);
 			physx::PxRaycastHit hits[2];
 			RayCastInfo info(hits, 2);
-			camera_distance = 20.0f;
+			camera_distance = 30.0f;
 			physx::PxQueryFilterData a;
 			a.data.word0 = Collider::Layer::Terrain;
 			a.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::ePREFILTER;
-			GetScene()->RayCast(Ray{ transform->position + Vector3(0,5,0), -cam_vector_z, 20 }, info, a);
+			GetScene()->RayCast(Ray{ transform->position + Vector3(0,7,0), -cam_vector_z, 30 }, info, a);
 			if (info.hasBlock) {
-				//printfDx("nb hits:%.1f\n", info.getAnyHit(0).distance);
 				camera_distance = info.block.distance - 0.05f;
 			}
 			cam_vector_z = cam_vector_z * camera_distance;
-			cam_trns->position = transform->position - cam_vector_z + Vector3(0, 5, 0);
+			cam_trns->position = transform->position - cam_vector_z + Vector3(0, 7, 0);
 			cam_trns->SetAxisZ(cam_vector_z);
-			//cam_lock->camera->PreDraw();
 		}
 	}
 	void Player::Exit()
@@ -117,5 +114,10 @@ namespace NeonFade
 	void Player::OnTriggerExit(const HitInfo& hit_info)
 	{
 		pl_controller->OnTriggerExit(hit_info);
+	}
+
+	void Player::Damage(int damage)
+	{
+		pl_controller->Damage(1);
 	}
 } // namespace NeonFade

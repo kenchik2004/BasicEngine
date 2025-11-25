@@ -51,7 +51,7 @@ Vector4 CalculateBoundingBoxInScreen(const Vector3& light_pos, float range, cons
 
 ShaderPs* shader_ssao = nullptr;
 
-inline int LightManager::Init() {
+int LightManager::Init() {
 	name = "LightManager";
 	lights_cbuffer_handle = CreateShaderConstantBuffer(sizeof(Vector4) + sizeof(LightInfo) * MAX_FORWARD_LIGHTS);
 	light_blend_shader = MaterialManager::LoadPixelShader("data/shader/ps_light_finish.fx", "ps_light_finish");

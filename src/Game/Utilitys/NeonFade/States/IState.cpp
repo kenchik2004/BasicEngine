@@ -31,7 +31,7 @@ namespace NeonFade
 		// 優先度順に挿入
 		auto insert_pos = std::find_if(change_requests.begin(), change_requests.end(),
 			[priority](const SafeUniquePtr<FunctionRequest>& req) {
-				return req->priority < priority;
+				return req->priority > priority;
 			});
 		change_requests.insert(insert_pos, std::move(request));
 

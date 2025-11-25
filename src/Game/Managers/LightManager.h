@@ -1,5 +1,13 @@
 ﻿#pragma once
 
+
+
+//TODO: ライトの管理をオブジェクトではなくマネージャ作成+コンポーネント化に変更する。
+//構成案：
+// LightManager(シーンごとに持たせるシステムのマネージャ)
+//		コンポーネントの持っているLight構造体vectorを持つ
+//   ├ LightComponent(各オブジェクトに持たせるコンポーネント)
+//      ├Light構造体(ライトの情報を持つ構造体、LightBase継承)
 enum class LightType :u32 {
 	Directional,
 	Point,

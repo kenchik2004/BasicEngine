@@ -135,7 +135,9 @@ bool Texture::Init(ID3D11Resource* d3d_resource)
 			d3d_device->CreateShaderResourceView(d3d_resource, nullptr, &srv); // SRV を作成
 
 			// ID3D11Texture2DからDxLibグラフィックハンドルを作成
-			if (handle < 0 && desc.Format != DXGI_FORMAT_R11G11B10_FLOAT && desc.Format != DXGI_FORMAT_R8G8B8A8_SNORM) {
+			if (handle < 0 && desc.Format != DXGI_FORMAT_R11G11B10_FLOAT 
+				&& desc.Format != DXGI_FORMAT_R8G8B8A8_SNORM
+				&&desc.Format!=DXGI_FORMAT_R8G8B8A8_TYPELESS) {
 				handle = CreateGraphFromID3D11Texture2D(d3d_resource); // DxLib ハンドルを作成
 			}
 		}

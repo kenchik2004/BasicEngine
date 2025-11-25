@@ -269,6 +269,8 @@ Vector3 Transform::AxisZ()
 }
 
 void Transform::SetAxisX(Vector3 target, Vector3 up) {
+	if (target.magnitudeSquared() <= 1e-6f * 1e-6f) return;	// ゼロベクトルは無視
+	if (up.magnitudeSquared() <= 1e-6f * 1e-6f) up = { 0,1,0 };	//基準軸がゼロベクトルの場合は{0,1,0}にする
 	Vector3 targetNorm = target.getNormalized();	//新しいX軸
 	Vector3 upNorm = up.getNormalized();		//基準となるY軸
 	Vector3 newZ = targetNorm.cross(upNorm).getNormalized(); //二つをもとに新しいZ軸を計算
@@ -277,6 +279,8 @@ void Transform::SetAxisX(Vector3 target, Vector3 up) {
 }
 
 void Transform::SetAxisY(Vector3 target, Vector3 right) {
+	if (target.magnitudeSquared() <= 1e-6f * 1e-6f) return;	// ゼロベクトルは無視
+	if (right.magnitudeSquared() <= 1e-6f * 1e-6f) right = { 1,0,0 };	//基準軸がゼロベクトルの場合は{1,0,0}にする
 	Vector3 targetNorm = target.getNormalized();	//新しいY軸
 	Vector3 rightNorm = right.getNormalized();		//基準となるX軸
 	Vector3 newZ = rightNorm.cross(targetNorm).getNormalized(); //二つをもとに新しいZ軸を計算
@@ -284,6 +288,8 @@ void Transform::SetAxisY(Vector3 target, Vector3 right) {
 	rotation = Quaternion({ right, targetNorm, newZ });	//3軸の方向からクォータニオンを作成
 }
 void Transform::SetAxisZ(Vector3 target, Vector3 up) {
+	if (target.magnitudeSquared() <= 1e-6f * 1e-6f) return;	// ゼロベクトルは無視
+	if (up.magnitudeSquared() <= 1e-6f * 1e-6f) up = { 0,1,0 };	//基準軸がゼロベクトルの場合は{0,1,0}にする
 	Vector3 targetNorm = target.getNormalized();	//新しいZ軸
 	Vector3 upNorm = up.getNormalized();		//基準となるY軸
 	Vector3 newX = upNorm.cross(targetNorm).getNormalized(); //二つをもとに新しいX軸を計算

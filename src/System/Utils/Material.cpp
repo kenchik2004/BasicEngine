@@ -25,12 +25,17 @@ Material::~Material()
 
 //----------------------------------------------------
 // @brief ピクセルシェーダーを設定する。
+// @param gbuffer Gbuffer用シェーダーかどうか。
 // @param override_ps 設定するピクセルシェーダー。
 //----------------------------------------------------
-void Material::SetShaderPs(ShaderPs* override_ps)
+void Material::SetShaderPs(ShaderPs* override_ps, bool gbuffer)
 {
-	pixel_shader = override_ps; // ピクセルシェーダーを設定
+	if (gbuffer)
+		pixel_shader_gbuffer = override_ps; // Gbuffer用ピクセルシェーダーを設定
+	else
+		pixel_shader = override_ps; // ピクセルシェーダーを設定
 }
+
 
 //----------------------------------------------------
 // @brief 頂点シェーダーを設定する。

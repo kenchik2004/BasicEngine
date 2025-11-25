@@ -7,123 +7,16 @@
 #include "Game/Managers/LightManager.h"
 #include "Game/Utilitys/NeonFade/CatmullRomPath.h"
 
+
 namespace NeonFade {
 	//1ビルの縦横...100m×100m
 	std::array<Vector3, 4> buildings = {
-		Vector3(0.0f,0.0f,-300.0f),
-		Vector3(101.0f,0.0f,-300.0f),
-		Vector3(202.0f,0.0f,-300.0f),
-		Vector3(303.0f,0.0f,-300.0f),
+		Vector3(-90.0f,0.0f,280.0f),
+		Vector3(-90.0f,0.0f,120.0f),
+		Vector3(90.0f,0.0f,120.0f),
+		Vector3(90.0f,0.0f,280.0f),
 	};
-	struct Trns {
-		Vector3 position;
-		Quaternion rotation;
-		Vector3 scale;
-		Vector3 loc_pos;
-		Quaternion loc_rot;
-		Vector3 loc_scale;
-	};
-	std::vector<Trns> test = {
-		{
-			{0,0,0},
-			Quaternion(0,0,0,1),
-			{1,1,1},
-			{0,0,0},
-			Quaternion(0,0,0,1),
-			{1,1,1}
-		},
-		{
-			{0,1,0},
-			Quaternion(DEG2RAD(30),{0,1,0}),
-			{1,1,1},
-			{0,1,0},
-			Quaternion(DEG2RAD(90),{0,1,0}),
-			{1,1,1},
-		},
-		{
-			{0,2,0},
-			Quaternion(DEG2RAD(60),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
 
-		{
-			{0,3,0},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-
-		{
-			{0,4,0},
-			Quaternion(DEG2RAD(120),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,5,0},
-			Quaternion(DEG2RAD(150),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,6,0},
-			Quaternion(DEG2RAD(180),{1,0,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,7,0},
-			Quaternion(DEG2RAD(210),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,8,0},
-			Quaternion(DEG2RAD(240),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,9,0},
-			Quaternion(DEG2RAD(270),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,10,0},
-			Quaternion(DEG2RAD(300),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		},
-		{
-			{0,11,0},
-			Quaternion(DEG2RAD(330),{0,1,0}),
-			{1,1,1},
-			{0,0,1},
-			Quaternion(DEG2RAD(90),{1,0,0}),
-			{1,1,1},
-		}
-
-	};
 	void SceneGame::Load()
 	{
 
@@ -139,25 +32,22 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/player/anim_climb.mv1", "climb");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_jump_attack.mv1", "jump_attack");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_back_flip.mv1", "back_flip");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_damage.mv1", "player_damage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/Ground.mv1", "stage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/building-01_UV.mv1", "building");
-		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road_.mv1", "high-way");
+		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road.mv1", "high-way");
 		ModelManager::LoadAsModel(u8"data/car/police.mv1", "police");
 
 
 		ModelManager::LoadAsModel(u8"data/enemy/model.mv1", "enemy_model");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_idle.mv1", "enemy_idle");
+		ModelManager::LoadAsAnimation(u8"data/enemy/anim_fighting_idle.mv1", "enemy_idle");
 		ModelManager::LoadAsAnimation(u8"data/enemy/anim_damage.mv1", "enemy_damage");
 		ModelManager::LoadAsAnimation(u8"data/enemy/anim_down.mv1", "enemy_down");
+		ModelManager::LoadAsAnimation(u8"data/enemy/anim_t_pose.mv1", "enemy_die");
+		ModelManager::LoadAsAnimation(u8"data/enemy/anim_attack_charge.mv1", "enemy_attack_charge");
+		ModelManager::LoadAsAnimation(u8"data/enemy/anim_attack_main.mv1", "enemy_attack_main");
 		AudioManager::Load(u8"data/Sound/siren.mp3", "siren");
-		//TextureManager::Load(u8"data/Stage/megapolis/road.fbm/GT_AL_Dark Panel 2A_Roughness.png", "road_mat0_roughness");
-		//TextureManager::Load(u8"data/Stage/megapolis/road.fbm/GT_AL_Dark Panel 2A_Metallic.png", "road_mat0_metallic");
-		//TextureManager::Load(u8"data/Stage/megapolis/road.fbm/GT_AL_Dark Panel 1A_Roughness.png", "road_mat2_roughness");
-		//TextureManager::Load(u8"data/Stage/megapolis/road.fbm/GT_AL_Dark Panel 1A_Metallic.png", "road_mat2_metallic");
-		//TextureManager::Load(u8"data/Stage/megapolis/road.fbm/GT_AL_Glass 1_Roughness.png", "road_mat4_roughness");
-		//TextureManager::Load(u8"data/Stage/megapolis/road.fbm/GT_AL_Glass 1_Metallic.png", "road_mat4_metallic");
-
-
+		TextureManager::Load(u8"data/FX.png", "fx_texture");
 
 		CheckForLoading();
 	}
@@ -173,7 +63,7 @@ namespace NeonFade {
 		shadowmap->SetLightDirection({ 0, -8, 5 });
 		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
 		player_->transform->scale = { 0.05f,0.05f,0.05f };
-		player_->transform->position = { 0,30,-20 };
+		player_->transform->position = { 0,30,100 };
 
 		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
 		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,100 }, 0, 0, { 0,-8,5 });
@@ -227,42 +117,53 @@ namespace NeonFade {
 			auto high_way = SceneManager::Object::Create<GameObject>("HighWay");
 			auto mod = high_way->AddComponent<ModelRenderer>();
 			mod->SetModel("high-way");
-			//auto mat = mod->GetMaterial(0);
-			//mat->SetTexture(TextureManager::Get("road_mat0_roughness"), Material::TextureType::Roughness);
-			//mat->SetTexture(TextureManager::Get("road_mat0_metallic"), Material::TextureType::Metalic);
-			//auto mat2 = mod->GetMaterial(2);
-			//mat2->SetTexture(TextureManager::Get("road_mat2_roughness"), Material::TextureType::Roughness);
-			//mat2->SetTexture(TextureManager::Get("road_mat2_metallic"), Material::TextureType::Metalic);
-			//auto mat4 = mod->GetMaterial(4);
-			//mat4->SetTexture(TextureManager::Get("road_mat4_roughness"), Material::TextureType::Roughness);
-			//mat4->SetTexture(TextureManager::Get("road_mat4_metallic"), Material::TextureType::Metalic);
-			
+
 			high_way->transform->position = { 0,2,0 };
 			high_way->transform->scale = { 3.0f,3.0f,3.0f };
 			high_way->AddComponent<RigidBody>();
 			high_way->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
 
+			for (u32 i = 0; i < 5; ++i)
+				SceneManager::Object::Create<PoliceCar>(u8"police_car")->SetPointOnpath(100 * i);
 		}
-		for (u8 i = 0; i < 5; i++) {
-			auto enem = SceneManager::Object::Create<Enemy>(u8"敵");
-			enem->transform->scale = { 0.05f,0.05f,0.05f };
-			enem->transform->position = { (float)i,60,-25 };
-			//enem->transform->position = { i * 0.5f,40,90 };
-		}
-		constexpr float gravity_factor = -9.81f * 5;
+		constexpr float gravity_factor = -9.81f * 6;
 		GetPhysicsScene()->setGravity({ 0,gravity_factor,0 });
-		for (u32 i = 0; i < 5; ++i)
-			SceneManager::Object::Create<PoliceCar>(u8"police_car")->SetPointOnpath(100 * i);
 
+		{
+			text_obj = SceneManager::Object::Create<UIObject>(u8"テキストオブジェクト");
+			text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
+			text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
+			text_obj->transform->scale = { 300,50,1 };
+			text_comp = text_obj->AddComponent<Text>();
+			text_comp->FontSize() = 50;
+			text_comp->TextColor() = Color::MAGENTA;
+			text_comp->SetAlignment(Text::ALIGNMENT::RIGHT);
+		}
+		{
+			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"α版HUD");
+			hud_prototype->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
+			hud_prototype->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
+			hud_prototype->transform->scale = { 400, 200, 1 };
+			auto hud_text = hud_prototype->AddComponent<Text>();
+			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
+			hud_text->TextColor() = Color::RED;
+			//α版以降はチュートリアルも込みで実装予定
+			static std::string hud_text_str =
+				u8"NeonFade α版 HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ZRトリガー\n回避:左スティック+ZLトリガー\n";
+			hud_text->SetText(hud_text_str);
+		}
+
+		scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
+		Time::ResetTime();
 		return Super::Init();
+
 	}
 
 	void SceneGame::Update()
 	{
 		if (!CheckForLoading())
 			return;
-
-
+		scene_state_machine->Update(Time::DeltaTime());
 
 
 	}
@@ -274,46 +175,13 @@ namespace NeonFade {
 
 	void SceneGame::LateDebugDraw()
 	{
-		for (u32 i = 0; i < test.size(); i++) {
-			auto& elem = test[i];
-			//行列を使わずワールド座標の計算
-			if (i == 0) {
-				elem.loc_pos = elem.position;
-				elem.loc_rot = elem.rotation;
-				elem.loc_scale = elem.scale;
-			}
-			else {
-				auto parent = test[i - 1];
-				elem.loc_pos = { (parent.rotation.getBasisVector0() * parent.scale.x).dot(elem.position - parent.position),
-					(parent.rotation.getBasisVector1() * parent.scale.y).dot(elem.position - parent.position),
-					(parent.rotation.getBasisVector2() * parent.scale.z).dot(elem.position - parent.position)
-				};
 
-				elem.loc_rot = parent.rotation.getConjugate() * elem.rotation;
-				elem.loc_scale = parent.scale / elem.scale;
-				elem.loc_rot.normalize();
-
-				elem.position = parent.rotation.rotate(parent.scale.multiply(elem.loc_pos)) + parent.position;
-				elem.rotation = parent.rotation * elem.loc_rot;
-				elem.rotation.normalize();
-				elem.scale = elem.loc_scale.multiply(parent.scale);
-			}
-
-		}
-		Vector3 offset = { 0,30,-30 };
-		for (auto& elem : test) {
-			DrawLine3D(cast(elem.position + offset), cast(offset + elem.position + elem.rotation.getBasisVector0()), Color::RED);
-			DrawLine3D(cast(elem.position + offset), cast(offset + elem.position + elem.rotation.getBasisVector1()), Color::GREEN);
-			DrawLine3D(cast(elem.position + offset), cast(offset + elem.position + elem.rotation.getBasisVector2()), Color::BLUE);
-		}
 	}
 	void SceneGame::OnLateDrawFinish()
 	{
 
 		printfDx("%.2f fps\n", Time::GetDrawFPS());
 		printfDx("%.2f update_fps\n", Time::GetFPS());
-		Vector3 player_pos = player->transform->position;
-		printfDx("Player Pos X:%.2f Y:%.2f Z:%.2f\n", player_pos.x, player_pos.y, player_pos.z);
 		//DrawBoxAA(0, 50, sample_count_timer * 50.0f, 80, Color::RED, true);
 
 	}

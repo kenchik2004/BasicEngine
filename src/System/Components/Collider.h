@@ -6,16 +6,6 @@ class Collider :
 	public Component
 {
 public:
-	USING_SUPER(Collider);
-	bool is_trigger = false;
-	void Construct() override;
-	int Init() override;
-	void Exit() override;
-	Vector3 position = { 0,0,0 };
-	Quaternion rotation = { 0,0,0,1 };
-	RigidBodyP GetRigidBody() { return rigidbody.lock(); }
-	void AttachToModel(int attach_index);
-	void SetMaterial(physx::PxMaterial* new_mat);
 	enum Layer :physx::PxU32 {
 		None = 0,
 		Default = 1,
@@ -27,6 +17,19 @@ public:
 
 		All = UINT32_MAX,
 	};
+	USING_SUPER(Collider);
+	Collider(Vector3 pos = { 0,0,0 }, Quaternion rot = { 0,0,0,1 }, bool is_trigger_ = false, Layer layer_ = Layer::Default, u8 hit_group_ = Layer::All) 
+		:position(pos), rotation(rot), is_trigger(is_trigger_), collision_group(layer_), hit_group(hit_group_) {}
+	bool is_trigger = false;
+	void Construct() override;
+	int Init() override;
+	void Exit() override;
+	Vector3 position = { 0,0,0 };
+	Quaternion rotation = { 0,0,0,1 };
+	RigidBodyP GetRigidBody() { return rigidbody.lock(); }
+	void AttachToModel(int attach_index);
+	void SetMaterial(physx::PxMaterial* new_mat);
+
 	void SetLayer(Layer layer);
 	Layer GetLayer() { return collision_group; }
 	u32 GetHitGroup() { return hit_group; }

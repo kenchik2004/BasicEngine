@@ -25,6 +25,8 @@ namespace NeonFade
 		void OnTriggerEnter(const HitInfo& hit_info)override;
 		void OnTriggerStay(const HitInfo& hit_info) override;
 		void OnTriggerExit(const HitInfo& hit_info) override;
+
+		void Damage(int damage);
 		ModelRendererWP model;
 		AnimatorWP animator;
 		RigidBodyWP rb;

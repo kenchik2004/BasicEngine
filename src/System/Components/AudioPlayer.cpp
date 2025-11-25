@@ -38,8 +38,8 @@ void AudioPlayer::Update()
 	if (audio && audio_listener) {
 		auto listener = audio_listener->owner.lock();
 		auto rb = listener->GetComponent<RigidBody>();
-		Vector3 vec_v_o = Vector3();
-		Vector3 vec_v_s = Vector3();
+		Vector3 vec_v_o = Vector3(0, 0, 0);
+		Vector3 vec_v_s = Vector3(0, 0, 0);
 		if (rb) {
 			vec_v_o = rb->velocity;
 		}

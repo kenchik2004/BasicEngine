@@ -163,6 +163,9 @@ Texture2D RoughnessTexture : register(t3); // ラフネステクスチャ
 SamplerState MetallicSampler : register(s4); // メタリックテクスチャサンプラー
 Texture2D MetallicTexture : register(t4); // メタリックテクスチャ
 
+SamplerState EmissionSampler : register(s5); // エミッションテクスチャサンプラー
+Texture2D EmissionTexture : register(t5); // エミッションテクスチャ
+
 // t3～t6はトゥーン用テクスチャ
 
 SamplerState SubSampler : register(s7); // サブテクスチャ

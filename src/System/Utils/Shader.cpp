@@ -20,101 +20,182 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 struct ConstantVariableInfo {
-	std::string name;
+	std::string name;		// 変数名
 	UINT offset;                  // CB内オフセット
 	UINT size;                    // バイト数
-	D3D_SHADER_VARIABLE_CLASS varClass;
-	D3D_SHADER_VARIABLE_TYPE varType;
+	D3D_SHADER_VARIABLE_CLASS varClass;	//クラス情報(構造体の場合は中身まで解析する必要あり)
+	D3D_SHADER_VARIABLE_TYPE varType;	//int floatなどの型情報(varClassと似ているが、別物のようだ。とりあえず保管しておく)
 	std::vector<ConstantVariableInfo> members; // 構造体メンバ
+
+	//----------------------------------------------------
+	// @brief 定数バッファの変数を再帰的に検索。
+	// @brief 構造体の場合は、中の変数まで検索をかけて、見つかった変数の情報を返す
+	// @param name 定数バッファ内の変数名 (例: "MyStruct.MyVariable")
+	// @retval 見つかった変数の情報を持つ構造体へのポインタ。 ない場合はnullptrが返る。
+	//----------------------------------------------------
 	ConstantVariableInfo* FindValue(std::string_view name_) {
 		ConstantVariableInfo* variable = nullptr;
+
+		//渡された文字列から'.'で区切られている位置を探す
+		//例："MyStruct.MyVariable"の"MyStruct"部分に当たる
 		auto period = name_.find('.');
+
+		//自分の持っているメンバ情報から、区切られた部分を探す
 		std::string_view perse = name_.substr(0, period);
 		auto buffer = std::find_if(members.begin(), members.end(),
 			[&perse](const ConstantVariableInfo& it) {return it.name == perse; });
+
+		//メンバにいる、かつそれ以降の区切りがまだ残っている場合、
+		// 見つかったメンバの中からその先の検索を行う
 		if (period != name_.npos && buffer != members.end())
 			variable = buffer->FindValue(name_.substr(period + 1));
+		//区切りがもう残っていない場合、見つかったメンバの情報を返す
 		else if (buffer != members.end())
 			variable = &(*buffer);
+
 		return variable;
 
 	}
 };
 
 struct ConstantBuffer {
-	std::string name;
+	std::string name;		//定数バッファ名
 	std::vector<ConstantVariableInfo> variables; // 定数バッファメンバ
-	u8 slot;
-	int buffer_handle = -1;
+	u8 slot;		//定数バッファが紐づけられているスロット番号(register(b0))など
+	u32 size;		//定数バッファ全体のサイズ(バイト単位)
+	int buffer_handle = -1;		//DxLibの定数バッファハンドル
+
+	//----------------------------------------------------
+	// @brief 定数バッファの変数を検索。
+	// @param name 定数バッファ名と、バッファ内での変数名 (例: "MyBuffer.MyStruct.MyVariable")
+	// @retval 見つかった変数の情報を持つ構造体へのポインタ。 ない場合はnullptrが返る。
+	//----------------------------------------------------
 	ConstantVariableInfo* FindValue(std::string_view name_) {
 		ConstantVariableInfo* variable = nullptr;
+
+		//渡された文字列から'.'で区切られている位置を探す
+		//例："MyBuffer.MyStruct.MyVariable"の"MyBuffer"部分に当たる
 		auto period = name_.find('.');
 		std::string_view perse = name_.substr(0, period);
+		//区切られた文字列をもとに、定数バッファを検索する
 		auto buffer = std::find_if(variables.begin(), variables.end(),
 			[&perse](const ConstantVariableInfo& it) {return it.name == perse; });
+
+		//定数バッファの変数が欲しい場合(中のMyStruct.MyVariableにアクセスしたい場合)は、
+		//定数バッファの中から再帰的に変数を検索してくる
 		if (period != name_.npos && buffer != variables.end())
 			variable = buffer->FindValue(name_.substr(period + 1));
+
+		//バッファそのものが欲しい場合、
+		//変数までは検索せずに見つかったバッファへのポインタを返す。
 		else if (buffer != variables.end())
 			variable = &(*buffer);
+
 		return variable;
 	}
 };
 
 
 
-
+//----------------------------------------------------
+// @brief 構造体メンバを解析して情報を取得
+// @param type 解析対象の型情報
+// @param outMembers 解析結果のメンバ情報を格納する配列
+// @param baseOffset 構造体のベースオフセット
+//----------------------------------------------------
 void ParseStructMembers(ID3D11ShaderReflectionType* type, std::vector<ConstantVariableInfo>& outMembers, UINT baseOffset)
 {
+	// 型情報を取得
 	D3D11_SHADER_TYPE_DESC typeDesc;
 	type->GetDesc(&typeDesc);
 
+	// メンバごとに情報を取得して格納
 	for (UINT i = 0; i < typeDesc.Members; i++) {
+		// メンバの型情報を取得
 		const char* name = type->GetMemberTypeName(i);
 		ID3D11ShaderReflectionType* memberType = type->GetMemberTypeByIndex(i);
 
+		// メンバの型情報Descを取得
 		D3D11_SHADER_TYPE_DESC memberDesc;
 		memberType->GetDesc(&memberDesc);
 
+		// メンバ情報を格納
 		ConstantVariableInfo memberInfo;
-		memberInfo.name = name;
-		memberInfo.offset = baseOffset + memberDesc.Offset;
-		memberInfo.size = memberDesc.Rows * memberDesc.Columns * 4; // float4単位換算
-		memberInfo.varClass = memberDesc.Class;
-		memberInfo.varType = memberDesc.Type;
+		memberInfo.name = name;	// メンバ名
+		memberInfo.offset = baseOffset + memberDesc.Offset;	// 構造体ベースオフセットを加算
+		memberInfo.size = memberDesc.Rows * memberDesc.Columns * sizeof(float); // float4単位換算
+		memberInfo.varClass = memberDesc.Class;	// クラス情報
+		memberInfo.varType = memberDesc.Type;	// 型情報
 
+		// 構造体の場合は再帰的にメンバ情報を解析
 		if (memberDesc.Class == D3D_SVC_STRUCT) {
+			//メンバごとに同じ関数を呼び出して解析
 			ParseStructMembers(memberType, memberInfo.members, memberInfo.offset);
 		}
 
+		// 解析結果を配列に追加
 		outMembers.push_back(std::move(memberInfo));
 	}
 }
 
+//----------------------------------------------------
+// @brief シェーダーの定数バッファを解析して情報を取得
+// @param reflection シェーダーリフレクションインターフェース
+// @param cbuffer 解析結果の定数バッファ情報を格納するマップ
+//----------------------------------------------------
 void ParseShaderConstants(ID3D11ShaderReflection* reflection, std::unordered_map<std::string, ConstantBuffer>& cbuffer)
 {
+	// シェーダーの定数バッファ情報を取得
 	D3D11_SHADER_DESC shaderDesc;
 	reflection->GetDesc(&shaderDesc);
 
+	// 定数バッファごとに情報を取得して格納
 	for (UINT i = 0; i < shaderDesc.ConstantBuffers; i++) {
 
+		//コンパイルしたシェーダーから定数バッファ情報を取得
 		ID3D11ShaderReflectionConstantBuffer* cb = reflection->GetConstantBufferByIndex(i);
-
+		//定数バッファの情報Descを取得
 		D3D11_SHADER_BUFFER_DESC cbDesc;
 		cb->GetDesc(&cbDesc);
+
+		//システム側で使う定数バッファ(DxLibのものやカメラや行列、ライト関連)はスキップ
+		static const std::vector<std::string> skipCBufferNames = {
+			"cbD3D11_CONST_BUFFER_COMMON",
+			"cbD3D11_CONST_BUFFER_PS_BASE",
+			"cbBE_PS_CONST_BUFFER_DEFAULT",
+			"cbD3D11_CONST_BUFFER_VS_BASE",
+			"cbD3D11_CONST_BUFFER_VS_OTHERMATRIX",
+			"cbD3D11_CONST_BUFFER_VS_LOCALWORLDMATRIX",
+			"LightInfo",
+			"CameraInfo",
+		};
+		//スキップ対象なら次の定数バッファへ
+		if (std::find(skipCBufferNames.begin(), skipCBufferNames.end(), cbDesc.Name) != skipCBufferNames.end()) {
+			continue;
+		}
+
+		//定数バッファ情報を格納
 		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 		reflection->GetResourceBindingDescByName(cbDesc.Name, &bindDesc);
-		cbuffer[cbDesc.Name].slot = bindDesc.BindPoint;
-		cbuffer[cbDesc.Name].name = cbDesc.Name;
 
+		cbuffer[cbDesc.Name].slot = bindDesc.BindPoint;	//register(b0)のb0部分
+		cbuffer[cbDesc.Name].name = cbDesc.Name;	//定数バッファ名
+		cbuffer[cbDesc.Name].size = cbDesc.Size;	//定数バッファ全体のサイズ(バイト単位)
+
+		//定数バッファ内の変数情報を格納
 		for (UINT v = 0; v < cbDesc.Variables; v++) {
+
+			//定数バッファ内の変数情報を取得
 			ID3D11ShaderReflectionVariable* var = cb->GetVariableByIndex(v);
 			D3D11_SHADER_VARIABLE_DESC varDesc;
 			var->GetDesc(&varDesc);
 
+			//変数の型情報を取得
 			ID3D11ShaderReflectionType* type = var->GetType();
 			D3D11_SHADER_TYPE_DESC typeDesc;
 			type->GetDesc(&typeDesc);
 
+			//変数情報を格納
 			ConstantVariableInfo info;
 			info.name = varDesc.Name;
 			info.offset = varDesc.StartOffset;
@@ -122,10 +203,24 @@ void ParseShaderConstants(ID3D11ShaderReflection* reflection, std::unordered_map
 			info.varClass = typeDesc.Class;
 			info.varType = typeDesc.Type;
 
+			//構造体の場合はメンバ情報も解析
 			if (typeDesc.Class == D3D_SVC_STRUCT) {
 				ParseStructMembers(type, info.members, varDesc.StartOffset);
 			}
+			//定数バッファを登録
 			cbuffer[cbDesc.Name].variables.push_back(std::move(info));
+		}
+
+		//DxLibの定数バッファハンドルを作成
+		if (cbuffer[cbDesc.Name].buffer_handle < 0)	// 未作成なら作成
+			//ハンドル作成
+			cbuffer[cbDesc.Name].buffer_handle = CreateShaderConstantBuffer(cbDesc.Size);
+
+		else {	//既にある場合はサイズが変わっている可能性があるので再作成
+			// 古いハンドルを削除して新規作成
+			DeleteShaderConstantBuffer(cbuffer[cbDesc.Name].buffer_handle);
+			// 新規作成
+			cbuffer[cbDesc.Name].buffer_handle = CreateShaderConstantBuffer(cbDesc.Size);
 		}
 	}
 }
@@ -136,9 +231,9 @@ void ParseShaderConstants(ID3D11ShaderReflection* reflection, std::unordered_map
 //----------------------------------------------------
 struct Variant {
 private:
-
-	std::unordered_map < std::string, ConstantBuffer> cbuffers;
+	std::unordered_map < std::string, ConstantBuffer> cbuffers;	//!<定数バッファ情報のマップ
 public:
+	int dxlib_shader_type;
 	//----------------------------------------------------
 	// @brief デフォルトコンストラクタ。
 	//----------------------------------------------------
@@ -161,12 +256,17 @@ public:
 		auto buffer = cbuffers[perse];
 		info = buffer.FindValue(name_.substr(period + 1));
 		u8* dxlib_cbuffer_ptr = reinterpret_cast<u8*>(GetBufferShaderConstantBuffer(buffer.buffer_handle));
-		if (!info || !dxlib_cbuffer_ptr)
+		if (!info || !dxlib_cbuffer_ptr || class_size > buffer.size)
 			return;
 		memcpy(dxlib_cbuffer_ptr + info->offset, value_, class_size);
+		UpdateShaderConstantBuffer(buffer.buffer_handle);
 	}
-	template <typename T> void SetValue(std::string_view name_, const T* value_) {
-		SetValue(name_, value_, sizeof(T));
+	void AplyConstantBuffers() {
+		for (auto& [name, buffer] : cbuffers) {
+			if (buffer.buffer_handle >= 0) {
+				SetShaderConstantBuffer(buffer.buffer_handle, dxlib_shader_type, buffer.slot);
+			}
+		}
 	}
 
 	//----------------------------------------------------
@@ -177,6 +277,8 @@ public:
 	//----------------------------------------------------
 	bool compile(const std::wstring& source_path, u32 index, int dxlib_shader_type)
 	{
+		this->dxlib_shader_type = dxlib_shader_type;
+
 		// ファイルからソースファイルを読み込み
 		std::vector<std::byte> source_code;
 		{
@@ -285,16 +387,15 @@ public:
 
 		// 結果を出力
 		handle_ = handle;
-#if 0 
+#if 1 
 		//定数バッファ情報をリフレクションで取得
 		Microsoft::WRL::ComPtr<ID3D11ShaderReflection> p_reflector;
 		hr = D3DReflect(shader_bytecode_.data(), shader_bytecode_.size(), IID_PPV_ARGS(p_reflector.GetAddressOf()));
 
 		if (SUCCEEDED(hr)) {
+			//定数バッファ情報を解析して格納
 			ParseShaderConstants(p_reflector.Get(), cbuffers);
-
 		}
-		SetValue("cbD3D11_CONST_BUFFER_COMMON.DxLib_Common.Material.Ambient_Emissive", nullptr, 0);
 #endif
 		return true;
 	}
@@ -376,7 +477,6 @@ namespace {
 //----------------------------------------------------
 Shader::Shader(std::string_view source_path, u32 dxlib_shader_type, u32 variant_count)
 {
-
 	//----------------------------------------------------------
 	// ファイルパス文字列を正規化
 	//----------------------------------------------------------
@@ -482,6 +582,14 @@ std::tuple<const void*, size_t> Shader::shader_bytecode(u32 variant_index) const
 	return { shader_bytecode.data(), shader_bytecode.size() };
 }
 
+void Shader::AplyConstantBuffers(u32 variant_index)
+{
+	if (impl_->variant_.size() <= variant_index) {
+		return;
+	}
+	impl_->variant_[variant_index].AplyConstantBuffers();
+}
+
 //----------------------------------------------------
 // @brief ファイルパスを取得。
 //----------------------------------------------------
@@ -496,4 +604,11 @@ const std::wstring& Shader::path() const
 void Shader::updateFileWatcher()
 {
 	file_watcher_.update();
+}
+
+void Shader::SetValueToVariant(Impl* impl, std::string_view name_, const void* value_, size_t class_size, u32 variant_index)
+{
+	if (impl->variant_.size() <= variant_index)
+		return;
+	impl->variant_[variant_index].SetValue(name_, value_, class_size);
 }

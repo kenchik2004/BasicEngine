@@ -38,12 +38,12 @@ namespace NeonFade
 			move_input += cam_trns->AxisZ() * -pad_left.y;
 			move_input += cam_trns->AxisX() * -pad_left.x;
 		}
-		move_input = ProjectOnPlane(move_input, { 0,1,0 });
+		move_input = ProjectOnPlane(move_input, { 0,1,0 }).normalized();
 
 
+		is_jumping = false;
 
 		if (is_landed && (Input::GetKeyDown(KeyCode::Space) || Input::GetPadButtonDown(0, PadButton::Button1))) {
-			fly = false;
 			is_jumping = true;
 			is_landed = false;
 		}
@@ -51,6 +51,13 @@ namespace NeonFade
 			is_jumping = false;
 			is_falling = false;
 		}
+		is_dodging = false;
+		if (Input::GetKeyDown(KeyCode::O) || Input::GetPadButtonDown(0, PadButton::Hoge)) {
+			is_dodging = true;
+		}
+
+		state_machine->is_damaged = is_damaged;
+		is_damaged = false;
 
 		climb_ray_start = owner_player->transform->position + owner_player->transform->AxisZ() * -1.5f + Vector3(0, 12, 0);
 		Vector3 climb_ray_dir = Vector3(0, -1, 0);
@@ -72,7 +79,7 @@ namespace NeonFade
 		else
 			can_climb = false;
 
-		fall_detect_time += Time::DeltaTime();
+		fall_detect_time += Time::UnscaledDeltaTime();
 		if (can_climb && move_input.magnitudeSquared() > FLT_EPSILON)
 			is_climbing = true;
 		if (is_climbing) {
@@ -80,22 +87,20 @@ namespace NeonFade
 			fall_detect_time = 0.0f;
 		}
 		is_falling = (fall_detect_time >= FALL_DETECT_THRESHOLD);
-		if (is_falling)
-			is_jumping = false;
 		is_attacking = Input::GetKeyDown(KeyCode::L) || Input::GetPadButtonDown(0, PadButton::Fuga);
 		state_machine->is_attacking = is_attacking;
 		state_machine->move_input = move_input;
 		state_machine->is_jumping = is_jumping;
-		state_machine->fly = fly;
+		state_machine->is_landed = is_landed;
 		state_machine->is_falling = is_falling;
 		state_machine->can_climb = can_climb;
-		state_machine->Update(Time::DeltaTime());
+		state_machine->is_dodging = is_dodging;
+		state_machine->Update(Time::UnscaledDeltaTime());
 	}
 
 	void PlayerController::Exit()
 	{
 	}
-	float gravity_param = 1.0f;
 	void PlayerController::LateDebugDraw()
 	{
 		DrawLine3D(cast(climb_ray_start), cast(climb_ray_start + Vector3(0, -5.0f, 0)), 0xff00ff);
@@ -105,21 +110,11 @@ namespace NeonFade
 
 		}
 		state_machine->DebugDraw();
-		printfDx("Gravity: %.1f", gravity_param);
 	}
 	void PlayerController::PrePhysics()
 	{
 		is_landed = false;
-		if (Input::GetKey(KeyCode::Alpha9)) {
-			gravity_param -= Time::DeltaTime();
-			owner->GetScene()->GetPhysicsScene()->setGravity(Vector3(0, -9.81f, 0) * gravity_param);
-		}
 
-		if (Input::GetKey(KeyCode::Alpha0)) {
-
-			gravity_param += Time::DeltaTime();
-			owner->GetScene()->GetPhysicsScene()->setGravity(Vector3(0, -9.81f, 0) * gravity_param);
-		}
 	}
 	void PlayerController::OnCollisionEnter(const HitInfo& hit_info)
 	{
@@ -162,6 +157,12 @@ namespace NeonFade
 	void PlayerController::OnTriggerExit(const HitInfo& hit_info)
 	{
 		state_machine->OnTriggerExit(hit_info);
+	}
+
+	void PlayerController::Damage(int damage)
+	{
+		is_damaged = true;
+		//:TODO ダメージ処理(現在はアニメーション遷移のみ)
 	}
 
 } // namespace NeonFade
