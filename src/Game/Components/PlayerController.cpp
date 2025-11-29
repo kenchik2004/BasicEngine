@@ -52,7 +52,7 @@ namespace NeonFade
 			is_falling = false;
 		}
 		is_dodging = false;
-		if (Input::GetKeyDown(KeyCode::O) || Input::GetPadButtonDown(0, PadButton::Hoge)) {
+		if (Input::GetKeyDown(KeyCode::O) || Input::GetPadButtonDown(0, PadButton::LTrigger)) {
 			is_dodging = true;
 		}
 
@@ -87,7 +87,7 @@ namespace NeonFade
 			fall_detect_time = 0.0f;
 		}
 		is_falling = (fall_detect_time >= FALL_DETECT_THRESHOLD);
-		is_attacking = Input::GetKeyDown(KeyCode::L) || Input::GetPadButtonDown(0, PadButton::Fuga);
+		is_attacking = Input::GetKeyDown(KeyCode::L) || Input::GetPadButtonDown(0, PadButton::RTrigger);
 		state_machine->is_attacking = is_attacking;
 		state_machine->move_input = move_input;
 		state_machine->is_jumping = is_jumping;

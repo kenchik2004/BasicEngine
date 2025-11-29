@@ -17,7 +17,7 @@ namespace NeonFade
 			}
 			auto hit_box_ = owner_enemy->AddComponent<SphereCollider>();
 			hit_box_->is_trigger = true;
-			hit_box_->SetLayer(Collider::Layer::Enemy);
+			hit_box_->SetLayer(Collider::Layer::Wepon);
 			hit_box_->SetHitGroup(Collider::Layer::Player);
 			hit_box_->radius = 5.0f;
 			hit_box_->position = Vector3(0, 3.5f, -3.5f);

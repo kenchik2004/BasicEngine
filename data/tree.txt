@@ -14,13 +14,14 @@ root
 |        end_of_node
 |        
 |-----Object
+|        |-----ShadowMapObject
+|        |-----LightManager
 |        |-----UIObject
 |        |        |-----ButtonObject
 |        |        |-----TextObject
+|        |        |-----NeonFade::DamageUIObject
 |        |        end_of_node
 |        |        
-|        |-----ShadowMapObject
-|        |-----LightManager
 |        |-----GameObject
 |        |        |-----Sample::GroundObject
 |        |        |-----CameraObject
@@ -43,6 +44,7 @@ root
 |        |        |        end_of_node
 |        |        |        
 |        |        |-----GameObject
+|        |        |-----GameObjectWithLifeTime
 |        |        |-----GameObject
 |        |        |-----NeonFade::Enemy
 |        |        end_of_node
@@ -51,6 +53,8 @@ root
 |        
 |-----Component
 |        |-----Button
+|        |-----EffectPlayer
+|        |-----Text3D
 |        |-----ImageRenderer
 |        |-----Text
 |        |-----AudioListener

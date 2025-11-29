@@ -47,9 +47,9 @@ namespace NeonFade {
 			Down({ 0,0,1 }, 50);
 		}
 	}
-	void Enemy::Damage(int damage)
+	void Enemy::Damage(int damage, bool ignore_i_frame)
 	{
-		enem_controller->Damage(damage);
+		enem_controller->Damage(damage, ignore_i_frame);
 	}
 	void Enemy::Down(Vector3 vec, int damage)
 	{

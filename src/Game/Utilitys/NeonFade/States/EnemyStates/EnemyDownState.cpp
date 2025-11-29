@@ -17,6 +17,8 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 		};
 	std::function collision_rotate = [this]() {
 		auto col = enemy->GetComponent<CapsuleCollider>();
+		if (!col)
+			return;
 		col->rotation = Quaternion(DEG2RAD(-90), { 0,1,0 });
 		col->position = { 5.4f, 1.5f, 0 };
 		};
@@ -50,8 +52,9 @@ void NeonFade::EnemyDownState::Update(IStateMachine* machine, float dt)
 	if (hit_stop_timer > 0)
 		hit_stop_timer += Time::UnscaledDeltaTime();
 	if (hit_stop_timer > 0.1f) {
+		auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 		animator->anim_speed = 1.0f;
-		rb->SetVelocity(enemy->transform->AxisZ() * 20 + Vector3(0, 20, 0));
+		rb->SetVelocity(enem_machine->move_vec);
 		hit_stop_timer = 0;
 	}
 }

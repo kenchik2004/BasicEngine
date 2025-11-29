@@ -134,6 +134,8 @@ private:
 	//std::vector<std::function<void()>> draw_calls;//ドローコールをキャッシュしておく設計
 	ObjectWPVec leak_objects;
 	void SyncGameObjectsPriority();
+	bool is_any_destroyed = false;
+	void DestroyMarkedGameObjects();
 	size_t FindInsertPositionByPriority(unsigned int priority);
 	AudioListenerWP current_audio_listener;
 	CameraWP current_camera;
@@ -257,7 +259,7 @@ protected:
 		return vec;
 	}
 
-	void DestroyGameObject(ObjectP destroy_obj);
+	void DestroyGameObject(ObjectP& destroy_obj);
 
 };
 

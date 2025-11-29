@@ -15,9 +15,12 @@ void Scene::Physics()
 
 	//シミュレーション
 	in_simulation = true;
-	//精度向上のため、サブステップで4回に分けてシミュレーションを行う
-	double single_step_time = Time::FixedDeltaTime() * physics_timescale / 4.0;
-	for (u32 i = 0; i < 4; i++) {
+
+	double fixed_max = Time::GetFixedDeltaTimeMAXD();
+	double realy_delta = Time::UnscaledDeltaTime();
+	double delta = max(fixed_max, realy_delta);
+	float single_step_time = delta * physics_timescale;
+	if (single_step_time > 0.0f) {
 		physics_scene->simulate(single_step_time);
 		//シミュレーションを待つ
 		while (!physics_scene->fetchResults(true)) {}
@@ -92,7 +95,8 @@ void Scene::Destroy()
 	for (auto& obj : w_vec) {
 		if (!obj)
 			continue;
-		DestroyGameObject(obj.lock());
+		auto obj_lock = obj.lock();
+		DestroyGameObject(obj_lock);
 	}
 	objects.clear();
 	for (auto& ite : leak_objects) {
@@ -246,6 +250,40 @@ void Scene::SyncGameObjectsPriority()
 	//Time::ResetTime();
 }
 
+// 実際に削除マークのついたオブジェクトを削除する関数
+void Scene::DestroyMarkedGameObjects()
+{
+	//毎回全オブジェクト走査は非効率なので、削除マークがついているかどうかのフラグを監視する
+	if (!is_any_destroyed)
+		return;
+	for (auto obj = objects.begin(); obj != objects.end();) {
+		auto obj_lock = (*obj);
+		if (obj_lock->status.status_bit.is(ObjStat::STATUS::REMOVED)) {
+			obj_lock->transform = nullptr;
+			while (obj_lock->GetComponent<Component>()) {
+				ComponentWP comp_wp = obj_lock->GetComponent<Component>();
+				obj_lock->RemoveComponent(comp_wp.lock());
+				try {
+					//if (comp_wp)
+					//	throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
+				}
+				catch (Exception& ex) {
+					ex.Show();
+				}
+			}
+			obj_lock->Exit();
+			obj = objects.erase(obj);
+			obj_lock.reset();
+			if (obj_lock)
+				leak_objects.push_back(obj_lock);
+		}
+		else {
+			obj++;
+		}
+	}
+}
+
+
 size_t Scene::FindInsertPositionByPriority(unsigned int priority)
 {
 
@@ -263,13 +301,37 @@ size_t Scene::FindInsertPositionByPriority(unsigned int priority)
 	return std::distance(objects.begin(), pos);
 }
 
-void Scene::DestroyGameObject(ObjectP destroy_obj) {
+//削除するオブジェクトをマークするだけの関数
+void Scene::DestroyGameObject(ObjectP& destroy_obj) {
 	if (objects.size() <= 0)
 		return;
 	if (IsInSimulation()) {
 		AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjectWP(destroy_obj)]()
-			{if (this_ && obj)
-			this_->DestroyGameObject(obj.lock());
+			{if (this_ && obj) {
+			auto obj_lock = obj.lock();
+			this_->DestroyGameObject(obj_lock);
+		}
+			});
+		return;
+	}
+	//dirty優先度のオブジェクトリストからも消す
+	if (auto obj = std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), destroy_obj); obj != dirty_priority_objects.end())
+	{
+		dirty_priority_objects.erase(obj);
+	}
+	destroy_obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
+	is_any_destroyed = true;
+}
+#if 0
+void Scene::DestroyGameObject(ObjectP& destroy_obj) {
+	if (objects.size() <= 0)
+		return;
+	if (IsInSimulation()) {
+		AddFunctionAfterSimulation([this_ = SceneWP(shared_from_this()), obj = ObjectWP(destroy_obj)]()
+			{if (this_ && obj) {
+			auto obj_lock = obj.lock();
+			this_->DestroyGameObject(obj_lock);
+		}
 			});
 		return;
 	}
@@ -306,8 +368,8 @@ void Scene::DestroyGameObject(ObjectP destroy_obj) {
 		obj++;
 	}
 
+
 }
-#if 0
 void Scene::DestroyGameObject(ObjectP& destroy_obj) {
 	if (objects.size() <= 0)
 		return;

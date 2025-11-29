@@ -11,7 +11,7 @@ namespace NeonFade {
 		USING_SUPER(Enemy);
 		int Init() override;
 		void Update() override;
-		void Damage(int damage);
+		void Damage(int damage, bool ignore_i_frame = false);
 		void Down(Vector3 vec, int damage = 1);
 		bool IsDead();
 

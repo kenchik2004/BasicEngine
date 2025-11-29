@@ -48,7 +48,7 @@ namespace NeonFade
 
 			//死んだら敵の数を減らす
 			static_cast<SceneGame*>(owner_enemy->GetScene().get())->SubtractEnemyCount();
-			SceneManager::Object::Destory(owner_enemy_);
+			SceneManager::Object::Destroy(owner_enemy_);
 			return;
 		}
 	}

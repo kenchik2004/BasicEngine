@@ -24,7 +24,8 @@ namespace NeonFade {
 
 		if (knock_back)
 		{
-			owner->transform->SetAxisZ(knock_back_vec);
+			owner->transform->SetAxisZ(ProjectOnPlane(knock_back_vec, { 0,1,0 }));
+			state_machine->move_vec = knock_back_vec;
 			knock_back = false;
 		}
 
@@ -60,9 +61,9 @@ namespace NeonFade {
 		state_machine->DebugDraw();
 	}
 
-	void EnemyController::Damage(int damage)
+	void EnemyController::Damage(int damage, bool ignore_i_frame)
 	{
-		if (invincible_timer <= 0.0f && !is_dead)
+		if ((invincible_timer <= 0.0f || ignore_i_frame) && !is_dead)
 		{
 			invincible_timer = INVINCIBLE_TIME;
 			hp -= damage;

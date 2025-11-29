@@ -17,6 +17,8 @@ namespace NeonFade {
 		float exit_timer = 0.0f;
 		bool atk_main_started = false;
 		static constexpr float exit_time = 0.8f;
+		float attack_interval_timer = 0.0f;
+		static constexpr float attack_interval = 0.05f;
 		Player* owner_player;
 		Enemy* target = nullptr;
 		RigidBody* rb;

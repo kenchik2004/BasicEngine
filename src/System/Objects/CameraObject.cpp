@@ -10,6 +10,7 @@ int CameraObject::Init()
 	camera->camera_far = 2000.0f;
 	camera->perspective = 30.0f;
 	camera->SetCurrentCamera();
+	transform->status.status_bit.off(CompStat::STATUS::DEBUG_DRAW);
 	return 0;
 }
 

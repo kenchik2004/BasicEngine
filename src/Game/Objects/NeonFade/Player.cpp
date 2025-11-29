@@ -27,6 +27,9 @@ namespace NeonFade
 		animator->SetAnimation("jump_attack", 0);
 		animator->SetAnimation("back_flip", 0);
 		animator->SetAnimation("player_damage", 0);
+		animator->SetAnimation("smash_charge", 0);
+		animator->SetAnimation("smash_attack", 0);
+		animator->SetAnimation("smash_finish", 0);
 
 
 		rb->freeze_rotation = { 1,1,1 };
@@ -75,11 +78,11 @@ namespace NeonFade
 			cam_vector_z = cam_rot_around.rotate(cam_vector_z);
 			physx::PxRaycastHit hits[2];
 			RayCastInfo info(hits, 2);
-			camera_distance = 30.0f;
+			camera_distance = camera_distance_max;
 			physx::PxQueryFilterData a;
 			a.data.word0 = Collider::Layer::Terrain;
 			a.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::ePREFILTER;
-			GetScene()->RayCast(Ray{ transform->position + Vector3(0,7,0), -cam_vector_z, 30 }, info, a);
+			GetScene()->RayCast(Ray{ transform->position + Vector3(0,7,0), -cam_vector_z, camera_distance }, info, a);
 			if (info.hasBlock) {
 				camera_distance = info.block.distance - 0.05f;
 			}

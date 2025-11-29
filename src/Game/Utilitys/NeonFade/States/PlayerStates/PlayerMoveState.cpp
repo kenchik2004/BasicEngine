@@ -97,9 +97,9 @@ namespace NeonFade
 		pl_trns->SetAxisZ(Slerp(forward, input.getNormalized(), rot_angle * dt));
 
 		if (sprint)
-			input = input * -45;
-		else
 			input = input * -25;
+		else
+			input = input * -15;
 		input_dbg = input.getNormalized();
 		input.y = rb->velocity.y;	// 重力成分を維持
 		rb->velocity = input;

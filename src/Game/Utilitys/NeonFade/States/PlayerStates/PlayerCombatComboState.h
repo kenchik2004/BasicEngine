@@ -27,8 +27,11 @@ namespace NeonFade
 		bool input_limit = false;
 		bool next_avalable = false;
 		bool knock_back = false;
+
+		float attack_timer = 0.0f;
+		static constexpr float ATTACK_TIME = 0.65f;
 		float hit_stop_timer = 0.0f;
-		static constexpr float HIT_STOP_TIME = 0.05f;
+		static constexpr float HIT_STOP_TIME = 0.03f;
 	};
 
 }

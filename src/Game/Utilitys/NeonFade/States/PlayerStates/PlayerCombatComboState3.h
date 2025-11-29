@@ -14,7 +14,7 @@ namespace NeonFade {
 		void OnCollisionEnter(IStateMachine* machine, const HitInfo& hit_info) override;
 		void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info) override;
 	private:
-		Player* owner_player = nullptr;
+		Player* player = nullptr;
 		RigidBody* rb = nullptr;
 		Animator* animator = nullptr;
 		bool input_limit = false;
@@ -22,8 +22,10 @@ namespace NeonFade {
 		bool knock_back = false;
 		SafeWeakPtr<SphereCollider> hit_box;
 		SafeWeakPtr<class Enemy> target;
+		float attack_timer = 0.0f;
+		static constexpr float ATTACK_TIME = 0.45f;
 		float hit_stop_timer = 0.0f;
-		static constexpr float HIT_STOP_TIME = 0.1f;
+		static constexpr float HIT_STOP_TIME = 0.03f;
 	};
 }
 

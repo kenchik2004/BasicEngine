@@ -33,6 +33,9 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/player/anim_jump_attack.mv1", "jump_attack");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_back_flip.mv1", "back_flip");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_damage.mv1", "player_damage");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_punch_charge.mv1", "smash_charge");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_punch_strike.mv1", "smash_attack");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_punch_finish.mv1", "smash_finish");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/Ground.mv1", "stage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/building-01_UV.mv1", "building");
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road.mv1", "high-way");
@@ -56,7 +59,6 @@ namespace NeonFade {
 	{
 		if (!CheckForLoading())
 			return 0;
-		physics_timescale = 2.0f;
 		auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
 		shadowmap->SetCascadeCount(4);
 		shadowmap->SetShadowMapSize(2048);
@@ -152,6 +154,8 @@ namespace NeonFade {
 				u8"NeonFade α版 HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ZRトリガー\n回避:左スティック+ZLトリガー\n";
 			hud_text->SetText(hud_text_str);
 		}
+
+		
 
 		scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
 		Time::ResetTime();

@@ -33,6 +33,7 @@ namespace NeonFade
 		PlayerControllerWP pl_controller;
 		ColliderWP foot;
 		CameraObjectWP player_camera;
+		float camera_distance_max = 30.0f;
 	private:
 		Vector2 camera_rot = { 0,0 };
 		float camera_distance = 20.0f;

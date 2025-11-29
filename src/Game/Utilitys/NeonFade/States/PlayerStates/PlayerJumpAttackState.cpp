@@ -1,6 +1,10 @@
 ﻿#include "PlayerJumpAttackState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
+#include "System/Components/Text3D.h"
+#include "Game/Objects/NeonFade/DamageUIObject.h"
+#include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
+#include "System/Components/EffectPlayer.h"
 
 namespace NeonFade {
 	PlayerJumpAttackState::PlayerJumpAttackState(Player* player_)
@@ -20,6 +24,7 @@ namespace NeonFade {
 		//rb->use_gravity = false;
 		//rb->velocity.y = 0;
 		atk_main_started = false;
+		attack_interval_timer = 0.0f;
 		{
 			atk_range_trigger = owner_player->AddComponent<BoxCollider>();
 			atk_range_trigger->SetLayer(Collider::Layer::Wepon);
@@ -45,6 +50,14 @@ namespace NeonFade {
 				knock_vec = ProjectOnPlane(knock_vec, { 0,1,0 });
 				target->rb->is_kinematic = false;
 				target->Down(knock_vec, 3);
+				{
+					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"jmp_atk_effect", 1.0f);
+					eff->transform->position = target->transform->position + Vector3(0, 5, 0);
+					eff->transform->rotation = owner_player->player_camera->transform->rotation;
+					eff->transform->scale = { 5, 5, 5 };
+					auto eff_comp = eff->AddComponent<EffectPlayer>("data/FX/Impact.efkefc");
+					eff_comp->Play();
+				}
 			}
 		}
 		target = nullptr;
@@ -81,15 +94,22 @@ namespace NeonFade {
 			}
 		}
 		else if (exit_timer > 0.3f && target) {
-			int frame = static_cast<int>(exit_timer * 100.0f);
 			if (target->IsDead()) {
 				target = nullptr;
 				machine->ChangeState("jump_attack_land");
 				return;
 			}
-			if (frame % 8 == 0) {
+			attack_interval_timer += dt;
+			if (attack_interval_timer >= attack_interval) {
+				attack_interval_timer = 0;
 				owner_player->transform->position += owner_player->transform->AxisZ() * Time::DeltaTime() * -30;
-				target->Damage(1);
+				auto damage_ui = SceneManager::Object::Create<DamageUIObject>("damage");
+				damage_ui->transform->position = target->transform->position + Vector3{ 0,5,0 };
+				auto txt_3d = damage_ui->AddComponent<Text3D>();
+				txt_3d->SetText("100");
+				txt_3d->SetFontSize(50);
+				txt_3d->SetTextColor(Color::RED);
+				target->Damage(1, true);
 			}
 		}
 

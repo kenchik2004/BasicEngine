@@ -9,8 +9,9 @@ struct CompStat {
 		INITIALIZED = 1,
 		ACTIVE = 1 << 1,
 		DRAW = 1 << 2,
-		REMOVED = 1 << 3,
-		SINGLE = 1 << 4,
+		DEBUG_DRAW = 1 << 3,
+		REMOVED = 1 << 4,
+		SINGLE = 1 << 5,
 	};
 	SBit<STATUS> status_bit;
 private:
@@ -37,12 +38,13 @@ public:
 		status.status_bit.on(CompStat::STATUS::INITIALIZED);
 		status.status_bit.on(CompStat::STATUS::ACTIVE);
 		status.status_bit.on(CompStat::STATUS::DRAW);
+		status.status_bit.on(CompStat::STATUS::DEBUG_DRAW);
 		status.class_name = info.ClassName();
 		//こっちはユーザーがカスタマイズできる
 		Construct();
 	}
 	inline virtual void Construct() {};
-	void SetPriority(unsigned int prio);	
+	void SetPriority(unsigned int prio);
 	inline unsigned int GetPriority() { return status.priority; }
 	void RemoveThisComponent();
 	//-----------------------------

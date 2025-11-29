@@ -173,6 +173,12 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerDamageState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState2.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState3.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\DamageUIObject.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
+    <ClCompile Include="src\System\Components\EffectPlayer.cpp" />
+    <ClCompile Include="src\System\Components\Text3D.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashChargeState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashMainState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -353,6 +359,12 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerDamageState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState2.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState3.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\DamageUIObject.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.h" />
+    <ClInclude Include="src\System\Components\EffectPlayer.h" />
+    <ClInclude Include="src\System\Components\Text3D.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashChargeState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashMainState.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

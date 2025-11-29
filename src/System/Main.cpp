@@ -195,26 +195,20 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			bool phys = false;
 			double real_delta = Time::RealDeltaTimeD();
 			double fixed_max = Time::GetFixedDeltaTimeMAXD();
-			double max = (fixed_max > real_delta ? fixed_max : real_delta);
+			double max = max(fixed_max, real_delta);
 			//PCのスペック次第では実際に出ているFPSよりも物理更新を行おうとするので、
 			//FPSが物理更新頻度を下回った場合はFPSを基準に計算頻度を決める
-			while (Time::FixedDeltaTimeD() >= max)
+			SceneManager::PrePhysics();
+			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max) + 1;
+			printfDx("Physics Loops: %llu\n", loops);
+			for (int i = 0; i < loops; i++)
 			{
 				//物理
-				SceneManager::PrePhysics();
 				SceneManager::Physics();
-				SceneManager::PostPhysics();
 
-				if (Time::FixedDeltaTimeD() >= Time::GetFixedDeltaTimeMAXD() * 2) {
-					phys = true;
-
-				}
-				Time::FixFixedFPS();
 			}
-			//あまりよろしくはないが、FPS低下時にはPhysicsが暴走する可能性があるので、
-			// fixed_deltatimeが2ループ分以上溜まったら時飛ばしを行う
-			if (phys)
-				Time::ResetTime();
+			Time::FixFixedFPS();
+			SceneManager::PostPhysics();
 
 			bool imgui_drawed = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());
 			//描画

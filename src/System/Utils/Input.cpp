@@ -65,8 +65,8 @@ namespace Input {
 			XINPUT_STATE state;
 			GetJoypadXInputState(DX_INPUT_PAD1, &state);
 			//DxLibにはなぜか10,11のボタンが未定義なので、とりあえずトリガーの情報を入れておく
-			state.Buttons[static_cast<u8>(PadButton::Hoge)] = state.LeftTrigger > 0;
-			state.Buttons[static_cast<u8>(PadButton::Fuga)] = state.RightTrigger > 0;
+			state.Buttons[static_cast<u8>(PadButton::LTrigger)] = state.LeftTrigger > 0;
+			state.Buttons[static_cast<u8>(PadButton::RTrigger)] = state.RightTrigger > 0;
 			pad_buffers[i].second = state;
 
 		}

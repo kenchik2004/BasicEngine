@@ -311,7 +311,7 @@ public:
 		}
 
 		//オブジェクトを削除
-		static inline void Destory(ObjectP destroy_obj) {
+		static inline void Destroy(ObjectP&& destroy_obj) {
 			//カレントシーンがいないなら何もしない
 			if (!current_scene)
 				return;
@@ -322,7 +322,7 @@ public:
 			destroy_obj.reset();
 		}
 		//オブジェクトを削除(シーン指定あり)
-		static inline void Destory(SceneP target_scene, ObjectP destroy_obj) {
+		static inline void Destroy(SceneP&& target_scene, ObjectP&& destroy_obj) {
 			//シーンがいないなら何もしない(そもそも大問題)
 			if (!target_scene)
 				return;

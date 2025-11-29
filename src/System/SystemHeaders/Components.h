@@ -28,3 +28,6 @@
 //2D描画関連コンポーネント
 #include "System/Components/ImageRenderer.h"
 
+//エフェクト関連コンポーネント
+#include "System/Components/EffectPlayer.h"
+

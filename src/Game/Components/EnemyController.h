@@ -19,7 +19,7 @@ namespace NeonFade {
 		void OnTriggerStay(const HitInfo& hit_info);
 		void OnTriggerExit(const HitInfo& hit_info);
 
-		void Damage(int damage);
+		void Damage(int damage, bool ignore_i_frame = false);
 		void Down(Vector3 vec, int damage = 1);
 		Vector3 move_vec = { 0,0,0 };
 		int hp = 10;

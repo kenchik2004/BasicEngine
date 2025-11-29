@@ -21,7 +21,6 @@ namespace NeonFade
 				(Vector3(0, 5, -4), Quaternion(0, 0, 0, 1), 4.0f,
 					true, Collider::Layer::Wepon, Collider::Layer::Enemy);
 			hit_box = std::move(col);
-			player->GetScene()->physics_timescale = 0.1f;
 
 			{
 				Vector2 input = Input::GetPadLeftStick(0) * -1;
@@ -39,21 +38,26 @@ namespace NeonFade
 					}
 					else {
 
-						mov -= player->player_camera->transform->AxisX() * input.x * 5.0f;
-						mov -= player->player_camera->transform->AxisZ() * input.y * 5.0f;
+						mov -= player->player_camera->transform->AxisX() * input.x * 10.0f;
+						mov -= player->player_camera->transform->AxisZ() * input.y * 10.0f;
 					}
 					mov = ProjectOnPlane(mov, { 0,1,0 });
-					rb->AddForce(mov * 10, ForceMode::Impulse);
+					rb->SetVelocity(mov);
 					player->transform->SetAxisZ(-mov.getNormalized());
 				}
 			}
 
 			};
 		animator->SetAnimationCallBack("combat_combo", left_punch160, 160, "second_punch");
+
 		std::function<bool()> to_next = [this]() {
 			return next_avalable && input_limit;
 			};
-		RegisterChangeRequest("combat_combo_3", to_next, 0);
+		std::function<bool()> to_idle = [this]() {
+			return !next_avalable && input_limit;
+			};
+		RegisterChangeRequest("attack3", to_next, 0);
+		RegisterChangeRequest("idle", to_idle, 1);
 	}
 	void PlayerCombatComboState2::OnEnter(IStateMachine* machine)
 	{
@@ -62,45 +66,63 @@ namespace NeonFade
 		next_avalable = false;
 		knock_back = false;
 		//rb->velocity = { rb->velocity.x * 0.5f, rb->velocity.y,rb->velocity.z * 0.5f };
-		animator->Play("combat_combo", false, 1.9f, 0.1f);
+		//animator->Play("combat_combo", false, 1.9f, 0.1f);
 		animator->anim_speed = 2.0f;
 		hit_stop_timer = 0.0f;
+		attack_timer = 0.0f;
 		{
 			Vector2 input = Input::GetPadLeftStick(0) * -1;
 
 			if (input.magnitudeSquared() > FLT_EPSILON) {
 
 				Vector3 mov(0, 0, 0);
-				mov += player->player_camera->transform->AxisX() * input.x;
-				mov += player->player_camera->transform->AxisZ() * input.y;
+				if (target)
+				{
+					if (target->IsDead())
+						target = nullptr;
+					else
+						mov = target->transform->position - player->transform->position;
+
+				}
+				else {
+
+					mov -= player->player_camera->transform->AxisX() * input.x * 10.0f;
+					mov -= player->player_camera->transform->AxisZ() * input.y * 10.0f;
+				}
 				mov = ProjectOnPlane(mov, { 0,1,0 });
-				rb->AddForce(mov.getNormalized() * -5);
-				player->transform->SetAxisZ(mov);
+				rb->SetVelocity(mov);
+				player->transform->SetAxisZ(-mov.getNormalized());
 			}
 		}
 	}
 	void PlayerCombatComboState2::OnExit(IStateMachine* machine)
 	{
-		animator->Stop();
+		//animator->Stop();
 		if (hit_box)
 			hit_box->RemoveThisComponent();
 		hit_box.reset();
 		Time::SetTimeScale(1.0);
-		player->GetScene()->physics_timescale = 2.0f;
+		player->GetScene()->physics_timescale = 1.0f;
 		animator->anim_speed = 1.0f;
 
 		target = nullptr;
 	}
 	void PlayerCombatComboState2::Update(IStateMachine* machine, float dt)
 	{
-		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::Fuga) || Input::GetKeyDown(KeyCode::L)))
+		attack_timer += dt;
+		if (attack_timer >= ATTACK_TIME) {
+			input_limit = true;
+		}
+		if (attack_timer >= 0.25f)
+			rb->SetVelocity(Vector3(0, rb->velocity.y, 0));
+		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::RTrigger) || Input::GetKeyDown(KeyCode::L)))
 			next_avalable = true;
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;
 			if (hit_stop_timer <= 0.0f) {
 				animator->anim_speed = 2.0f;
 				Time::SetTimeScale(1.0);
-				player->GetScene()->physics_timescale = 2.0f;
+				player->GetScene()->physics_timescale = 1.0f;
 			}
 		}
 	}

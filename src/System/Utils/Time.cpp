@@ -101,7 +101,8 @@ namespace Time {
 	// 物理処理の経過時間を更新・物理処理のFPSを計測
 	void FixFixedFPS() {
 		fixed_fps = 1.0 / fixed_delta_time;						//!<物理FPSを計測
-		fixed_delta_time -= fixed_delta_time_max;				//!<そして1フレーム分デクリメント(こちらは0にすると物理演算が不正確になるのでデクリメントして使う)
+		//fixed_delta_time -= fixed_delta_time_max;				//!<そして1フレーム分デクリメント(こちらは0にすると物理演算が不正確になるのでデクリメントして使う)
+		fixed_delta_time = 0.0;				//!<そして1フレーム分デクリメント(こちらは0にすると物理演算が不正確になるのでデクリメントして使う)
 	}
 
 

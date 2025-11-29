@@ -36,7 +36,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game\Components\EnemyController.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\DamageUIObject.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.cpp" />
@@ -97,6 +99,8 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerJumpAttackState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerJumpState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerMoveState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashChargeState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashMainState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ketsu.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ten.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_KI.cpp" />
@@ -107,6 +111,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Package|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\System\Components\EffectPlayer.cpp" />
+    <ClCompile Include="src\System\Components\Text3D.cpp" />
     <ClCompile Include="src\System\Managers\AudioManager.cpp" />
     <ClCompile Include="src\System\Utils\Audio.cpp" />
     <ClCompile Include="src\System\Utils\Color.cpp" />
@@ -162,7 +168,9 @@
     <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\DamageUIObject.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Enemy.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
     <ClInclude Include="src\Game\Objects\Sample\Cards\CardBase.h" />
@@ -216,11 +224,15 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerJumpAttackState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerJumpState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerMoveState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashChargeState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashMainState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ketsu.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ten.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_KI.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Show.h" />
     <ClInclude Include="src\precompile.h" />
+    <ClInclude Include="src\System\Components\EffectPlayer.h" />
+    <ClInclude Include="src\System\Components\Text3D.h" />
     <ClInclude Include="src\System\Managers\AudioManager.h" />
     <ClInclude Include="src\System\SystemHeaders\Objects.h" />
     <ClInclude Include="src\System\SystemHeaders\Utilitys.h" />
@@ -461,7 +473,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration);Effekseer</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <Profile>true</Profile>
@@ -488,7 +500,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/$(Configuration);Effekseer</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Link>
@@ -514,7 +526,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>dxlib;PhysX/PhysX-5.5.1/lib/$(Platform)/Release;Effekseer</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <Profile>false</Profile>

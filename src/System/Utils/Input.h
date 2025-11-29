@@ -131,13 +131,14 @@ enum struct PadButton : u8 {
 	RightStick = 7,	// 右スティック押し込み
 	LeftShoulder = 8,	// LBボタン
 	RightShoulder = 9,	// RBボタン
-	Hoge = 10,	//DxLib未定義
-	Fuga = 11,	//DxLib未定義2
+	//以下の二つは未定義だが、押されているかどうか検出のためLTrigger、RTriggerの代わりに使用する
+	LTrigger = 10,	//DxLib未定義
+	RTrigger = 11,	//DxLib未定義2
 	Button1 = 12,// Aボタン
 	Button2 = 13,// Bボタン
 	Button3 = 14,// Xボタン
 	Button4 = 15,// Yボタン
-	
+
 };
 //----------------------------------------------------
 // @brief 入力関連の関数を提供する名前空間。

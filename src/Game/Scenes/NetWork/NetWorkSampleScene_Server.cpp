@@ -334,7 +334,7 @@ namespace NetWorkTest_Server {
 			auto pit = std::find_if(another_players.begin(), another_players.end(),
 				[&key](const auto& p) {return p.first == key; });
 			if (pit != another_players.end()) {
-				SceneManager::Object::Destory(pit->second.lock());
+				SceneManager::Object::Destroy(pit->second.lock());
 				another_players.erase(pit);
 			}
 

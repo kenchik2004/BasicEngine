@@ -16,10 +16,6 @@ namespace NeonFade {
 		std::function slip_stop = [this]() {
 			rb->velocity = { 0,rb->velocity.y,0 };
 			};
-		std::function slip_stop2 = [this]() {
-			rb->velocity = { 0,rb->velocity.y,0 };
-			input_limit = true;
-			};
 
 		std::function left_punch84 = [this]() {
 			auto col = player->AddComponent<SphereCollider>
@@ -40,11 +36,11 @@ namespace NeonFade {
 					}
 					else {
 
-						mov -= player->player_camera->transform->AxisX() * input.x * 5.0f;
-						mov -= player->player_camera->transform->AxisZ() * input.y * 5.0f;
+						mov -= player->player_camera->transform->AxisX() * input.x * 10.0f;
+						mov -= player->player_camera->transform->AxisZ() * input.y * 10.0f;
 					}
 					mov = ProjectOnPlane(mov, { 0,1,0 });
-					rb->AddForce(mov * 10, ForceMode::Impulse);
+					rb->SetVelocity(mov);
 					player->transform->SetAxisZ(-mov.getNormalized());
 				}
 			}
@@ -141,7 +137,6 @@ namespace NeonFade {
 #endif
 		animator->SetAnimationCallBack("combat_combo", slip_stop, 40, "slip_stop");
 		animator->SetAnimationCallBack("combat_combo", left_punch84, 84, "first_punch");
-		animator->SetAnimationCallBack("combat_combo", slip_stop2, 92, "slip_stop2");
 
 #if 0
 		animator->SetAnimationCallBack("combat_combo", left_punch160, 160, "second_punch");
@@ -155,7 +150,11 @@ namespace NeonFade {
 		std::function<bool()> to_next = [this]() {
 			return next_avalable && input_limit;
 			};
-		RegisterChangeRequest("combat_combo_2", to_next, 0);
+		std::function<bool()> to_idle = [this]() {
+			return !next_avalable && input_limit;
+			};
+		RegisterChangeRequest("attack2", to_next, 0);
+		RegisterChangeRequest("idle", to_idle, 1);
 	}
 	void PlayerCombatComboState::OnEnter(IStateMachine* machine)
 	{
@@ -167,42 +166,58 @@ namespace NeonFade {
 		animator->Play("combat_combo", false, 0.9f, 0.1f);
 		animator->anim_speed = 2.0f;
 		hit_stop_timer = 0.0f;
+		attack_timer = 0.0f;
 		{
 			Vector2 input = Input::GetPadLeftStick(0) * -1;
 
 			if (input.magnitudeSquared() > FLT_EPSILON) {
 
 				Vector3 mov(0, 0, 0);
-				mov += player->player_camera->transform->AxisX() * input.x;
-				mov += player->player_camera->transform->AxisZ() * input.y;
+				if (target)
+				{
+					if (target->IsDead())
+						target = nullptr;
+					else
+						mov = target->transform->position - player->transform->position;
+
+				}
+				else {
+
+					mov -= player->player_camera->transform->AxisX() * input.x * 10.0f;
+					mov -= player->player_camera->transform->AxisZ() * input.y * 10.0f;
+				}
 				mov = ProjectOnPlane(mov, { 0,1,0 });
-				rb->AddForce(mov.getNormalized() * -5);
-				player->transform->SetAxisZ(mov);
+				rb->SetVelocity(mov);
+				player->transform->SetAxisZ(-mov.getNormalized());
 			}
 		}
 	}
 	void PlayerCombatComboState::OnExit(IStateMachine* machine)
 	{
-		animator->Stop();
 		if (hit_box)
 			hit_box->RemoveThisComponent();
 		hit_box.reset();
 		Time::SetTimeScale(1.0);
-		player->GetScene()->physics_timescale = 2.0f;
+		player->GetScene()->physics_timescale = 1.0f;
 		animator->anim_speed = 1.0f;
 
 		target = nullptr;
 	}
 	void PlayerCombatComboState::Update(IStateMachine* machine, float dt)
 	{
-		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::Fuga) || Input::GetKeyDown(KeyCode::L)))
+		attack_timer += dt;
+		if (attack_timer >= ATTACK_TIME) {
+			input_limit = true;
+			rb->SetVelocity(Vector3(0, rb->velocity.y, 0));
+		}
+		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::RTrigger) || Input::GetKeyDown(KeyCode::L)))
 			next_avalable = true;
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;
 			if (hit_stop_timer <= 0.0f) {
 				animator->anim_speed = 2.0f;
 				Time::SetTimeScale(1.0);
-				player->GetScene()->physics_timescale = 2.0f;
+				player->GetScene()->physics_timescale = 1.0f;
 			}
 		}
 	}

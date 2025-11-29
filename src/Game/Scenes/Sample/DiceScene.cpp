@@ -194,8 +194,8 @@ namespace Sample {
 	void DiceScene::Clear()
 	{
 		for (auto ite = dices.begin(); ite != dices.end();) {
-			SceneManager::Object::Destory(shared_from_this(), (*ite).pair[0]);
-			SceneManager::Object::Destory(shared_from_this(), (*ite).pair[1]);
+			SceneManager::Object::Destroy(shared_from_this(), (*ite).pair[0]);
+			SceneManager::Object::Destroy(shared_from_this(), (*ite).pair[1]);
 			ite = dices.erase(ite);
 		}
 		results_out_of_dices.clear();

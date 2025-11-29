@@ -8,6 +8,8 @@
 #include "System/Utils/Shader.h"
 #include "System/Utils/Render.h"
 
+#include "../Effekseer/EffekseerForDXLib.h"
+
 #define SORT
 bool USE_DEBUG_DRAW = false;
 
@@ -29,6 +31,7 @@ int SceneManager::Init()
 	TextureManager::Init();
 	ModelManager::Init();
 	AudioManager::Init();
+	Effekseer_Init(2000);
 
 	//レンダラー用のデフォルト定数バッファの作成
 	be_default_cbuffer = CreateShaderConstantBuffer(sizeof(Vector4));
@@ -640,6 +643,7 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 				});
 			scene->OnDrawFinish();
 
+			DrawEffekseer3D_Begin();
 			scene->LateDraw();
 			std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
 				if (!obj)
@@ -669,6 +673,8 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 				}
 				comps.clear();
 				});
+			DrawEffekseer3D_End();
+			SetRenderTarget(GetRenderTarget());
 			scene->OnLateDrawFinish();
 			if (USE_DEBUG_DRAW) {
 				//デバッグ描画を行う
@@ -688,7 +694,7 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 						}
 						std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 							if (comp)
-								if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
+								if (comp->status.status_bit.is(CompStat::STATUS::DEBUG_DRAW))
 									comp->DebugDraw();
 							});
 					}
@@ -719,7 +725,7 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 		}
 		SetUseLighting(true);
 		SetLightEnable(true);
-		Time::ResetTime();
+		//Time::ResetTime();
 	}
 	scene->SetCurrentCamera(current_camera.lock());
 	scene->PostDraw();
@@ -770,6 +776,8 @@ void SceneManager::Draw()
 		}
 	}
 
+	Effekseer_Sync3DSetting();
+	UpdateEffekseer3D();
 	for (auto& another_scene : another_scenes)
 	{
 		DrawCycleForOneScene(another_scene);
@@ -870,6 +878,11 @@ void SceneManager::PostDraw()
 			func_on_loop_finish.erase(ite);
 		}
 	}
+	for (auto& scene : scenes) {
+		//ループの最後にシーン内の削除マークが付いたオブジェクトを削除する
+		scene->DestroyMarkedGameObjects();
+
+	}
 	return;
 	if (!current_scene)
 		return;
@@ -945,6 +958,8 @@ void SceneManager::Exit()
 	ReleaseSkyboxResources();
 	DxLib::DeleteShaderConstantBuffer(be_default_cbuffer);
 	be_default_cbuffer = -1;
+
+	Effkseer_End();
 	try {
 		ModelManager::Exit();
 	}

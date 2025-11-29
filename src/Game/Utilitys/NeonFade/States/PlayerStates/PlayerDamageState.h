@@ -16,8 +16,6 @@ namespace NeonFade
 	private:
 		Player* player = nullptr;
 		Animator* animator = nullptr;
-		float hit_stop_timer = 0;
-		static constexpr float HIT_STOP_TIME = 0.1f;
 	};
 }
 

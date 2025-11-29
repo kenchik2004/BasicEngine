@@ -119,6 +119,15 @@ inline Vector3 QuaternionToEuler(const Quaternion& q) {
 
 	return Vector3(roll, pitch, yaw);  // X, Y, Z に対応するオイラー角を返す
 }
+inline Vector3 QuaternionToRadians(const Quaternion& q) {
+	// Roll (X-axis rotation)
+	float roll = physx::PxAtan2(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+	// Pitch (Y-axis rotation)
+	float pitch = physx::PxAsin(2.0f * (q.w * q.y - q.z * q.x));
+	// Yaw (Z-axis rotation)
+	float yaw = physx::PxAtan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z));
+	return Vector3(roll, pitch, yaw);  // X, Y, Z に対応するオイラー角を返す
+}
 inline Quaternion Inverse(Quaternion q) {
 	if (fabsf(q.magnitudeSquared()) < FLT_EPSILON)
 		return Quaternion(0, 0, 0, 1);

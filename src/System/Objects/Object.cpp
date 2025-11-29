@@ -210,10 +210,10 @@ void UIObject::Update()
 void UIObject::PreDraw()
 {
 	Super::PreDraw();
-	auto scale = transform->local_scale;
-	transform->local_scale = { scale.x, scale.y, 0 };
-	auto pos = transform->local_position;
-	transform->local_position = { pos.x, pos.y, 0 };
+	//auto scale = transform->local_scale;
+	//transform->local_scale = { scale.x, scale.y, 0 };
+	//auto pos = transform->local_position;
+	//transform->local_position = { pos.x, pos.y, 0 };
 
 }
 

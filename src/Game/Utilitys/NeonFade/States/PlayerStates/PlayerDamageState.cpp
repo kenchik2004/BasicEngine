@@ -8,11 +8,7 @@ namespace NeonFade
 	{
 		player = owner_;
 		animator = player->animator.lock().get();
-		std::function hit_stop = [this]() {
-			animator->anim_speed = 0.001f;
-			hit_stop_timer += Time::UnscaledDeltaTime();
-			};
-		animator->SetAnimationCallBack("player_damage", hit_stop, 3, "hit_stop");
+		
 		std::function default_change = [this]() {
 			return exit_timer >= EXIT_TIME;
 			};
@@ -22,7 +18,6 @@ namespace NeonFade
 	{
 		animator->anim_speed = 2.0f;
 		animator->PlayIfNoSame("player_damage");
-		hit_stop_timer = 0;
 		exit_timer = 0;
 		//rb->velocity = { 0, 0, 0 };
 	}
@@ -34,11 +29,5 @@ namespace NeonFade
 	void PlayerDamageState::Update(IStateMachine* machine, float dt)
 	{
 		exit_timer += dt;
-		if (hit_stop_timer > 0)
-			hit_stop_timer += dt;
-		if (hit_stop_timer > 0.1f) {
-			animator->anim_speed = 2.0f;
-			hit_stop_timer = 0;
-		}
 	}
 }
