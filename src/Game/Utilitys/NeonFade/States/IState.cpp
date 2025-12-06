@@ -22,10 +22,10 @@ namespace NeonFade
 		return "";
 	}
 
-	void IState::RegisterChangeRequest(const std::string& state_name, std::function<bool()>& func, u8 priority)
+	void IState::RegisterChangeRequest(const std::string& state_name, std::function<bool()> func, u8 priority)
 	{
 		auto request = make_safe_unique<FunctionRequest>();
-		request->function = std::move(func);
+		request->function = func;
 		request->priority = priority;
 		request->state_name = state_name;
 		// 優先度順に挿入

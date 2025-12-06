@@ -8,7 +8,7 @@ public:
 	EffectPlayer(std::string_view name);
 	int Init() override;
 	void LateDraw() override;
-	void Play();
+	void Play(bool loop = false);
 	void Stop();
 	void Load(std::string_view effect_name_);
 	void Exit() override;
@@ -20,6 +20,7 @@ private:
 	std::string effect_name;
 	float speed = 1.0f;
 	bool is_playing = false;
+	bool is_loop = false;
 	static std::unordered_map<std::string, int> effect_handle_map;
 
 };

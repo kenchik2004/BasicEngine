@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
-#include "Game/Components/EntityController.h"
 namespace NeonFade
 {
 	USING_PTR(PlayerStateMachine);

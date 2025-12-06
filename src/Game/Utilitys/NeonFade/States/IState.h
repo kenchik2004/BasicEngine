@@ -22,7 +22,7 @@ namespace NeonFade
 		void SetName(const std::string_view name_) { name = name_; }
 		virtual void DebugDraw() {};
 		std::string GetChangeRequest();
-		void RegisterChangeRequest(const std::string& state_name, std::function<bool()>& func, u8 priority = 0);
+		void RegisterChangeRequest(const std::string& state_name, std::function<bool()> func, u8 priority = 0);
 	private:
 		GameObject* owner = nullptr;
 		std::string name;

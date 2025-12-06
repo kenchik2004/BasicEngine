@@ -20,11 +20,14 @@ void EffectPlayer::LateDraw()
 	if (!is_playing)
 		return;
 	is_playing = !IsEffekseer3DEffectPlaying(playing_handle);
-	if (!is_playing)
+	if (!is_playing && !is_loop)
 	{
 		Stop();
 		playing_handle = -1;
 		return;
+	}
+	if (!is_playing) {
+		Play(is_loop);
 	}
 	Vector3& pos = owner.lock()->transform->position;
 	Quaternion& rot = owner.lock()->transform->rotation;
@@ -40,13 +43,13 @@ void EffectPlayer::LateDraw()
 	DrawEffekseer3D_Draw(playing_handle);
 }
 
-void EffectPlayer::Play()
+void EffectPlayer::Play(bool loop)
 {
 	if (effect_handle < 0)
 		return;
 	if (is_playing)
 		Stop();
-
+	is_loop = loop;
 	playing_handle = PlayEffekseer3DEffect(effect_handle);
 
 	is_playing = true;

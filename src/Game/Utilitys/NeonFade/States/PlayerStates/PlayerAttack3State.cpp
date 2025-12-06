@@ -12,7 +12,7 @@ namespace NeonFade {
 		animator = player_->animator.lock().get();
 		std::function<void()> create_hit_box = [this]() {
 			auto col = owner_player->AddComponent<BoxCollider>
-				(Vector3(0, -3, 5), Quaternion(0, 0, 0, 1), Vector3(6, 2, 4),
+				(Vector3(0, -3, 1.5f), Quaternion(0, 0, 0, 1), Vector3(10, 2, 9),
 					true, Collider::Layer::Wepon, Collider::Layer::Enemy);
 			hit_box = std::move(col);
 			};
@@ -30,10 +30,18 @@ namespace NeonFade {
 		exit_timer = 0.0f;
 		animator->Play("leg_sweep", true, 0, 0);
 		animator->anim_speed = 1.5f;
+		rb->velocity *= 0.3f;
+		hit_stop_timer = 0.0f;
 	}
 	void PlayerAttack3State::Update(IStateMachine* machine, float dt)
 	{
 		exit_timer += dt;
+
+		if (hit_stop_timer > 0.0f) {
+			hit_stop_timer -= dt;
+			if (hit_stop_timer <= 0.0f)
+				animator->anim_speed = 1.5f;
+		}
 	}
 	void PlayerAttack3State::OnExit(IStateMachine* machine)
 	{
@@ -55,6 +63,10 @@ namespace NeonFade {
 				knockback_dir.y = 2;
 				knockback_dir *= 10;
 				enemy->Down(knockback_dir, 3);
+			}
+			if (hit_stop_timer <= 0.0f) {
+				hit_stop_timer = HIT_STOP_TIME;
+				animator->anim_speed = 0.01f;
 			}
 		}
 	}

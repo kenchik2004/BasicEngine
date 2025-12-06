@@ -18,12 +18,12 @@ namespace NeonFade
 				hit_box->RemoveThisComponent();
 
 			auto col = player->AddComponent<SphereCollider>
-				(Vector3(0, 5, -4), Quaternion(0, 0, 0, 1), 4.0f,
+				(Vector3(0, 0, 4), Quaternion(0, 0, 0, 1), 4.0f,
 					true, Collider::Layer::Wepon, Collider::Layer::Enemy);
 			hit_box = std::move(col);
 
 			{
-				Vector2 input = Input::GetPadLeftStick(0) * -1;
+				Vector2 input = Input::GetPadLeftStick(0);
 
 				if (input.magnitudeSquared() > FLT_EPSILON) {
 
@@ -38,12 +38,12 @@ namespace NeonFade
 					}
 					else {
 
-						mov -= player->player_camera->transform->AxisX() * input.x * 10.0f;
-						mov -= player->player_camera->transform->AxisZ() * input.y * 10.0f;
+						mov += player->player_camera->transform->AxisX() * input.x * 10.0f;
+						mov += player->player_camera->transform->AxisZ() * input.y * 10.0f;
 					}
 					mov = ProjectOnPlane(mov, { 0,1,0 });
 					rb->SetVelocity(mov);
-					player->transform->SetAxisZ(-mov.getNormalized());
+					player->transform->SetAxisZ(mov.getNormalized());
 				}
 			}
 
@@ -71,7 +71,7 @@ namespace NeonFade
 		hit_stop_timer = 0.0f;
 		attack_timer = 0.0f;
 		{
-			Vector2 input = Input::GetPadLeftStick(0) * -1;
+			Vector2 input = Input::GetPadLeftStick(0);
 
 			if (input.magnitudeSquared() > FLT_EPSILON) {
 
@@ -86,12 +86,12 @@ namespace NeonFade
 				}
 				else {
 
-					mov -= player->player_camera->transform->AxisX() * input.x * 10.0f;
-					mov -= player->player_camera->transform->AxisZ() * input.y * 10.0f;
+					mov += player->player_camera->transform->AxisX() * input.x * 10.0f;
+					mov += player->player_camera->transform->AxisZ() * input.y * 10.0f;
 				}
 				mov = ProjectOnPlane(mov, { 0,1,0 });
 				rb->SetVelocity(mov);
-				player->transform->SetAxisZ(-mov.getNormalized());
+				player->transform->SetAxisZ(mov.getNormalized());
 			}
 		}
 	}

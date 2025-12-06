@@ -7,21 +7,6 @@ namespace NeonFade
 	{
 		owner = owner_;
 	}
-	void IStateMachine::OnSelect()
-	{
-		if (current_state)
-		{
-			current_state->OnEnter(this);
-		}
-	}
-	void IStateMachine::OnDeselect()
-	{
-		if (current_state)
-		{
-			current_state->OnExit(this);
-			current_state = nullptr;
-		}
-	}
 	void IStateMachine::ChangeState(std::string_view next)
 	{
 		auto it = states.find(next.data());
@@ -53,7 +38,8 @@ namespace NeonFade
 	}
 
 	void IStateMachine::AddState(std::string_view name, SafeUniquePtr<IState> state) {
-		state->SetName(name);
+		if (state)
+			state->SetName(name);
 		states[name.data()] = std::move(state);
 	}
 	void IStateMachine::DebugDraw()

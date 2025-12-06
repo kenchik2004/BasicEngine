@@ -2,10 +2,7 @@
 
 namespace NeonFade
 {
-	EntityController::EntityController()
-		: Component()
-	{
-	}
+
 	int EntityController::Init()
 	{
 		return Super::Init();

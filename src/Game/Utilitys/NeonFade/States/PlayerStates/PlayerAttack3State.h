@@ -5,14 +5,16 @@ namespace NeonFade {
 	class PlayerAttack3State :
 		public IState
 	{
-		public:
+	public:
 		PlayerAttack3State(Player* player_);
 		void OnEnter(IStateMachine* machine) override;
 		void Update(IStateMachine* machine, float dt) override;
 		void OnExit(IStateMachine* machine) override;
 		void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)override;
-		static constexpr float EXIT_TIME = 0.8f;
+		static constexpr float EXIT_TIME = 0.6f;
 		float exit_timer = 0.0f;
+		float hit_stop_timer = 0.0f;
+		static constexpr float HIT_STOP_TIME = 0.1f;
 	private:
 		Player* owner_player = nullptr;
 		Animator* animator = nullptr;

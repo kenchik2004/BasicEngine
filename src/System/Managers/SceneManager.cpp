@@ -22,6 +22,8 @@ std::vector<std::function<void()>> SceneManager::func_on_loop_finish(0);
 
 int be_default_cbuffer = -1;
 
+bool shader_runtime_compilation_enabled = true;
+
 
 #if 1
 //----------------------------------------------------------------
@@ -37,6 +39,8 @@ int SceneManager::Init()
 	be_default_cbuffer = CreateShaderConstantBuffer(sizeof(Vector4));
 	SetUpSkyboxResources();
 	//post_effect_filter = make_safe_unique<ShaderPs>(u8"data/shader/PostEffectFilter.fx");
+
+	shader_runtime_compilation_enabled = FileSystem::IniFileManager::GetBool(u8"StartConfig", u8"shader_runtime_compile", false, u8"data/test.ini");
 
 	//裏シーンの配列の0番目は必ずここで作成するシーンが入っている
 	auto default_dontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
@@ -806,7 +810,8 @@ void SceneManager::Draw()
 
 		}
 	}
-	Shader::updateFileWatcher();
+	if (shader_runtime_compilation_enabled)
+		Shader::updateFileWatcher();
 
 }
 

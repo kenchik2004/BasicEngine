@@ -22,11 +22,19 @@ namespace NeonFade {
 		animator->Play("clouch_inv", false, CUR_ANIMTIME_MAX, 0.1f);
 		//mixamoのアニメーションが酷いので、手動で逆再生
 		animator->anim_speed = -3.0f;
+		rb->velocity *= 0.3f;
 		effect_played = false;
+		hit_stop_timer = 0.0f;
 	}
 	void PlayerAttack2State::Update(IStateMachine* machine, float dt)
 	{
 		exit_timer += dt;
+		if (hit_stop_timer > 0.0f) {
+			hit_stop_timer -= dt;
+			if (hit_stop_timer <= 0.0f)
+				animator->anim_speed = -3.0f;
+		}
+
 		if (exit_timer >= 0.3f && !hit_box) {
 			auto col = owner_player->AddComponent<BoxCollider>
 				(Vector3(0, -3, 3), Quaternion(0, 0, 0, 1), Vector3(8, 2, 3),
@@ -50,10 +58,6 @@ namespace NeonFade {
 			hit_box->extension = Vector3(8, 2, 3 + 200.0f * std::lerp<float>(0, 1, smoothstep * (exit_timer - 0.3f)));
 			hit_box->position = Vector3(0, -3, 3 + 100.0f * std::lerp<float>(0, 1, smoothstep * (exit_timer - 0.3f)));
 		}
-		if (exit_timer >= 0.9f && hit_box) {
-			hit_box->RemoveThisComponent();
-			hit_box.reset();
-		}
 	}
 	void PlayerAttack2State::OnExit(IStateMachine* machine)
 	{
@@ -69,6 +73,10 @@ namespace NeonFade {
 		if (hit_info.collision == hit_box) {
 			if (auto enemy = SafeDynamicCast<Enemy>(hit_info.hit_collision->owner.lock())) {
 				enemy->Damage(2);
+				if (hit_stop_timer <= 0.0f) {
+					hit_stop_timer = HIT_STOP_TIME;
+					animator->anim_speed = -0.01f;
+				}
 			}
 		}
 	}

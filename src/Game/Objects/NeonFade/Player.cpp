@@ -104,6 +104,7 @@ namespace NeonFade
 	}
 	void Player::LateDebugDraw()
 	{
+		return;
 		if (model) {
 			auto dx_mat = model->GetFrameWorldMatDX(9);
 			auto px_mat = model->GetFrameWorldMat(9);
