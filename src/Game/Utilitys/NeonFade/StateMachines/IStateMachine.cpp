@@ -7,6 +7,21 @@ namespace NeonFade
 	{
 		owner = owner_;
 	}
+	void IStateMachine::OnSelect()
+	{
+		if (current_state)
+		{
+			current_state->OnEnter(this);
+		}
+	}
+	void IStateMachine::OnDeselect()
+	{
+		if (current_state)
+		{
+			current_state->OnExit(this);
+			current_state = nullptr;
+		}
+	}
 	void IStateMachine::ChangeState(std::string_view next)
 	{
 		auto it = states.find(next.data());

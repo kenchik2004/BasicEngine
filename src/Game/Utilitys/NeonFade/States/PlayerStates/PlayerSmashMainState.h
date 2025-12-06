@@ -11,6 +11,7 @@ namespace NeonFade {
 		void OnExit(IStateMachine* machine) override;
 		void Update(IStateMachine* machine, float dt) override;
 		void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info) override;
+		void DebugDraw() override;
 		float smash_timer = 0.0f;
 		const float MAX_SMASH_TIME = 1.5f;
 	private:

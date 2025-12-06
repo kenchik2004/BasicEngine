@@ -1,6 +1,8 @@
 ﻿#include "EffectPlayer.h"
 #include "../Effekseer/EffekseerForDXLib.h"
 
+std::unordered_map<std::string, int> EffectPlayer::effect_handle_map = {};
+
 EffectPlayer::EffectPlayer(std::string_view name)
 	:Component()
 {
@@ -16,10 +18,11 @@ int EffectPlayer::Init()
 void EffectPlayer::LateDraw()
 {
 	if (!is_playing)
-		Play();
+		return;
 	is_playing = !IsEffekseer3DEffectPlaying(playing_handle);
 	if (!is_playing)
 	{
+		Stop();
 		playing_handle = -1;
 		return;
 	}
@@ -57,14 +60,18 @@ void EffectPlayer::Stop()
 
 void EffectPlayer::Load(std::string_view effect_name_)
 {
+	auto it = effect_handle_map.find(std::string(effect_name_));
+	if (it != effect_handle_map.end()) {
+		effect_handle = it->second;
+		return;
+	}
 	effect_name = effect_name_;
 	effect_handle = LoadEffekseerEffect(effect_name.c_str());
+	effect_handle_map[std::string(effect_name_)] = effect_handle;
 }
 
 void EffectPlayer::Exit()
 {
-	if (effect_handle >= 0) {
-		DeleteEffekseerEffect(effect_handle);
-		effect_handle = -1;
-	}
+	if (is_playing)
+		Stop();
 }

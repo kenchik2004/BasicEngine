@@ -83,9 +83,9 @@ inline MATRIX cast(const mat4x4& mat)
 inline mat4x4 cast(const MATRIX& mat)
 {
 	return mat4x4(
-		Vector4(mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[0][3]).getNormalized(),
-		Vector4(mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[1][3]).getNormalized(),
-		Vector4(mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[2][3]).getNormalized(),
+		Vector4(mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[0][3]),
+		Vector4(mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[1][3]),
+		Vector4(mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[2][3]),
 		Vector4(mat.m[3][0], mat.m[3][1], mat.m[3][2], mat.m[3][3])
 	);
 }
@@ -100,9 +100,9 @@ inline Quaternion CastPhysXQuat(const Quaternion& q) {
 }
 inline mat4x4 CastPhysXMat(const mat4x4& mat) {
 	return mat4x4(
-		Vector4(mat.column0.x, mat.column1.x, mat.column2.x, mat.column0.w),
-		Vector4(mat.column0.y, mat.column1.y, mat.column2.y, mat.column1.w),
-		Vector4(mat.column0.z, mat.column1.z, mat.column2.z, mat.column2.w),
+		Vector4(mat.column0.x, mat.column1.x, mat.column2.x, mat.column0.w).getNormalized(),
+		Vector4(mat.column0.y, mat.column1.y, mat.column2.y, mat.column1.w).getNormalized(),
+		Vector4(mat.column0.z, mat.column1.z, mat.column2.z, mat.column2.w).getNormalized(),
 		Vector4(mat.column3.x, mat.column3.y, mat.column3.z, mat.column3.w)
 	);
 }

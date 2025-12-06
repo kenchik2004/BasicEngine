@@ -87,6 +87,9 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDownState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyIdleState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\IState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack1State.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack2State.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack3State.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerClimbingState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState2.cpp" />
@@ -212,6 +215,9 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDownState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyIdleState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\IState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack1State.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack2State.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack3State.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerClimbingState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerCombatComboState2.h" />

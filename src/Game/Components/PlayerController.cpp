@@ -26,17 +26,17 @@ namespace NeonFade
 		// 十分に倒されていなかったらキーボード入力を使う
 		if (pad_left.magnitudeSquared() <= FLT_EPSILON) {
 			if (Input::GetKey(KeyCode::W))
-				move_input -= cam_trns->AxisZ();
-			if (Input::GetKey(KeyCode::S))
 				move_input += cam_trns->AxisZ();
+			if (Input::GetKey(KeyCode::S))
+				move_input -= cam_trns->AxisZ();
 			if (Input::GetKey(KeyCode::A))
-				move_input += cam_trns->AxisX();
-			if (Input::GetKey(KeyCode::D))
 				move_input -= cam_trns->AxisX();
+			if (Input::GetKey(KeyCode::D))
+				move_input += cam_trns->AxisX();
 		}
 		else {
-			move_input += cam_trns->AxisZ() * -pad_left.y;
-			move_input += cam_trns->AxisX() * -pad_left.x;
+			move_input += cam_trns->AxisZ() * pad_left.y;
+			move_input += cam_trns->AxisX() * pad_left.x;
 		}
 		move_input = ProjectOnPlane(move_input, { 0,1,0 }).normalized();
 
@@ -59,7 +59,7 @@ namespace NeonFade
 		state_machine->is_damaged = is_damaged;
 		is_damaged = false;
 
-		climb_ray_start = owner_player->transform->position + owner_player->transform->AxisZ() * -1.5f + Vector3(0, 12, 0);
+		climb_ray_start = owner_player->transform->position + owner_player->transform->AxisZ() * 1.5f + Vector3(0, 7, 0);
 		Vector3 climb_ray_dir = Vector3(0, -1, 0);
 		RayCastInfo climb_ray_info;
 

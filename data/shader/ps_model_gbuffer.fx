@@ -60,8 +60,8 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 
 
 #if 1	
-	float roughness = 0.5; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
-	float metallic = 1.0; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
+	float roughness = 0.7; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
+	float metallic = 0.1; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
 
 	roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
 	metallic = MetallicTexture.Sample(MetallicSampler, uv).r;

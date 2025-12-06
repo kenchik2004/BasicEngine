@@ -20,6 +20,7 @@ private:
 	std::string effect_name;
 	float speed = 1.0f;
 	bool is_playing = false;
+	static std::unordered_map<std::string, int> effect_handle_map;
 
 };
 

@@ -26,6 +26,10 @@ public:
 	TransformWP parent; //!< 親TransformへのWeakPointer
 	void Construct() override;
 	void PreDraw() override;
+	void PrePhysics() override;
+	void PreUpdate() override;
+	void Update() override;
+	void LateUpdate() override;
 	void PostUpdate() override;
 	void DebugDraw() override;
 	TransformWP GetChild(size_t index) const;

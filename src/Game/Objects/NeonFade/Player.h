@@ -17,6 +17,7 @@ namespace NeonFade
 		int Init() override;
 		void Update() override;
 		void PreDraw() override;
+		void LateDebugDraw() override;
 		void Exit() override;
 
 		void OnCollisionEnter(const HitInfo& hit_info)override;

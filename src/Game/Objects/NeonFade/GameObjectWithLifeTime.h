@@ -10,5 +10,6 @@ public:
 	void Update() override;
 	const float lifetime;
 	float lifetimer = 0.0f;
+	Vector3 move_dir = Vector3(0, 0, 0);
 };
 

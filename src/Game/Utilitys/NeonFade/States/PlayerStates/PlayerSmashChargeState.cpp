@@ -23,7 +23,8 @@ namespace NeonFade {
 		rb->velocity = { 0,0,0 };
 		{
 			auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_smash_charge", MAX_CHARGE_TIME);
-			eff->AddComponent<EffectPlayer>(u8"data/FX/Missile.efkefc");
+			auto eff_player = eff->AddComponent<EffectPlayer>(u8"data/FX/Missile.efkefc");
+			eff_player->Play();
 			charge_effect = eff;
 		}
 		for (u32 i = 0; i < 1; i++)
@@ -55,7 +56,7 @@ namespace NeonFade {
 	{
 		charge_timer += dt;
 		Vector3 move_dir = Vector3(0, 0, 0);
-		move_dir += owner_player->transform->AxisZ() * 3.0f;
+		move_dir += owner_player->transform->AxisZ() * -3.0f;
 		move_dir += owner_player->transform->AxisY() * 3.0f;
 		rb->velocity = move_dir;
 		auto pos = MV1GetFramePosition(owner_player->model->GetModelHandle(), 45);

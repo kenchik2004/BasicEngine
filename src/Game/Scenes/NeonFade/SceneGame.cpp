@@ -36,6 +36,10 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/player/anim_punch_charge.mv1", "smash_charge");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_punch_strike.mv1", "smash_attack");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_punch_finish.mv1", "smash_finish");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_spin.mv1", "spin");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_clouch_inv.mv1", "clouch_inv");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_spin_kick.mv1", "spin_kick");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_leg_sweep.mv1", "leg_sweep");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/Ground.mv1", "stage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/building-01_UV.mv1", "building");
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road.mv1", "high-way");
@@ -64,7 +68,6 @@ namespace NeonFade {
 		shadowmap->SetShadowMapSize(2048);
 		shadowmap->SetLightDirection({ 0, -8, 5 });
 		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
-		player_->transform->scale = { 0.05f,0.05f,0.05f };
 		player_->transform->position = { 0,30,100 };
 
 		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
@@ -95,7 +98,7 @@ namespace NeonFade {
 		camera->transform->position = { 0,10,10 };
 		camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
 		camera->camera->render_type = Camera::RenderType::Deferred;
-		camera->camera->camera_far = 1000.0f;
+		camera->camera->camera_far = 500.0f;
 		camera->AddComponent<AudioListener>();
 
 		player_->player_camera = camera;
@@ -155,7 +158,7 @@ namespace NeonFade {
 			hud_text->SetText(hud_text_str);
 		}
 
-		
+
 
 		scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
 		Time::ResetTime();

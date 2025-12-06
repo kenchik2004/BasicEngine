@@ -8,6 +8,7 @@ int GameObjectWithLifeTime::Init()
 
 void GameObjectWithLifeTime::Update()
 {
+	transform->position += move_dir * Time::UnscaledDeltaTime();
 	lifetimer -= Time::UnscaledDeltaTime();
 	if (lifetimer <= 0.0f)
 		SceneManager::Object::Destroy(shared_from_this());

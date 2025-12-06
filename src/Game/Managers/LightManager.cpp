@@ -169,7 +169,7 @@ void LightManager::LateDraw()
 	if (camera->render_type != Camera::RenderType::Deferred)
 		return;
 	auto current_rt = GetRenderTarget();
-	if constexpr (false) {
+	if constexpr (true) {
 		//--------------------------
 		//ここにSSAOを計算するコードを追加予定
 		auto& ao_buffer = camera->gbuffer_texture_[0];
@@ -179,6 +179,20 @@ void LightManager::LateDraw()
 		//--------------------------
 		// AO計算をして、ao_bufferに書き込む
 		//--------------------------
+
+		//書き込む前に、albedoを書き換えないようにブレンドモードを変更
+		DxLib::SetDrawCustomBlendMode(
+			true,
+			DX_BLEND_ONE,
+			DX_BLEND_ONE,
+			DX_BLENDOP_MIX,
+			DX_BLEND_ONE,
+			DX_BLEND_ONE,
+			DX_BLENDOP_MIX,
+			255
+
+		);
+
 		FillRenderTarget(*shader_ssao);
 		SetRenderTarget(nullptr);
 		//--------------------------

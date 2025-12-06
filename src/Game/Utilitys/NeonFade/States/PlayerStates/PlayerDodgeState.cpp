@@ -26,9 +26,9 @@ namespace NeonFade
 		else {
 			dodge_dir.normalize();
 		}
-		dodge_dir = ProjectOnPlane(dodge_dir, { 0,1,0 }) * -1;
+		dodge_dir = ProjectOnPlane(dodge_dir, { 0,1,0 });
 
-		player->transform->SetAxisZ(dodge_dir.getNormalized(), { 0,1,0 });
+		player->transform->SetAxisZ(-dodge_dir.getNormalized(), { 0,1,0 });
 		dodge_dir *= DODGE_SPEED;
 		dodge_dir.y = 20; // 少しジャンプさせる
 		rb->velocity = dodge_dir;

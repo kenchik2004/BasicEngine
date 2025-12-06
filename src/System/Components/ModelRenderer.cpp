@@ -92,6 +92,12 @@ void ModelRenderer::PreDraw()
 	// あれだと既に登録されているProcを上書きしてしまうので、同一プライオリティで複数登録できない
 	//
 
+	mat4x4 mat(CastPhysXQuat(owner->transform->rotation));
+	mat.scale(Vector4(owner->transform->scale, 1));
+	//mat.scale(Vector4(scale, 1));
+	mat.setPosition(owner->transform->position);
+
+	MV1SetMatrix(model->handle, cast(mat));
 }
 
 void ModelRenderer::Draw()
@@ -109,7 +115,7 @@ void ModelRenderer::Draw()
 void ModelRenderer::DebugDraw()
 {
 	//if (!model)
-		return;
+	return;
 	if (owner->GetComponent<MeshCollider>() || owner->GetComponent<ConvexMeshCollider>())
 		return;
 	MV1SetWireFrameDrawFlag(model->handle, true);
@@ -119,6 +125,50 @@ void ModelRenderer::DebugDraw()
 
 void ModelRenderer::Load(std::string_view path, std::string_view name) {
 	ModelManager::LoadAsModel(path, name);
+}
+
+MATRIX ModelRenderer::GetFrameWorldMatDX(u32 index)
+{
+	if (!model)
+		return DxLib::MGetIdent();
+	int index_max = MV1GetFrameNum(model->handle);
+	if (index_max < 0 || index >= static_cast<u32>(index_max))
+		return DxLib::MGetIdent();
+	return MV1GetFrameLocalWorldMatrix(model->handle, index);
+}
+
+mat4x4 ModelRenderer::GetFrameWorldMat(u32 index)
+{
+	if (!model)
+		return mat4x4(physx::PxIdentity);
+	int index_max = MV1GetFrameNum(model->handle);
+	if (index_max < 0 || index >= static_cast<u32>(index_max))
+		return mat4x4(physx::PxIdentity);
+	MATRIX result = MV1GetFrameLocalWorldMatrix(model->handle, index);
+
+	return reinterpret_cast<mat4x4&>(result);
+}
+
+MATRIX ModelRenderer::GetFrameWorldMatDX(std::string_view frame_name)
+{
+	if (!model)
+		return DxLib::MGetIdent();
+	int index = MV1SearchFrame(model->handle, frame_name.data());
+	if (index >= 0)
+		return MV1GetFrameLocalWorldMatrix(model->handle, index);
+	return DxLib::MGetIdent();
+}
+
+mat4x4 ModelRenderer::GetFrameWorldMat(std::string_view frame_name)
+{
+	if (!model)
+		return mat4x4(physx::PxIdentity);
+	int index = MV1SearchFrame(model->handle, frame_name.data());
+	if (index < 0)
+		return mat4x4(physx::PxIdentity);
+	MATRIX result = MV1GetFrameLocalWorldMatrix(model->handle, index);
+
+	return reinterpret_cast<mat4x4&>(result);
 }
 
 

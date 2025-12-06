@@ -3,7 +3,6 @@
 
 
 
-//!< TO_DO 自前シェーダーに対応
 USING_PTR(ModelRenderer);
 class ModelRenderer :
 	public Component
@@ -25,6 +24,10 @@ public:
 	static void Load(std::string_view path, std::string_view name);
 
 	const int GetModelHandle() { return model ? model->handle : -1; }
+	MATRIX GetFrameWorldMatDX(u32 index);
+	mat4x4 GetFrameWorldMat(u32 index);
+	MATRIX GetFrameWorldMatDX(std::string_view frame_name);
+	mat4x4 GetFrameWorldMat(std::string_view frame_name);
 	bool IsLoaded() { return model ? model->handle >= 0 : false; }
 
 	std::string model_name = "";

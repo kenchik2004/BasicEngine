@@ -8,6 +8,10 @@ namespace NeonFade
 	public:
 		virtual ~IStateMachine() = default;
 		IStateMachine(GameObject* owner_);
+
+		virtual void OnSelect();
+		virtual void OnDeselect();
+
 		virtual void ChangeState(std::string_view next);
 		std::string GetCurrentStateName() { return current_state ? current_state->GetName() : ""; }
 		virtual void Update(float dt);

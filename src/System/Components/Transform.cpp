@@ -94,18 +94,37 @@ void Transform::PreDraw()
 	CalculateTransform();
 }
 
+void Transform::PrePhysics()
+{
+	CalculateTransform();
+}
+
+void Transform::PreUpdate()
+{
+
+}
+
+void Transform::Update()
+{
+}
+
+void Transform::LateUpdate()
+{
+}
+
 void Transform::PostUpdate()
 {
+	CalculateTransform();
 }
 
 void Transform::DebugDraw()
 {
-	DrawLine3D(cast(position), cast(position + AxisX()), Color::BLUE);
-	DrawCone3D(cast(position + AxisX()), cast(position + AxisX() * 0.7f), 0.05f, 8, Color::BLUE, Color::BLUE, true);
+	DrawLine3D(cast(position), cast(position + AxisX()), Color::RED);
+	DrawCone3D(cast(position + AxisX()), cast(position + AxisX() * 0.7f), 0.05f, 8, Color::RED, Color::RED, true);
 	DrawLine3D(cast(position), cast(position + AxisY()), Color::GREEN);
 	DrawCone3D(cast(position + AxisY()), cast(position + AxisY() * 0.7f), 0.05f, 8, Color::GREEN, Color::GREEN, true);
-	DrawLine3D(cast(position), cast(position + AxisZ()), Color::RED);
-	DrawCone3D(cast(position + AxisZ()), cast(position + AxisZ() * 0.7f), 0.05f, 8, Color::RED, Color::RED, true);
+	DrawLine3D(cast(position), cast(position + AxisZ()), Color::BLUE);
+	DrawCone3D(cast(position + AxisZ()), cast(position + AxisZ() * 0.7f), 0.05f, 8, Color::BLUE, Color::BLUE, true);
 
 }
 

@@ -199,7 +199,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//PCのスペック次第では実際に出ているFPSよりも物理更新を行おうとするので、
 			//FPSが物理更新頻度を下回った場合はFPSを基準に計算頻度を決める
 			SceneManager::PrePhysics();
-			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max) + 1;
+			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max);
 			printfDx("Physics Loops: %llu\n", loops);
 			for (int i = 0; i < loops; i++)
 			{
@@ -207,7 +207,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				SceneManager::Physics();
 
 			}
-			Time::FixFixedFPS();
+			Time::FixFixedFPS(loops);
 			SceneManager::PostPhysics();
 
 			bool imgui_drawed = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());

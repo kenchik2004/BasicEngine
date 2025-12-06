@@ -19,6 +19,18 @@ namespace NeonFade {
 
 
 
+
+		Vector3 player_dist = { 0,0,0 };
+		if (auto player_lock = player.lock())
+		{
+			is_attacking = false;
+			player_dist = player_lock->transform->position - owner.lock()->transform->position;
+			player_dist.y = 0;
+			if (player_dist.magnitudeSquared() <= 4.0f * 4.0f) {
+				state_machine->move_vec = player_dist;
+				is_attacking = true;
+			}
+		}
 		invincible_timer -= Time::UnscaledDeltaTime();
 		state_machine->knock_back = knock_back;
 
@@ -33,17 +45,6 @@ namespace NeonFade {
 		if (is_damaged)
 		{
 			is_damaged = false;
-		}
-		Vector3 player_dist = { 0,0,0 };
-		if (auto player_lock = player.lock())
-		{
-			is_attacking = false;
-			player_dist = player_lock->transform->position - owner.lock()->transform->position;
-			player_dist.y = 0;
-			if (player_dist.magnitudeSquared() <= 8.0f * 8.0f) {
-				state_machine->move_vec = player_dist;
-				is_attacking = true;
-			}
 		}
 		state_machine->is_attacking = is_attacking;
 
@@ -85,6 +86,7 @@ namespace NeonFade {
 			invincible_timer = INVINCIBLE_TIME;
 			hp -= damage;
 			is_damaged = true;
+			state_machine->move_vec = knock_back_vec;
 			state_machine->ChangeState("down");
 			if (hp <= 0)
 				is_dead = true;

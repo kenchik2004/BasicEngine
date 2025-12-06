@@ -50,7 +50,7 @@ namespace NeonFade
 			rot_angle *= 5;
 		pl_trns->SetAxisZ(Lerp(pl_trns->AxisZ(), input, rot_angle * Time::DeltaTime()));
 
-		input = input * -30;
+		input = input * 30;
 		input.y = rb->velocity.y;	// 重力成分を維持
 		rb->velocity = input;
 		jump_timer += dt;

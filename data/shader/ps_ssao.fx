@@ -30,7 +30,7 @@ float4 main(PS_INPUT input) : SV_Target0
 	//----------------------------------------------------------
 
 	float ao = 0;
-	float3 vN = V;
+	float3 vN = N;
 	//接線ベクトルを計算する際の基準軸を決定するためのcosine値
 	float cosine = abs(dot(vN, float3(0, 1, 0)));
 	// 接線ベクトルを計算
@@ -39,20 +39,22 @@ float4 main(PS_INPUT input) : SV_Target0
 	float3 vB = cross(vT, vN);
 	vT = normalize(vT); //接線(横方向)
 	vB = normalize(vB); //従法線(縦方向)
+	vN = cross(vB, vT);
 
-	float base_angle = rand(input.position_.xy * 0.01) * 2 * PI;
+	float base_angle = rand(input.position_.xy * 0.0001 * BE_Default.delta_time) * 2 * PI;
+	float3 sample_center_position = mul(float4(surfaceInfo.world_position_, 1), mat_view_).xyz;
 
 	//半球状にサンプリングを行う
 	static const int SAMPLE_COUNT = 64;
 	[unroll]
-	for (int i = 50; i < SAMPLE_COUNT; i++)
+	for (int i = 0; i < SAMPLE_COUNT; i++)
 	{
 		float2 offset = VogelDiskSample(i, SAMPLE_COUNT, base_angle);
-		float height = rand(input.uv0_ + i);
+		float height = abs(rand(input.position_.xy * 0.001 + i));
 
 		float3 direction = normalize(float3(offset.x, offset.y, height));
 		float3 offset_in_3d = (direction.x * vT) + (direction.y * vB) + (direction.z * vN);
-		float3 sample_position = surfaceInfo.world_position_ + offset_in_3d * 0.5; //サンプリング距離を0.5に設定
+		float3 sample_position = surfaceInfo.world_position_ + offset_in_3d;
 		float3 view_position = mul(float4(sample_position, 1), mat_view_).xyz;
 		float4 screen_position = mul(float4(view_position, 1), mat_proj_);
 
@@ -64,16 +66,23 @@ float4 main(PS_INPUT input) : SV_Target0
 		uv = saturate(uv);
 		float2 resolution = float2(1280, 720);
 		SurfaceInfo depth_surface = GetSurfaceInfo(int2(uv * resolution));
-		float4 view_depth = mul(mat_proj_inv, float4(screen_position.xy, depth_surface.depth_, 0));
+		float4 view_depth = mul(float4(screen_position.xy, depth_surface.depth_, 1), mat_proj_inv);
 		view_depth.xyz /= view_depth.w;
-		float delta = length(screen_position.w - view_depth.w);
-			ao = delta;
-			return float4(view_depth.www, 1);
-	
+
+		if (view_depth.z < view_position.z) {
+			float3 dir_center = normalize(sample_center_position - view_position);
+			float3 dir_sample = normalize(sample_center_position - view_depth.xyz);
+			float cosine = dot(dir_center, dir_sample);
+			ao += cosine / SAMPLE_COUNT;
+		}
+		//ao += 1.0f / SAMPLE_COUNT;
+		/*return float4(view_depth.zzz*0.01, 1);
+		return float4(view_position.zzz * 0.01, 1);*/
+
 	}
-
-
-
+	ao *= 1 - smoothstep(0.1, 50.0, sample_center_position.z);
+	
+	ao = 1.0 - ao;
 	// 出力パラメータを返す
-	return float4(surfaceInfo.world_position_.xyz*0.01,ao);
+	return float4(1,1,1,ao);
 }

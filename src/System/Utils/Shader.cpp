@@ -603,7 +603,7 @@ const std::wstring& Shader::path() const
 //----------------------------------------------------
 void Shader::updateFileWatcher()
 {
-	return;
+	//return;
 	file_watcher_.update();
 }
 
