@@ -71,6 +71,11 @@ namespace NeonFade {
 				hit_box = hit_box_;
 			}
 		}
+		if (smash_timer >= 0.7f && hit_box)
+		{
+			hit_box->RemoveThisComponent();
+			hit_box.reset();
+		}
 
 	}
 	void PlayerSmashMainState::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
@@ -80,7 +85,8 @@ namespace NeonFade {
 			auto hit_obj = hit_info.hit_collision->owner.lock();
 			auto enemy = SafeStaticCast<Enemy>(hit_obj);
 			if (enemy) {
-				enemy->Down(owner_player->transform->AxisZ() * 30.0f + Vector3(0, 30, 0), 5);
+				enemy->Damage(30);
+				enemy->Down(owner_player->transform->AxisZ() * 30.0f + Vector3(0, 30, 0));
 			}
 		}
 	}

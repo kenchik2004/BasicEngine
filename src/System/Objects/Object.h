@@ -73,11 +73,13 @@ private:
 
 
 	void SyncComponentsPriority();
+	size_t FindInsertPositionByPriority(unsigned int priority);
 	bool CheckForSingleComponent(ComponentP comp);
 
 
 	ComponentPVec components;
 	ComponentPVec dirty_priority_components;
+	trigger_bool is_any_component_removed = false;
 	SceneP scene;
 
 
@@ -96,9 +98,8 @@ public:
 			comp->ConstructBase();
 			if (!CheckForSingleComponent(comp))
 				return nullptr;
-
-			dirty_priority_components.push_back(comp);
-			components.push_back(comp);
+			size_t pos = FindInsertPositionByPriority(comp->GetPriority());
+			components.insert(components.begin() + pos, comp);
 			comp->Init();
 		}
 		catch (Exception& ex) {
@@ -119,8 +120,8 @@ public:
 			if (!CheckForSingleComponent(comp))
 				return nullptr;
 
-			dirty_priority_components.push_back(comp);
-			components.push_back(comp);
+			size_t pos = FindInsertPositionByPriority(comp->GetPriority());
+			components.insert(components.begin() + pos, comp);
 			comp->Init();
 		}
 		catch (Exception& ex) {
@@ -153,28 +154,35 @@ public:
 		return vec;
 	}
 
-	void RemoveComponent(ComponentP remove_comp) {
+	void RemoveComponent(ComponentP&& remove_comp) {
 
-		//if (remove_comp == transform)
-	//		return;
-
-		ComponentWP comp_wp;
 		if (auto comp = std::find(dirty_priority_components.begin(), dirty_priority_components.end(), remove_comp); comp != dirty_priority_components.end())
 		{
 			dirty_priority_components.erase(comp);
 		}
-		for (auto comp = components.begin(); comp != components.end();) {
-			comp_wp = (*comp);
-			if (comp_wp.lock() == remove_comp) {
-				comp_wp->Exit();
-				comp_wp->status.status_bit.on(CompStat::STATUS::REMOVED);
-				comp = components.erase(comp);
-				remove_comp.reset();
-				break;
-
-			}
-			comp++;
+		if (auto comp = std::find(components.begin(), components.end(), remove_comp); comp != components.end())
+		{
+			remove_comp->Exit();
+			remove_comp->status.status_bit.on(CompStat::STATUS::REMOVED);
+			remove_comp.reset();
+			is_any_component_removed.set();
 		}
+
+	}
+	void RemoveComponent(ComponentP& remove_comp) {
+
+		if (auto comp = std::find(dirty_priority_components.begin(), dirty_priority_components.end(), remove_comp); comp != dirty_priority_components.end())
+		{
+			dirty_priority_components.erase(comp);
+		}
+		if (auto comp = std::find(components.begin(), components.end(), remove_comp); comp != components.end())
+		{
+			remove_comp->Exit();
+			remove_comp->status.status_bit.on(CompStat::STATUS::REMOVED);
+			remove_comp.reset();
+			is_any_component_removed.set();
+		}
+
 	}
 
 	void SetPriority(unsigned int prio);

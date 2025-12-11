@@ -16,6 +16,7 @@ namespace NeonFade {
 		float hit_stop_timer = 0.0f;
 		static constexpr float HIT_STOP_TIME = 0.1f;
 	private:
+		float hit_box_created_time = 0.0f;
 		Player* owner_player = nullptr;
 		Animator* animator = nullptr;
 		RigidBody* rb = nullptr;

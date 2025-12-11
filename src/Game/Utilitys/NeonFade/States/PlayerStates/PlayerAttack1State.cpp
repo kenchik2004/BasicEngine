@@ -2,6 +2,7 @@
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
+#include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 
 namespace NeonFade {
 	PlayerAttack1State::PlayerAttack1State(Player* player_)
@@ -93,15 +94,24 @@ namespace NeonFade {
 			auto enem = SafeStaticCast<Enemy>(hit_info.hit_collision->owner.lock());
 			if (enem && !enem->IsDead()) {
 				Vector3 knockback_dir = enem->transform->position - owner_player->transform->position;
-				knockback_dir.y = -3;
+				knockback_dir.y = 0;
 				knockback_dir.normalize();
-				knockback_dir *= 30;
-				enem->Down(knockback_dir, 3);
+				knockback_dir *= 40;
+				knockback_dir.y = -10;
+				enem->Damage(13);
+				enem->Down(knockback_dir);
 			}
 
 			if (hit_stop_timer <= 0.0f) {
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.01f;
+				{
+					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_attack1_hit", 1.0f);
+					eff->transform->position = hit_info.hit_collision->owner->transform->position;
+					eff->transform->position.y += 4.0f;
+					eff->transform->scale = { 0.2f,0.2f,0.2f };
+					eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efk")->Play();
+				}
 			}
 		}
 	}

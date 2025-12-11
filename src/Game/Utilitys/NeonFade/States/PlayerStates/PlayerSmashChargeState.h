@@ -17,7 +17,7 @@ namespace NeonFade {
 		RigidBody* rb;
 		Animator* animator;
 		float charge_timer = 0.0f;
-		SafeSharedPtr<GameObject> charge_effect = nullptr;
+		SafeWeakPtr<GameObject> charge_effect = nullptr;
 		LightManager* light_manager = nullptr;
 		std::vector<SafeSharedPtr<PointLight>> smash_lights;
 		static constexpr float MAX_CHARGE_TIME = 1.5f;

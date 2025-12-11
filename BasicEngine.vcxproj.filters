@@ -182,6 +182,11 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack1State.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack2State.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack3State.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -371,6 +376,11 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack1State.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack2State.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerAttack3State.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

@@ -4,6 +4,7 @@
 USING_PTR(CameraObject);
 namespace NeonFade {
 	USING_PTR(SceneGameStateMachine);
+	USING_PTR(Player);
 	class SceneGame :
 		public Scene
 	{
@@ -20,16 +21,17 @@ namespace NeonFade {
 		bool CheckForLoading();
 
 
-		void AddEnemyCount() { enemy_count++; }
-		void SubtractEnemyCount() { enemy_count--; }
+		void AddEnemyCount(u32 cnt = 1) { enemy_count += cnt; }
+		void SubtractEnemyCount(u32 cnt = 1) { enemy_count -= min(cnt, enemy_count); }
 		int GetEnemyCount() const { return enemy_count; }
 		CameraObjectWP camera;
-		GameObjectWP player;
+		PlayerWP player;
 		UIObjectWP text_obj;
+		UIObjectWP hud_obj;
 		TextWP text_comp;
 		SceneGameStateMachineUP scene_state_machine = nullptr;
 	private:
-		int enemy_count = 0;
+		u32 enemy_count = 0;
 	};
 }
 

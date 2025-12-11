@@ -51,7 +51,6 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 
 
@@ -59,7 +58,9 @@ PxFilterFlags filtershader(PxFilterObjectAttributes attributes0,
 	else {
 		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		pairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 	}
 
@@ -199,10 +200,34 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 	for (physx::PxU32 i = 0; i < nbPairs; i++)
 	{
 		PxContactPair contact = pairs[i];
+		Vector3 hit_point = { 0,0,0 };
+		Vector3 normal = { 0,0,0 };
+		if (contact.contactCount > 0)
+		{
+
+			// PxContactStreamIterator を作成し、接触点を取得する
+			PxContactStreamIterator iterator(contact.contactPatches,
+				contact.contactPoints,
+				contact.getInternalFaceIndices(),
+				contact.patchCount,
+				contact.contactCount);
+			if (iterator.hasNextContact()) {
+				iterator.nextContact();
+
+				//  衝突座標 を取得
+				hit_point = iterator.getContactPoint();
+
+				// 法線ベクトル
+				normal = iterator.getContactNormal();
+			}
+		}
 		if (contact.events & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
 		{
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[0]->userData));
 			auto wp_b = static_cast<SafeWeakPtr<Collider>*>((pairHeader.pairs->shapes[1]->userData));
+
+
+
 			//SafeWeakPtrへのポインタにすることで、userDataがnullptrになっていたり、shared_ptrが解放されていてもアクセスすることがない
 			if (wp_a && wp_b) {
 				//ヒット時に、オブジェクトを消しちゃうおバカちゃんたちがいるかもしれないので
@@ -210,13 +235,23 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
+					// 法線ベクトルがゼロベクトルの場合、接点計算が走っていないので適当な値を入れておく
+					if (normal.isZero())
+					{
+						normal = Vector3(0, 1, 0);
+						hit_point = sp_a->owner->transform->position + sp_b->owner->transform->position;
+						hit_point *= 0.5f;	// 中間点を接触点とする
+					}
+
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
+					hit_info0.hit_position = hit_point;
 					sp_a->owner->OnCollisionEnter(hit_info0); // オブジェクトAのヒット発生関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
+					hit_info1.hit_position = hit_point;
 					sp_b->owner->OnCollisionEnter(hit_info1); // オブジェクトBのヒット発生関数を呼ぶ
 				}
 
@@ -232,13 +267,22 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
+					// 法線ベクトルがゼロベクトルの場合、接点計算が走っていないので適当な値を入れておく
+					if (normal.isZero())
+					{
+						normal = Vector3(0, 1, 0);
+						hit_point = sp_a->owner->transform->position + sp_b->owner->transform->position;
+						hit_point *= 0.5f;// 中間点を接触点とする
+					}
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
+					hit_info0.hit_position = hit_point;
 					sp_a->owner->OnCollisionStay(hit_info0); // オブジェクトAのヒット継続関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
+					hit_info1.hit_position = hit_point;
 					sp_b->owner->OnCollisionStay(hit_info1); // オブジェクトBのヒット継続関数を呼ぶ
 				}
 			}
@@ -252,13 +296,21 @@ void HitCallBack::onContact(const physx::PxContactPairHeader& pairHeader, const 
 				auto sp_a = wp_a->lock();
 				auto sp_b = wp_b->lock();
 				if (sp_a && sp_b) {
+					//衝突終了時は、そもそも接点計算が走らないので適当な値を入れておく
+
+					normal = Vector3(0, 1, 0);
+					hit_point = sp_a->owner->transform->position + sp_b->owner->transform->position;
+					hit_point *= 0.5f;// 中間点を接触点とする
+
 					HitInfo hit_info0;
 					hit_info0.collision = sp_a;
 					hit_info0.hit_collision = sp_b;
+					hit_info0.hit_position = hit_point;
 					sp_a->owner->OnCollisionExit(hit_info0); // オブジェクトAのヒット終了関数を呼ぶ
 					HitInfo hit_info1;
 					hit_info1.collision = sp_b;
 					hit_info1.hit_collision = sp_a;
+					hit_info1.hit_position = hit_point;
 					sp_b->owner->OnCollisionExit(hit_info1); // オブジェクトBのヒット終了関数を呼ぶ
 				}
 			}
@@ -272,6 +324,7 @@ void HitCallBack::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 	for (physx::PxU32 i = 0; i < count; i++)
 	{
 		PxTriggerPair contact = pairs[i];
+
 		if (contact.status & PxPairFlag::eNOTIFY_TOUCH_FOUND) // 衝突が発生したとき
 		{
 			auto wp_a = static_cast<SafeWeakPtr<Collider>*>((pairs[i].triggerShape->userData));

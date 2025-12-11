@@ -140,10 +140,11 @@ namespace NeonFade {
 			hit_stop_timer = HIT_STOP_TIME;
 
 			if (knock_back) {
-				enem->Down(Vector3(ProjectOnPlane(enem->transform->position - player->transform->position, { 0,1,0 })).getNormalized(), 2);
+				enem->Damage(3);
+				enem->Down(Vector3(ProjectOnPlane(enem->transform->position - player->transform->position, { 0,1,0 })).getNormalized());
 			}
 			else {
-				enem->Damage(1);
+				enem->Damage(100);
 				if (!target)
 					target = enem;
 

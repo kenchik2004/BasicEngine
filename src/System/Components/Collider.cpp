@@ -7,6 +7,17 @@ void Collider::Construct()
 {
 	SetPriority(1);
 }
+void Collider::OnSleep()
+{
+
+	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+}
+void Collider::OnWakeUp()
+{
+	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !is_trigger);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, is_trigger);
+}
 int Collider::Init()
 {
 	rigidbody = owner->GetComponent<RigidBody>();

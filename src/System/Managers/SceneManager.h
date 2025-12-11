@@ -43,6 +43,7 @@ public:
 
 private:
 	static void DrawCycleForOneScene(SceneP scene);		//!< 1シーンに対して一括でPreDraw,Draw,LateDrawを行うので使いまわし用の関数
+	static void ForEachObjAndComp(ObjectPVec& objs, const std::function<void(::Object*)>& objFn, const std::function<void(Component*)>& compFn, const std::function<bool(::Object*)>& objFilter, const std::function<bool(Component*)>& compFilter);
 public:
 	static void Draw();				//<描画
 	static void DebugDraw();		//<デバッグ描画

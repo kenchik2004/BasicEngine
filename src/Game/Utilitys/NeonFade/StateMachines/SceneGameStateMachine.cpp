@@ -19,13 +19,13 @@ namespace NeonFade {
 		AddState("KI", std::move(ki_state));
 
 		std::function<bool()> show_to_ten = [this]() {
-			return owner_scene_game->GetEnemyCount() <= 0;
+			return owner_scene_game->GetEnemyCount() == 0;
 			};
 		show_state->RegisterChangeRequest("Ten", show_to_ten, 0);
 		AddState("Show", std::move(show_state));
 
 		std::function<bool()> ten_to_ketsu = [this]() {
-			return owner_scene_game->GetEnemyCount() <= 0;
+			return owner_scene_game->GetEnemyCount() == 0;
 			};
 		ten_state->RegisterChangeRequest("Ketsu", ten_to_ketsu, 0);
 

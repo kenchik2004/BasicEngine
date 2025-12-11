@@ -384,6 +384,64 @@ using u64 = uint64_t;    //!< 64bit 符号なし整数
 using f32 = float;       //!< 単精度浮動小数点数
 using f64 = double;      //!< 倍精度浮動小数点数
 
+// @brief trigger_bool構造体 (ワンショットフラグ)
+// @details 一度 true を返すと、再度trueを代入もしくはsetが呼ばれるまではfalseを返す。
+struct trigger_bool {
+private:
+	//constではないが、呼び出し時に変更されるためmutableにする
+	mutable bool flag = false;
+
+public:
+	trigger_bool(bool val = false) : flag(val) {}
+
+	// コピーはコピー元の状態を引き継ぎ、コピー元をfalseにする。
+	trigger_bool(const trigger_bool& other) { flag = static_cast<bool>(other); }
+	void operator=(const trigger_bool& other) { flag = static_cast<bool>(other); }
+	trigger_bool(trigger_bool&&) = delete;
+	trigger_bool& operator=(trigger_bool&&) = delete;
+
+	// constでも呼べるワンショット
+	// 値を返して同時に false にする。
+	operator bool() const {
+		return std::exchange(flag, false);
+	}
+
+	inline void operator=(const bool& val) { flag = val; }
+	inline void set() const { flag = true; }
+	inline void reset() const { flag = false; }
+
+	//非推奨: 状態を変更しないpeekは避けるべきなので、呼び出しにくい命名にしています。
+	inline bool __peek() const { return flag; }
+};
+
+// @brief trigger_bool構造体(atomicバージョン)
+// @ref trigger_boolと同じ使い方ができるが、スレッドセーフ。
+struct atomic_trigger_bool {
+private:
+	mutable std::atomic_bool flag = false;
+
+public:
+	atomic_trigger_bool(bool v = false) : flag(v) {}
+
+	atomic_trigger_bool(const atomic_trigger_bool&) = delete;
+	atomic_trigger_bool& operator=(const atomic_trigger_bool&) = delete;
+	atomic_trigger_bool(atomic_trigger_bool&&) = delete;
+	atomic_trigger_bool& operator=(atomic_trigger_bool&&) = delete;
+
+	// constでも呼べる。値を返して同時に false にする。
+	inline operator bool() const {
+		// 1 を返して 0 に書き換える "test-and-clear"
+		bool expected = true;
+		return flag.compare_exchange_strong(expected, false);
+	}
+
+	inline void set() const { flag.store(true); }
+	inline void reset() const { flag.store(false); }
+	inline void operator=(const bool& v) const { flag.store(v); }
+
+	inline bool peek() const { return flag.load(); }
+};
+
 
 //ステータス管理用ビット演算テンプレート
 template <class T, class V = u32> struct SBit {
@@ -402,8 +460,8 @@ template <class T, class V = u32> struct SBit {
 		return status_bit_;
 	}
 	inline V  set(T b, bool _on) { return _on ? on(b) : off(b); }						//1ビットのみのセット
-	inline V  set(T b) { status_bit_ = b; return status_bit_; }							//全ビットのセット
-	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<int>(b)); }	//ビットの正否を返す
+	inline V  set(T b) { status_bit_ = static_cast<V>(b); return status_bit_; }			//全ビットのセット
+	inline V  is(T b) const { return status_bit_ & (1ui64 << static_cast<V>(b)); }	//ビットの正否を返す
 	inline V& get() { return status_bit_; }												//全ビットの情報を返す
 
 private:

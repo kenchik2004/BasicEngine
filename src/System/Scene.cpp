@@ -262,7 +262,8 @@ void Scene::DestroyMarkedGameObjects()
 			obj_lock->transform = nullptr;
 			while (obj_lock->GetComponent<Component>()) {
 				ComponentWP comp_wp = obj_lock->GetComponent<Component>();
-				obj_lock->RemoveComponent(comp_wp.lock());
+				auto comp_lock = comp_wp.lock();
+				obj_lock->RemoveComponent(comp_lock);
 				try {
 					//if (comp_wp)
 					//	throw(MemoryLeakException(typeid(*comp_wp.lock().raw_shared().get()).name(), DEFAULT_EXCEPTION_PARAM));
@@ -313,6 +314,18 @@ void Scene::DestroyGameObject(ObjectP& destroy_obj) {
 		}
 			});
 		return;
+	}
+	//transformで子オブジェクトまで再帰的に消す
+
+	if (destroy_obj->transform) {
+		auto children = destroy_obj->transform->GetChildren();
+		for (auto& child : children) {
+			if (child->owner) {
+				auto child_obj = child->owner.lock();
+				if (child_obj)
+					DestroyGameObject(child_obj);
+			}
+		}
 	}
 	//dirty優先度のオブジェクトリストからも消す
 	if (auto obj = std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), destroy_obj); obj != dirty_priority_objects.end())

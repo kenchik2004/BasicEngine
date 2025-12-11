@@ -235,7 +235,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 		DxLib::SetupCamera_ProjectionMatrix(cast(CastPhysXMat(shadowmap_proj)));
 
 		//シャドウマップに対し、全モデルを描画する
-		for (auto renderer : model_renderers) {
+		for (auto& renderer : model_renderers) {
 			if (!renderer)
 				continue;
 			if (!renderer->CastShadow())

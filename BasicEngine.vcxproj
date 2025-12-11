@@ -41,6 +41,10 @@
     <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
@@ -78,6 +82,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\ISceneState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.cpp" />
@@ -202,10 +207,15 @@
     <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
     <ClInclude Include="src\Game\Utilitys\DicePair.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\CatmullRomPath.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\ISceneState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.h" />

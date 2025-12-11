@@ -36,6 +36,7 @@ public:
 USING_PTR(Collider);
 class HitInfo {
 public:
+	Vector3 hit_position;
 	ColliderP collision = nullptr;
 	ColliderP hit_collision = nullptr;
 };

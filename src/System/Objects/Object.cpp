@@ -24,8 +24,39 @@ void GameObject::DebugDraw()
 {
 }
 
+size_t Object::FindInsertPositionByPriority(unsigned int priority)
+{
+
+	// 優先度に合った場所を二分探索で探す
+	// upper_bound は「指定した値より大きい最初の位置」を返す
+	// つまり、同じ優先度のものがあればその後ろに挿入される
+	auto pos = std::upper_bound(
+		components.begin(),
+		components.end(),
+		priority,
+		[](const unsigned int lhs, const ComponentP& rhs) {
+			return lhs < rhs->GetPriority();
+		}
+	);
+	return std::distance(components.begin(), pos);
+}
+
 void Object::SyncComponentsPriority()
 {
+	// まず、削除されたコンポーネントを components から消す
+	if (is_any_component_removed)
+	{
+		auto ite = std::find_if(components.begin(), components.end(),
+			[](ComponentP comp) { return comp->status.status_bit.is(CompStat::STATUS::REMOVED); });
+		//一つ残らず消す
+		while (ite != components.end())
+		{
+			components.erase(ite);
+			ite = std::find_if(components.begin(), components.end(),
+				[](ComponentP comp) { return comp->status.status_bit.is(CompStat::STATUS::REMOVED); });
+		}
+	}
+
 	if (dirty_priority_components.empty()) return;
 
 	// 1) dirty_GetPriority()_components を優先度順に並べ替える
@@ -42,10 +73,9 @@ void Object::SyncComponentsPriority()
 		if (cur != components.end()) components.erase(cur);
 
 		// 2‑2) 優先度に合った場所を二分探索で探す
-		auto pos = std::upper_bound(components.begin(), components.end(), obj,
-			[](ComponentP a, ComponentP b) { return a->GetPriority() < b->GetPriority(); });
+		size_t pos = FindInsertPositionByPriority(obj->GetPriority());
 
-		components.insert(pos, obj);  // ここに差し込む
+		components.insert(components.begin() + pos, obj);  // ここに差し込む
 	}
 	dirty_priority_components.clear();
 }

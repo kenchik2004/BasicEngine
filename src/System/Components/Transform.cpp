@@ -38,11 +38,15 @@ void Transform::CalculateTransform()
 
 		// グローバル位置が変更された場合、ローカル位置を更新
 		if (global_position_changed) {
-			Vector3 local_position_ =
-			{ (parent->rotation.getBasisVector0() * parent->scale.x).dot(position - parent->position),
-					(parent->rotation.getBasisVector1() * parent->scale.y).dot(position - parent->position),
-					(parent->rotation.getBasisVector2() * parent->scale.z).dot(position - parent->position)
-			};
+			Vector3 parent_sub_this_pos = position - parent->position;
+			Vector3 ax_X = parent->rotation.getBasisVector0() * parent->scale.x;
+			Vector3 ax_Y = parent->rotation.getBasisVector1() * parent->scale.y;
+			Vector3 ax_Z = parent->rotation.getBasisVector2() * parent->scale.z;
+			float local_x = parent_sub_this_pos.dot(ax_X);
+			float local_y = parent_sub_this_pos.dot(ax_Y);
+			float local_z = parent_sub_this_pos.dot(ax_Z);
+
+			Vector3 local_position_ = { local_x,local_y,local_z };
 			local_position = local_position_;
 		}
 		else 												// ローカル位置が変更された場合は、ローカルを元にグローバルを更新
@@ -133,6 +137,11 @@ TransformWP Transform::GetChild(size_t index) const
 	if (index >= children.size())
 		return nullptr;
 	return children[index];
+}
+
+TransformWPVec& Transform::GetChildren()
+{
+	return children;
 }
 
 void Transform::SetChild(TransformP new_child)

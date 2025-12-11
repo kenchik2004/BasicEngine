@@ -25,7 +25,11 @@ int be_default_cbuffer = -1;
 bool shader_runtime_compilation_enabled = true;
 
 
-#if 1
+
+
+
+
+#if 0
 //----------------------------------------------------------------
 int SceneManager::Init()
 {
@@ -992,6 +996,26 @@ void SceneManager::Object::DontDestroyOnLoad(ObjectP obj, SceneP from_where)
 //----------------------------------------------------------------
 
 #else
+////////////////////////////////////////////////////////////////////// 
+void SceneManager::ForEachObjAndComp(ObjectPVec& objs, const std::function<void(::Object*)>& objFn, const std::function<void(Component*)>& compFn, const std::function<bool(::Object*)>& objFilter, const std::function<bool(Component*)>& compFilter) {
+	for (u64 obj_it = 0; obj_it < objs.size(); ++obj_it) {
+		auto& obj = objs[obj_it];
+		if (!obj) continue;
+		if (!objFilter || !objFilter(obj.get())) continue;
+		try { objFn(obj.get()); }
+		catch (Exception& ex) { ex.Show(); }
+
+		for (u64 comp_it = 0; comp_it < obj->components.size(); ++comp_it) {
+			auto& comp = obj->components[comp_it];
+			if (!comp) continue;
+			if (!compFilter || !compFilter(comp.get())) continue;
+
+			try { compFn(comp.get()); }
+			catch (Exception& ex) { ex.Show(); }
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////
 
 //----------------------------------------------------------------
 int SceneManager::Init()
@@ -1000,11 +1024,14 @@ int SceneManager::Init()
 	TextureManager::Init();
 	ModelManager::Init();
 	AudioManager::Init();
-	//===============================//
-	//デバッグ用ボックス(SooS提供)のロード
-	ModelManager::LoadAsModel("data/DebugBox/DebugMode/Box.mv1", "debug_box");
-	debug_box = ModelManager::CloneModelByName("debug_box");
-	//===============================//
+	Effekseer_Init(2000);
+
+	//レンダラー用のデフォルト定数バッファの作成
+	be_default_cbuffer = CreateShaderConstantBuffer(sizeof(Vector4));
+	SetUpSkyboxResources();
+	//post_effect_filter = make_safe_unique<ShaderPs>(u8"data/shader/PostEffectFilter.fx");
+
+	shader_runtime_compilation_enabled = FileSystem::IniFileManager::GetBool(u8"StartConfig", u8"shader_runtime_compile", false, u8"data/test.ini");
 
 	//裏シーンの配列の0番目は必ずここで作成するシーンが入っている
 	auto default_dontdestroyonload_scene = make_safe_shared<DontDestroyOnLoadScene>();
@@ -1016,7 +1043,7 @@ int SceneManager::Init()
 
 void SceneManager::PreUpdate()
 {
-	if (Input::GetKeyDown(KEY_INPUT_F4)) {
+	if (Input::GetKeyDown(KeyCode::F4)) {
 		USE_DEBUG_DRAW = !USE_DEBUG_DRAW;
 	}
 	//全ての裏シーンに対してPreUpdate
@@ -1042,38 +1069,26 @@ void SceneManager::PreUpdate()
 			ex.Show();
 		}
 
-		auto& objs = another_scene->objects;
-		//オブジェクト毎にPreUpdateを行う
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			//オブジェクトがnullptrなら何もしない
-			if (!obj)
-				return;
-			//オブジェクトのステータスがアクティブならPreUpdateを行う
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				try {
-					obj->PreUpdate();
+		//オブジェクトとコンポーネントのPreUpdate
+		//シーンのオブジェクトを取得
+		{
+			ObjectPVec& objs = another_scene->objects;
+			//全てのオブジェクトとコンポーネントに対してPreUpdateを行う
+			ForEachObjAndComp(
+				objs,
+				std::bind(&::Object::PreUpdate, std::placeholders::_1),
+				std::bind(&Component::PreUpdate, std::placeholders::_1),
+				//オブジェクトのPreUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのPreUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 				}
-				catch (Exception& ex) {
-					ex.Show();
-				}
-				auto& comps = obj->components;
-				//コンポーネント毎にPreUpdateを行う
-				std::for_each(comps.begin(), comps.end(), [&obj](ComponentP& comp) {
-					//コンポーネントがnullptrなら何もしない
-					if (!comp)
-						return;
-					//コンポーネントのステータスがアクティブならPreUpdateを行う
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE)) {
-						try {
-							comp->PreUpdate();
-						}
-						catch (Exception& ex) {
-							ex.Show();
-						}
-					}
-					});
-			}
-			});
+			);
+		}
 		//PreUpdateが終わったら、シーンのPreUpdateFinishを呼ぶ
 		another_scene->OnPreUpdateFinish();
 	}
@@ -1095,30 +1110,24 @@ void SceneManager::PreUpdate()
 	//カレントシーンのPreUpdateを呼ぶ
 	current_scene->PreUpdate();
 
-
-	auto& objs = current_scene->objects;
-
-	//オブジェクト毎にPreUpdateを行う
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		//オブジェクトがnullptrなら何もしない
-		if (!obj)
-			return;
-		//オブジェクトのステータスがアクティブならPreUpdateを行う
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			//オブジェクトのPreUpdateを行う
-			obj->PreUpdate();
-			auto& comps = obj->components;
-			//コンポーネント毎にPreUpdateを行う
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				//コンポーネントがnullptrなら何もしない
-				if (!comp)
-					return;
-				//コンポーネントのステータスがアクティブならPreUpdateを行う
-				if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-					comp->PreUpdate();
-				});
-		}
-		});
+	//オブジェクトとコンポーネントのPreUpdate
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(
+			objs,
+			std::bind(&::Object::PreUpdate, std::placeholders::_1),
+			std::bind(&Component::PreUpdate, std::placeholders::_1),
+			//オブジェクトのPreUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのPreUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 	//PreUpdateが終わったら、カレントシーンのPreUpdateFinishを呼ぶ
 	current_scene->OnPreUpdateFinish();
 }
@@ -1129,35 +1138,23 @@ void SceneManager::Update()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->Update();
-
-		auto& objs = another_scene->objects;
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-
-			if (!obj)
-				return;
-
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				try {
-					obj->Update();
+		{
+			ObjectPVec& objs = another_scene->objects;
+			ForEachObjAndComp(objs,
+				std::bind(&::Object::Update, std::placeholders::_1),
+				std::bind(&Component::Update, std::placeholders::_1),
+				//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 				}
-				catch (Exception& ex) {
-					ex.Show();
-				}
-				auto& comps = obj->components;
+			);
+		}
 
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE)) {
-							try {
-								comp->Update();
-							}
-							catch (Exception& ex) {
-								ex.Show();
-							}
-						}
-					});
-			}
-			});
 		another_scene->OnUpdateFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
@@ -1169,20 +1166,22 @@ void SceneManager::Update()
 	catch (Exception& ex) {
 		ex.Show();
 	}
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->Update();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->Update();
-				});
-		}
-		});
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::Update, std::placeholders::_1),
+			std::bind(&Component::Update, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 	current_scene->OnUpdateFinish();
 }
 
@@ -1191,52 +1190,44 @@ void SceneManager::LateUpdate()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->LateUpdate();
-		auto& objs = another_scene->objects;
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				try {
-					obj->LateUpdate();
+		{
+			ObjectPVec& objs = another_scene->objects;
+			ForEachObjAndComp(objs,
+				std::bind(&::Object::LateUpdate, std::placeholders::_1),
+				std::bind(&Component::LateUpdate, std::placeholders::_1),
+				//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 				}
-				catch (Exception& ex) {
-					ex.Show();
-				}
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						{
-							try {
-								comp->LateUpdate();
-							}
-							catch (Exception& ex) {
-								ex.Show();
-							}
-						}
-					});
-			}
-			});
+			);
+		}
 		another_scene->OnLateUpdateFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
 	current_scene->LateUpdate();
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->LateUpdate();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->LateUpdate();
-				});
-		}
-		});
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::LateUpdate, std::placeholders::_1),
+			std::bind(&Component::LateUpdate, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 	current_scene->OnLateUpdateFinish();
 }
 
@@ -1245,52 +1236,44 @@ void SceneManager::PostUpdate()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PostUpdate();
-		auto& objs = another_scene->objects;
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				try {
-					obj->PostUpdate();
+		{
+			ObjectPVec& objs = another_scene->objects;
+			ForEachObjAndComp(objs,
+				std::bind(&::Object::PostUpdate, std::placeholders::_1),
+				std::bind(&Component::PostUpdate, std::placeholders::_1),
+				//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 				}
-				catch (Exception& ex) {
-					ex.Show();
-				}
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						{
-							try {
-								comp->PostUpdate();
-							}
-							catch (Exception& ex) {
-								ex.Show();
-							}
-						}
-					});
-			}
-			});
+			);
+		}
 		another_scene->OnPostUpdateFinish();
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
 	current_scene->PostUpdate();
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->PostUpdate();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->PostUpdate();
-				});
-		}
-		});
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::PostUpdate, std::placeholders::_1),
+			std::bind(&Component::PostUpdate, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 	current_scene->OnPostUpdateFinish();
 }
 
@@ -1300,59 +1283,66 @@ void SceneManager::PrePhysics()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PrePhysics();
-		auto& objs = another_scene->objects;
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->PrePhysics();
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->PrePhysics();
-					});
-			}
-			});
+		{
+			ObjectPVec& objs = another_scene->objects;
+			ForEachObjAndComp(objs,
+				std::bind(&::Object::PrePhysics, std::placeholders::_1),
+				std::bind(&Component::PrePhysics, std::placeholders::_1),
+				//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+				}
+			);
+		}
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
 	current_scene->PrePhysics();
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->PrePhysics();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->PrePhysics();
-				});
-		}
-		});
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::PrePhysics, std::placeholders::_1),
+			std::bind(&Component::PrePhysics, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 }
 
 void SceneManager::Physics()
 {
 	for (auto& another_scene : another_scenes)
 	{
-		auto& objs = another_scene->objects;
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->Physics();
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->Physics();
-					});
-			}
-			});
+
+		{
+			ObjectPVec& objs = another_scene->objects;
+			ForEachObjAndComp(objs,
+				std::bind(&::Object::Physics, std::placeholders::_1),
+				std::bind(&Component::Physics, std::placeholders::_1),
+				//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+				}
+			);
+		}
 		//Physicsだけ、シーンのシミュレーションを最後に行う
 		another_scene->Physics();
 
@@ -1361,20 +1351,22 @@ void SceneManager::Physics()
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->Physics();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->Physics();
-				});
-		}
-		});
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::Physics, std::placeholders::_1),
+			std::bind(&Component::Physics, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 
 	//Physicsだけ、シーンのシミュレーションを最後に行う
 	current_scene->Physics();
@@ -1385,185 +1377,177 @@ void SceneManager::PostPhysics()
 	for (auto& another_scene : another_scenes)
 	{
 		another_scene->PostPhysics();
-		auto& objs = another_scene->objects;
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->PostPhysics();
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->PostPhysics();
-					});
-			}
-			});
+		{
+			ObjectPVec& objs = another_scene->objects;
+			ForEachObjAndComp(objs,
+				std::bind(&::Object::PostPhysics, std::placeholders::_1),
+				std::bind(&Component::PostPhysics, std::placeholders::_1),
+				//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+				[](::Object* obj)
+				{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+				!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+				//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+				[](Component* comp) {
+					return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+						!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+				}
+			);
+		}
 	}
 	//カレントシーンがいないならそちらは何もしない
 	if (!current_scene)
 		return;
 	current_scene->PostPhysics();
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->PostPhysics();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->PostPhysics();
-				});
-		}
-		});
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::PostPhysics, std::placeholders::_1),
+			std::bind(&Component::PostPhysics, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
+	}
 }
 
 //シーン一つ一つに対してPreDraw,Draw,LateDrawを別々に呼ぶとカメラの情報が競合したり、
 //いろいろとナンセンスなのでやめた。
 void SceneManager::DrawCycleForOneScene(SceneP scene) {
-	scene->PreDraw();
-	auto& objs = scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			obj->PreDraw();
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-						comp->PreDraw();
-				});
-		}
-		});
-	scene->OnPreDrawFinish();
+	auto current_camera = scene->GetCurrentCamera();
+	auto& active_cameras = scene->GetActiveCamerasRef();
 
-	scene->Draw();
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			try {
-				obj->Draw();
-			}
-			catch (Exception& ex) {
-				ex.Show();
-			}
-			auto& comps = obj->components;
 
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-					{
-						try {
-							comp->Draw();
-						}
-						catch (Exception& ex) {
-							ex.Show();
-						}
+	ObjectPVec& objs = current_scene->objects;
+	for (auto& cam_wp : active_cameras) {
+		if (auto cam = cam_wp.lock()) {
+			if (!cam->owner->status.status_bit.is(ObjStat::STATUS::ACTIVE))
+				continue;
+			cam->SetCurrentCamera();
+			scene->PreDraw();
+			{
+				ForEachObjAndComp(objs,
+					std::bind(&::Object::PreDraw, std::placeholders::_1),
+					std::bind(&Component::PreDraw, std::placeholders::_1),
+					//オブジェクトのUpdate条件フィルター(描画オンかつ未削除)
+					[](::Object* obj)
+					{ return obj->status.status_bit.is(ObjStat::STATUS::DRAW) &&
+					!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+					//コンポーネントのUpdate条件フィルター(描画オンかつ未削除)
+					[](Component* comp) {
+						return comp->status.status_bit.is(CompStat::STATUS::DRAW) &&
+							!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 					}
-				});
-		}
-		});
-	scene->OnDrawFinish();
-
-	scene->LateDraw();
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			try {
-				obj->LateDraw();
+				);
 			}
-			catch (Exception& ex) {
-				ex.Show();
-			}
-			auto& comps = obj->components;
-
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-					{
-						try {
-							comp->LateDraw();
-						}
-						catch (Exception& ex) {
-							ex.Show();
-						}
+			scene->OnPreDrawFinish();
+			scene->Draw();
+			{
+				ForEachObjAndComp(objs,
+					std::bind(&::Object::Draw, std::placeholders::_1),
+					std::bind(&Component::Draw, std::placeholders::_1),
+					//オブジェクトのUpdate条件フィルター(描画オンかつ未削除)
+					[](::Object* obj)
+					{ return obj->status.status_bit.is(ObjStat::STATUS::DRAW) &&
+					!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+					//コンポーネントのUpdate条件フィルター(描画オンかつ未削除)
+					[](Component* comp) {
+						return comp->status.status_bit.is(CompStat::STATUS::DRAW) &&
+							!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 					}
-				});
+				);
+			}
+			scene->OnDrawFinish();
+
+			DrawEffekseer3D_Begin();
+			scene->LateDraw();
+			{
+				ForEachObjAndComp(objs,
+					std::bind(&::Object::LateDraw, std::placeholders::_1),
+					std::bind(&Component::LateDraw, std::placeholders::_1),
+					//オブジェクトのUpdate条件フィルター(描画オンかつ未削除)
+					[](::Object* obj)
+					{ return obj->status.status_bit.is(ObjStat::STATUS::DRAW) &&
+					!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+					//コンポーネントのUpdate条件フィルター(描画オンかつ未削除)
+					[](Component* comp) {
+						return comp->status.status_bit.is(CompStat::STATUS::DRAW) &&
+							!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+					}
+				);
+			}
+			DrawEffekseer3D_End();
+			SetRenderTarget(GetRenderTarget());
+			scene->OnLateDrawFinish();
+			if (USE_DEBUG_DRAW) {
+				//デバッグ描画を行う
+
+
+				SetUseLighting(false);
+				DxLib::SetLightEnable(false);
+				scene->DebugDraw();
+				{
+					ForEachObjAndComp(objs,
+						std::bind(&::Object::DebugDraw, std::placeholders::_1),
+						std::bind(&Component::DebugDraw, std::placeholders::_1),
+						//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+						[](::Object* obj)
+						{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+						!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+						//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+						[](Component* comp) {
+							return comp->status.status_bit.is(CompStat::STATUS::DEBUG_DRAW) &&
+								!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+						}
+					);
+				}
+				scene->OnDebugDrawFinish();
+
+				scene->LateDebugDraw();
+				{
+					ForEachObjAndComp(objs,
+						std::bind(&::Object::LateDebugDraw, std::placeholders::_1),
+						std::bind(&Component::LateDebugDraw, std::placeholders::_1),
+						//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+						[](::Object* obj)
+						{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+						!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+						//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+						[](Component* comp) {
+							return comp->status.status_bit.is(CompStat::STATUS::DEBUG_DRAW) &&
+								!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+						}
+					);
+				}
+				scene->OnLateDebugDrawFinish();
+			}
 		}
-		});
-	scene->OnLateDrawFinish();
-	if (USE_DEBUG_DRAW) {
-		//デバッグ描画を行う
-
-
-		SetUseLighting(false);
-		SetLightEnable(false);
-		scene->DebugDraw();
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->DebugDraw();
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->DebugDraw();
-					});
-			}
-			});
-		scene->OnDebugDrawFinish();
-
-		scene->LateDebugDraw();
-		std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-			if (!obj)
-				return;
-			if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-				obj->LateDebugDraw();
-				auto& comps = obj->components;
-				std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-					if (comp)
-						if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-							comp->LateDebugDraw();
-					});
-			}
-			});
-		scene->OnLateDebugDrawFinish();
-
 		SetUseLighting(true);
-		SetLightEnable(true);
+		DxLib::SetLightEnable(true);
+		//Time::ResetTime();
 	}
+	scene->SetCurrentCamera(current_camera.lock());
 	scene->PostDraw();
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
-		if (!obj)
-			return;
-		if (obj->status.status_bit.is(ObjStat::STATUS::DRAW)) {
-			try {
-				obj->PostDraw();
+	{
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::PostDraw, std::placeholders::_1),
+			std::bind(&Component::PostDraw, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブかつ未削除)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
 			}
-			catch (Exception& ex) {
-				ex.Show();
-			}
-			auto& comps = obj->components;
-			std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::DRAW))
-					{
-						try {
-							comp->PostDraw();
-						}
-						catch (Exception& ex) {
-							ex.Show();
-						}
-					}
-				});
-		}
-		});
+		);
+	}
 	scene->OnPostDrawFinish();
 
 }
@@ -1571,6 +1555,20 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 
 void SceneManager::Draw()
 {
+	{
+		void* cbuffer_p = GetBufferShaderConstantBuffer(be_default_cbuffer);
+		if (cbuffer_p) {
+			auto* p = reinterpret_cast<Vector4*>(cbuffer_p);
+			p->x = Time::SystemTime();
+			p->y = Time::DrawDeltaTime();
+			UpdateShaderConstantBuffer(be_default_cbuffer);
+			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_PIXEL, 4);
+			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_VERTEX, 4);
+		}
+	}
+
+	Effekseer_Sync3DSetting();
+	UpdateEffekseer3D();
 	for (auto& another_scene : another_scenes)
 	{
 		DrawCycleForOneScene(another_scene);
@@ -1584,18 +1582,23 @@ void SceneManager::Draw()
 	SetRenderTarget(GetBackBuffer(), GetDepthStencil());
 	if (current_scene) {
 		auto current_camera = current_scene->GetCurrentCamera();
+#if 0
 		auto debug_camera = current_scene->GetDebugCamera();
 		if (debug_camera) {
 			if (debug_camera->status.status_bit.is(CompStat::STATUS::ACTIVE))
 				current_camera = debug_camera;
 		}
+#endif
 		if (auto camera = current_camera.lock()) {
 			ClearColor(Color::GRAY);
-			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->hdr, true);
-			a++;
+			//int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->hdr, true);
+			CopyToRenderTarget(GetBackBuffer(), camera->hdr.get());
+			//CopyToRenderTarget(GetBackBuffer(), camera->hdr.get());
+
 		}
 	}
-	Shader::updateFileWatcher();
+	if (shader_runtime_compilation_enabled)
+		Shader::updateFileWatcher();
 
 }
 
@@ -1605,27 +1608,24 @@ void SceneManager::DebugDraw()
 {
 	return;
 
-	//===============================//
-	//デバッグ用ボックス(SooS提供)の描画
-	MV1SetPosition(debug_box->handle, VGet(0, 0, 0));
-	//MV1SetScale(debug_box, VGet(10, 10, 10));
-	//MV1DrawModel(debug_box);
-
-	//===============================//
-
 
 	if (!current_scene) {
-		DrawString(0, 0, ShiftJISToUTF8("カレントシーンが存在しません").c_str(), GetColor(255, 0, 0));
+		DrawString(0, 0, u8"カレントシーンが存在しません", GetColor(255, 0, 0));
 		return;
 	}
 	current_scene->DebugDraw();
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
+		objs.push_back(obj);
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj)
 			return;
 		obj->DebugDraw();
-		auto& comps = obj->components;
-		std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
+		ComponentWPVec comps;
+		for (auto& comp : obj->components) {
+			comps.push_back(comp);
+		}
+		std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 			if (comp)
 				comp->DebugDraw();
 			});
@@ -1637,18 +1637,23 @@ void SceneManager::LateDebugDraw()
 {
 	return;
 	if (!current_scene) {
-		DrawString(0, 0, "カレントシーンが存在しません", GetColor(255, 0, 0));
+		DrawString(0, 0, u8"カレントシーンが存在しません", GetColor(255, 0, 0));
 		return;
 	}
 
 	current_scene->LateDebugDraw();
-	auto& objs = current_scene->objects;
-	std::for_each(objs.begin(), objs.end(), [](ObjectP& obj) {
+	ObjectWPVec objs;
+	for (auto& obj : Object::GetArray<::Object>())
+		objs.push_back(obj);
+	std::for_each(objs.begin(), objs.end(), [](ObjectWP& obj) {
 		if (!obj)
 			return;
 		obj->LateDebugDraw();
-		auto& comps = obj->components;
-		std::for_each(comps.begin(), comps.end(), [](ComponentP& comp) {
+		ComponentWPVec comps;
+		for (auto& comp : obj->components) {
+			comps.push_back(comp);
+		}
+		std::for_each(comps.begin(), comps.end(), [](ComponentWP& comp) {
 			if (comp)
 				comp->LateDebugDraw();
 			});
@@ -1658,30 +1663,37 @@ void SceneManager::LateDebugDraw()
 
 void SceneManager::PostDraw()
 {
+	clsDx();
 	if (auto ite = func_on_loop_finish.begin(); ite != func_on_loop_finish.end()) {
 		if (*ite) {
 			(*ite)();
 			func_on_loop_finish.erase(ite);
 		}
 	}
+	for (auto& scene : scenes) {
+		//ループの最後にシーン内の削除マークが付いたオブジェクトを削除する
+		scene->DestroyMarkedGameObjects();
+
+	}
 	return;
 	if (!current_scene)
 		return;
 	current_scene->PostDraw();
-	auto& objs = current_scene->objects;
-	for (auto& obj : objs) {
-		if (!obj)
-			continue;
-		if (obj->status.status_bit.is(ObjStat::STATUS::ACTIVE)) {
-			obj->PostDraw();
-			if (!obj)
-				continue;
-			auto& comps = obj->components;
-			for (auto& comp : comps)
-				if (comp)
-					if (comp->status.status_bit.is(CompStat::STATUS::ACTIVE))
-						comp->PostDraw();
-		}
+	{
+		ObjectPVec& objs = current_scene->objects;
+		ForEachObjAndComp(objs,
+			std::bind(&::Object::PostDraw, std::placeholders::_1),
+			std::bind(&Component::PostDraw, std::placeholders::_1),
+			//オブジェクトのUpdate条件フィルター(アクティブ)
+			[](::Object* obj)
+			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
+			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
+			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
+			[](Component* comp) {
+				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
+					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
+			}
+		);
 	}
 	current_scene->OnPostDrawFinish();
 }
@@ -1731,11 +1743,11 @@ void SceneManager::Exit()
 		another_scene->DestroyPhysics();
 	}
 
-	//===============================//
-	//デバッグ用ボックス(SooS提供)の解放
-	debug_box.reset();
-	//===============================//
+	ReleaseSkyboxResources();
+	DxLib::DeleteShaderConstantBuffer(be_default_cbuffer);
+	be_default_cbuffer = -1;
 
+	Effkseer_End();
 	try {
 		ModelManager::Exit();
 	}
@@ -1758,6 +1770,5 @@ void SceneManager::Object::DontDestroyOnLoad(ObjectP obj, SceneP from_where)
 {
 	SafeStaticCast<DontDestroyOnLoadScene>(another_scenes[0])->DontDestroyOnLoad(obj, from_where);
 }
-
 #endif
 //----------------------------------------------------------------

@@ -54,9 +54,10 @@ namespace NeonFade {
 
 		}
 		if (exit_timer < 0.6f && hit_box) {
-			static constexpr float smoothstep = 1.0f / 0.6f;
-			hit_box->extension = Vector3(8, 2, 3 + 200.0f * std::lerp<float>(0, 1, smoothstep * (exit_timer - 0.3f)));
-			hit_box->position = Vector3(0, -3, 3 + 100.0f * std::lerp<float>(0, 1, smoothstep * (exit_timer - 0.3f)));
+			static constexpr float smoothstep_t = 1.0f / 0.6f;
+			const float smoothstep = static_cast<float>(std::lerp<float>(0.0f, 1.0f, smoothstep_t * (exit_timer - 0.3f)));
+			hit_box->extension = Vector3(8, 2, 3.0f + 200.0f * smoothstep);
+			hit_box->position = Vector3(0, -3, 3 + 100.0f * smoothstep);
 		}
 	}
 	void PlayerAttack2State::OnExit(IStateMachine* machine)

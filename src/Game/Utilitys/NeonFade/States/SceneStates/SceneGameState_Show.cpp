@@ -12,13 +12,16 @@ namespace NeonFade
 	}
 	void SceneGameState_Show::OnEnter(ISceneStateMachine* machine)
 	{
+		EnemyFactory factory;
+		factory.SetSpawnPosition({ 0,5,200 });
+		factory.SetSpawnRadius(20);
+		u32 teams = 20, enem_per_tems = 10;
+		for (u32 i = 0; i < teams; i++) {
+			factory.MakeEnemyTeam(1, enem_per_tems, owner_scene_game->player);
+			factory.SetSpawnPosition(Random::Position({ -30,5,180 }, { 30,5,400 }));
 
-		for (u8 i = 0; i < 10; i++) {
-			auto enem = SceneManager::Object::Create<Enemy>(u8"敵");
-			enem->transform->scale = { 0.05f,0.05f,0.05f };
-			enem->transform->position = { (float)i,60,180 };
-			owner_scene_game->AddEnemyCount();
 		}
+		owner_scene_game->AddEnemyCount(teams * enem_per_tems);
 		owner_scene_game->text_comp->SetText(u8"Show State");
 	}
 	void SceneGameState_Show::OnExit(ISceneStateMachine* machine)

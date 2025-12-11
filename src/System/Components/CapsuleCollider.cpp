@@ -43,5 +43,8 @@ void CapsuleCollider::DebugDraw()
 	mat4x4 mat(trns * trns2);
 	capsule_start = mat.getPosition() - mat.getBasis(0) * height * 0.5f;
 	capsule_vec = mat.getBasis(0) * height;
-	DrawCapsule3D(capsule_start, capsule_start + capsule_vec, radius, 8, Color::GREEN, Color::GREEN, false);
+	if (status.status_bit.is(CompStat::STATUS::ACTIVE))
+		DrawCapsule3D(capsule_start, capsule_start + capsule_vec, radius, 8, Color::GREEN, Color::GREEN, false);
+	else
+		DrawCapsule3D(capsule_start, capsule_start + capsule_vec, radius, 8, Color::DARK_GREEN, Color::DARK_GREEN, false);
 }

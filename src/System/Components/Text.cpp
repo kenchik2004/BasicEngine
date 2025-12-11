@@ -65,7 +65,6 @@ std::vector<CharToken> parseTextWithTags(const std::string& input, Color def_col
 
 void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_box_size, float& draw_char_num, Color def_color = Color::WHITE, float speed = 100)
 {
-	int          font_size = GetFontSize();
 	int          x = static_cast<int>(draw_box_pos.x);
 	int          y = static_cast<int>(draw_box_pos.y);
 	int          max_x = static_cast<int>(draw_box_pos.x + draw_box_size.x - font_size);
@@ -91,16 +90,13 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 				break;
 			int wid;
 
-			ChangeFont(ShiftJISToUTF8(font).c_str());
-			wid = GetDrawFormatStringWidth(token.utf8_char.c_str());
-			DrawFormatString(x, y, token.color, token.utf8_char.c_str());
-			ChangeFont("");
+			wid = GetDrawStringWidthToHandle(token.utf8_char.c_str(), token.utf8_char.size(), font_handle);
+			DrawStringFToHandle(x, y, token.utf8_char.c_str(), token.color, font_handle);
 
 			x += wid; // または固定幅
 
 		}
 		draw_char_num += Time::DrawDeltaTime() * speed;
-		SetFontSize(DEFAULT_FONT_SIZE);
 		return;
 	}
 	case DX_CHARCODEFORMAT_SHIFTJIS: {
@@ -135,7 +131,6 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 				y += font_size;
 			}
 		}
-		SetFontSize(DEFAULT_FONT_SIZE);
 		if ((int)draw_char_num < str_.size())
 			draw_char_num += Time::DrawDeltaTime() * speed;
 	}
@@ -147,6 +142,7 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 int Text::Init()
 {
 	SetPriority(3);
+	SetFontSize(DEFAULT_FONT_SIZE);
 	return Super::Init();
 }
 
@@ -161,10 +157,9 @@ void Text::Update()
 
 void Text::LateDraw()
 {
-	SetFontSize(font_size);
 	auto owner_ = SafeStaticCast<UIObject>(owner.lock());
 	int  div_x, div_y;
-	GetDrawStringSize(&div_x, &div_y, 0, text.c_str(), text.size());
+	GetDrawStringSizeToHandle(&div_x, &div_y, 0, text.c_str(), text.size(), font_handle);
 	Vector3 div = { static_cast<float>(div_x), static_cast<float>(div_y), 0.0f };
 	Vector3 draw_pos = owner_->GetDrawPos();
 	draw_pos += text_box_pos;
@@ -175,15 +170,15 @@ void Text::LateDraw()
 	switch (alignment) {
 	case Text::LEFT:
 		draw_pos.y += scale.y * 0.5f - div.y * 0.5f;
-		DrawStringF(draw_pos.x, draw_pos.y, text.c_str(), txt_color);
+		DrawStringFToHandle(draw_pos.x, draw_pos.y, text.c_str(), txt_color, font_handle);
 		break;
 	case Text::MIDDLE:
 		draw_pos += scale * 0.5f - div * 0.5f;
-		DrawStringF(draw_pos.x, draw_pos.y, text.c_str(), txt_color);
+		DrawStringFToHandle(draw_pos.x, draw_pos.y, text.c_str(), txt_color, font_handle);
 		break;
 	case Text::RIGHT:
 		draw_pos.y += scale.y * 0.5f - div.y * 0.5f;
-		DrawStringF(draw_pos.x + scale.x - div.x, draw_pos.y, text.c_str(), txt_color);
+		DrawStringFToHandle(draw_pos.x + scale.x - div.x, draw_pos.y, text.c_str(), txt_color, font_handle);
 
 		break;
 	case AUTO:
@@ -198,5 +193,15 @@ void Text::LateDraw()
 void Text::SetText(std::string new_text) {
 	text = new_text;
 	tokens = parseTextWithTags(text, txt_color);
+}
+
+inline int Text::SetFontSize(u32 font_size_)
+{
+	if (font_size_ != font_size) {
+		DeleteFontToHandle(font_handle);
+		font_handle = DxLib::CreateFontToHandle(nullptr, font_size_, -1, DX_FONTTYPE_NORMAL);
+		font_size = font_size_;
+	}
+	return font_size;
 }
 

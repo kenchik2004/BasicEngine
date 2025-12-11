@@ -49,7 +49,8 @@ namespace NeonFade {
 				Vector3 knock_vec = target->transform->position - owner_player->transform->position;
 				knock_vec = ProjectOnPlane(knock_vec, { 0,1,0 });
 				target->rb->is_kinematic = false;
-				target->Down(knock_vec, 3);
+				target->Damage(3);
+				target->Down(knock_vec);
 				{
 					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"jmp_atk_effect", 1.0f);
 					eff->transform->position = target->transform->position + Vector3(0, 5, 0);

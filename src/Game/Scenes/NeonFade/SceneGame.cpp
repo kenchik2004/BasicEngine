@@ -46,13 +46,16 @@ namespace NeonFade {
 		ModelManager::LoadAsModel(u8"data/car/police.mv1", "police");
 
 
-		ModelManager::LoadAsModel(u8"data/enemy/model.mv1", "enemy_model");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_fighting_idle.mv1", "enemy_idle");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_damage.mv1", "enemy_damage");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_down.mv1", "enemy_down");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_t_pose.mv1", "enemy_die");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_attack_charge.mv1", "enemy_attack_charge");
-		ModelManager::LoadAsAnimation(u8"data/enemy/anim_attack_main.mv1", "enemy_attack_main");
+		ModelManager::LoadAsModel(u8"data/enemy/X Bot.mv1", "enemy_model");
+		ModelManager::LoadAsModel(u8"data/enemy/X Bot_LOD.mv1", "enemy_model_LOD");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_fighting_idle.mv1", "enemy_idle");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_damage.mv1", "enemy_damage");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down.mv1", "enemy_down");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_t_pose.mv1", "enemy_die");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_charge.mv1", "enemy_attack_charge");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_main.mv1", "enemy_attack_main");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_walk.mv1", "enemy_walk");
+
 		AudioManager::Load(u8"data/Sound/siren.mp3", "siren");
 		TextureManager::Load(u8"data/FX.png", "fx_texture");
 
@@ -65,7 +68,7 @@ namespace NeonFade {
 			return 0;
 		auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
 		shadowmap->SetCascadeCount(4);
-		shadowmap->SetShadowMapSize(2048);
+		shadowmap->SetShadowMapSize(1024);
 		shadowmap->SetLightDirection({ 0, -8, 5 });
 		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
 		player_->transform->position = { 0,30,100 };
@@ -140,7 +143,7 @@ namespace NeonFade {
 			text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->transform->scale = { 300,50,1 };
 			text_comp = text_obj->AddComponent<Text>();
-			text_comp->FontSize() = 50;
+			text_comp->SetFontSize(50);
 			text_comp->TextColor() = Color::MAGENTA;
 			text_comp->SetAlignment(Text::ALIGNMENT::RIGHT);
 		}
@@ -148,14 +151,15 @@ namespace NeonFade {
 			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"α版HUD");
 			hud_prototype->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
 			hud_prototype->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
-			hud_prototype->transform->scale = { 400, 200, 1 };
+			hud_prototype->transform->scale = { 500, 200, 1 };
 			auto hud_text = hud_prototype->AddComponent<Text>();
 			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
 			hud_text->TextColor() = Color::RED;
 			//α版以降はチュートリアルも込みで実装予定
 			static std::string hud_text_str =
-				u8"NeonFade α版 HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ZRトリガー\n回避:左スティック+ZLトリガー\n";
+				u8"NeonFade α版 HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ABXYどれか+ZRトリガー\n回避:左スティック+ZLトリガー\nスタートボタンを押してこのHUDを閉じる";
 			hud_text->SetText(hud_text_str);
+			hud_obj = hud_prototype;
 		}
 
 
@@ -171,7 +175,9 @@ namespace NeonFade {
 		if (!CheckForLoading())
 			return;
 		scene_state_machine->Update(Time::DeltaTime());
-
+		if (Input::GetPadButtonDown(0, PadButton::Start)) {
+			hud_obj->GetComponent<Text>()->Sleep();
+		}
 
 	}
 

@@ -7,6 +7,7 @@
 NeonFade::EnemyDamageState::EnemyDamageState(Enemy* owner_) :
 	IState(static_cast<GameObject*>(owner_))
 {
+
 	enemy = owner_;
 	animator = enemy->animator.lock().get();
 	rb = enemy->rb.lock().get();

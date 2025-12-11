@@ -43,6 +43,10 @@ public:
 		//こっちはユーザーがカスタマイズできる
 		Construct();
 	}
+	void Sleep();
+	virtual void OnSleep() {}
+	void WakeUp();
+	virtual void OnWakeUp() {}
 	inline virtual void Construct() {};
 	void SetPriority(unsigned int prio);
 	inline unsigned int GetPriority() { return status.priority; }

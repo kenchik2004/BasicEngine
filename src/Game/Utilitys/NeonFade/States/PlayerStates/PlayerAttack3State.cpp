@@ -2,6 +2,7 @@
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
+#include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 
 namespace NeonFade {
 	PlayerAttack3State::PlayerAttack3State(Player* player_)
@@ -12,9 +13,10 @@ namespace NeonFade {
 		animator = player_->animator.lock().get();
 		std::function<void()> create_hit_box = [this]() {
 			auto col = owner_player->AddComponent<BoxCollider>
-				(Vector3(0, -3, 1.5f), Quaternion(0, 0, 0, 1), Vector3(10, 2, 9),
+				(Vector3(0, -3, 3.5f), Quaternion(DEG2RAD(90), { 0,1,0 }), Vector3(2, 2, 9),
 					true, Collider::Layer::Wepon, Collider::Layer::Enemy);
 			hit_box = std::move(col);
+			hit_box_created_time = exit_timer;
 			};
 		//ヒットボックス生成タイミング
 		animator->SetAnimationCallBack("leg_sweep", create_hit_box, 27, "create_hit_box");
@@ -42,6 +44,9 @@ namespace NeonFade {
 			if (hit_stop_timer <= 0.0f)
 				animator->anim_speed = 1.5f;
 		}
+		if (hit_box) {
+			hit_box->rotation = Slerp(Quaternion(DEG2RAD(90), { 0,1,0 }), Quaternion(DEG2RAD(-90), { 0,1,0 }), (exit_timer - hit_box_created_time) / (EXIT_TIME - hit_box_created_time));
+		}
 	}
 	void PlayerAttack3State::OnExit(IStateMachine* machine)
 	{
@@ -62,11 +67,20 @@ namespace NeonFade {
 				knockback_dir.normalize();
 				knockback_dir.y = 2;
 				knockback_dir *= 10;
-				enemy->Down(knockback_dir, 3);
+				enemy->Damage(5);
+				enemy->Down(knockback_dir);
 			}
 			if (hit_stop_timer <= 0.0f) {
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.01f;
+
+				{
+					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_attack1_hit", 1.0f);
+					eff->transform->position = hit_info.hit_collision->owner->transform->position;
+					eff->transform->position.y += 1.0f;
+					eff->transform->scale = { 0.2f,0.2f,0.2f };
+					eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efk")->Play();
+				}
 			}
 		}
 	}

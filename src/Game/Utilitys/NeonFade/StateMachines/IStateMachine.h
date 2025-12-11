@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h" 
 class GameObject;
+
 namespace NeonFade
 {
 	class IStateMachine
@@ -8,7 +9,7 @@ namespace NeonFade
 	public:
 		virtual ~IStateMachine() = default;
 		IStateMachine(GameObject* owner_);
-		
+
 
 		virtual void ChangeState(std::string_view next);
 		std::string GetCurrentStateName() { return current_state ? current_state->GetName() : ""; }

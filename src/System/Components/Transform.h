@@ -33,6 +33,7 @@ public:
 	void PostUpdate() override;
 	void DebugDraw() override;
 	TransformWP GetChild(size_t index) const;
+	TransformWPVec& GetChildren();
 	void SetChild(TransformP new_child);
 	void SetParent(TransformP new_parent);
 

@@ -1,7 +1,9 @@
 ﻿#pragma once
+#include "Game/Utilitys/NeonFade/EnemyBrain/AbstractEnemyBrain.h"
 namespace NeonFade {
 	USING_PTR(EnemyStateMachine);
 	USING_PTR(Player);
+	USING_PTR(AbstractEnemyBrain);
 	class EnemyController :
 		public Component
 	{
@@ -20,20 +22,21 @@ namespace NeonFade {
 		void OnTriggerExit(const HitInfo& hit_info);
 
 		void Damage(int damage, bool ignore_i_frame = false);
-		void Down(Vector3 vec, int damage = 1);
-		Vector3 move_vec = { 0,0,0 };
-		int hp = 10;
-		float invincible_timer = 0;
-		static constexpr float INVINCIBLE_TIME = 0.1f;
-		bool is_damaged = false;
-		bool is_dead = false;
-		bool is_attacking = false;
-		bool knock_back = false;
-		Vector3 knock_back_vec = { 0,0,0 };
+		void Down(Vector3 vec);
+		bool IsDead();
+		u32 GetHp();
+		EnemyStateMachine* GetStateMachine() { return state_machine.get(); }
+		AbstractEnemyBrain* GetBrain() { return brain.get(); }
+		void SetPlayer(PlayerWP player_) { player = player_; }
+		void SetBrain(AbstractEnemyBrainUP new_brain) {
+			brain = std::move(new_brain); brain->Think();
+		}
 	private:
 		EnemyStateMachineUP state_machine;
+		AbstractEnemyBrainUP brain = nullptr;
 		PlayerWP player = nullptr;
-
+		bool is_leader = false;
 	};
+
 }
 

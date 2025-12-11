@@ -60,7 +60,6 @@ root
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
 |        |-----AudioPlayer
-|        |-----Transform
 |        |-----Collider
 |        |        |-----SphereCollider
 |        |        |-----MeshCollider
@@ -72,6 +71,7 @@ root
 |        |-----RigidBody
 |        |-----Animator
 |        |-----ModelRenderer
+|        |-----Transform
 |        |-----NeonFade::EnemyController
 |        end_of_node
 |        

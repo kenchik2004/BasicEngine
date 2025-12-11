@@ -18,7 +18,7 @@ public:
 	void SetText(std::string new_text);
 	inline Vector3& BoxSize() { return text_box_size; }
 	inline Vector3& BoxPos() { return text_box_pos; }
-	inline int& FontSize() { return font_size; }
+	inline int SetFontSize(u32 font_size_ = DEFAULT_FONT_SIZE);
 	inline void  SetFont(std::string_view font_name) { font = font_name; }
 	inline void           ResetDrawChar() { draw_char_num = 0; }
 	enum ALIGNMENT
@@ -40,6 +40,7 @@ private:
 	float         draw_char_num;
 	Vector3       text_box_pos = { 0,0,0 };
 	Vector3       text_box_size = { 0,0,0 };
-	int           font_size = DEFAULT_FONT_SIZE;
+	int           font_size = 1;
+	int font_handle = -1;
 	Color  txt_color = Color::BLACK;
 };

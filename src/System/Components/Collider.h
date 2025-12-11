@@ -18,10 +18,13 @@ public:
 		All = UINT32_MAX,
 	};
 	USING_SUPER(Collider);
-	Collider(Vector3 pos = { 0,0,0 }, Quaternion rot = { 0,0,0,1 }, bool is_trigger_ = false, Layer layer_ = Layer::Default, u8 hit_group_ = Layer::All) 
-		:position(pos), rotation(rot), is_trigger(is_trigger_), collision_group(layer_), hit_group(hit_group_) {}
+	Collider(Vector3 pos = { 0,0,0 }, Quaternion rot = { 0,0,0,1 }, bool is_trigger_ = false, Layer layer_ = Layer::Default, u32 hit_group_ = Layer::All)
+		:position(pos), rotation(rot), is_trigger(is_trigger_), collision_group(layer_), hit_group(hit_group_) {
+	}
 	bool is_trigger = false;
 	void Construct() override;
+	void OnSleep() override;
+	void OnWakeUp() override;
 	int Init() override;
 	void Exit() override;
 	Vector3 position = { 0,0,0 };

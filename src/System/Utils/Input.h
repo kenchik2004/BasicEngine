@@ -126,7 +126,7 @@ enum struct PadButton : u8 {
 	Left = 2,	// 十字キー左
 	Right = 3,	// 十字キー右
 	Start = 4,	// スタートボタン
-	Back = 4,	// セレクトボタン
+	Back = 5,	// セレクトボタン
 	LeftStick = 6,	// 左スティック押し込み
 	RightStick = 7,	// 右スティック押し込み
 	LeftShoulder = 8,	// LBボタン
