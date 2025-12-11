@@ -68,7 +68,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
     float f = light_info_[0].intensity; // f 1.0~4.0 (大きくすると強く減衰する)
     float attenuation = (1 - s * s) * (1 - s * s) / (1 + f * s);
     
-    float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_;
+    float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_*0;
     diffuse += ambient;
     diffuse *= attenuation;
     specular *= attenuation;

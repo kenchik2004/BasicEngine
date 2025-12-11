@@ -231,8 +231,11 @@ void ShadowMapObject::ShadowMapDrawBegin()
 
 
 
-		DxLib::SetCameraViewMatrix(cast(CastPhysXMat(shadowmap_view)));
-		DxLib::SetupCamera_ProjectionMatrix(cast(CastPhysXMat(shadowmap_proj)));
+		//DxLib::SetCameraViewMatrix(cast(CastPhysXMat(shadowmap_view)));
+		//DxLib::SetupCamera_ProjectionMatrix(cast(CastPhysXMat(shadowmap_proj)));
+
+		DxLib::SetCameraViewMatrix(reinterpret_cast<MATRIX&>(shadowmap_view));
+		DxLib::SetupCamera_ProjectionMatrix(reinterpret_cast<MATRIX&>(shadowmap_proj));
 
 		//シャドウマップに対し、全モデルを描画する
 		for (auto& renderer : model_renderers) {
@@ -240,7 +243,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 				continue;
 			if (!renderer->CastShadow())
 				continue;
-			renderer->Draw();
+			renderer->DrawToShadowMap();
 		}
 
 

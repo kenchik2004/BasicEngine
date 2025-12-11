@@ -110,6 +110,15 @@ void ModelRenderer::Draw()
 	model->Draw(camera->render_type == Camera::RenderType::Deferred);
 }
 
+void ModelRenderer::DrawToShadowMap()
+{
+	if (!model)
+		return;
+	model->use_lighting = false;
+	model->Draw(false);
+	model->use_lighting = true;
+}
+
 
 
 void ModelRenderer::DebugDraw()

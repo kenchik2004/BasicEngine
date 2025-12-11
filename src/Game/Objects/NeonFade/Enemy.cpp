@@ -20,7 +20,6 @@ namespace NeonFade {
 		model = model_obj->AddComponent<ModelRenderer>();
 		animator = model_obj->AddComponent<Animator>();
 		model->SetModel("enemy_model_LOD");
-		model->cast_shadow = false;
 		animator->SetAnimation("enemy_idle", 0);
 		animator->SetAnimation("enemy_damage", 0);
 		animator->SetAnimation("enemy_down", 0);

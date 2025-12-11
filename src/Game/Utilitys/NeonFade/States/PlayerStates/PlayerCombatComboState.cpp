@@ -144,7 +144,7 @@ namespace NeonFade {
 				enem->Down(Vector3(ProjectOnPlane(enem->transform->position - player->transform->position, { 0,1,0 })).getNormalized());
 			}
 			else {
-				enem->Damage(100);
+				enem->Damage(3);
 				if (!target)
 					target = enem;
 

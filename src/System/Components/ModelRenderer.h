@@ -19,6 +19,7 @@ public:
 	void Exit() override;
 	void PreDraw() override;
 	void Draw() override;
+	void DrawToShadowMap();
 	void DebugDraw() override;
 
 	static void Load(std::string_view path, std::string_view name);

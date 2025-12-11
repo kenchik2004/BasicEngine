@@ -27,7 +27,6 @@ namespace NeonFade {
 			eff_player->Play();
 			charge_effect = eff;
 		}
-		for (u32 i = 0; i < 1; i++)
 		{
 			if (!light_manager)
 				light_manager = SceneManager::Object::Get<LightManager>().get();

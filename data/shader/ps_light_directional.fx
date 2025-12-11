@@ -75,7 +75,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	//----------------------------------------------------------
 	PS_OUTPUT_LIGHTING output;
 
-	float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_*1;
+	float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_*0;
 	output.diffuse_ = float4(diffuse + ambient, 1.0f);
 	output.specular_ = float4(specular, 1.0f);
 
