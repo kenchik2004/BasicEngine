@@ -3,6 +3,7 @@
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "System/Components/EffectPlayer.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
+#include "Game/Components/PlayerCameraMachine.h"
 
 namespace NeonFade {
 	PlayerCombatComboState3::PlayerCombatComboState3(Player* owner_)
@@ -124,7 +125,10 @@ namespace NeonFade {
 			animator->anim_speed = 0.001f;
 			Time::SetTimeScale(0.0);
 			player->GetScene()->physics_timescale = 0.0f;
-			hit_stop_timer = HIT_STOP_TIME;
+			if (hit_stop_timer <= 0.0f) {
+				hit_stop_timer = HIT_STOP_TIME;
+				player->player_camera_machine->ShakeCamera(0.2f, HIT_STOP_TIME);
+			}
 
 			if (knock_back) {
 				enem->Damage(100);

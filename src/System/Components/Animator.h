@@ -16,6 +16,7 @@ public:
 	void Exit() override;
 	//----------------------------------------------------------------------------------
 	//アニメーションコンポーネントが管理するべきもの
+	static inline float static_anim_speed = 1.0f;
 	float anim_speed = 1.0f;
 	float anim_blend_time = 0.5f;
 	bool anim_loop = false;

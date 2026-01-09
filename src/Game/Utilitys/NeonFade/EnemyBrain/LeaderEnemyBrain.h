@@ -36,6 +36,7 @@ namespace NeonFade {
 			Vector3 team_mov_vec = { 0,0,1 };
 			u32 member_num = 0;
 			std::vector<TeamMemberEnemyBrain*> members;
+			LeaderEnemyBrain* leader = nullptr;
 		};
 		const LeaderBrainData& GetTeamData() const { return team_data; }
 	private:

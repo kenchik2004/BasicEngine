@@ -262,8 +262,8 @@ void Model::Draw(bool to_gbuffer) {
 	{
 
 		for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
-			SetUseTextureToShader(i, -1); // テクスチャをリセット
-			//SetTexture(i, nullptr); // シェーダーのテクスチャをリセット
+			//SetUseTextureToShader(i, -1); // テクスチャをリセット
+			SetTexture(i, nullptr); // シェーダーのテクスチャをリセット
 		}
 		//フレームのメッシュ数を取得
 		s32 mesh_count = MV1GetFrameMeshNum(handle, frame_index);
@@ -299,12 +299,12 @@ void Model::Draw(bool to_gbuffer) {
 				for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
 					auto texture = cur_material->GetTexture(static_cast<Material::TextureType>(i)); // テクスチャを取得
 					if (texture) {
-						SetUseTextureToShader(i, *texture); // テクスチャを無効化
-						//SetTexture(i, texture.get()); // シェーダーにテクスチャをセット
+						//SetUseTextureToShader(i, *texture); // テクスチャを無効化
+						SetTexture(i, texture.get()); // シェーダーにテクスチャをセット
 					}
 					else {
-						SetUseTextureToShader(i, -1); // テクスチャを無効化
-						//SetTexture(i, nullptr); // シェーダーのテクスチャを無効化
+						//SetUseTextureToShader(i, -1); // テクスチャを無効化
+						SetTexture(i, nullptr); // シェーダーのテクスチャを無効化
 					}
 				}
 
@@ -360,8 +360,8 @@ void Model::Draw(bool to_gbuffer) {
 		}
 
 		for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
-			SetUseTextureToShader(i, -1); // テクスチャをリセット
-			//SetTexture(i, nullptr); // シェーダーのテクスチャをリセット
+			//SetUseTextureToShader(i, -1); // テクスチャをリセット
+			SetTexture(i, nullptr); // シェーダーのテクスチャをリセット
 		}
 	}
 	DxLib::MV1SetUseOrigShader(false); // オリジナルシェーダーを無効化

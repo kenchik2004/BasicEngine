@@ -50,6 +50,9 @@ Vector4 CalculateBoundingBoxInScreen(const Vector3& light_pos, float range, cons
 
 
 ShaderPs* shader_ssao = nullptr;
+ShaderPs* gaussian = nullptr;
+ShaderPs* nd_filter = nullptr;
+ShaderPs* bloom_combine = nullptr;
 
 int LightManager::Init() {
 	name = "LightManager";
@@ -59,6 +62,25 @@ int LightManager::Init() {
 	diffuse_accumulation_texture = make_safe_shared<Texture>(SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
 	if (!shader_ssao)
 		shader_ssao = MaterialManager::LoadPixelShader("data/shader/ps_ssao.fx", "ps_ssao");
+	{
+		if (!gaussian)
+			gaussian = MaterialManager::LoadPixelShader("data/shader/ps_gaussian7x7.fx", "ps_gaussian7x7");
+		if (!nd_filter)
+			nd_filter = MaterialManager::LoadPixelShader("data/shader/ps_neutral_density.fx", "ps_nd");
+		u32 w = SCREEN_W / 2;
+		u32 h = SCREEN_H / 2;
+		DXGI_FORMAT dxgi_format = DXGI_FORMAT_R11G11B10_FLOAT;
+		bloom_work_texture = make_safe_shared<Texture>(w, h, dxgi_format);
+		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
+			w = max(1u, w >> 1);
+			h = max(1u, h >> 1);
+			bloom_reduction_textures[i].first = make_safe_shared<Texture>(w, h, dxgi_format);
+			bloom_reduction_textures[i].second = make_safe_shared<Texture>(w, h, dxgi_format);
+		}
+		if (!bloom_combine)
+			bloom_combine = MaterialManager::LoadPixelShader("data/shader/ps_bloom.fx", "ps_bloom");
+
+	}
 	return 0;
 }
 
@@ -236,6 +258,43 @@ void LightManager::LateDraw()
 	SetTexture(21, diffuse_accumulation_texture.get());
 	SetTexture(22, specular_accumulation_texture.get());
 	FillRenderTarget(*light_blend_shader);
+	if constexpr (true) {
+		// ブルーム処理
+
+		CopyToRenderTarget(bloom_work_texture.get(), current_rt.color_targets_[0], *nd_filter);
+		float inv_w = 1.0f / bloom_work_texture->Width();	//1ピクセル当たりのU幅
+		float inv_h = 1.0f / bloom_work_texture->Height();	//1ピクセル当たりのV高さ
+		int offset_radius = 1; //ガウシアンフィルタのオフセット半径
+		Texture* upper_mip_tex = bloom_work_texture.get();
+		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
+			//1段上の階層テクスチャから縮小コピー
+			auto& work = bloom_reduction_textures[i];
+			CopyToRenderTarget(work.first.get(), upper_mip_tex);
+			Vector2 offset = { 0.0f,inv_h * offset_radius };
+			gaussian->SetValue("FilterInfo.pixel_offset", &offset);
+			gaussian->AplyConstantBuffers();
+			CopyToRenderTarget(work.second.get(), work.first.get(), *gaussian);
+
+			offset = { inv_w * offset_radius,0.0f };
+			gaussian->SetValue("FilterInfo.pixel_offset", &offset);
+			gaussian->AplyConstantBuffers();
+			CopyToRenderTarget(work.first.get(), work.second.get(), *gaussian);
+
+			upper_mip_tex = work.first.get();
+		}
+		//ブルーム合成
+		SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
+			SetTexture(30 + i, bloom_reduction_textures[i].first.get());
+		}
+		CopyToRenderTarget(current_rt.color_targets_[0], bloom_work_texture.get(), *bloom_combine);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
+			SetTexture(30 + i, nullptr);
+		}
+	}
+
+
 	SetTexture(21, nullptr);
 	SetTexture(22, nullptr);
 

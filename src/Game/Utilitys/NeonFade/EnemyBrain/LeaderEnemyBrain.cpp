@@ -9,12 +9,15 @@ namespace NeonFade {
 	LeaderEnemyBrain::LeaderEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_)
 		:AbstractEnemyBrain(state_machine_, player_)
 	{
+		team_data.leader = this;
 		another_groups.push_back(&team_data);
 	}
 	LeaderEnemyBrain::~LeaderEnemyBrain()
 	{
+
 		auto ite = std::find(another_groups.begin(), another_groups.end(), &team_data);
-		another_groups.erase(ite);
+		if (ite != another_groups.end())
+			another_groups.erase(ite);
 	}
 	void LeaderEnemyBrain::Think()
 	{
@@ -51,7 +54,7 @@ namespace NeonFade {
 					avoid -= (to_other.getNormalized() * 8.0f / to_other.magnitude());
 				}
 			}
-			team_data.team_mov_vec = team_data.team_mov_vec*5  + avoid;
+			team_data.team_mov_vec = team_data.team_mov_vec * 5 + avoid;
 		}
 		if (state_machine->enemy->transform->position.y < -50)
 			Die();
@@ -97,18 +100,40 @@ namespace NeonFade {
 		u64 member_num = team_data.members.size();
 		if (member_num == 0)
 			return;
+		for (auto& member : team_data.members) {
+			member->AddLeader(nullptr);
+		}
+
+
+		auto ite = std::find(another_groups.begin(), another_groups.end(), &team_data);
+		another_groups.erase(ite);
+
 		//仮で、群れの中から次のリーダーを選出するようにする
 		//TODO: 確率でもいいので、他の群れに合流するとかあってもいいかも
-		u64 next_leader = Random::Int(0, member_num - 1);
-		auto next_leader_brain = make_safe_unique<LeaderEnemyBrain>(team_data.members[next_leader]->GetMachine(), player);
-		for (u64 member_idx = 0; member_idx < team_data.members.size(); member_idx++) {
-			if (member_idx == next_leader)
-				continue;
-			auto* member_brain = team_data.members[member_idx];
-			member_brain->AddLeader(next_leader_brain.get());
+		if (member_num > 3 || another_groups.size() <= 1) {
+			u64 next_leader = Random::Int(0, member_num - 1);
+			auto next_leader_brain = make_safe_unique<LeaderEnemyBrain>(team_data.members[next_leader]->GetMachine(), player);
+			for (u64 member_idx = 0; member_idx < team_data.members.size(); member_idx++) {
+				if (member_idx == next_leader)
+					continue;
+				auto* member_brain = team_data.members[member_idx];
+				member_brain->AddLeader(next_leader_brain.get());
+			}
+			team_data.members[next_leader]->GetOwnerBody()->enem_controller->SetBrain(std::move(next_leader_brain));
+			team_data.members.clear();
 		}
-		team_data.members[next_leader]->GetOwnerBody()->enem_controller->SetBrain(std::move(next_leader_brain));
-		team_data.members.clear();
+		else {
+			u64 next_team_idx = Random::Int(0, another_groups.size() - 1);
+
+			auto next_leader_brain = another_groups[next_team_idx]->leader;
+			for (u64 member_idx = 0; member_idx < team_data.members.size(); member_idx++) {
+				auto* member_brain = team_data.members[member_idx];
+				member_brain->AddLeader(next_leader_brain);
+			}
+			team_data.members.clear();
+		}
+
+
 
 
 	}

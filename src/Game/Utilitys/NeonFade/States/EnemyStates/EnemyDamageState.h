@@ -15,6 +15,7 @@ namespace NeonFade {
 		virtual void OnCollisionEnter(IStateMachine* machine, const HitInfo& hit_info)override {}
 		virtual void OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info) override {}
 		virtual void OnCollisionExit(IStateMachine* machine, const HitInfo& hit_info) override {}
+		static constexpr float HITSTOP_TIME = 0.2f;
 	private:
 		Enemy* enemy = nullptr;
 		Animator* animator = nullptr;

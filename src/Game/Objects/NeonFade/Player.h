@@ -8,6 +8,7 @@ USING_PTR(CameraObject);
 namespace NeonFade
 {
 	USING_PTR(PlayerController);
+	USING_PTR(PlayerCameraMachine);
 
 	class Player :
 		public GameObject
@@ -34,10 +35,8 @@ namespace NeonFade
 		PlayerControllerWP pl_controller;
 		ColliderWP foot;
 		CameraObjectWP player_camera;
-		float camera_distance_max = 30.0f;
+		PlayerCameraMachineWP player_camera_machine;
 	private:
-		Vector2 camera_rot = { 0,0 };
-		float camera_distance = 20.0f;
 
 	};
 

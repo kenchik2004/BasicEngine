@@ -58,11 +58,12 @@ namespace NeonFade {
 		move_dir += owner_player->transform->AxisZ() * -3.0f;
 		move_dir += owner_player->transform->AxisY() * 3.0f;
 		rb->velocity = move_dir;
+		auto mat=owner_player->model->GetFrameWorldMat(45);
 		auto pos = MV1GetFramePosition(owner_player->model->GetModelHandle(), 45);
 		if (charge_effect)
-			charge_effect->transform->position = cast(pos);
+			charge_effect->transform->position = cast(mat.getPosition());
 		for (auto& light : smash_lights) {
-			light->position = cast(pos);
+			light->position = cast(mat.getPosition());
 
 			Color light_color = Random::Color({ 0,0,0,1 }, { 1,1,1,1 });
 			light_color = light_color * 100.0f;

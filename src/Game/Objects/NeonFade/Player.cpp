@@ -18,7 +18,6 @@ namespace NeonFade
 		model_obj->transform->scale = { 0.05f,0.05f,0.05f };
 		model_obj->transform->local_position = { 0,-4.5f,0 };
 		model_obj->transform->local_rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
-
 		model = model_obj->AddComponent<ModelRenderer>();
 		animator = model_obj->AddComponent<Animator>();
 
@@ -41,8 +40,22 @@ namespace NeonFade
 		animator->SetAnimation("spin_kick", 0);
 		animator->SetAnimation("clouch_inv", 0);
 		animator->SetAnimation("leg_sweep", 0);
+#if 1
+		auto mov_tex = TextureManager::Get("electro_movie");
+#endif
+		int mv1_handle = model->GetModelHandle();
+		auto mat = model->GetMaterial(0);
+		auto mat2 = model->GetMaterial(1);
+		//MV1SetMaterialEmiColor(mv1_handle, 0, { 10.0f,10.0f,10.0f,10.0f });
+		//mat->SetTexture(TextureManager::Get("electro_texture"), Material::TextureType::Emission);
+		//mat2->SetTexture(TextureManager::Get("electro_texture"), Material::TextureType::Emission);
+		//mat->SetTexture(TextureManager::Create("electro_texture", 1000, 1000, DXGI_FORMAT_B8G8R8A8_UNORM), Material::TextureType::Emission);
+
+		PlayMovieToGraph(*mov_tex, DX_PLAYTYPE_LOOP);
 
 
+		mat->SetTexture(mov_tex, Material::TextureType::Emission);
+		mat2->SetTexture(mov_tex, Material::TextureType::Emission);
 		rb->freeze_rotation = { 1,1,1 };
 		auto col = AddComponent<CapsuleCollider>();
 		col->height = 5.7f;
@@ -63,63 +76,31 @@ namespace NeonFade
 	}
 	void Player::Update()
 	{
+		if (Input::GetKeyDown(KeyCode::Period))
+			SetGlobalAmbientLight({ 0,0,0,0 });
 	}
 	void Player::PreDraw()
 	{
+		auto mat = model->GetMaterial(0);
+		auto mov_tex = mat->GetTexture(Material::TextureType::Emission);
+		UpdateMovieToGraph(*mov_tex);
 
-		{
-			Vector2 pad_input = Input::GetPadRightStick(0);
-			if (pad_input.magnitudeSquared() >= FLT_EPSILON) {
-				camera_rot.y += pad_input.x * Time::DrawDeltaTime() * 90 * 3;
-				camera_rot.x += pad_input.y * Time::DrawDeltaTime() * 90 * 3;
-				camera_rot.x = physx::PxClamp(camera_rot.x, -45.0f, 30.0f);
-			}
-			else {
-				if (Input::GetKey(KeyCode::Left))
-					camera_rot.y -= Time::DrawDeltaTime() * 90;
-				if (Input::GetKey(KeyCode::Right))
-					camera_rot.y += Time::DrawDeltaTime() * 90;
-			}
-
-
-			auto cam_lock = player_camera.lock();
-			Transform* cam_trns = cam_lock->transform.get();
-			Quaternion cam_rot_around = Quaternion(DEG2RAD(camera_rot.y), { 0,1,0 }) * Quaternion(DEG2RAD(camera_rot.x), { 1,0,0 });
-			Vector3 cam_vector_z = { 0,0,1 };
-			cam_vector_z = cam_rot_around.rotate(cam_vector_z);
-			physx::PxRaycastHit hits[2];
-			RayCastInfo info(hits, 2);
-			camera_distance = camera_distance_max;
-			physx::PxQueryFilterData a;
-			a.data.word0 = Collider::Layer::Terrain;
-			a.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::ePREFILTER;
-			GetScene()->RayCast(Ray{ transform->position + Vector3(0,2,0), -cam_vector_z, camera_distance }, info, a);
-			if (info.hasBlock) {
-				camera_distance = info.block.distance - 0.05f;
-			}
-			cam_vector_z = cam_vector_z * camera_distance;
-			cam_trns->position = transform->position - cam_vector_z + Vector3(0, 2, 0);
-			cam_trns->SetAxisZ(cam_vector_z);
-		}
+#if 0
+		auto cur_rt = GetRenderTarget();
+		auto mat = model->GetMaterial(0);
+		auto tex = mat->GetTexture(Material::TextureType::Emission);
+		SetRenderTarget(tex.get());
+		SetDrawScreen(*tex);
+		ClearColor({ 0,0,0,0 });
+		PlayMovieToGraph(movie, DX_PLAYTYPE_LOOP);
+		DrawExtendGraph(0, 0, tex->Width(), tex->Height(), movie, TRUE);
+		SetDrawScreen(DX_SCREEN_BACK);
+		SetRenderTarget(cur_rt);
+#endif
 	}
 	void Player::LateDebugDraw()
 	{
-		return;
-		if (model) {
-			auto dx_mat = model->GetFrameWorldMatDX(9);
-			auto px_mat = model->GetFrameWorldMat(9);
-			printfDx("Frame 10 World Mat DX:\n");
-			for (int i = 0; i < 4; i++) {
-				printfDx("| %.2f %.2f %.2f %.2f |\n", dx_mat.m[i][0] * 100, dx_mat.m[i][1] * 100, dx_mat.m[i][2] * 100, dx_mat.m[i][3]);
-			}
-			printfDx("Frame 10 World Mat PX:\n");
-			for (int i = 0; i < 4; i++) {
-				printfDx("| %.2f %.2f %.2f %.2f |\n", px_mat[i][0] * 100, px_mat[i][1] * 100, px_mat[i][2] * 100, px_mat[i][3]);
-			}
-			DrawLine3D(cast(px_mat.getPosition()), cast(px_mat.getPosition() + px_mat.column0.getXYZ() * 100), Color::RED);
-			DrawLine3D(cast(px_mat.getPosition()), cast(px_mat.getPosition() + px_mat.column1.getXYZ() * 100), Color::GREEN);
-			DrawLine3D(cast(px_mat.getPosition()), cast(px_mat.getPosition() + px_mat.column2.getXYZ() * 100), Color::BLUE);
-		}
+
 	}
 	void Player::Exit()
 	{

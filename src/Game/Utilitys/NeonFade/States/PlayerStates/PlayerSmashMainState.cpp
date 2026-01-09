@@ -2,6 +2,7 @@
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
+#include "Game/Components/PlayerCameraMachine.h"
 
 namespace NeonFade {
 	PlayerSmashMainState::PlayerSmashMainState(Player* player_)
@@ -40,11 +41,11 @@ namespace NeonFade {
 	{
 		smash_timer += dt;
 		if (smash_timer < 0.5f) {
-			owner_player->camera_distance_max = std::lerp(50.0f, 30.0f, 0.5f - smash_timer);
+			owner_player->player_camera_machine->camera_distance_max = std::lerp(50.0f, 30.0f, 0.5f - smash_timer);
 		}
 		else if (smash_timer < 0.7f) {
 
-			owner_player->camera_distance_max = std::lerp(30.0f, 50.0f, 0.7f - smash_timer);
+			owner_player->player_camera_machine->camera_distance_max = std::lerp(30.0f, 50.0f, 0.7f - smash_timer);
 			rb->velocity = Vector3(0, 0, 0);
 		}
 		if (smash_timer >= 0.3f && !anim_after_smash) {
@@ -85,7 +86,7 @@ namespace NeonFade {
 			auto hit_obj = hit_info.hit_collision->owner.lock();
 			auto enemy = SafeStaticCast<Enemy>(hit_obj);
 			if (enemy) {
-				enemy->Damage(30);
+				enemy->Damage(100);
 				enemy->Down(owner_player->transform->AxisZ() * 30.0f + Vector3(0, 30, 0));
 			}
 		}

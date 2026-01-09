@@ -22,6 +22,7 @@ struct SurfaceInfo
 	float3 normal_;
 	float roughness_;
 	float metallic_;
+	float emissive_;
 	float3 world_position_;
 	float depth_;
 };
@@ -103,7 +104,8 @@ SurfaceInfo GetSurfaceInfo(int2 position)
 	s.ao_ = gbuffer0.a;
 	s.normal_ = NormalDecode(gbuffer1.rg);
 	s.roughness_ = gbuffer1.b;
-	s.metallic_ = gbuffer1.a;
+	s.metallic_ = saturate(gbuffer1.a *(gbuffer1.a<0.5? 2.0:0));
+	s.emissive_ = saturate(gbuffer1.a * 2.0 - 1.0) * 64.0;
 	s.world_position_ = gbuffer2.rgb;
 	s.depth_ = depth;
 

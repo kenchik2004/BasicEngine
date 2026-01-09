@@ -114,7 +114,7 @@ void Camera::Construct()
 
 int Camera::Init()
 {
-	hdr = TextureManager::Create(owner->name + "camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+	hdr = TextureManager::Create(owner->name + "camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	depth = TextureManager::Create(owner->name + "camerascreendepth", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
 
 	constant_buffer_handle = CreateShaderConstantBuffer(sizeof(CBufferCameraInfo));

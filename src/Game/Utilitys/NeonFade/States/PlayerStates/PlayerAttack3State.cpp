@@ -3,6 +3,7 @@
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
+#include "Game/Components/PlayerCameraMachine.h"
 
 namespace NeonFade {
 	PlayerAttack3State::PlayerAttack3State(Player* player_)
@@ -71,6 +72,8 @@ namespace NeonFade {
 				enemy->Down(knockback_dir);
 			}
 			if (hit_stop_timer <= 0.0f) {
+
+				owner_player->player_camera_machine->ShakeCamera(0.2f, HIT_STOP_TIME);
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.01f;
 
@@ -78,8 +81,9 @@ namespace NeonFade {
 					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_attack1_hit", 1.0f);
 					eff->transform->position = hit_info.hit_collision->owner->transform->position;
 					eff->transform->position.y += 1.0f;
-					eff->transform->scale = { 0.2f,0.2f,0.2f };
-					eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efk")->Play();
+					auto eff_comp = eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efk");
+					//eff_comp->SetSpeed(0.2f);
+					eff_comp->Play();
 				}
 			}
 		}

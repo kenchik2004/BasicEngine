@@ -12,20 +12,20 @@ namespace NeonFade
 		if (!path) {
 
 			std::vector<Vector3> pts = {
-				{ -152, 30, -29  },
-				{ -107, 30, -24  },
-				{ -38 , 30, -24  },
-				{ 117 , 30, -24  },
-				{ 163 , 30, -29  },
-				{ 205 , 30, -67  },
-				{ 205 , 30, -130 },
-				{ 163 , 30, -168 },
-				{ 117 , 30, -173 },
-				{ -38 , 30, -173 },
-				{ -107, 30, -173 },
-				{ -152, 30, -168 },
-				{ -194, 30, -130 },
-				{ -194, 30, -67  },
+				{ -152, 37, -29  },
+				{ -107, 37, -24  },
+				{ -38 , 37, -24  },
+				{ 117 , 37, -24  },
+				{ 163 , 37, -29  },
+				{ 205 , 37, -67  },
+				{ 205 , 37, -130 },
+				{ 163 , 37, -168 },
+				{ 117 , 37, -173 },
+				{ -38 , 37, -173 },
+				{ -107, 37, -173 },
+				{ -152, 37, -168 },
+				{ -194, 37, -130 },
+				{ -194, 37, -67  },
 			};
 			path = make_safe_unique<CatmullRomPath>();
 			path->SetPoints(pts, true);
@@ -118,8 +118,8 @@ namespace NeonFade
 			pos_delta += transform->position;
 			transform->rotation = rot_;
 			Vector3 police_x = transform->AxisX();
-			moving_light_blue->position = pos_ + Vector3(0, 3, 0) + police_x * 3;
-			moving_light_red->position = pos_ + Vector3(0, 3, 0) - police_x * 3;
+			moving_light_blue->position = pos_ + Vector3(0, 3.5f, 0) + police_x * 3;
+			moving_light_red->position = pos_ + Vector3(0, 3.5f, 0) - police_x * 3;
 			if (player_rideon)
 				rb->velocity = { 0,0,0 };
 			else

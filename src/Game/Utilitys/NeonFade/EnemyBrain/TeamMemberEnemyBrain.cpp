@@ -96,9 +96,8 @@ namespace NeonFade {
 
 	void TeamMemberEnemyBrain::AddLeader(LeaderEnemyBrain* new_leader)
 	{
-		if (!new_leader)
-			return;
-		number_in_team = new_leader->AddMember(this);
+		if (new_leader)
+			number_in_team = new_leader->AddMember(this);
 		leader = new_leader;
 	}
 
@@ -130,7 +129,8 @@ namespace NeonFade {
 	}
 	void TeamMemberEnemyBrain::Die() {
 		hp = 0;
-		leader->SubstractMember(this);
+		if (leader)
+			leader->SubstractMember(this);
 	}
 
 }

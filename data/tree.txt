@@ -72,6 +72,7 @@ root
 |        |-----Animator
 |        |-----ModelRenderer
 |        |-----Transform
+|        |-----Component
 |        |-----NeonFade::EnemyController
 |        end_of_node
 |        

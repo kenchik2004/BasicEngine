@@ -71,7 +71,7 @@ void Animator::Update()
 	anim_blend_time = max(FLT_EPSILON, anim_blend_time);	//0割り防止
 	//一旦全アニメーションの時間を進める
 	if (current_anim) {
-		current_anim->Update(anim_speed);
+		current_anim->Update(anim_speed * static_anim_speed);
 		MV1SetAttachAnimTime(model->GetModelHandle(), current_anim->attached_index, current_anim->current_time);
 		if (anim_loop && !IsPlaying()) {
 			current_anim->current_time = current_anim->current_time > current_anim->total_time ? 0 : current_anim->total_time;
@@ -108,7 +108,7 @@ void Animator::Update()
 		if (old_anim) {
 			//古いアニメーションも更新する
 			//しかし、コールバックを呼ぶと管理がてんやわんやになるので、falseを渡す
-			old_anim->Update(anim_speed, false);
+			old_anim->Update(anim_speed * static_anim_speed, false);
 			//アニメーションの時間を進める
 			//ループしているかどうかはこの段階では知ったこっちゃないので、とりあえず進めるだけ進める
 			old_anim->current_time = std::clamp(old_anim->current_time, 0.0f, old_anim->total_time);

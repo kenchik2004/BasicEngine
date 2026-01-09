@@ -42,7 +42,8 @@ namespace NeonFade
 
 
 		is_jumping = false;
-
+		if ((Input::GetKeyDown(KeyCode::Space) || Input::GetPadButtonDown(0, PadButton::Button1)))
+			printfDx("jump!!\n");
 		if (is_landed && (Input::GetKeyDown(KeyCode::Space) || Input::GetPadButtonDown(0, PadButton::Button1))) {
 			is_jumping = true;
 			is_landed = false;
@@ -113,13 +114,13 @@ namespace NeonFade
 	}
 	void PlayerController::PrePhysics()
 	{
-		is_landed = false;
+		//is_landed = false;
 
 	}
 	void PlayerController::OnCollisionEnter(const HitInfo& hit_info)
 	{
-
-		if (hit_info.hit_collision->GetLayer() == Collider::Layer::Terrain) {
+		auto layer = hit_info.hit_collision->GetLayer();
+		if (layer == Collider::Layer::Terrain || layer == Collider::Layer::Enemy) {
 			is_landed = true;
 			if (is_climbing)
 				is_climbing = false;
@@ -128,17 +129,20 @@ namespace NeonFade
 	}
 	void PlayerController::OnCollisionStay(const HitInfo& hit_info)
 	{
-		if (hit_info.hit_collision->GetLayer() == Collider::Layer::Terrain) {
+		auto layer = hit_info.hit_collision->GetLayer();
+		if (layer == Collider::Layer::Terrain || layer == Collider::Layer::Enemy) {
+			is_landed = true;
+			fall_detect_time = 0.0f;
 			if (owner_player->rb->velocity.y <= 1) {
-				is_landed = true;
-				fall_detect_time = 0.0f;
 			}
 		}
 		state_machine->OnCollisionStay(hit_info);
 	}
 	void PlayerController::OnCollisionExit(const HitInfo& hit_info)
 	{
-		if (hit_info.hit_collision->GetLayer() == Collider::Layer::Terrain) {
+		auto layer = hit_info.hit_collision->GetLayer();
+		if (layer == Collider::Layer::Terrain || layer == Collider::Layer::Enemy) {
+			printfDx("exit landed\n");
 			is_landed = false;
 		}
 		state_machine->OnCollisionExit(hit_info);

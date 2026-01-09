@@ -15,7 +15,7 @@ namespace NeonFade
 		EnemyFactory factory;
 		factory.SetSpawnPosition({ 0,5,200 });
 		factory.SetSpawnRadius(20);
-		u32 teams = 20, enem_per_tems = 10;
+		u32 teams = 2, enem_per_tems = 5;
 		for (u32 i = 0; i < teams; i++) {
 			factory.MakeEnemyTeam(1, enem_per_tems, owner_scene_game->player);
 			factory.SetSpawnPosition(Random::Position({ -30,5,180 }, { 30,5,400 }));

@@ -16,7 +16,7 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 	rb = enemy->rb.lock().get();
 
 	std::function hit_stop = [this]() {
-		animator->anim_speed = 0.001f;
+		animator->anim_speed = 0.0001f;
 		hit_stop_timer += Time::UnscaledDeltaTime();
 		};
 	std::function collision_rotate = [this]() {
@@ -27,7 +27,7 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 		col->position = { 5.4f, 1.5f, 0 };
 		col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon);
 		};
-	animator->SetAnimationCallBack("enemy_down", hit_stop, 7, "hit_stop");
+	animator->SetAnimationCallBack("enemy_down", hit_stop, 10, "hit_stop");
 	animator->SetAnimationCallBack("enemy_down", collision_rotate, 30, "collision_rotate");
 	std::function default_change = [this]() {
 		return exit_timer >= EXIT_TIME;
@@ -65,7 +65,7 @@ void NeonFade::EnemyDownState::Update(IStateMachine* machine, float dt)
 	exit_timer += dt;
 	if (hit_stop_timer > 0)
 		hit_stop_timer += dt;
-	if (hit_stop_timer > 0.1f) {
+	if (hit_stop_timer > HITSTOP_TIME) {
 		auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 		animator->anim_speed = 1.0f;
 		rb->SetVelocity(knock_back_vec);

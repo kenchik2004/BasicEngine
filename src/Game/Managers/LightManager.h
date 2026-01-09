@@ -65,6 +65,9 @@ private:
 	ShaderPs* light_blend_shader = nullptr;
 	SafeSharedPtr<Texture> specular_accumulation_texture = nullptr;
 	SafeSharedPtr<Texture> diffuse_accumulation_texture = nullptr;
+	SafeSharedPtr<Texture> bloom_work_texture = nullptr;
+	static constexpr u8 REDUCTION_COUNT_MAX = 5;
+	std::array<std::pair<SafeSharedPtr<Texture>, SafeSharedPtr<Texture>>, REDUCTION_COUNT_MAX> bloom_reduction_textures;
 	mat4x4 camera_view_proj = mat4x4(physx::PxIdentity);
 	int lights_cbuffer_handle = -1;
 	static constexpr u8 MAX_FORWARD_LIGHTS = 6;

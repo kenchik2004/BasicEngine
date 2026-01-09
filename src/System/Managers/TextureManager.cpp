@@ -44,7 +44,8 @@ void TextureManager::Load(std::string_view path, std::string_view name)
 	data->path_map = &paths;
 	data->texture_source = std::move(texture);
 	SetUseASyncLoadFlag(true);
-	data->texture_source->handle = MV1LoadTexture(path_key.c_str());
+	//data->texture_source->handle = MV1LoadTexture(path_key.c_str());
+	data->texture_source->handle = LoadGraph(path_key.c_str());
 
 	if (data->texture_source->handle >= 0) {
 		names[name_key].handle = data->texture_source->handle;
@@ -80,7 +81,9 @@ SafeSharedPtr<Texture> TextureManager::CloneByName(std::string_view name, std::s
 	if (resource != names.end() && resource->second.handle >= 0) {
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
-		while (resource->second.index < 0) {}
+		while (resource->second.index < 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 		auto& cache_tex = *(cache[resource->second.index]);
 		if (!cache_tex.is_initialized)
 			cache_tex.Init();

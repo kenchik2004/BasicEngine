@@ -13,6 +13,8 @@ namespace NeonFade {
 		void OnExit(IStateMachine* machine) override;
 		void Update(IStateMachine* machine, float dt) override;
 	private:
+		SafeSharedPtr<Texture> charge_emi_tex = nullptr;
+		SafeSharedPtr<Texture> def_emi_tex = nullptr;
 		Player* owner_player;
 		RigidBody* rb;
 		Animator* animator;

@@ -25,6 +25,7 @@ NeonFade::EnemyDamageState::EnemyDamageState(Enemy* owner_) :
 void NeonFade::EnemyDamageState::OnEnter(IStateMachine* machine)
 {
 	animator->Play("enemy_damage");
+	animator->anim_speed = 1.6f;
 	hit_stop_timer = 0;
 	//rb->velocity = { 0, 0, 0 };
 }
@@ -41,8 +42,8 @@ void NeonFade::EnemyDamageState::Update(IStateMachine* machine, float dt)
 		machine->ChangeState("idle");
 	if (hit_stop_timer > 0)
 		hit_stop_timer += Time::UnscaledDeltaTime();
-	if (hit_stop_timer > 0.1f) {
-		animator->anim_speed = 1.0f;
+	if (hit_stop_timer > HITSTOP_TIME) {
+		animator->anim_speed = 1.6f;
 		hit_stop_timer = 0;
 	}
 

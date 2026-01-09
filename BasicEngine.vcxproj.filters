@@ -187,6 +187,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Components\PlayerCameraMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -381,6 +382,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.h" />
+    <ClInclude Include="src\Game\Components\PlayerCameraMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -398,5 +400,11 @@
     <Filter Include="shader">
       <UniqueIdentifier>{9e7682ef-6479-4955-923f-a52f497c24cd}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\shader\Debug.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\shader\seafloor.dds" />
   </ItemGroup>
 </Project>

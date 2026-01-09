@@ -6,6 +6,8 @@
 
 #include "Game/Managers/LightManager.h"
 #include "Game/Utilitys/NeonFade/CatmullRomPath.h"
+#include "Game/Components/PlayerCameraMachine.h"
+
 
 
 namespace NeonFade {
@@ -58,6 +60,8 @@ namespace NeonFade {
 
 		AudioManager::Load(u8"data/Sound/siren.mp3", "siren");
 		TextureManager::Load(u8"data/FX.png", "fx_texture");
+		TextureManager::Load(u8"data/player/electron.jpg", "electro_texture");
+		TextureManager::Load(u8"data/player/thunder.mp4", "electro_movie");
 
 		CheckForLoading();
 	}
@@ -74,7 +78,7 @@ namespace NeonFade {
 		player_->transform->position = { 0,30,100 };
 
 		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
-		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,100 }, 0, 0, { 0,-8,5 });
+		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 2,2,10 }, 0, 0, { 0,-8,5 });
 
 		for (u32 i = 0; i < buildings.size(); ++i)
 			for (u32 j = 0; j < 20; ++j) {
@@ -97,14 +101,19 @@ namespace NeonFade {
 			ground->transform->scale = { 50,50,50 };
 			ground->transform->position = { 0,0,0 };
 		}
-		camera = SceneManager::Object::Create<CameraObject>();
-		camera->transform->position = { 0,10,10 };
-		camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
-		camera->camera->render_type = Camera::RenderType::Deferred;
-		camera->camera->camera_far = 500.0f;
-		camera->AddComponent<AudioListener>();
+		{
+			camera = SceneManager::Object::Create<CameraObject>();
+			camera->transform->position = { 0,10,10 };
+			camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
+			camera->camera->render_type = Camera::RenderType::Deferred;
+			camera->camera->camera_far = 500.0f;
+			camera->AddComponent<AudioListener>();
+			auto machine = camera->AddComponent<PlayerCameraMachine>();
 
-		player_->player_camera = camera;
+			player_->player_camera = camera;
+			player_->player_camera_machine = machine;
+			machine->SetTarget(player_);
+		}
 		player = player_;
 		for (u32 i = 0; i < buildings.size(); ++i)
 		{
@@ -126,7 +135,6 @@ namespace NeonFade {
 			auto mod = high_way->AddComponent<ModelRenderer>();
 			mod->SetModel("high-way");
 
-			high_way->transform->position = { 0,2,0 };
 			high_way->transform->scale = { 3.0f,3.0f,3.0f };
 			high_way->AddComponent<RigidBody>();
 			high_way->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
@@ -177,6 +185,7 @@ namespace NeonFade {
 		scene_state_machine->Update(Time::DeltaTime());
 		if (Input::GetPadButtonDown(0, PadButton::Start)) {
 			hud_obj->GetComponent<Text>()->Sleep();
+
 		}
 
 	}

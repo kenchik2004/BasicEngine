@@ -81,6 +81,9 @@ void TextureSource::Init()
 
 	if (desc.BindFlags & D3D11_BIND_RENDER_TARGET) { // レンダーターゲットとしてバインドされている場合
 		d3d_device->CreateRenderTargetView(d3d_resource, nullptr, &rtv); // RTV を作成
+		if (handle < 0) {
+			handle = CreateGraphFromID3D11Texture2D(d3d_resource); // DxLib ハンドルを作成
+		}
 	}
 
 	if (desc.BindFlags & D3D11_BIND_DEPTH_STENCIL) { // デプスステンシルとしてバインドされている場合
@@ -135,9 +138,9 @@ bool Texture::Init(ID3D11Resource* d3d_resource)
 			d3d_device->CreateShaderResourceView(d3d_resource, nullptr, &srv); // SRV を作成
 
 			// ID3D11Texture2DからDxLibグラフィックハンドルを作成
-			if (handle < 0 && desc.Format != DXGI_FORMAT_R11G11B10_FLOAT 
+			if (handle < 0 && desc.Format != DXGI_FORMAT_R11G11B10_FLOAT
 				&& desc.Format != DXGI_FORMAT_R8G8B8A8_SNORM
-				&&desc.Format!=DXGI_FORMAT_R8G8B8A8_TYPELESS) {
+				&& desc.Format != DXGI_FORMAT_R8G8B8A8_TYPELESS) {
 				handle = CreateGraphFromID3D11Texture2D(d3d_resource); // DxLib ハンドルを作成
 			}
 		}
@@ -178,10 +181,17 @@ Texture::Texture(ID3D11Resource* d3d_resource)
 //----------------------------------------------------
 Texture::Texture(int dxlib_handle)
 {
+	if (dxlib_handle < 0)
+		return; // 無効なハンドルの場合は何もしない
 	DxLib::GetGraphSize(dxlib_handle, reinterpret_cast<int*>(&width), reinterpret_cast<int*>(&height)); // サイズを取得
 
 	auto* d3d_device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // デバイスを取得
+	if (!d3d_device)
+		throw Exception("D3Dデバイスが取得できませんでした", DEFAULT_EXCEPTION_PARAM); // デバイスが取得できない場合は例外を投げる
 	ID3D11Resource* d3d_resource = reinterpret_cast<ID3D11Resource*>(const_cast<void*>(GetGraphID3D11Texture2D(dxlib_handle))); // D3D リソースを取得
+	if (!d3d_resource)
+		throw Exception("ハンドルが無効、またはテクスチャのハンドルではありません。", DEFAULT_EXCEPTION_PARAM); // リソースが取得できない = Dxlibではテクスチャとして扱われていない
+
 	texture = d3d_resource; // テクスチャを設定
 	D3D11_TEXTURE2D_DESC desc;
 	reinterpret_cast<ID3D11Texture2D*>(d3d_resource)->GetDesc(&desc); // テクスチャ記述を取得

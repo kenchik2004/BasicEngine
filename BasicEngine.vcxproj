@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game\Components\EnemyController.cpp" />
+    <ClCompile Include="src\Game\Components\PlayerCameraMachine.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\DamageUIObject.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
     <ClInclude Include="src\Game\Components\EnemyController.h" />
+    <ClInclude Include="src\Game\Components\PlayerCameraMachine.h" />
     <ClInclude Include="src\Game\Components\PlayerController.h" />
     <ClInclude Include="src\Game\Managers\LightManager.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
@@ -298,6 +300,16 @@
     <ClInclude Include="src\System\typedef.h" />
     <ClInclude Include="src\System\Utils\Material.h" />
     <ClInclude Include="src\System\Utils\Render.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\shader\Debug.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\shader\seafloor.dds">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
+    </Image>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
