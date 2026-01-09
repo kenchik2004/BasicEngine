@@ -23,6 +23,14 @@ void ModelRenderer::SetModel(std::string_view name_, std::string_view new_name_)
 	model = data;
 }
 
+void ModelRenderer::SetModel(SafeSharedPtr<Model> model_, std::string_view new_name_)
+{
+	model_name = model_->name;
+	new_name = new_name_;
+	model = model_;
+
+}
+
 void ModelRenderer::Update()
 {
 	if (!model) {

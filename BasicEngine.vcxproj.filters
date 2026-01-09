@@ -188,6 +188,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Components\PlayerCameraMachine.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\StageMakeScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -383,6 +384,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.h" />
     <ClInclude Include="src\Game\Components\PlayerCameraMachine.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\StageMakeScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

@@ -41,6 +41,7 @@
     <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\StageMakeScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Game\Objects\Sample\SampleAnimationObject.h" />
     <ClInclude Include="src\Game\Objects\Sample\SampleMovingCharacter.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneGame.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\StageMakeScene.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />

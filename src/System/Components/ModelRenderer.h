@@ -13,6 +13,7 @@ public:
 	void Construct() override;
 	int Init() override;
 	void SetModel(std::string_view name_, std::string_view new_name_ = "");
+	void SetModel(SafeSharedPtr<Model> model_, std::string_view new_name_ = "");
 	void Update() override;
 	void LateUpdate() override;
 	void PostPhysics() override;

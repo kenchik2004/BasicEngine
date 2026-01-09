@@ -40,6 +40,11 @@ void ModelManager::LoadAsModel(std::string_view path, std::string_view name)
 	data->m_source = std::move(model);
 	SetUseASyncLoadFlag(true);
 	data->m_source->handle = MV1LoadModel(path_key.c_str());
+	if (data->m_source->handle < 0) {
+		delete data;
+		SetUseASyncLoadFlag(false);
+		return;
+	}
 	m_name[name_key].handle = data->m_source->handle;
 	m_path[path_key].handle = data->m_source->handle;
 	SetASyncLoadFinishCallback(data->m_source->handle, call_back, data);
