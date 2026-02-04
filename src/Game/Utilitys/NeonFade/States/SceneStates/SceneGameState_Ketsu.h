@@ -17,8 +17,6 @@ namespace NeonFade {
 		virtual void Update(ISceneStateMachine* machine, float dt) override;
 	private:
 		SceneGame* owner_scene_game = nullptr;
-		float exit_timer = 0;
-		static constexpr float EXIT_TIME = 2.0f;
 	};
 }
 

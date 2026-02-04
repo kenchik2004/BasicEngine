@@ -42,10 +42,10 @@ void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 	exit_timer = 0;
 	auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 	knock_back_vec = enem_machine->move_vec;
+	knock_back_vec.y = 0;
 	if (knock_back_vec.isZero())
 		knock_back_vec = -enemy->transform->AxisZ();
 	Vector3 set_forward = -knock_back_vec;
-	set_forward.y = 0;
 	set_forward.normalize();
 	enemy->transform->SetAxisZ(set_forward);
 }

@@ -1,5 +1,8 @@
 ﻿#pragma once
 #include "Game/Utilitys/NeonFade/States/ISceneState.h"
+
+class CatmullRomPath;
+class CameraObject;
 namespace NeonFade {
 
 	//----------------------------------------
@@ -18,7 +21,12 @@ namespace NeonFade {
 	private:
 		SceneGame* owner_scene_game = nullptr;
 		float exit_timer = 0;
-		static constexpr float EXIT_TIME = 2.0f;
+		static constexpr float EXIT_TIME = 10.0f;
+		SafeWeakPtr<CameraObject> movie_camera = nullptr;
+		SafeWeakPtr<CameraObject> scene_camera = nullptr;
+
+		SafeUniquePtr<CatmullRomPath> camera_path = nullptr;
+		TextWP message_text = nullptr;
 	};
 }
 

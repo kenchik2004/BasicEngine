@@ -8,34 +8,6 @@
 #include "System/Objects/CameraObject.h"
 #include "System/Components/Collider.h"
 
-Vector3 Slerp(const Vector3& from, const Vector3& to, float t)
-{
-	// 正規化（方向ベクトルを前提とする）
-	Vector3 v0 = from.getNormalized();
-	Vector3 v1 = to.getNormalized();
-
-	// 内積を取得
-	float dot = physx::PxClamp(v0.dot(v1), -1.0f, 1.0f);
-
-	// tよりも近い場合はターゲットを返す
-	if (dot >= 1 - t)
-		return v1;
-
-	// 角度を算出（ラジアン）
-	float theta = acosf(dot);
-
-
-
-
-	// sin(θ)を利用して補間（球面線形補間）
-	float sinTheta = sinf(theta);
-	float w1 = sinf((1.0f - t) * theta) / sinTheta;
-	float w2 = sinf(t * theta) / sinTheta;
-
-	// 補間
-	Vector3 result = (v0 * w1) + (v1 * w2);
-	return result.getNormalized();
-}
 namespace NeonFade
 {
 	PlayerMoveState::PlayerMoveState(Player* owner_) :

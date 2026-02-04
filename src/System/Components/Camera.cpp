@@ -270,8 +270,6 @@ void Camera::Exit() {
 		gbuffer.reset();
 	DeleteShaderConstantBuffer(constant_buffer_handle);
 	owner->GetScene()->UnregisterActiveCamera(std::static_pointer_cast<Camera>(shared_from_this()));
-	sky_dome.reset();
-	sky_texture.reset();
 
 }
 

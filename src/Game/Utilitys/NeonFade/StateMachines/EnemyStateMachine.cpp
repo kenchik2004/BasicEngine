@@ -9,6 +9,7 @@
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyAttackChargeState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyAttackMainState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyMoveState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyAttackReadyState.h"
 
 namespace NeonFade {
 	EnemyStateMachine::EnemyStateMachine(Enemy* owner_)
@@ -29,14 +30,14 @@ namespace NeonFade {
 		std::function<bool()> idle_to_move = [this]() {
 			return move_vec.magnitudeSquared() > 1e-6f * 1e-6f;
 			};
-		std::function<bool()>  idle_to_attack_charge = [this]() {
-			return is_attacking;
+		std::function<bool()>  idle_to_attack_ready = [this]() {
+			return static_cast<bool>(is_attacking);
 			};
 
 		idle_state->RegisterChangeRequest("down", idle_to_down, 0);
 		idle_state->RegisterChangeRequest("die", move_to_die, 0);
 		idle_state->RegisterChangeRequest("damage", idle_to_damage, 0);
-		idle_state->RegisterChangeRequest("attack_charge", idle_to_attack_charge, 1);
+		idle_state->RegisterChangeRequest("attack_ready", idle_to_attack_ready, 1);
 		idle_state->RegisterChangeRequest("move", idle_to_move, 1);
 
 		AddState("idle", std::move(idle_state));
@@ -52,10 +53,14 @@ namespace NeonFade {
 		std::function<bool()> move_to_down = [this]() {
 			return static_cast<bool>(knock_back);
 			};
+		std::function<bool()> move_to_attack_ready = [this]() {
+			return static_cast<bool>(is_attacking);
+			};
 		move_state->RegisterChangeRequest("down", move_to_down, 0);
 		move_state->RegisterChangeRequest("damage", move_to_damage, 0);
 		move_state->RegisterChangeRequest("die", move_to_die, 0);
 		move_state->RegisterChangeRequest("idle", move_to_idle, 1);
+		move_state->RegisterChangeRequest("attack_ready", move_to_attack_ready, 0);
 		AddState("move", std::move(move_state));
 
 
@@ -88,11 +93,33 @@ namespace NeonFade {
 
 		auto die_state = make_safe_unique<EnemyDieState>(enemy);
 		AddState("die", std::move(die_state));
+		auto attack_ready_state = make_safe_unique<EnemyAttackReadyState>(enemy);
+		std::function<bool()> attack_to_knockback = [this]() {
+			return static_cast<bool>(knock_back);
+			};
+		std::function<bool()> attack_ready_to_damage = [this]() {
+			return static_cast<bool>(is_damaged);
+			};
+		std::function<bool()> attack_ready_to_die = [this]() {
+			return is_dead;
+			};
+		attack_ready_state->RegisterChangeRequest("down", attack_to_knockback, 0);
+		attack_ready_state->RegisterChangeRequest("die", attack_ready_to_die, 0);
+		attack_ready_state->RegisterChangeRequest("damage", attack_ready_to_damage, 0);
 
+		AddState("attack_ready", std::move(attack_ready_state));
 		auto attack_charge_state = make_safe_unique<EnemyAttackChargeState>(enemy);
+		std::function<bool()> charge_to_damage = [this]() {
+			return static_cast<bool>(is_damaged);
+			};
+		std::function<bool()> charge_to_knockback = [this]() {
+			return static_cast<bool>(knock_back);
+			};
 		std::function<bool()> charge_to_die = [this]() {
 			return is_dead;
 			};
+		attack_charge_state->RegisterChangeRequest("damage", charge_to_damage, 0);
+		attack_charge_state->RegisterChangeRequest("down", charge_to_knockback, 0);
 		attack_charge_state->RegisterChangeRequest("die", charge_to_die, 0);
 		AddState("attack_charge", std::move(attack_charge_state));
 		auto attack_main_state = make_safe_unique<EnemyAttackMainState>(enemy);

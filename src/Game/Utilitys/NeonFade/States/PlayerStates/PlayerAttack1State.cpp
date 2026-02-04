@@ -42,7 +42,7 @@ namespace NeonFade {
 	}
 	void PlayerAttack1State::Update(IStateMachine* machine, float dt)
 	{
-		exit_timer += dt;
+			exit_timer += dt;
 
 
 		static constexpr float smoothstep_rottime = 1.0f / SPIN_TIME;

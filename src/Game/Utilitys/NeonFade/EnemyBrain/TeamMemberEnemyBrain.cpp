@@ -32,16 +32,16 @@ namespace NeonFade {
 				Vector3 desired = Vector3(0, 0, 0);
 
 				// 1) チーム全体の移動方向（重み高）
-				desired += brain.team_mov_vec.getNormalized();
+				desired += brain.team_mov_vec;
+
 
 				// 2) コヒージョン：隊の中心へ軽く寄る（重み中）
 				Vector3 to_center = brain.team_position - trns_pos;
 				to_center.y = 0;   // 水平方向のみ
-				float dist = to_center.magnitude();
-				if (dist > 5.0f) {
-					desired += to_center.getNormalized() * 0.5f;
+				float dist_sqr = to_center.magnitudeSquared();
+				if (dist_sqr > 5.0f * 5.0f) {
+					desired += to_center.getNormalized() * 5.0f;
 				}
-				desired = { 0,0,0 };
 				// 3) 自分のフォーメーション位置へ移動（重み強）
 				Quaternion rot = Quaternion(DEG2RAD(number_in_team * (360 / brain.member_num)), Vector3(0, 1, 0));
 				Vector3 slot_pos = brain.team_position + rot.rotate(Vector3(0, 0, 5));
@@ -73,11 +73,10 @@ namespace NeonFade {
 				desired += slotForce;
 
 				// 最終方向の正規化
-				Vector3 move = desired.getNormalized();
+				Vector3 move = desired;
 
-				// 出力速度（お好みで）
-				input_vec = move * 5.0f;
-
+				// 出力速度
+				input_vec = move;
 
 			}
 		}
@@ -87,7 +86,6 @@ namespace NeonFade {
 		}
 
 		state_machine->move_vec = input_vec;
-		state_machine->is_attacking = false;
 		state_machine->is_dead = hp == 0;
 		knock_back = false;
 		is_damaged = false;
@@ -126,6 +124,10 @@ namespace NeonFade {
 		DrawHPDebug();
 		if (leader)
 			DxLib::DrawLine3D(cast(state_machine->enemy->transform->position + Vector3(0, 4, 0)), cast(leader->GetTeamData().team_position + Vector3(0, 4, 0)), Color::ORANGE);
+	}
+	void TeamMemberEnemyBrain::Attack()
+	{
+		is_attacking = true;
 	}
 	void TeamMemberEnemyBrain::Die() {
 		hp = 0;

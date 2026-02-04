@@ -186,7 +186,7 @@ void Text::LateDraw()
 		break;
 	}
 
-	SetFontSize(DEFAULT_FONT_SIZE);
+	DxLib::SetFontSize(DEFAULT_FONT_SIZE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 

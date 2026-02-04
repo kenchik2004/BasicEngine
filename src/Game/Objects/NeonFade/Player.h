@@ -29,6 +29,8 @@ namespace NeonFade
 		void OnTriggerExit(const HitInfo& hit_info) override;
 
 		void Damage(int damage);
+		void SetElectroEffectTextureToMaterials();
+		void ResetMaterialsToDefault();
 		ModelRendererWP model;
 		AnimatorWP animator;
 		RigidBodyWP rb;
@@ -37,6 +39,7 @@ namespace NeonFade
 		CameraObjectWP player_camera;
 		PlayerCameraMachineWP player_camera_machine;
 	private:
+		SafeSharedPtr<Texture> mov_tex = nullptr;
 
 	};
 

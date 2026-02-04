@@ -73,15 +73,16 @@ float4 main(PS_INPUT input) : SV_Target0
 			float3 dir_center = normalize(sample_center_position - view_position);
 			float3 dir_sample = normalize(sample_center_position - view_depth.xyz);
 			float cosine = dot(dir_center, dir_sample);
-			ao += cosine / SAMPLE_COUNT;
+			float step = smoothstep(0,0.0001, length(sample_center_position - view_position));
+			ao += cosine / SAMPLE_COUNT*step;
 		}
 		//ao += 1.0f / SAMPLE_COUNT;
 		/*return float4(view_depth.zzz*0.01, 1);
 		return float4(view_position.zzz * 0.01, 1);*/
 
 	}
-	ao *= 1 - smoothstep(0.1, 50.0, sample_center_position.z);
-	
+	ao *= 1 - smoothstep(0.1, 100.0, sample_center_position.z);
+
 	ao = 1.0 - ao;
 	// 出力パラメータを返す
 	return float4(1,1,1,ao);

@@ -83,6 +83,7 @@
     <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\ISceneState.cpp" />
@@ -111,6 +112,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerMoveState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashChargeState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashMainState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Fin.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ketsu.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ten.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_KI.cpp" />
@@ -218,6 +220,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\ISceneState.h" />
@@ -246,6 +249,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerMoveState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashChargeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\PlayerStates\PlayerSmashMainState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Fin.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ketsu.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ten.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_KI.h" />

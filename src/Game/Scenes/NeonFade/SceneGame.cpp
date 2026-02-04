@@ -13,10 +13,10 @@
 namespace NeonFade {
 	//1ビルの縦横...100m×100m
 	std::array<Vector3, 4> buildings = {
-		Vector3(-90.0f,0.0f,280.0f),
-		Vector3(-90.0f,0.0f,120.0f),
-		Vector3(90.0f,0.0f,120.0f),
-		Vector3(90.0f,0.0f,280.0f),
+		Vector3(-100.0f,0.0f,290.0f),
+		Vector3(-100.0f,0.0f,130.0f),
+		Vector3(100.0f,0.0f,130.0f),
+		Vector3(100.0f,0.0f,290.0f),
 	};
 
 	void SceneGame::Load()
@@ -75,7 +75,7 @@ namespace NeonFade {
 		shadowmap->SetShadowMapSize(1024);
 		shadowmap->SetLightDirection({ 0, -8, 5 });
 		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
-		player_->transform->position = { 0,30,100 };
+		player_->transform->position = { 0,20,100 };
 
 		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
 		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 2,2,10 }, 0, 0, { 0,-8,5 });
@@ -154,6 +154,21 @@ namespace NeonFade {
 			text_comp->SetFontSize(50);
 			text_comp->TextColor() = Color::MAGENTA;
 			text_comp->SetAlignment(Text::ALIGNMENT::RIGHT);
+			std::array<std::string, 2> ui_name_table = { "txt_message","txt_time" };
+			std::array<std::string, 2> ui_txt_table = { u8"殲滅せよ",u8"" };
+			for (u32 i = 0; i < ui_name_table.size(); i++) {
+				auto txt_obj = SceneManager::Object::Create<UIObject>(ui_name_table[i]);
+				txt_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+				txt_obj->AnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+				txt_obj->transform->scale = { 300,170,1 };
+				auto txt_comp = txt_obj->AddComponent<Text>();
+				txt_comp->SetFontSize(170);
+				txt_comp->TextColor() = Color::YELLOW;
+				txt_comp->SetAlignment(Text::ALIGNMENT::MIDDLE);
+				txt_comp->SetText(ui_txt_table[i]);
+				ui_texts[ui_name_table[i]] = txt_obj;
+
+			}
 		}
 		{
 			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"α版HUD");

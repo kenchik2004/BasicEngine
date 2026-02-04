@@ -28,6 +28,7 @@ namespace NeonFade {
 		PlayerWP player;
 		UIObjectWP text_obj;
 		UIObjectWP hud_obj;
+		std::unordered_map<std::string, UIObjectWP> ui_texts;
 		TextWP text_comp;
 		SceneGameStateMachineUP scene_state_machine = nullptr;
 	private:

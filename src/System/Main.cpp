@@ -283,6 +283,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			Time::UpdateFPS();
 			if (ProcessMessage())	break;
 			if (Input::GetKey(KeyCode::Escape))	break;
+			if (SceneManager::IsApplicationClosing())	break;
 		}
 		catch (Exception& ex) {
 			ex.Show();

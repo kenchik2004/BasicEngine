@@ -27,9 +27,12 @@ namespace NeonFade {
 		charge_timer += dt;
 		if (charge_timer < 0.6f) {
 			auto enem_machine = static_cast<EnemyStateMachine*>(machine);
-			owner_enemy->transform->SetAxisZ(-enem_machine->move_vec.getNormalized());
-			if (enem_machine->move_vec.magnitudeSquared() >= 3.0f * 3.0f)
-				rb->velocity = enem_machine->move_vec.getNormalized() * 3.0f;
+			Vector3 mov = enem_machine->move_vec;
+			mov = ProjectOnPlane(mov, { 0,1,0 });
+			if (mov.isFinite() && !mov.isZero())
+				owner_enemy->transform->SetAxisZ(mov);
+			if (mov.magnitudeSquared() >= 3.0f * 3.0f)
+				rb->velocity = mov.getNormalized() * 3.0f;
 			else
 				rb->velocity = { 0,rb->velocity.y,0 };
 		}

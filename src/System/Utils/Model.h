@@ -45,6 +45,9 @@ public:
 	// @brief デストラクタ。モデルとメッシュを解放。
 	//----------------------------------------------------
 	~ModelSource() { MV1DeleteModel(handle); if (convex_mesh)convex_mesh->release(); if (triangle_mesh)triangle_mesh->release(); }
+
+	const std::string& GetName() const { return name; }
+	const std::string& GetPath() const { return path; }
 };
 
 //----------------------------------------------------
@@ -130,6 +133,8 @@ public:
 	// @param to_gbuffer GBuffer に描画するかどうか。
 	//----------------------------------------------------
 	void Draw(bool to_gbuffer = false);
+	const std::string& GetName() const { return name; }
+	const std::string& GetPath() const { return original->GetPath(); }
 };
 
 //----------------------------------------------------

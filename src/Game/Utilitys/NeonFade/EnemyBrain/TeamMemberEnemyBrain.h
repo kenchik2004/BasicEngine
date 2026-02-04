@@ -15,6 +15,7 @@ namespace NeonFade {
 		void Die();
 		void KnockBack(Vector3 knock_back_vec) override;
 		void DebugDraw() override;
+		void Attack();
 
 	private:
 		u32 number_in_team = 0;
@@ -25,6 +26,7 @@ namespace NeonFade {
 		static constexpr float I_FRAME = 0.05f;
 		trigger_bool knock_back = false;
 		trigger_bool is_damaged = false;
+		trigger_bool is_attacking = false;
 	};
 }
 

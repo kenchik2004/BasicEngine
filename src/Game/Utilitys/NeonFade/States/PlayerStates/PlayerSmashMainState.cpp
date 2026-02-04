@@ -36,22 +36,35 @@ namespace NeonFade {
 			hit_box->RemoveThisComponent();
 			hit_box = nullptr;
 		}
+		//ずっとビリビリしてるのもアレなので、通常テクスチャに戻す
+		{
+			owner_player->ResetMaterialsToDefault();
+		}
 	}
 	void PlayerSmashMainState::Update(IStateMachine* machine, float dt)
 	{
 		smash_timer += dt;
+
+		owner_player->player_camera_machine->SetTransitionTime(0.5f);
 		if (smash_timer < 0.5f) {
-			owner_player->player_camera_machine->camera_distance_max = std::lerp(50.0f, 30.0f, 0.5f - smash_timer);
+			owner_player->player_camera_machine->camera_distance_max = std::lerp(50.0f, 17.0f, (0.5f - smash_timer) / 1.0f);
 		}
 		else if (smash_timer < 0.7f) {
 
-			owner_player->player_camera_machine->camera_distance_max = std::lerp(30.0f, 50.0f, 0.7f - smash_timer);
+			owner_player->player_camera_machine->camera_distance_max = std::lerp(30.0f, 50.0f, (0.2f - smash_timer + 0.5f) / 1.0f);
 			rb->velocity = Vector3(0, 0, 0);
 		}
+
 		if (smash_timer >= 0.3f && !anim_after_smash) {
 
 			animator->PlayIfNoSame("smash_finish", false, 0.0f, 0.0f, false);
 			anim_after_smash = true;
+
+			if (owner_player->player_camera_machine->GetCameraMode() == PlayerCameraMachine::CINEMATIC)
+			{
+				owner_player->player_camera_machine->SetTransitionTime(0.2f);
+				owner_player->player_camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::MANIPULATE);
+			}
 			auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_smash", 2.0f);
 			Vector3 offset = owner_player->transform->AxisZ() * 20.0f;
 			eff->move_dir = owner_player->transform->AxisZ() * 70.0f;

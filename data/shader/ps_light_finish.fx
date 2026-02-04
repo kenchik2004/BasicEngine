@@ -46,9 +46,10 @@ PS_OUTPUT main(PS_INPUT input)
 		specular.rgb *= so;
 
 	}
-	float4 emissive = float4(saturate(surfaceInfo.albedo_.rgb * surfaceInfo.emissive_), 1);
+	float4 emissive = float4(surfaceInfo.albedo_.rgb * surfaceInfo.emissive_, 1);
 	output.color0_ = diffuse + specular + emissive;
-	output.color0_.rgb = pow(saturate(output.color0_.rgb), 1.0 / 2.2);
+	output.color0_.rgb = pow(output.color0_.rgb, 1.0 / 2.2);
+	output.color0_ += emissive;
 
 	// 出力パラメータを返す
 	return output;

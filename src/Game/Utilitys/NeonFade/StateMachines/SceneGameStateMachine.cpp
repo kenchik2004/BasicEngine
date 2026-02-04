@@ -4,6 +4,7 @@
 #include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_Show.h"
 #include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_Ten.h"
 #include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_Ketsu.h"
+#include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_Fin.h"
 
 namespace NeonFade {
 	SceneGameStateMachine::SceneGameStateMachine(SceneGame* owner_scene_)
@@ -14,7 +15,7 @@ namespace NeonFade {
 		auto show_state = make_safe_unique<SceneGameState_Show>(owner_scene_game);
 		auto ten_state = make_safe_unique<SceneGameState_Ten>(owner_scene_game);
 		auto ketsu_state = make_safe_unique<SceneGameState_Ketsu>(owner_scene_game);
-
+		auto fin_state = make_safe_unique<SceneGameState_Fin>(owner_scene_game);
 
 		AddState("KI", std::move(ki_state));
 
@@ -24,13 +25,15 @@ namespace NeonFade {
 		show_state->RegisterChangeRequest("Ten", show_to_ten, 0);
 		AddState("Show", std::move(show_state));
 
-		std::function<bool()> ten_to_ketsu = [this]() {
+
+		std::function<bool()> ketsu_to_fin = [this]() {
 			return owner_scene_game->GetEnemyCount() == 0;
 			};
-		ten_state->RegisterChangeRequest("Ketsu", ten_to_ketsu, 0);
 
+		ketsu_state->RegisterChangeRequest("Fin", ketsu_to_fin, 0);
 		AddState("Ten", std::move(ten_state));
 		AddState("Ketsu", std::move(ketsu_state));
+		AddState("Fin", std::move(fin_state));
 
 		ChangeState("KI");
 

@@ -2,6 +2,7 @@
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 #include "Game/Managers/LightManager.h"
+#include "Game/Components/PlayerCameraMachine.h"
 
 namespace NeonFade {
 	PlayerSmashChargeState::PlayerSmashChargeState(Player* player_)
@@ -27,6 +28,10 @@ namespace NeonFade {
 			eff_player->Play();
 			charge_effect = eff;
 		}
+		//ビリビリしてそうな感じの動画テクスチャをマテリアルにセット
+		{
+			owner_player->SetElectroEffectTextureToMaterials();
+		}
 		{
 			if (!light_manager)
 				light_manager = SceneManager::Object::Get<LightManager>().get();
@@ -41,6 +46,17 @@ namespace NeonFade {
 			smash_lights.push_back(light);
 
 		}
+
+		auto& camera_machine = owner_player->player_camera_machine;
+		if (Random::Int(0, 5) == 0) {
+			camera_machine->SetTransitionTime(1.0f);
+			camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::CINEMATIC);
+			Vector3 cinematic_offset = -owner_player->transform->AxisX();
+			cinematic_offset += owner_player->transform->AxisY() * 0.5f;
+			cinematic_offset += owner_player->transform->AxisZ() * -1.7f;
+			camera_machine->SetCinematicOffset(cinematic_offset.getNormalized());
+			camera_machine->camera_distance_max = 17.0f;
+		}
 	}
 	void PlayerSmashChargeState::OnExit(IStateMachine* machine)
 	{
@@ -50,6 +66,7 @@ namespace NeonFade {
 		for (auto& light : smash_lights) {
 			light_manager->RemoveLight(light);
 		}
+
 	}
 	void PlayerSmashChargeState::Update(IStateMachine* machine, float dt)
 	{
@@ -58,7 +75,7 @@ namespace NeonFade {
 		move_dir += owner_player->transform->AxisZ() * -3.0f;
 		move_dir += owner_player->transform->AxisY() * 3.0f;
 		rb->velocity = move_dir;
-		auto mat=owner_player->model->GetFrameWorldMat(45);
+		auto mat = owner_player->model->GetFrameWorldMat(45);
 		auto pos = MV1GetFramePosition(owner_player->model->GetModelHandle(), 45);
 		if (charge_effect)
 			charge_effect->transform->position = cast(mat.getPosition());

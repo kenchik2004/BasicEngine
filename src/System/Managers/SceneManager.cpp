@@ -1701,6 +1701,7 @@ void SceneManager::PostDraw()
 void SceneManager::Exit()
 {
 	if (current_scene) {
+		current_scene->Exit();
 		for (auto& obj : Object::GetArray<::Object>()) {
 
 			while (auto comp = obj->GetComponent<Component>()) {
@@ -1709,7 +1710,6 @@ void SceneManager::Exit()
 			obj->Exit();
 			obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
 		}
-		current_scene->Exit();
 		current_scene->UnLoad();
 		current_scene->Destroy();
 		current_scene->DestroyPhysics();
@@ -1730,6 +1730,7 @@ void SceneManager::Exit()
 	}
 
 	for (auto& another_scene : another_scenes) {
+		another_scene->Exit();
 		for (auto& obj : another_scene->GetGameObjectPtrVec<::Object>()) {
 
 			while (auto comp = obj->GetComponent<Component>()) {
@@ -1738,7 +1739,6 @@ void SceneManager::Exit()
 			obj->Exit();
 			obj->status.status_bit.on(ObjStat::STATUS::REMOVED);
 		}
-		another_scene->Exit();
 		another_scene->Destroy();
 		another_scene->DestroyPhysics();
 	}

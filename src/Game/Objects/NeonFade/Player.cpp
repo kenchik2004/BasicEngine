@@ -12,7 +12,7 @@ namespace NeonFade
 	{
 		rb = AddComponent<RigidBody>();
 		rb->GetBody()->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0f);
-
+		rb->SetMassCenter({ 0,-4.5f,0 });
 		auto model_obj = SceneManager::Object::Create<GameObject>("pl_model");
 		model_obj->transform->SetParent(transform);
 		model_obj->transform->scale = { 0.05f,0.05f,0.05f };
@@ -41,21 +41,11 @@ namespace NeonFade
 		animator->SetAnimation("clouch_inv", 0);
 		animator->SetAnimation("leg_sweep", 0);
 #if 1
-		auto mov_tex = TextureManager::Get("electro_movie");
-#endif
-		int mv1_handle = model->GetModelHandle();
-		auto mat = model->GetMaterial(0);
-		auto mat2 = model->GetMaterial(1);
-		//MV1SetMaterialEmiColor(mv1_handle, 0, { 10.0f,10.0f,10.0f,10.0f });
-		//mat->SetTexture(TextureManager::Get("electro_texture"), Material::TextureType::Emission);
-		//mat2->SetTexture(TextureManager::Get("electro_texture"), Material::TextureType::Emission);
-		//mat->SetTexture(TextureManager::Create("electro_texture", 1000, 1000, DXGI_FORMAT_B8G8R8A8_UNORM), Material::TextureType::Emission);
-
+		mov_tex = TextureManager::Get("electro_movie");
 		PlayMovieToGraph(*mov_tex, DX_PLAYTYPE_LOOP);
+#endif
 
 
-		mat->SetTexture(mov_tex, Material::TextureType::Emission);
-		mat2->SetTexture(mov_tex, Material::TextureType::Emission);
 		rb->freeze_rotation = { 1,1,1 };
 		auto col = AddComponent<CapsuleCollider>();
 		col->height = 5.7f;
@@ -78,6 +68,8 @@ namespace NeonFade
 	{
 		if (Input::GetKeyDown(KeyCode::Period))
 			SetGlobalAmbientLight({ 0,0,0,0 });
+		if (transform->position.y < -50)
+			transform->position.y = 5.0f;
 	}
 	void Player::PreDraw()
 	{
@@ -104,6 +96,7 @@ namespace NeonFade
 	}
 	void Player::Exit()
 	{
+		mov_tex.reset();
 	}
 	void Player::OnCollisionEnter(const HitInfo& hit_info)
 	{
@@ -133,5 +126,22 @@ namespace NeonFade
 	void Player::Damage(int damage)
 	{
 		pl_controller->Damage(1);
+	}
+	void Player::SetElectroEffectTextureToMaterials()
+	{
+
+		int mv1_handle = model->GetModelHandle();
+		auto mat = model->GetMaterial(0);
+		auto mat2 = model->GetMaterial(1);
+		mat->SetTexture(mov_tex, Material::TextureType::Emission);
+		mat2->SetTexture(mov_tex, Material::TextureType::Emission);
+	}
+	void Player::ResetMaterialsToDefault()
+	{
+		auto mat = model->GetMaterial(0);
+		auto mat2 = model->GetMaterial(1);
+		mat->SetTexture(nullptr, Material::TextureType::Emission);
+		mat2->SetTexture(nullptr, Material::TextureType::Emission);
+
 	}
 } // namespace NeonFade

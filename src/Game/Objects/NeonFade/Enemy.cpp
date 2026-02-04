@@ -13,6 +13,7 @@ namespace NeonFade {
 	{
 
 		rb = AddComponent<RigidBody>();
+		rb->mass = 0.1f;
 		auto model_obj = SceneManager::Object::Create<GameObject>("pl_model");
 		model_obj->transform->SetParent(transform);
 		model_obj->transform->scale = { 0.05f,0.05f,0.05f };

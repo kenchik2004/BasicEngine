@@ -11,6 +11,7 @@ root
 |        |-----NetWorkTest_Client::NetWorkSampleScene_Client
 |        |-----NetWorkTest::NetWorkSampleScene
 |        |-----NeonFade::SceneGame
+|        |-----NeonFade_Debug::StageMakeScene
 |        end_of_node
 |        
 |-----Object

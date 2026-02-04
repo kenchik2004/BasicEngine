@@ -99,6 +99,7 @@ void CatmullRomPath::BuildArcLengthTable() {
 	const int samplesPerSegment = 32; // LUT密度
 
 	int N = (int)controlPoints.size();
+	if (!loop) N -= 1; // 非ループ時は終端制御点分を除外
 	for (int i = 0; i < N; i++) {
 		SegmentInfo seg{};
 		seg.length = 0.0f;

@@ -42,6 +42,10 @@ namespace NeonFade {
 	private:
 		LeaderBrainData team_data;
 		Vector3 next_target = { 0,0,0 };
+		static constexpr float max_randwalk_time = 7.0f;
+		float randwalk_timer = 0.0f;
+		static constexpr float attack_cool_time = 3.0f;
+		float attack_cool_timer = 3.0f;
 		static inline std::vector<LeaderBrainData*> another_groups = std::vector<LeaderBrainData*>(0);
 
 		//オブジェクトに持たせる用の変数

@@ -14,7 +14,7 @@ namespace NeonFade {
 		trigger_bool is_damaged = false;
 		trigger_bool knock_back = false;
 		bool is_dead = false;
-		bool is_attacking = false;
+		trigger_bool is_attacking = false;
 		Vector3 move_vec = { 0,0,0 };
 	private:
 	};

@@ -28,7 +28,7 @@ namespace NeonFade {
 	}
 	void PlayerAttack2State::Update(IStateMachine* machine, float dt)
 	{
-		exit_timer += dt;
+			exit_timer += dt;
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;
 			if (hit_stop_timer <= 0.0f)

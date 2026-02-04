@@ -270,7 +270,7 @@ public:
 	void          Update() override;
 	void          PreDraw() override final;
 	void          LateDraw() override final;
-	virtual unsigned int& BackGroundColor() { return back_ground_color; }
+	virtual Color& BackGroundColor() { return back_ground_color; }
 	virtual bool& UseBackGround() { return use_back_color; }
 
 	inline const Vector3& GetDrawPos() { return draw_pos; }
@@ -294,7 +294,7 @@ public:
 protected:
 	int          draw_priolity = 0;
 	bool         use_back_color = false;
-	unsigned int back_ground_color = Color::GRAY;
+	Color back_ground_color = Color::GRAY;
 	Vector3       anchor_point;
 	Vector3       canvas_anchor_point;
 	Vector3       draw_pos;

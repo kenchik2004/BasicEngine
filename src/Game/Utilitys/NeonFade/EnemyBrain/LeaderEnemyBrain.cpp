@@ -24,23 +24,47 @@ namespace NeonFade {
 
 
 
+		bool knock_back_bool = knock_back;
+		bool damaged_bool = is_damaged;
 		//ここで思考する
 		{
 			if (!player)
 				return;
+			randwalk_timer -= Time::UnscaledDeltaTime();
 			Vector3 pl_dist = player->transform->position - team_data.team_position;
 			pl_dist.y = 0;//高さ方向は無視
 			//一旦仮で、プレイヤーから一定距離内に近付き、その中でランダムウォークを行うようにしておく
-			if (pl_dist.magnitudeSquared() > 50.0f * 50.0f) {
-				team_data.team_mov_vec = pl_dist.getNormalized();
-				next_target = Random::Position(team_data.team_position - Vector3(30, 0, 30), team_data.team_position + Vector3(30, 0, 30));
-			}
-			else {
-				Vector3 random_walk_vec = next_target - team_data.team_position;
-				if (random_walk_vec.magnitudeSquared() <= 1.0f)
-					next_target = Random::Position(team_data.team_position - Vector3(30, 0, 30), team_data.team_position + Vector3(30, 0, 30));
-				random_walk_vec = next_target - team_data.team_position;
-				team_data.team_mov_vec = random_walk_vec.getNormalized();
+			if constexpr (true) {
+				if (pl_dist.magnitudeSquared() > 30.0f * 30.0f) {
+					Vector3 random_walk_vec = next_target - team_data.team_position;
+					random_walk_vec.y = 0;		//高さ方向は無視
+					if (random_walk_vec.magnitudeSquared() <= 5.0f * 5.0f || random_walk_vec.magnitudeSquared() > 70.0f * 70.0f || randwalk_timer < 0.0f) {
+						randwalk_timer = max_randwalk_time;
+						next_target = Random::Position(team_data.team_position - Vector3(30, 0, 30), team_data.team_position + Vector3(30, 0, 30));
+					}
+					random_walk_vec = next_target - team_data.team_position;
+					team_data.team_mov_vec = random_walk_vec.getNormalized();
+
+					for (auto& member : team_data.members) {
+						member->GetMachine()->is_attacking = false;
+					}
+					state_machine->is_attacking = false;
+				}
+				else {
+					if (pl_dist.magnitudeSquared() > 5.0f * 5.0f)
+						team_data.team_mov_vec = pl_dist.getNormalized() * 7;
+					else {
+						team_data.team_mov_vec = { 0,0,0 };
+						randwalk_timer = max_randwalk_time;
+						next_target = Random::Position(team_data.team_position - Vector3(30, 0, 30), team_data.team_position + Vector3(30, 0, 30));
+					}
+
+					for (auto& member : team_data.members) {
+						member->GetMachine()->is_attacking = true;
+					}
+					if (!damaged_bool)
+						state_machine->is_attacking = true;
+				}
 			}
 			//ほかのグループと押し合う
 			Vector3 avoid = { 0,0,0 };
@@ -51,7 +75,7 @@ namespace NeonFade {
 				if (to_other.magnitudeSquared() <= 8.0f * 8.0f) {
 					if (to_other.magnitudeSquared() <= 1e-6f * 1e-6f)
 						to_other = { Random::Float01() + 0.01f,0.0f,Random::Float01() + 0.01f };
-					avoid -= (to_other.getNormalized() * 8.0f / to_other.magnitude());
+					avoid -= group->team_mov_vec.getNormalized() / to_other.magnitudeSquared() * 50.0f;
 				}
 			}
 			team_data.team_mov_vec = team_data.team_mov_vec * 5 + avoid;
@@ -71,8 +95,7 @@ namespace NeonFade {
 		if (i_frame_timer > 0.0f)
 			i_frame_timer -= dt;
 
-		bool knock_back_bool = knock_back;
-		state_machine->is_damaged = is_damaged;
+		state_machine->is_damaged = damaged_bool;
 		state_machine->knock_back = knock_back_bool;
 		state_machine->is_dead = hp == 0;
 
@@ -140,7 +163,7 @@ namespace NeonFade {
 	void LeaderEnemyBrain::DebugDraw()
 	{
 		DrawCylinder3D(cast(state_machine->enemy->transform->position), cast(state_machine->enemy->transform->position + Vector3(0, 10, 0)), 8, 16, Color::YELLOW, Color::YELLOW, false);
-
+		DrawLine3D(cast(state_machine->enemy->transform->position + Vector3(0, 5, 0)), cast(next_target), Color::RED);
 	}
 	void LeaderEnemyBrain::KnockBack(Vector3 knock_back_vec)
 	{

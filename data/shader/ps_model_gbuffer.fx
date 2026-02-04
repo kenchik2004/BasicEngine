@@ -82,12 +82,14 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	// 出力
 	//----------------------------------------------------------
 	PS_OUTPUT_MRT output;
-	float3 emissive = EmissionTexture.Sample(EmissionSampler,uv).rgb;
-
+	float3 emissive = EmissionTexture.Sample(EmissionSampler, uv).rgb*2;
+	//emissive = saturate(emissive * 2 - 1)*0.5;
 	emissive += DxLib_Common.Material.Ambient_Emissive.rgb;
-	emissive = (emissive - 0.5) * 2;
+
+
+
 	float emissive_strength = dot(emissive.rgb, float3(0.299, 0.597, 0.114));
-	emissive_strength = saturate(emissive_strength * (1.0 / 64.0))*1000;
+	emissive_strength = saturate(emissive_strength * (1.0 / 64.0));
 	float metal_emissive = saturate(metallic) * 0.5;
 	metal_emissive = emissive_strength > 0.0001 ? (emissive_strength * 0.5 + 0.5) : metal_emissive;
 	output.color0_ = float4(albedo, ao);

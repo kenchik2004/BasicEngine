@@ -53,6 +53,8 @@ public:
 	static void PostDraw();			//<フレーム中最終更新
 
 	static void Exit();			//<終了
+	static void CloseApplication() { is_application_closing = true; }	//<アプリケーション終了要求
+	static bool IsApplicationClosing() { return is_application_closing; }	//<アプリケーション終了要求確認
 
 
 	//裏のデフォルトシーンを取得
@@ -341,6 +343,7 @@ public:
 
 	static std::vector<std::function<void()>> func_on_loop_finish;
 private:
+	static inline bool is_application_closing = false;	//!<アプリケーション終了要求フラグ
 	static ScenePVec scenes;			//!<作成済みシーンの配列
 	static ScenePVec another_scenes;	//!<裏シーンの配列
 	static SceneP current_scene;		//!<現在シーン(カレントシーン)へのポインタ

@@ -20,7 +20,7 @@ namespace NeonFade
 			hit_box_->SetLayer(Collider::Layer::Wepon);
 			hit_box_->SetHitGroup(Collider::Layer::Player);
 			hit_box_->radius = 5.0f;
-			hit_box_->position = Vector3(0, 3.5f, -3.5f);
+			hit_box_->position = Vector3(0, 3.5f, 3.5f);
 			hit_box = hit_box_;
 			};
 		std::function<void()> hit_box_remove = [this]() {
