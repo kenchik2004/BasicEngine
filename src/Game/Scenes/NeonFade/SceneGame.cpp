@@ -78,7 +78,7 @@ namespace NeonFade {
 		player_->transform->position = { 0,20,100 };
 
 		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
-		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 2,2,10 }, 0, 0, { 0,-8,5 });
+		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,100 }, 0, 0, { 0,-8,5 });
 
 		for (u32 i = 0; i < buildings.size(); ++i)
 			for (u32 j = 0; j < 20; ++j) {

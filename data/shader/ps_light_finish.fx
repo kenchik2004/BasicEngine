@@ -33,7 +33,7 @@ PS_OUTPUT main(PS_INPUT input)
 	{
 		float ao = surfaceInfo.ao_;
 		float3 colored_ao = surfaceInfo.albedo_ * ao * ao;
-		diffuse.rgb = colored_ao;
+		diffuse.rgb *= colored_ao;
 		//diffuse.rgb = ao;
 
 	}
@@ -49,7 +49,7 @@ PS_OUTPUT main(PS_INPUT input)
 	float4 emissive = float4(surfaceInfo.albedo_.rgb * surfaceInfo.emissive_, 1);
 	output.color0_ = diffuse + specular + emissive;
 	output.color0_.rgb = pow(output.color0_.rgb, 1.0 / 2.2);
-	output.color0_ += emissive;
+    output.color0_.a = 1;
 
 	// 出力パラメータを返す
 	return output;

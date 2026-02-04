@@ -46,7 +46,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	float shadow = getShadow(input.position_, surfaceInfo.world_position_);
 
 	// Lambertと暗いほうを選択する
-	shadow = min(shadow, saturate(dot(N, L)));
+    shadow = min(shadow, saturate(dot(N, L)));
 
 
 	// 疑似的に影を薄くする
@@ -75,7 +75,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	//----------------------------------------------------------
 	PS_OUTPUT_LIGHTING output;
 
-	float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_*0;
+	float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_;
 	output.diffuse_ = float4(diffuse + ambient, 1.0f);
 	output.specular_ = float4(specular, 1.0f);
 
