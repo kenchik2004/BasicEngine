@@ -2,6 +2,7 @@
 #include "Game/Scenes/NeonFade/SceneGame.h"
 
 #include "Game/Objects/NeonFade/Enemy.h"
+#include "Game/Utilitys/NeonFade/EnemyTeam.h"
 
 namespace NeonFade
 {
@@ -17,7 +18,7 @@ namespace NeonFade
 		factory.SetSpawnRadius(20);
 		u32 teams = 3, enem_per_tems = 5;
 
-		factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
+		enemy_teams = factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
 		owner_scene_game->AddEnemyCount(teams * enem_per_tems);
 		owner_scene_game->text_comp->SetText(u8"Show State");
 	}

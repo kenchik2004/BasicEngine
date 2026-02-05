@@ -22,6 +22,7 @@ namespace NeonFade
 		void OnTriggerEnter(const HitInfo& hit_info);
 		void OnTriggerStay(const HitInfo& hit_info);
 		void OnTriggerExit(const HitInfo& hit_info);
+		const PlayerStateMachine* GetStateMachine() const { return state_machine.get(); }
 
 	private:
 		PlayerStateMachineUP state_machine;

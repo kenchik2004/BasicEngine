@@ -12,7 +12,6 @@ namespace NeonFade
 	{
 		rb = AddComponent<RigidBody>();
 		rb->GetBody()->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0f);
-		rb->SetMassCenter({ 0,-4.5f,0 });
 		auto model_obj = SceneManager::Object::Create<GameObject>("pl_model");
 		model_obj->transform->SetParent(transform);
 		model_obj->transform->scale = { 0.05f,0.05f,0.05f };
@@ -51,7 +50,7 @@ namespace NeonFade
 		col->height = 5.7f;
 		col->radius = 1.5f;
 		//col->position = { 4.5f,0,0 };
-		col->rotation = Quaternion(DEG2RAD(90), { 0,0,1 });
+		col->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
 		col->SetLayer(Collider::Layer::Player);
 		pl_controller = AddComponent<PlayerController>();
 		//auto foot_col = AddComponent<BoxCollider>();

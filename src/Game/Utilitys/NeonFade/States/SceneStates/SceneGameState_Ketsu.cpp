@@ -1,6 +1,7 @@
 ﻿#include "SceneGameState_Ketsu.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/Enemy.h"
+#include "Game/Utilitys/NeonFade/EnemyTeam.h"
 
 namespace NeonFade {
 	SceneGameState_Ketsu::SceneGameState_Ketsu(SceneGame* owner_scene_)
@@ -15,7 +16,7 @@ namespace NeonFade {
 		factory.SetSpawnPosition({ 0,5,200 });
 		factory.SetSpawnRadius(20);
 		u32 teams = 12, enem_per_tems = 12;
-		factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
+		enemy_teams = factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
 		owner_scene_game->AddEnemyCount(teams * enem_per_tems);
 
 		owner_scene_game->text_comp->SetText(u8"KETSU State");

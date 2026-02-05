@@ -12,7 +12,7 @@ namespace NeonFade
 
 
 		virtual void ChangeState(std::string_view next);
-		std::string GetCurrentStateName() { return current_state ? current_state->GetName() : ""; }
+		const std::string GetCurrentStateName() const { return current_state ? current_state->GetName() : "none"; }
 		virtual void Update(float dt);
 		void AddState(std::string_view name, SafeUniquePtr<IState> state);
 		virtual void OnCollisionEnter(const HitInfo& hit_info);

@@ -200,7 +200,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//FPSが物理更新頻度を下回った場合はFPSを基準に計算頻度を決める
 			SceneManager::PrePhysics();
 			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max);
-			printfDx("Physics Loops: %llu\n", loops);
 			for (int i = 0; i < loops; i++)
 			{
 				//物理

@@ -18,7 +18,7 @@ namespace NeonFade {
 	void EnemyAttackReadyState::OnEnter(IStateMachine* machine)
 	{
 		next = false;
-		ready_timer = max_ready_time+Random::Float01();
+		ready_timer = max_ready_time + Random::Float01();
 		animator->anim_speed = 2.0f;
 		random_attack_distance = 3.0f + Random::Float01() * 5.0f;
 		animator->Play("enemy_walk", true, Random::Float01());
@@ -29,11 +29,16 @@ namespace NeonFade {
 		Vector3 mov_vec;
 
 		auto enem_machine = static_cast<EnemyStateMachine*>(machine);
-		mov_vec = enem_machine->move_vec;
+		mov_vec = target->transform->position - owner_enemy->transform->position;
 		mov_vec = ProjectOnPlane(mov_vec, { 0,1,0 });
+
 		if (mov_vec.magnitudeSquared() >= random_attack_distance * random_attack_distance || ready_timer > 0.0f) {
+
+			mov_vec.normalize();
+			owner_enemy->transform->SetAxisZ(mov_vec);
+			mov_vec *= 10;
+			mov_vec.y = rb->velocity.y;
 			rb->velocity = mov_vec;
-			owner_enemy->transform->SetAxisZ(mov_vec.getNormalized());
 			return;
 		}
 		next = true;

@@ -191,6 +191,9 @@
     <ClCompile Include="src\Game\Scenes\NeonFade\StageMakeScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Fin.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyTeam.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyWelterState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -389,6 +392,9 @@
     <ClInclude Include="src\Game\Scenes\NeonFade\StageMakeScene.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Fin.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyTeam.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyWelterState.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
