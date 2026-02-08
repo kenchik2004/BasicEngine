@@ -40,10 +40,18 @@ namespace NeonFade {
 		std::function<bool()>  idle_to_attack_ready = [this]() {
 			return static_cast<bool>(is_attacking);
 			};
+		std::function<bool()> idle_to_step_back = [this]() {
+			return static_cast<bool>(is_step_back);
+			};
+		std::function<bool()> idle_to_instruct = [this]() {
+			return is_instructing;
+			};
 
 		idle_state->RegisterChangeRequest("down", idle_to_down, 0);
 		idle_state->RegisterChangeRequest("die", idle_to_die, 0);
 		idle_state->RegisterChangeRequest("damage", idle_to_damage, 0);
+		idle_state->RegisterChangeRequest("attack_instruct", idle_to_instruct, 1);
+		idle_state->RegisterChangeRequest("step_back", idle_to_step_back, 1);
 		idle_state->RegisterChangeRequest("attack_ready", idle_to_attack_ready, 1);
 		idle_state->RegisterChangeRequest("welter", idle_to_welter, 1);
 		idle_state->RegisterChangeRequest("escape", idle_to_escape, 1);
@@ -153,7 +161,7 @@ namespace NeonFade {
 		attack_main_state->RegisterChangeRequest("die", attack_to_die, 0);
 		attack_main_state->RegisterChangeRequest("idle", attack_to_idle, 0);
 		AddState("attack_main", std::move(attack_main_state));
-		
+
 		auto welter_state = make_safe_unique<EnemyWelterState>(enemy);
 		std::function<bool()> welter_to_damage = [this]() {
 			return static_cast<bool>(is_damaged);

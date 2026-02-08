@@ -55,6 +55,8 @@ namespace NeonFade {
 			animator->SetAnimation("enemy_attack_charge", 0);
 			animator->SetAnimation("enemy_attack_main", 0);
 			animator->SetAnimation("enemy_escape", 0);
+			animator->SetAnimation("enemy_instruct", 0);
+			animator->SetAnimation("enemy_stepback", 0);
 
 
 

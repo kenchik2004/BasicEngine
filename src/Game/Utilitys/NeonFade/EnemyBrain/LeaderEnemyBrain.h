@@ -22,6 +22,15 @@ namespace NeonFade {
 	private:
 		EnemyTeam* my_team = nullptr;
 		EnemyStateMachine* machine = nullptr;
+
+		std::unordered_map<std::string, std::function<void()>> thinkings;
+		std::function<std::string()> update_selector;
+		u32 hp;
+		static constexpr u32 MAX_HP = 300;
+		float i_frame_timer = 0.0f;
+		static constexpr float I_FRAME = 0.1f;
+		trigger_bool knock_back = false;
+		trigger_bool is_damaged = false;
 	};
 }
 

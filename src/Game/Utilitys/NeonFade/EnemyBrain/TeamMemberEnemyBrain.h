@@ -30,7 +30,6 @@ namespace NeonFade {
 		std::function<std::string()> update_selector;
 		u32 hp;
 		static constexpr u32 MAX_HP = 100;
-		Vector3 move_vec = { 0,0,0 };
 	};
 }
 

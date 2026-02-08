@@ -48,7 +48,6 @@ namespace NeonFade {
 				return "damage";
 			if (hp == 0)
 				return "die";
-			machine->move_vec = move_vec;
 			{
 				//ここで各行動に点数をつけて、一番高い行動を返すようにする
 				u32 weakness = 0;	//弱虫度(リーダーが近くにいない、体力が少ない等で変動)
@@ -57,7 +56,8 @@ namespace NeonFade {
 				if (my_team) {
 					if (auto leader_brain = my_team->GetLeader()) {
 						//リーダーがいる場合
-						if (leader_brain->GetMachine()->GetCurrentStateName() == "attack")
+						std::string leader_state = leader_brain->GetMachine()->GetCurrentStateName();
+						if (leader_state.find("attack") != leader_state.npos)
 							aggression += 10; //リーダーが攻撃していると攻撃的度アップ
 
 						if (auto leader = leader_brain->GetMachine()->enemy) {
@@ -106,7 +106,7 @@ namespace NeonFade {
 			}
 			};
 		std::function<void()> default_think = [this]() {
-			machine->move_vec = move_vec;
+			//何もしない
 			};
 		std::function<void()> damage_think = [this]() {
 			machine->is_damaged = true;
