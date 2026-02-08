@@ -1,7 +1,7 @@
 #pragma once
+#include "Game/Utilitys/NeonFade/EnemyBrain/TeamMemberEnemyBrain.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/LeaderEnemyBrain.h"
 namespace NeonFade {
-	class LeaderEnemyBrain;
-	class TeamMemberEnemyBrain;
 	class EnemyTeam
 	{
 	private:
@@ -24,8 +24,14 @@ namespace NeonFade {
 			members.erase(std::remove(members.begin(), members.end(), member), members.end());
 		}
 		void ClearTeam() {
-			leader_brain = nullptr;
-			members.clear();
+			if (leader_brain)
+				leader_brain->RemoveFromTeam();
+			for (; members.size() > 0;) {
+				auto& member = members[0];
+				if (member) {
+					member->RemoveFromTeam();
+				}
+			}
 		}
 	};
 }

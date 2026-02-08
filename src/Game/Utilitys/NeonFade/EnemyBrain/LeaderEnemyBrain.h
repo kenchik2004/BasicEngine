@@ -16,6 +16,7 @@ namespace NeonFade {
 		void KnockBack(Vector3 knock_back_vec) override;
 		void Die();
 		void DebugDraw() override;
+		void RemoveFromTeam();
 
 
 	private:

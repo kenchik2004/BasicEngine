@@ -15,8 +15,7 @@ namespace NeonFade {
 	}
 	LeaderEnemyBrain::~LeaderEnemyBrain()
 	{
-		if (my_team)
-			my_team->SetLeader(nullptr);
+		RemoveFromTeam();
 	}
 	void LeaderEnemyBrain::Think()
 	{
@@ -33,5 +32,12 @@ namespace NeonFade {
 	}
 	void LeaderEnemyBrain::KnockBack(Vector3 knock_back_vec)
 	{
+	}
+	void LeaderEnemyBrain::RemoveFromTeam()
+	{
+		if (my_team) {
+			my_team->SetLeader(nullptr);
+			my_team = nullptr;
+		}
 	}
 }
