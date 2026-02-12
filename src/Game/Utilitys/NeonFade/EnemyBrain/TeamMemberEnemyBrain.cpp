@@ -58,7 +58,7 @@ namespace NeonFade {
 						//リーダーがいる場合
 						std::string leader_state = leader_brain->GetMachine()->GetCurrentStateName();
 						if (leader_state.find("attack") != leader_state.npos)
-							aggression += 10; //リーダーが攻撃していると攻撃的度アップ
+							aggression += 5; //リーダーが攻撃していると攻撃的度アップ
 
 						if (auto leader = leader_brain->GetMachine()->enemy) {
 							Vector3 to_leader = leader->transform->position - machine->enemy->transform->position;
