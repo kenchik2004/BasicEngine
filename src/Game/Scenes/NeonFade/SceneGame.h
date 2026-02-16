@@ -15,6 +15,7 @@ namespace NeonFade {
 		void Update() override;
 		void PreDraw() override;
 		void LateDebugDraw() override;
+		void LateDraw() override;
 		void OnLateDrawFinish() override;
 
 		void Exit() override;

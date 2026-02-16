@@ -63,13 +63,13 @@ namespace NeonFade {
 
 
 			rb->freeze_rotation = { 1,1,1 };
-			auto col = AddComponent<CapsuleCollider>();
-			col->height = 5.7f;
-			col->radius = 1.5f;
-			col->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
-			col->SetLayer(Collider::Layer::Enemy);
+			auto col_ = AddComponent<CapsuleCollider>();
+			col_->height = 5.7f;
+			col_->radius = 1.5f;
+			col_->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
+			col_->SetLayer(Collider::Layer::Enemy);
 			enem_controller = AddComponent<EnemyController>();
-			col = col;
+			col = col_;
 		}
 
 		if (!death_material) {

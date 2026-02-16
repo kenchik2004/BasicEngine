@@ -44,10 +44,10 @@ namespace NeonFade {
 			bool kb_bool = knock_back;
 			if (kb_bool)
 				return "knock_back";
+			if (hp == 0 || machine->enemy->transform->position.y < -50)
+				return "die";
 			if (dmg_bool)
 				return "damage";
-			if (hp == 0)
-				return "die";
 			{
 				//ここで各行動に点数をつけて、一番高い行動を返すようにする
 				u32 weakness = 0;	//弱虫度(リーダーが近くにいない、体力が少ない等で変動)

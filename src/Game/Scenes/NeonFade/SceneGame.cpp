@@ -67,23 +67,44 @@ namespace NeonFade {
 		TextureManager::Load(u8"data/player/electron.jpg", "electro_texture");
 		TextureManager::Load(u8"data/player/thunder.mp4", "electro_movie");
 
+		{
+			std::array<std::string, 2> ui_name_table = { "txt_message","txt_time" };
+			std::array<std::string, 2> ui_txt_table = { u8"殲滅せよ",u8"" };
+			for (u32 i = 0; i < ui_name_table.size(); i++) {
+				auto txt_obj = SceneManager::Object::Create<UIObject>(shared_from_this());
+				txt_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+				txt_obj->AnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+				txt_obj->transform->scale = { 300,170,1 };
+				auto txt_comp = txt_obj->AddComponent<Text>();
+				txt_comp->SetFontSize(170);
+				txt_comp->TextColor() = Color::YELLOW;
+				txt_comp->SetAlignment(Text::ALIGNMENT::MIDDLE);
+				txt_comp->SetText(ui_txt_table[i]);
+				ui_texts[ui_name_table[i]] = txt_obj;
+
+			}
+		}
 		CheckForLoading();
 	}
 
 	int SceneGame::Init()
 	{
-		if (!CheckForLoading())
-			return 0;
+		if (!camera)
+			camera = SceneManager::Object::Create<CameraObject>();
 		auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
 		shadowmap->SetCascadeCount(4);
 		shadowmap->SetShadowMapSize(1024);
 		shadowmap->SetLightDirection({ 0, -8, 5 });
-		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
-		player_->transform->position = { 0,20,100 };
+
 
 		auto light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
 		light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,100 }, 0, 0, { 0,-8,5 });
 
+		if (!CheckForLoading())
+			return 0;
+
+		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
+		player_->transform->position = { 0,20,100 };
 		for (u32 i = 0; i < buildings.size(); ++i)
 			for (u32 j = 0; j < 20; ++j) {
 				Vector3 rand_start = Vector3(-5, 20, -5);
@@ -106,7 +127,6 @@ namespace NeonFade {
 			ground->transform->position = { 0,0,0 };
 		}
 		{
-			camera = SceneManager::Object::Create<CameraObject>();
 			camera->transform->position = { 0,10,10 };
 			camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
 			camera->camera->render_type = Camera::RenderType::Deferred;
@@ -158,21 +178,7 @@ namespace NeonFade {
 			text_comp->SetFontSize(50);
 			text_comp->TextColor() = Color::MAGENTA;
 			text_comp->SetAlignment(Text::ALIGNMENT::RIGHT);
-			std::array<std::string, 2> ui_name_table = { "txt_message","txt_time" };
-			std::array<std::string, 2> ui_txt_table = { u8"殲滅せよ",u8"" };
-			for (u32 i = 0; i < ui_name_table.size(); i++) {
-				auto txt_obj = SceneManager::Object::Create<UIObject>(ui_name_table[i]);
-				txt_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
-				txt_obj->AnchorType() = UIObject::ANCHOR_TYPE::CENTER;
-				txt_obj->transform->scale = { 300,170,1 };
-				auto txt_comp = txt_obj->AddComponent<Text>();
-				txt_comp->SetFontSize(170);
-				txt_comp->TextColor() = Color::YELLOW;
-				txt_comp->SetAlignment(Text::ALIGNMENT::MIDDLE);
-				txt_comp->SetText(ui_txt_table[i]);
-				ui_texts[ui_name_table[i]] = txt_obj;
 
-			}
 		}
 		{
 			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"α版HUD");
@@ -187,6 +193,7 @@ namespace NeonFade {
 				u8"NeonFade α版 HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ABXYどれか+ZRトリガー\n回避:左スティック+ZLトリガー\nスタートボタンを押してこのHUDを閉じる";
 			hud_text->SetText(hud_text_str);
 			hud_obj = hud_prototype;
+			ui_texts["txt_message"]->GetComponent<Text>()->SetText(u8"殲滅せよ");
 		}
 
 
@@ -218,13 +225,25 @@ namespace NeonFade {
 	{
 
 	}
+	void SceneGame::LateDraw()
+	{
+
+	}
 	void SceneGame::OnLateDrawFinish()
 	{
 
 		printfDx("%.2f fps\n", Time::GetDrawFPS());
 		printfDx("%.2f update_fps\n", Time::GetFPS());
 		//DrawBoxAA(0, 50, sample_count_timer * 50.0f, 80, Color::RED, true);
-
+		if (!CheckForLoading())
+		{
+			float cnt = Time::GetTimeFromStart();
+			int dot_cnt = int(cnt * 2) % 4;
+			std::string load_txt = u8"ロード中";
+			for (int i = 0; i < dot_cnt; ++i)
+				load_txt += '.';
+			ui_texts["txt_message"]->GetComponent<Text>()->SetText(load_txt); 
+		}
 	}
 
 	void SceneGame::Exit()
@@ -235,7 +254,7 @@ namespace NeonFade {
 	{
 		if (loading_status == LOADING_STATUS::LOADED)
 			return true;
-		loading_status = ModelManager::GetLoadingCount() == 0 ? LOADING_STATUS::LOADED : LOADING_STATUS::LOADING;
+		loading_status = (ModelManager::GetLoadingCount()+TextureManager::GetLoadingCount()+AudioManager::GetLoadingCount()) == 0 ? LOADING_STATUS::LOADED : LOADING_STATUS::LOADING;
 		if (loading_status == LOADING_STATUS::LOADED)
 			Init();
 		return loading_status == LOADING_STATUS::LOADED;

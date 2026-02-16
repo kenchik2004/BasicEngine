@@ -61,7 +61,7 @@ namespace NeonFade
 			update_selector = [this]()->std::string {
 				bool dmg_bool = static_cast<bool>(is_damaged);
 				bool kb_bool = static_cast<bool>(knock_back);
-				if (hp == 0)
+				if (hp == 0||machine->enemy->transform->position.y<-50)
 					return "die";
 				if (kb_bool)
 					return "knock_back";
