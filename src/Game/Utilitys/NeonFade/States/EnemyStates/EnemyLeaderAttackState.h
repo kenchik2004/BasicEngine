@@ -6,7 +6,7 @@ namespace NeonFade {
 		public IState
 	{
 	public:
-		EnemyLeaderAttackState(Enemy* owner_);
+		EnemyLeaderAttackState(Enemy* owner_, GameObjectWP player_);
 		void OnEnter(IStateMachine* machine) override;
 		void OnExit(IStateMachine* machine) override;
 		void Update(IStateMachine* machine, float dt) override;
@@ -17,6 +17,7 @@ namespace NeonFade {
 		Enemy* enemy;
 		RigidBody* rb;
 		Animator* animator;
+		GameObjectWP player;
 	};
 }
 

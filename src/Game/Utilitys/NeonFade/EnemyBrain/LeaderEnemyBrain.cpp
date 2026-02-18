@@ -18,7 +18,7 @@ namespace NeonFade
 		player = player_;
 		hp = MAX_HP;
 		{
-			auto instruct_state = make_safe_unique<EnemyLeaderAttackState>(machine->enemy);
+			auto instruct_state = make_safe_unique<EnemyLeaderAttackState>(machine->enemy, player);
 			std::function<bool()> instruct_to_die = [this]() {
 				return machine->is_dead;
 				};
@@ -61,7 +61,7 @@ namespace NeonFade
 			update_selector = [this]()->std::string {
 				bool dmg_bool = static_cast<bool>(is_damaged);
 				bool kb_bool = static_cast<bool>(knock_back);
-				if (hp == 0||machine->enemy->transform->position.y<-50)
+				if (hp == 0 || machine->enemy->transform->position.y < -50)
 					return "die";
 				if (kb_bool)
 					return "knock_back";
@@ -81,7 +81,7 @@ namespace NeonFade
 
 					//プレイヤーが近いほど弱虫度アップ
 					float dist_factor = 1.0f - distance / max_pl_dist;
-					weakness += static_cast<u32>(dist_factor * 30.0f);
+					weakness += static_cast<u32>(dist_factor * 20.0f);
 					//プレイヤーが遠いほど攻撃的度アップ
 					float aggro_factor = (distance / max_pl_dist);
 					aggression += static_cast<u32>(aggro_factor * 10.0f);
@@ -94,7 +94,7 @@ namespace NeonFade
 						u32 member_count = static_cast<u32>(my_team->GetMemberNum());
 						aggression += member_count * 5;
 						//部下が少ないほど弱虫度アップ
-						weakness += (5 - member_count) * 5;
+						weakness += member_count > 5 ? (5 - member_count) * 3 : 0;
 					}
 
 					//高い方の行動を選択

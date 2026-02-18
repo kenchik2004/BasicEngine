@@ -91,6 +91,7 @@ namespace NeonFade {
 	{
 		if (!camera)
 			camera = SceneManager::Object::Create<CameraObject>();
+
 		auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
 		shadowmap->SetCascadeCount(4);
 		shadowmap->SetShadowMapSize(1024);
@@ -188,7 +189,6 @@ namespace NeonFade {
 			auto hud_text = hud_prototype->AddComponent<Text>();
 			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
 			hud_text->TextColor() = Color::RED;
-			//α版以降はチュートリアルも込みで実装予定
 			static std::string hud_text_str =
 				u8"NeonFade α版 HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ABXYどれか+ZRトリガー\n回避:左スティック+ZLトリガー\nスタートボタンを押してこのHUDを閉じる";
 			hud_text->SetText(hud_text_str);
@@ -200,6 +200,33 @@ namespace NeonFade {
 
 		scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
 		Time::ResetTime();
+
+		//今の状態では、敵やプレイヤーが非常に広範囲に移動できてしまうので、
+		//見えない壁を用意
+		{
+			std::array<Vector3, 4> wall_positions = {
+				Vector3(0,20,650),
+				Vector3(0,20,-250),
+				Vector3(-300,20,200),
+				Vector3(300,20,200)
+			};
+			std::array<Vector3, 4> wall_extents = {
+				Vector3(600.0f,100.0f,20.0f),
+				Vector3(600.0f,100.0f,20.0f),
+				Vector3(20.0f,100.0f,900.0f),
+				Vector3(20.0f,100.0f,900.0f)
+			};
+			for (u32 i = 0; i < wall_positions.size(); ++i) {
+				auto wall = SceneManager::Object::Create<GameObject>("Wall" + std::to_string(i));
+				wall->transform->position = wall_positions[i];
+				auto rb = wall->AddComponent<RigidBody>();
+				rb->is_kinematic = true;
+				auto col = wall->AddComponent<BoxCollider>();
+				col->extension = wall_extents[i];
+				col->SetLayer(Collider::Layer::Terrain);
+			}
+
+		}
 		return Super::Init();
 
 	}
@@ -242,7 +269,7 @@ namespace NeonFade {
 			std::string load_txt = u8"ロード中";
 			for (int i = 0; i < dot_cnt; ++i)
 				load_txt += '.';
-			ui_texts["txt_message"]->GetComponent<Text>()->SetText(load_txt); 
+			ui_texts["txt_message"]->GetComponent<Text>()->SetText(load_txt);
 		}
 	}
 
@@ -254,7 +281,7 @@ namespace NeonFade {
 	{
 		if (loading_status == LOADING_STATUS::LOADED)
 			return true;
-		loading_status = (ModelManager::GetLoadingCount()+TextureManager::GetLoadingCount()+AudioManager::GetLoadingCount()) == 0 ? LOADING_STATUS::LOADED : LOADING_STATUS::LOADING;
+		loading_status = (ModelManager::GetLoadingCount() + TextureManager::GetLoadingCount() + AudioManager::GetLoadingCount()) == 0 ? LOADING_STATUS::LOADED : LOADING_STATUS::LOADING;
 		if (loading_status == LOADING_STATUS::LOADED)
 			Init();
 		return loading_status == LOADING_STATUS::LOADED;
