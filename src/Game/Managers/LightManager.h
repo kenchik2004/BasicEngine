@@ -71,6 +71,7 @@ private:
 	mat4x4 camera_view_proj = mat4x4(physx::PxIdentity);
 	int lights_cbuffer_handle = -1;
 	static constexpr u8 MAX_FORWARD_LIGHTS = 6;
+	SafeSharedPtr<Texture> sdr = nullptr;
 
 public:
 	LightManager() :Object(1) {}
