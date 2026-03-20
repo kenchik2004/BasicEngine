@@ -15,7 +15,7 @@ namespace NeonFade {
 		EnemyFactory factory;
 		factory.SetSpawnPosition({ 0,5,200 });
 		factory.SetSpawnRadius(20);
-		u32 teams = 8, enem_per_tems = 8;
+		u32 teams = 3, enem_per_tems = 5;
 		enemy_teams = factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
 		owner_scene_game->AddEnemyCount(teams * enem_per_tems);
 
@@ -23,6 +23,7 @@ namespace NeonFade {
 	}
 	void SceneGameState_Ketsu::OnExit(ISceneStateMachine* machine)
 	{
+		owner_scene_game->StopGameTimer();
 	}
 	void SceneGameState_Ketsu::Update(ISceneStateMachine* machine, float dt)
 	{

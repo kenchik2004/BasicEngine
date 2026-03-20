@@ -19,6 +19,7 @@ namespace NeonFade {
 		SceneGame* owner_scene_game = nullptr;
 		float exit_timer = 0;
 		static constexpr float EXIT_TIME = 5.0f;
+		UIObjectWP fin_text_obj;
 	};
 }
 

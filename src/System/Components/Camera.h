@@ -51,8 +51,13 @@ public:
 		Forward,
 		Deferred,
 	};
+	enum class ClearType {
+		SkyBox,
+		Color,
+	};
 	RenderType render_type = RenderType::Forward;
-
+	ClearType clear_type = ClearType::SkyBox;
+	Color clear_color = { 0,0,0,0 };
 	// ■【GBufferのレイアウト】■
 //            R         G         B         A
 //       +---------+---------+---------+---------+

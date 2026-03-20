@@ -141,20 +141,28 @@ void Camera::Draw()
 		case RenderType::Forward:
 		{
 			SetRenderTarget(hdr.get(), depth.get());
-			ClearColor(hdr.get(), { 0,0,0,0 });
-			MV1SetPosition(sky_dome->GetHandle(), cast(owner->transform->position));
+			ClearColor(hdr.get(), clear_color);
 			ClearDepth(depth.get(), 1.0f);
-			sky_dome->Draw(false);
+			if (clear_type == ClearType::SkyBox) {
+				MV1SetPosition(sky_dome->GetHandle(), cast(owner->transform->position));
+				sky_dome->Draw(false);
+			}
 			ClearDepth(depth.get(), 1.0f);
 		}
 		break;
 		case RenderType::Deferred:
 		{
-			for (auto& gbuffer : gbuffer_texture_)
-				ClearColor(gbuffer.get(), { 0,0,0,0 });
-			MV1SetPosition(sky_dome->GetHandle(), cast(owner->transform->position));
+			for (auto& gbuffer : gbuffer_texture_) {
+				if (gbuffer.get() == gbuffer_texture_[0].get())
+					ClearColor(gbuffer.get(), clear_color);
+				else
+					ClearColor(gbuffer.get(), { 0,0,0,0 });
+			}
 			ClearDepth(gbuffer_texture_[GBUFFER_NUM - 1].get(), 1.0f);
-			sky_dome->Draw(false);
+			if (clear_type == ClearType::SkyBox) {
+				MV1SetPosition(sky_dome->GetHandle(), cast(owner->transform->position));
+				sky_dome->Draw(false);
+			}
 			ClearDepth(gbuffer_texture_[GBUFFER_NUM - 1].get(), 1.0f);
 
 		}
@@ -175,7 +183,7 @@ void Camera::LateDraw()
 			context->CopyResource(depth->D3dResource(), gbuffer_texture_[GBUFFER_NUM - 1]->D3dResource());
 
 			SetRenderTarget(hdr.get(), depth.get());
-			ClearColor(hdr.get(), { 0,0,0,0 });
+			ClearColor(hdr.get(), clear_color);
 
 
 			for (int i = 0; i < 16; i++)

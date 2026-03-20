@@ -1423,7 +1423,7 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 	auto& active_cameras = scene->GetActiveCamerasRef();
 
 
-	ObjectPVec& objs = current_scene->objects;
+	ObjectPVec& objs = scene->objects;
 	for (auto& cam_wp : active_cameras) {
 		if (auto cam = cam_wp.lock()) {
 			if (!cam->owner->status.status_bit.is(ObjStat::STATUS::ACTIVE))

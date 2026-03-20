@@ -357,8 +357,9 @@ namespace NeonFade
 			if (GetCurrentStateName() == "jump" || GetCurrentStateName() == "fall") {
 				attack_index = 1; //空中攻撃はsmash_chargeに固定
 			}
-			printfDx("attack_index:%d\n", attack_index);
+#ifdef _DEBUG
 			int i = 0;
+			printfDx("attack_index:%d\n", attack_index);
 			for (auto& state : attack_states_vec) {
 				if (state) {
 					printfDx("index:%d,name:%s\n", i, state->GetName().c_str());
@@ -369,6 +370,7 @@ namespace NeonFade
 				}
 				i++;
 			}
+#endif // _DEBUG
 			//前フレームと違う攻撃が選択されたら状態を入れ替え
 
 			//既にある攻撃状態を元のスロットに戻す

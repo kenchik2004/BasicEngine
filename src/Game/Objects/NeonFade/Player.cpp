@@ -72,8 +72,6 @@ namespace NeonFade
 	}
 	void Player::PreDraw()
 	{
-		auto mat = model->GetMaterial(0);
-		auto mov_tex = mat->GetTexture(Material::TextureType::Emission);
 		UpdateMovieToGraph(*mov_tex);
 
 #if 0
@@ -130,15 +128,15 @@ namespace NeonFade
 	{
 
 		int mv1_handle = model->GetModelHandle();
-		auto mat = model->GetMaterial(0);
-		auto mat2 = model->GetMaterial(1);
+		auto mat = model->GetMaterial(2);
+		auto mat2 = model->GetMaterial(4);
 		mat->SetTexture(mov_tex, Material::TextureType::Emission);
 		mat2->SetTexture(mov_tex, Material::TextureType::Emission);
 	}
 	void Player::ResetMaterialsToDefault()
 	{
-		auto mat = model->GetMaterial(0);
-		auto mat2 = model->GetMaterial(1);
+		auto mat = model->GetMaterial(2);
+		auto mat2 = model->GetMaterial(4);
 		mat->SetTexture(nullptr, Material::TextureType::Emission);
 		mat2->SetTexture(nullptr, Material::TextureType::Emission);
 

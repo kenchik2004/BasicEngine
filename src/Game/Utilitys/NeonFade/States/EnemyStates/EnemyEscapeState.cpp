@@ -1,4 +1,4 @@
-#include "EnemyEscapeState.h"
+ï»¿#include "EnemyEscapeState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 
@@ -37,6 +37,7 @@ namespace NeonFade {
 		if (leader)
 		{
 			Vector3 to_leader = leader->transform->position - enemy->transform->position;
+			mov.y = 0;
 			mov = Lerp(mov, to_leader.getNormalized(), 0.2f);
 			if (to_leader.magnitude() < 5.0f)
 				mov = Lerp(mov, -to_leader.getNormalized(), 0.3f);
@@ -44,6 +45,7 @@ namespace NeonFade {
 		else {
 
 			Vector3 to_player = player->transform->position - enemy->transform->position;
+			mov.y = 0;
 			mov = Lerp(mov, -to_player.getNormalized(), 0.1f);
 
 		}
@@ -55,7 +57,7 @@ namespace NeonFade {
 		rb->velocity = mov;
 		if (escape_timer <= 0.0f)
 		{
-			exit_flag = true;	// ƒ^ƒCƒ€ƒAƒbƒv‚Å“¦‘–I—¹
+			exit_flag = true;	// ã‚¿ã‚¤ãƒ ã‚¢ãƒƒãƒ—ã§é€ƒèµ°çµ‚äº†
 		}
 
 	}
