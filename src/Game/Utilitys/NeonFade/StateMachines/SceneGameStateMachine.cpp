@@ -20,14 +20,20 @@ namespace NeonFade {
 		AddState("KI", std::move(ki_state));
 
 		std::function<bool()> show_to_ten = [this]() {
-			return owner_scene_game->GetEnemyCount() == 0;
+			return
+				owner_scene_game->GetEnemyCount() == 0 &&
+				!owner_scene_game->IsEffectExsist() &&
+				!owner_scene_game->IsEffectPreparing();
 			};
 		show_state->RegisterChangeRequest("Ten", show_to_ten, 0);
 		AddState("Show", std::move(show_state));
 
 
 		std::function<bool()> ketsu_to_fin = [this]() {
-			return owner_scene_game->GetEnemyCount() == 0;
+			return
+				owner_scene_game->GetEnemyCount() == 0 &&
+				!owner_scene_game->IsEffectExsist() &&
+				!owner_scene_game->IsEffectPreparing();
 			};
 
 		ketsu_state->RegisterChangeRequest("Fin", ketsu_to_fin, 0);

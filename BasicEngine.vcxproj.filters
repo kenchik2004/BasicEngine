@@ -191,6 +191,12 @@
     <ClCompile Include="src\Game\Scenes\NeonFade\StageMakeScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Fin.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyTeam.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyWelterState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderAttackState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderStepBackState.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\HuntedEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -389,6 +395,12 @@
     <ClInclude Include="src\Game\Scenes\NeonFade\StageMakeScene.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Fin.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyTeam.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyWelterState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderAttackState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderStepBackState.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\HuntedEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -412,5 +424,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\shader\seafloor.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="data\shader\ps_hunted_effect.fx" />
   </ItemGroup>
 </Project>

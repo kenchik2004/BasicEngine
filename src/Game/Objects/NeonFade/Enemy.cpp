@@ -7,41 +7,71 @@
 #include "Game/Utilitys/NeonFade/EnemyBrain/BasicEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/LeaderEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/TeamMemberEnemyBrain.h"
+#include "Game/Utilitys/NeonFade/EnemyTeam.h"
 
 namespace NeonFade {
 	int Enemy::Init()
 	{
 
-		rb = AddComponent<RigidBody>();
-		rb->mass = 0.1f;
-		auto model_obj = SceneManager::Object::Create<GameObject>("pl_model");
-		model_obj->transform->SetParent(transform);
-		model_obj->transform->scale = { 0.05f,0.05f,0.05f };
-		model_obj->transform->local_rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
-		model = model_obj->AddComponent<ModelRenderer>();
-		animator = model_obj->AddComponent<Animator>();
-		model->SetModel("enemy_model_LOD");
-		animator->SetAnimation("enemy_idle", 0);
-		animator->SetAnimation("enemy_damage", 0);
-		animator->SetAnimation("enemy_down", 0);
-		animator->SetAnimation("enemy_walk", 0);
-		animator->SetAnimation("enemy_die", 0);
-		animator->SetAnimation("enemy_attack_charge", 0);
-		animator->SetAnimation("enemy_attack_main", 0);
+		if constexpr (false) {
 
+			rb = AddComponent<RigidBody>();
+			//		rb->mass = 0.1f;
+			auto model_obj = SceneManager::Object::Create<GameObject>("pl_model");
+			model_obj->transform->SetParent(transform);
+			model_obj->transform->scale = { 0.05f,0.05f,0.05f };
+			model_obj->transform->local_rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
+			model = model_obj->AddComponent<ModelRenderer>();
+			animator = model_obj->AddComponent<Animator>();
 
-		rb->freeze_rotation = { 1,1,1 };
+			rb->freeze_rotation = { 1,1,1 };
 
-		enem_controller = AddComponent<EnemyController>();
-		if constexpr (true) {
+			enem_controller = AddComponent<EnemyController>();
 
-			auto col_ = AddComponent<CapsuleCollider>(7.5f, 1.5f, Vector3(5.4f, 0, 0), Quaternion(DEG2RAD(90), { 0,0,1 }), false,
+			auto col_ = AddComponent<CapsuleCollider>(7.5f, 1.5f, Vector3(-5.4f, 0, 0), Quaternion(DEG2RAD(90), { 0,0,-1 }), false,
 				Collider::Layer::Enemy, Collider::Layer::Player | Collider::Layer::Terrain | Collider::Layer::Wepon | Collider::Layer::Vehicle);
 			//col_->SetMaterial(PhysicMaterial::ZeroFriction);
 			col = col_;
 		}
 		else
-			rb->use_gravity = false;
+		{
+
+			rb = AddComponent<RigidBody>();
+			rb->GetBody()->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0f);
+			auto model_obj = SceneManager::Object::Create<GameObject>("enem_model");
+			model_obj->transform->SetParent(transform);
+			model_obj->transform->scale = { 0.05f,0.05f,0.05f };
+			model_obj->transform->local_position = { 0,-4.5f,0 };
+			model_obj->transform->local_rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
+			model = model_obj->AddComponent<ModelRenderer>();
+			animator = model_obj->AddComponent<Animator>();
+			model->SetModel("enemy_model_LOD");
+			animator->SetAnimation("enemy_idle", 0);
+			animator->SetAnimation("enemy_damage", 0);
+			animator->SetAnimation("enemy_down", 0);
+			animator->SetAnimation("enemy_down_forward", 0);
+			animator->SetAnimation("enemy_walk", 0);
+			animator->SetAnimation("enemy_die", 0);
+			animator->SetAnimation("enemy_attack_charge", 0);
+			animator->SetAnimation("enemy_attack_main", 0);
+			animator->SetAnimation("enemy_escape", 0);
+			animator->SetAnimation("enemy_instruct", 0);
+			animator->SetAnimation("enemy_stepback", 0);
+
+
+
+
+
+			rb->freeze_rotation = { 1,1,1 };
+			auto col_ = AddComponent<CapsuleCollider>();
+			col_->height = 5.7f;
+			col_->radius = 1.5f;
+			col_->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
+			col_->SetLayer(Collider::Layer::Enemy);
+			enem_controller = AddComponent<EnemyController>();
+			col = col_;
+		}
+
 		if (!death_material) {
 
 			auto death_shader = MaterialManager::LoadPixelShader("data/shader/enemy_death_ps.fx", "neonfade_enemy_death_ps");
@@ -118,10 +148,10 @@ namespace NeonFade {
 	}
 
 	//リーダーに従い行動する脳がセットされた敵を作成して脳のポインタを返す
-	TeamMemberEnemyBrain* EnemyFactory::MakeTeamMateEnemy(LeaderEnemyBrain* leader_ptr, SafeWeakPtr<Player> player) {
+	TeamMemberEnemyBrain* EnemyFactory::MakeTeamMateEnemy(LeaderEnemyBrain* leader_ptr, SafeWeakPtr<Player> player, EnemyTeam* my_team) {
 		auto [controller, machine] = MakeAbstractEnemy();
 		controller->SetPlayer(player);
-		auto brain = make_safe_unique<TeamMemberEnemyBrain>(machine, player);
+		auto brain = make_safe_unique<TeamMemberEnemyBrain>(machine, player, my_team);
 		brain->AddLeader(leader_ptr);
 		controller->SetBrain(std::move(brain));
 
@@ -131,21 +161,27 @@ namespace NeonFade {
 	}
 
 	//チームの統率を取る脳をセットされた敵を作成して脳のポインタを返す
-	LeaderEnemyBrain* EnemyFactory::MakeLeader(SafeWeakPtr<Player> player) {
+	LeaderEnemyBrain* EnemyFactory::MakeLeader(SafeWeakPtr<Player> player, EnemyTeam* my_team) {
 		auto [controller, machine] = MakeAbstractEnemy();
 		controller->SetPlayer(player);
-		controller->SetBrain(make_safe_unique<LeaderEnemyBrain>(machine, player));
+		controller->SetBrain(make_safe_unique<LeaderEnemyBrain>(machine, player, my_team));
 
 		//moveした後は、コントローラーからアクセスする
 		//作成した敵の脳はリーダーのものなので、そのままキャストして返す
 		return static_cast<LeaderEnemyBrain*>(controller->GetBrain());
 	}
-	void EnemyFactory::MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player) {
+	std::vector<EnemyTeamUP> EnemyFactory::MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player) {
+		auto teams = std::vector<SafeUniquePtr<EnemyTeam>>();
 		for (u32 i = 0; i < team_count; i++) {
-			auto leader_brain = MakeLeader(player);
+			auto enemy_team = make_safe_unique<EnemyTeam>();
+			auto leader_brain = MakeLeader(player, enemy_team.get());
+			enemy_team->SetLeader(leader_brain);
 			for (u32 i = 1; i < enem_per_team; i++) {
-				MakeTeamMateEnemy(leader_brain, player);
+				auto member = MakeTeamMateEnemy(leader_brain, player, enemy_team.get());
+				enemy_team->AddMember(member);
 			}
+			teams.push_back(std::move(enemy_team));
 		}
+		return teams;
 	}
 }

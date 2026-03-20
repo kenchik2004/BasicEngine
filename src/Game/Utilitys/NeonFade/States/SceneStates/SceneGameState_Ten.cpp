@@ -20,7 +20,7 @@ namespace NeonFade {
 		message_text->WakeUp();
 		message_text->SetFontSize(70);
 		message_text->TextColor() = Color::YELLOW;
-		message_text->SetText(u8"注意!!敵が多数接近中!!");
+		message_text->SetText(u8"まだ逃げ手がいるぞ!!");
 		{
 			auto panel = SceneManager::Object::Create<UIObject>(u8"fullscreen_panel");
 			panel->SetPriority(1999U);

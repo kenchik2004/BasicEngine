@@ -13,6 +13,8 @@ PS_OUTPUT main(PS_INPUT input) {
 	output.color0_ += ReductionTexture2.Sample(DiffuseSampler, input.uv0_);
 	output.color0_ += ReductionTexture3.Sample(DiffuseSampler, input.uv0_);
 	output.color0_ += ReductionTexture4.Sample(DiffuseSampler, input.uv0_);
+	//加算ブレンドにより合成後のアルファが暴走するのを防ぐため、アルファは0にする
+    output.color0_.a = 0.0;
 	
 
 	return output;

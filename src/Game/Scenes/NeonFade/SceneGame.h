@@ -2,6 +2,8 @@
 #include "System/Scene.h"
 #include "Game/Utilitys/NeonFade/StateMachines/SceneGameStateMachine.h"
 USING_PTR(CameraObject);
+USING_PTR(ShadowMapObject);
+USING_PTR(LightManager);
 namespace NeonFade {
 	USING_PTR(SceneGameStateMachine);
 	USING_PTR(Player);
@@ -15,6 +17,7 @@ namespace NeonFade {
 		void Update() override;
 		void PreDraw() override;
 		void LateDebugDraw() override;
+		void LateDraw() override;
 		void OnLateDrawFinish() override;
 
 		void Exit() override;
@@ -22,7 +25,7 @@ namespace NeonFade {
 
 
 		void AddEnemyCount(u32 cnt = 1) { enemy_count += cnt; }
-		void SubtractEnemyCount(u32 cnt = 1) { enemy_count -= min(cnt, enemy_count); }
+		void SubtractEnemyCount(u32 cnt = 1);
 		int GetEnemyCount() const { return enemy_count; }
 		CameraObjectWP camera;
 		PlayerWP player;
@@ -31,7 +34,17 @@ namespace NeonFade {
 		std::unordered_map<std::string, UIObjectWP> ui_texts;
 		TextWP text_comp;
 		SceneGameStateMachineUP scene_state_machine = nullptr;
+
+		ShadowMapObjectWP shadowmap = nullptr;
+		LightManagerWP light_manager = nullptr;
+		void StartGameTimer() { game_timer = 0.0f; is_game_timer_started = true; }
+		void StopGameTimer() { is_game_timer_started = false; }
+		float GetGameTimer() const { return game_timer; }
+		bool IsEffectExsist() const;
+		bool IsEffectPreparing() const;
 	private:
+		float game_timer = 0.0f;
+		bool is_game_timer_started = false;
 		u32 enemy_count = 0;
 	};
 }

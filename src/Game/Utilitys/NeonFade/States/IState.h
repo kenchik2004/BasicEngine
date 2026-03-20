@@ -18,7 +18,7 @@ namespace NeonFade
 		virtual void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info) {};
 		virtual void OnTriggerStay(IStateMachine* machine, const HitInfo& hit_info) {};
 		virtual void OnTriggerExit(IStateMachine* machine, const HitInfo& hit_info) {};
-		const std::string& GetName() { return name; }
+		const std::string& GetName() const { return name; }
 		void SetName(const std::string_view name_) { name = name_; }
 		virtual void DebugDraw() {};
 		std::string GetChangeRequest();

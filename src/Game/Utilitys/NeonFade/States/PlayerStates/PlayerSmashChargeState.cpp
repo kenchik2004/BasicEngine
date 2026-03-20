@@ -75,8 +75,7 @@ namespace NeonFade {
 		move_dir += owner_player->transform->AxisZ() * -3.0f;
 		move_dir += owner_player->transform->AxisY() * 3.0f;
 		rb->velocity = move_dir;
-		auto mat = owner_player->model->GetFrameWorldMat(45);
-		auto pos = MV1GetFramePosition(owner_player->model->GetModelHandle(), 45);
+		auto mat = owner_player->model->GetFrameWorldMat(81);
 		if (charge_effect)
 			charge_effect->transform->position = cast(mat.getPosition());
 		for (auto& light : smash_lights) {

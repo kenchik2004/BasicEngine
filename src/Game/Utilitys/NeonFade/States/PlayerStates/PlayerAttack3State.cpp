@@ -35,18 +35,20 @@ namespace NeonFade {
 		animator->anim_speed = 1.5f;
 		rb->velocity *= 0.3f;
 		hit_stop_timer = 0.0f;
+		stop_counter = 0;
 	}
 	void PlayerAttack3State::Update(IStateMachine* machine, float dt)
 	{
-			exit_timer += dt;
 
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;
 			if (hit_stop_timer <= 0.0f)
 				animator->anim_speed = 1.5f;
 		}
+		else
+			exit_timer += dt;
 		if (hit_box) {
-			hit_box->rotation = Slerp(Quaternion(DEG2RAD(90), { 0,1,0 }), Quaternion(DEG2RAD(-90), { 0,1,0 }), (exit_timer - hit_box_created_time) / (EXIT_TIME - hit_box_created_time));
+			hit_box->rotation = Slerp(Quaternion(DEG2RAD(90), { 0,1,0 }), Quaternion(DEG2RAD(-90), { 0,1,0 }), (exit_timer - hit_box_created_time) / (EXIT_TIME - 0.1f - hit_box_created_time));
 		}
 	}
 	void PlayerAttack3State::OnExit(IStateMachine* machine)
@@ -71,11 +73,11 @@ namespace NeonFade {
 				enemy->Damage(5);
 				enemy->Down(knockback_dir);
 			}
-			if (hit_stop_timer <= 0.0f) {
-
+			if (hit_stop_timer <= 0.0f && stop_counter < MAX_STOP_COUNT) {
+				stop_counter++;
 				owner_player->player_camera_machine->ShakeCamera(0.2f, HIT_STOP_TIME);
 				hit_stop_timer = HIT_STOP_TIME;
-				animator->anim_speed = 0.01f;
+				animator->anim_speed = 0.001f;
 
 				{
 					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_attack1_hit", 1.0f);

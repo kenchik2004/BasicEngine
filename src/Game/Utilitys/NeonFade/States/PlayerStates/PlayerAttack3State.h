@@ -14,7 +14,9 @@ namespace NeonFade {
 		static constexpr float EXIT_TIME = 0.6f;
 		float exit_timer = 0.0f;
 		float hit_stop_timer = 0.0f;
-		static constexpr float HIT_STOP_TIME = 0.2f;
+		static constexpr float HIT_STOP_TIME = 0.1f;
+		int stop_counter = 0;
+		static constexpr int MAX_STOP_COUNT = 3;
 	private:
 		float hit_box_created_time = 0.0f;
 		Player* owner_player = nullptr;

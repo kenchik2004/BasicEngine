@@ -4,53 +4,31 @@ namespace NeonFade {
 	class Enemy;
 	class EnemyStateMachine;
 	class TeamMemberEnemyBrain;
+	class EnemyTeam;
 	class LeaderEnemyBrain :
 		public AbstractEnemyBrain
 	{
 	public:
-		LeaderEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_);
+		LeaderEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_, EnemyTeam* team);
 		~LeaderEnemyBrain();
 		void Think() override;
 		void Damage(u32 damage = 0, bool ignore_i_frame = false) override;
 		void KnockBack(Vector3 knock_back_vec) override;
 		void Die();
 		void DebugDraw() override;
-		u32 AddMember(TeamMemberEnemyBrain* new_member) {
-			if (!new_member)
-				return 0;
-			team_data.members.push_back(new_member);
-			return ++team_data.member_num;
-		}
-		void SubstractMember(TeamMemberEnemyBrain* delete_member) {
-			if (!delete_member)
-				return;
-			auto it = std::find(team_data.members.begin(), team_data.members.end(), delete_member);
-			if (it == team_data.members.end())
-				return;
-			team_data.members.erase(it);
-			team_data.member_num--;
-		}
+		void RemoveFromTeam();
 
-		struct LeaderBrainData {
-			Vector3 team_position = { 0,0,0 };
-			Vector3 team_mov_vec = { 0,0,1 };
-			u32 member_num = 0;
-			std::vector<TeamMemberEnemyBrain*> members;
-			LeaderEnemyBrain* leader = nullptr;
-		};
-		const LeaderBrainData& GetTeamData() const { return team_data; }
+
 	private:
-		LeaderBrainData team_data;
-		Vector3 next_target = { 0,0,0 };
-		static constexpr float max_randwalk_time = 7.0f;
-		float randwalk_timer = 0.0f;
-		static constexpr float attack_cool_time = 3.0f;
-		float attack_cool_timer = 3.0f;
-		static inline std::vector<LeaderBrainData*> another_groups = std::vector<LeaderBrainData*>(0);
+		EnemyTeam* my_team = nullptr;
+		EnemyStateMachine* machine = nullptr;
 
-		//オブジェクトに持たせる用の変数
+		std::unordered_map<std::string, std::function<void()>> thinkings;
+		std::function<std::string()> update_selector;
+		u32 hp;
+		static constexpr u32 MAX_HP = 300;
 		float i_frame_timer = 0.0f;
-		static constexpr float I_FRAME = 0.05f;
+		static constexpr float I_FRAME = 0.1f;
 		trigger_bool knock_back = false;
 		trigger_bool is_damaged = false;
 	};

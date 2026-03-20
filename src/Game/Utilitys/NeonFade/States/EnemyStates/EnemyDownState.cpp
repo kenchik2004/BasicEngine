@@ -14,21 +14,38 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 	enemy = owner_;
 	animator = enemy->animator.lock().get();
 	rb = enemy->rb.lock().get();
-
-	std::function hit_stop = [this]() {
-		animator->anim_speed = 0.0001f;
-		hit_stop_timer += Time::UnscaledDeltaTime();
-		};
-	std::function collision_rotate = [this]() {
-		auto col = enemy->GetComponent<CapsuleCollider>();
-		if (!col)
-			return;
-		col->rotation = Quaternion(DEG2RAD(90), { 0,1,0 });
-		col->position = { 5.4f, 1.5f, 0 };
-		col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon);
-		};
-	animator->SetAnimationCallBack("enemy_down", hit_stop, 10, "hit_stop");
-	animator->SetAnimationCallBack("enemy_down", collision_rotate, 30, "collision_rotate");
+	{
+		std::function hit_stop = [this]() {
+			animator->anim_speed = 0.0001f;
+			hit_stop_timer += Time::UnscaledDeltaTime();
+			};
+		std::function collision_rotate = [this]() {
+			auto col = enemy->GetComponent<CapsuleCollider>();
+			if (!col)
+				return;
+			col->rotation = Quaternion(DEG2RAD(90), { 0,1,0 });
+			col->position = { 0,1.0f,0 };
+			col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon);
+			};
+		animator->SetAnimationCallBack("enemy_down", hit_stop, 10, "hit_stop");
+		animator->SetAnimationCallBack("enemy_down", collision_rotate, 30, "collision_rotate");
+	}
+	{
+		std::function hit_stop = [this]() {
+			animator->anim_speed = 0.0001f;
+			hit_stop_timer += Time::UnscaledDeltaTime();
+			};
+		std::function collision_rotate = [this]() {
+			auto col = enemy->GetComponent<CapsuleCollider>();
+			if (!col)
+				return;
+			col->rotation = Quaternion(DEG2RAD(90), { 0,1,0 });
+			col->position = { 0,1.0f,0 };
+			col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon);
+			};
+		animator->SetAnimationCallBack("enemy_down_forward", hit_stop, 10, "hit_stop");
+		animator->SetAnimationCallBack("enemy_down_forward", collision_rotate, 30, "collision_rotate");
+	}
 	std::function default_change = [this]() {
 		return exit_timer >= EXIT_TIME;
 		};
@@ -37,25 +54,36 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 
 void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 {
-	animator->Play("enemy_down", false, 0.05f);
 	hit_stop_timer = 0;
 	exit_timer = 0;
 	auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 	knock_back_vec = enem_machine->move_vec;
 	knock_back_vec.y = 0;
+	Vector3 current_z = enemy->transform->AxisZ();
+	bool down_forward = false;
+	if (!knock_back_vec.isZero() && current_z.dot(knock_back_vec) > 0.5f)
+		down_forward = true;
+
 	if (knock_back_vec.isZero())
-		knock_back_vec = -enemy->transform->AxisZ();
-	Vector3 set_forward = -knock_back_vec;
+		knock_back_vec = -current_z;
+	Vector3 set_forward = knock_back_vec;
 	set_forward.normalize();
-	enemy->transform->SetAxisZ(set_forward);
+	if (down_forward) {								// だいたい前方に倒れる場合	
+		enemy->transform->SetAxisZ(set_forward);
+		animator->Play("enemy_down_forward", false, 0.05f, 0.2f, true);
+	}
+	else {											//倒れる方向と進行方向があまりにも違う場合
+		enemy->transform->SetAxisZ(-set_forward);
+		animator->Play("enemy_down", false, 0.05f, 0.2f, true);
+	}
 }
 
 void NeonFade::EnemyDownState::OnExit(IStateMachine* machine)
 {
 	animator->anim_speed = 1.0f;
 	auto col = enemy->GetComponent<CapsuleCollider>();
-	col->position = { 5.4f,0,0 };
-	col->rotation = Quaternion(DEG2RAD(90), { 0,0,1 });
+	col->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
+	col->position = { 0,0,0 };
 	col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon | Collider::Layer::Player);
 
 }

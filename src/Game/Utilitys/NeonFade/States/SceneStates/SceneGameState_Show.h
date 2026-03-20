@@ -3,6 +3,7 @@
 
 namespace NeonFade {
 	class SceneGame;
+	class EnemyTeam;
 	//----------------------------------------
 	// 起承転結の「承」
 	// ほかの名前が思いつかなかった。許せ。
@@ -17,6 +18,7 @@ namespace NeonFade {
 		virtual void Update(ISceneStateMachine* machine, float dt) override;
 	private:
 		SceneGame* owner_scene_game = nullptr;
+		std::vector<SafeUniquePtr<EnemyTeam>> enemy_teams;
 	};
 }
 

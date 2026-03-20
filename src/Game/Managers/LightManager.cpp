@@ -53,6 +53,7 @@ ShaderPs* shader_ssao = nullptr;
 ShaderPs* gaussian = nullptr;
 ShaderPs* nd_filter = nullptr;
 ShaderPs* bloom_combine = nullptr;
+ShaderPs* tone_mapping = nullptr;
 
 int LightManager::Init() {
 	name = "LightManager";
@@ -60,6 +61,9 @@ int LightManager::Init() {
 	light_blend_shader = MaterialManager::LoadPixelShader("data/shader/ps_light_finish.fx", "ps_light_finish");
 	specular_accumulation_texture = make_safe_shared<Texture>(SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
 	diffuse_accumulation_texture = make_safe_shared<Texture>(SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
+
+	sdr = make_safe_shared<Texture>(SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+
 	if (!shader_ssao)
 		shader_ssao = MaterialManager::LoadPixelShader("data/shader/ps_ssao.fx", "ps_ssao");
 	{
@@ -79,7 +83,8 @@ int LightManager::Init() {
 		}
 		if (!bloom_combine)
 			bloom_combine = MaterialManager::LoadPixelShader("data/shader/ps_bloom.fx", "ps_bloom");
-
+		if (!tone_mapping)
+			tone_mapping = MaterialManager::LoadPixelShader("data/shader/ps_tonemapping.fx", "ps_tonemapping");
 	}
 	return 0;
 }
@@ -293,6 +298,9 @@ void LightManager::LateDraw()
 			SetTexture(30 + i, nullptr);
 		}
 	}
+	//トーンマッピング
+	CopyToRenderTarget(sdr.get(), current_rt.color_targets_[0], *tone_mapping);
+	CopyToRenderTarget(current_rt.color_targets_[0], sdr.get());
 
 
 	SetTexture(21, nullptr);

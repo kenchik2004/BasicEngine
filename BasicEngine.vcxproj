@@ -40,6 +40,7 @@
     <ClCompile Include="src\Game\Objects\NeonFade\DamageUIObject.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\HuntedEffect.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\StageMakeScene.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
@@ -47,6 +48,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyTeam.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
@@ -85,7 +87,11 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderAttackState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderStepBackState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyWelterState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\ISceneState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.cpp" />
@@ -184,6 +190,7 @@
     <ClInclude Include="src\Game\Objects\NeonFade\DamageUIObject.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Enemy.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\HuntedEffect.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
     <ClInclude Include="src\Game\Objects\Sample\Cards\CardBase.h" />
@@ -217,12 +224,17 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\LeaderEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyTeam.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderAttackState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderStepBackState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyMoveState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyWelterState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\ISceneState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.h" />
@@ -316,6 +328,22 @@
     <Image Include="data\shader\seafloor.dds">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="data\shader\ps_hunted_effect.fx">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Secondary|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Package|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Package|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Package|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

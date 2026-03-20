@@ -19,12 +19,10 @@ namespace NeonFade
 	}
 	void EnemyDieState::OnEnter(IStateMachine* machine)
 	{
-		if (animator->GetCurrentAnimName() != "enemy_down")
-			animator->Play("enemy_die", false, 0.0f, 0.2f, true);
-		auto rb = owner_enemy->rb.lock().get();
-		auto col = owner_enemy->col.lock().get();
-		col->RemoveThisComponent();
-		rb->RemoveThisComponent();
+		if (auto rb = owner_enemy->rb.lock())
+			rb->RemoveThisComponent();
+		if (auto col = owner_enemy->col.lock())
+			col->RemoveThisComponent();
 		for (u8 i = 0; i < 2; i++) {
 			model->SetMaterial(Enemy::death_material, i);
 		}

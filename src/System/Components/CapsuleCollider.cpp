@@ -36,6 +36,7 @@ void CapsuleCollider::PrePhysics()
 void CapsuleCollider::DebugDraw()
 {
 	auto body = rigidbody->GetBody();
+	if (!body) return;
 	physx::PxTransform trns = body->getGlobalPose();
 	physx::PxTransform trns2 = shape->getLocalPose();
 	float3 capsule_start;

@@ -5,6 +5,7 @@ namespace NeonFade {
 
 	USING_PTR(EnemyController);
 	USING_PTR(Player);
+	USING_PTR(EnemyTeam);
 	class Enemy :
 		public GameObject
 	{
@@ -48,13 +49,13 @@ namespace NeonFade {
 		BasicEnemyBrain* MakeBasicEnemy(SafeWeakPtr<Player> player);
 
 		//リーダーに従い行動する脳がセットされた敵を作成して脳のポインタを返す
-		TeamMemberEnemyBrain* MakeTeamMateEnemy(LeaderEnemyBrain* leader_ptr, SafeWeakPtr<Player> player);
+		TeamMemberEnemyBrain* MakeTeamMateEnemy(LeaderEnemyBrain* leader_ptr, SafeWeakPtr<Player> player, EnemyTeam* my_team = nullptr);
 
 		//チームの統率を取る脳をセットされた敵を作成して脳のポインタを返す
-		LeaderEnemyBrain* MakeLeader(SafeWeakPtr<Player> player);
+		LeaderEnemyBrain* MakeLeader(SafeWeakPtr<Player> player, EnemyTeam* my_team);
 
 		//敵のチームを、指定した人数*指定したグループ数だけ作成する
-		void MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player);
+		std::vector<EnemyTeamUP> MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player);
 
 	};
 }
