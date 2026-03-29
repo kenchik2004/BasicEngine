@@ -1,4 +1,5 @@
 root
+|-----NeonFade::FinishEffectObject
 |-----Sample::DicePair
 |-----Scene
 |        |-----Sample::SampleRoomScene
@@ -20,6 +21,7 @@ root
 |        |-----UIObject
 |        |        |-----ButtonObject
 |        |        |-----TextObject
+|        |        |-----UIObject
 |        |        |-----NeonFade::DamageUIObject
 |        |        end_of_node
 |        |        
@@ -56,11 +58,11 @@ root
 |        |-----Button
 |        |-----EffectPlayer
 |        |-----Text3D
-|        |-----ImageRenderer
 |        |-----Text
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
 |        |-----AudioPlayer
+|        |-----ImageRenderer
 |        |-----Collider
 |        |        |-----SphereCollider
 |        |        |-----MeshCollider

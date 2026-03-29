@@ -20,6 +20,7 @@ namespace NeonFade {
 		RigidBody* rb = nullptr;
 		bool anim_after_smash = false;
 		SafeSharedPtr<Collider> hit_box = nullptr;
+		SafeSharedPtr<AudioClip> smash_se;
 
 	};
 }

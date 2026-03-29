@@ -14,6 +14,11 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 	enemy = owner_;
 	animator = enemy->animator.lock().get();
 	rb = enemy->rb.lock().get();
+
+
+	if (!hit_se)
+		hit_se = AudioManager::CloneByName(u8"hit_se");
+
 	{
 		std::function hit_stop = [this]() {
 			animator->anim_speed = 0.0001f;
@@ -26,6 +31,8 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 			col->rotation = Quaternion(DEG2RAD(90), { 0,1,0 });
 			col->position = { 0,1.0f,0 };
 			col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon);
+			if (knockout_se)
+				knockout_se->PlayOneShot();
 			};
 		animator->SetAnimationCallBack("enemy_down", hit_stop, 10, "hit_stop");
 		animator->SetAnimationCallBack("enemy_down", collision_rotate, 30, "collision_rotate");
@@ -42,6 +49,8 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 			col->rotation = Quaternion(DEG2RAD(90), { 0,1,0 });
 			col->position = { 0,1.0f,0 };
 			col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon);
+			if (knockout_se)
+				knockout_se->PlayOneShot();
 			};
 		animator->SetAnimationCallBack("enemy_down_forward", hit_stop, 10, "hit_stop");
 		animator->SetAnimationCallBack("enemy_down_forward", collision_rotate, 30, "collision_rotate");
@@ -50,12 +59,16 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 		return exit_timer >= EXIT_TIME;
 		};
 	RegisterChangeRequest("idle", default_change, 1);
+	if (!knockout_se)
+		knockout_se = AudioManager::CloneByName(u8"knockout_se");
 }
 
 void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 {
 	hit_stop_timer = 0;
 	exit_timer = 0;
+	if (hit_se)
+		hit_se->PlayOneShot();
 	auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 	knock_back_vec = enem_machine->move_vec;
 	knock_back_vec.y = 0;

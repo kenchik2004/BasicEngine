@@ -12,6 +12,7 @@ namespace NeonFade {
 		RegisterChangeRequest("Ketsu", ten_to_ketsu, 0);
 		owner_scene_game = owner_scene_;
 		message_text = owner_scene_game->ui_texts["txt_message"]->GetComponent<Text>();
+		assert_se = AudioManager::CloneByName(u8"assert_se");
 	}
 	void SceneGameState_Ten::OnEnter(ISceneStateMachine* machine)
 	{
@@ -21,6 +22,7 @@ namespace NeonFade {
 		message_text->SetFontSize(70);
 		message_text->TextColor() = Color::YELLOW;
 		message_text->SetText(u8"まだ逃げ手がいるぞ!!");
+		assert_se->PlayOneShot();
 		{
 			auto panel = SceneManager::Object::Create<UIObject>(u8"fullscreen_panel");
 			panel->SetPriority(1999U);
@@ -41,7 +43,7 @@ namespace NeonFade {
 	void SceneGameState_Ten::Update(ISceneStateMachine* machine, float dt)
 	{
 		exit_timer += dt;
-		if(exit_timer > EXIT_TIME - 1.0f) {
+		if (exit_timer > EXIT_TIME - 1.0f) {
 			message_text->TextColor().a = 1.0f - (exit_timer - (EXIT_TIME - 1.0f));
 		}
 		if (fullscreen_panel.lock()) {

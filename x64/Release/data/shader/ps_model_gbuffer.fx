@@ -65,7 +65,9 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	float metallic = 0.1; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
 
 	roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
+    //roughness = 0.99;
 	metallic = MetallicTexture.Sample(MetallicSampler, uv).r;
+    metallic = 0.5;
 #else
 	//スペキュラマップがあるもでるはこっち
 	float3 specularColor = SpecularTexture.Sample(SpecularSampler, uv).rgb;

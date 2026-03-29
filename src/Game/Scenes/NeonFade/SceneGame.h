@@ -42,6 +42,7 @@ namespace NeonFade {
 		float GetGameTimer() const { return game_timer; }
 		bool IsEffectExsist() const;
 		bool IsEffectPreparing() const;
+		AudioPlayerP audio_player;
 	private:
 		float game_timer = 0.0f;
 		bool is_game_timer_started = false;

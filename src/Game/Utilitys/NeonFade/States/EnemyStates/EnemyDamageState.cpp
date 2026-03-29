@@ -20,6 +20,9 @@ NeonFade::EnemyDamageState::EnemyDamageState(Enemy* owner_) :
 		return !animator->IsPlaying();
 		};
 	RegisterChangeRequest("idle", default_change, 1);
+
+	if (!hit_se)
+		hit_se = AudioManager::CloneByName(u8"hit_se");
 }
 
 void NeonFade::EnemyDamageState::OnEnter(IStateMachine* machine)
@@ -27,6 +30,7 @@ void NeonFade::EnemyDamageState::OnEnter(IStateMachine* machine)
 	animator->Play("enemy_damage");
 	animator->anim_speed = 1.6f;
 	hit_stop_timer = 0;
+	hit_se->PlayOneShot();
 	//rb->velocity = { 0, 0, 0 };
 }
 

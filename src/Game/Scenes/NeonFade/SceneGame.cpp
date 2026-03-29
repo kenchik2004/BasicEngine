@@ -22,7 +22,11 @@ namespace NeonFade {
 		static constexpr float EFFECT_DURATION = 2.0f;
 		UIObjectWP effect_obj;
 		UIObjectWP effect_text_obj;
+		SafeWeakPtr<AudioClip> hunt_se;
 	public:
+		HuntedEffectCreater() {
+			hunt_se = AudioManager::CloneByName(u8"hunt_se");
+		}
 		bool IsEffectActive() const { return effect_obj.lock() != nullptr; }
 		bool IsEffectPreparing() const { return effect_enemys.size() > 0; }
 		void Update() {
@@ -96,6 +100,7 @@ namespace NeonFade {
 				text->SetAlignment(Text::ALIGNMENT::AUTO);
 				text->text_speed = 4.0f;
 			}
+			hunt_se->PlayOneShot();
 		}
 	};
 }
@@ -158,10 +163,20 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_stepback.mv1", "enemy_stepback");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_hunted.mv1", "enemy_hunted");
 
-		AudioManager::Load(u8"data/Sound/siren.mp3", "siren");
 		TextureManager::Load(u8"data/FX.png", "fx_texture");
 		TextureManager::Load(u8"data/player/thunder.mp4", "electro_movie");
 		TextureManager::Load(u8"data/player/cutin.png", "cutin_eff");
+
+		AudioManager::Load(u8"data/sound/bgm.mp3", "bgm");
+		AudioManager::Load(u8"data/sound/hit_se.mp3", "hit_se");
+		AudioManager::Load(u8"data/sound/smash_se.mp3", "smash_se");
+		AudioManager::Load(u8"data/sound/smash_charge_se.mp3", "smash_charge_se");
+		AudioManager::Load(u8"data/sound/knockout_se.mp3", "knockout_se");
+		AudioManager::Load(u8"data/sound/hunt_se.mp3", "hunt_se");
+		AudioManager::Load(u8"data/sound/assert_se.mp3", "assert_se");
+		AudioManager::Load(u8"data/sound/finish_se.mp3", "finish_se");
+		AudioManager::Load(u8"data/sound/result_bgm.mp3", "result_bgm");
+		AudioManager::Load(u8"data/sound/score_se.mp3", "score_se");
 
 
 
@@ -237,6 +252,9 @@ namespace NeonFade {
 
 		if (!CheckForLoading())
 			return 0;
+		auto audio_player_obj = SceneManager::Object::Create<GameObject>();
+		audio_player = audio_player_obj->AddComponent<AudioPlayer>();
+		audio_player->is_3d = false;
 
 		auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
 
@@ -253,8 +271,8 @@ namespace NeonFade {
 
 			}
 
-		if constexpr (true) {
 
+		{
 			auto ground = SceneManager::Object::Create<GameObject>("Ground");
 			ground->AddComponent<ModelRenderer>()->SetModel("stage");
 			ground->AddComponent<RigidBody>();
@@ -290,7 +308,7 @@ namespace NeonFade {
 			collision->position = { 0,100.0f,0 };
 			collision->SetLayer(Collider::Layer::Terrain);
 		}
-		if constexpr (true)
+
 		{
 			auto high_way = SceneManager::Object::Create<GameObject>("HighWay");
 			auto mod = high_way->AddComponent<ModelRenderer>();
@@ -300,8 +318,6 @@ namespace NeonFade {
 			high_way->AddComponent<RigidBody>();
 			high_way->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
 
-			for (u32 i = 0; i < 5; ++i)
-				SceneManager::Object::Create<PoliceCar>(u8"police_car")->SetPointOnpath(100 * i);
 		}
 		constexpr float gravity_factor = -9.81f * 6;
 		GetPhysicsScene()->setGravity({ 0,gravity_factor,0 });

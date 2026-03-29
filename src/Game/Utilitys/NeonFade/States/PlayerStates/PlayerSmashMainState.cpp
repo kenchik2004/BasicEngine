@@ -16,12 +16,15 @@ namespace NeonFade {
 			return smash_timer >= MAX_SMASH_TIME;
 			};
 		RegisterChangeRequest("idle", to_idle, 0);
+		if (!smash_se)
+			smash_se = AudioManager::CloneByName(u8"smash_se");
 	}
 	void PlayerSmashMainState::OnEnter(IStateMachine* machine)
 	{
 		smash_timer = 0.0f;
 		animator->PlayIfNoSame("smash_attack", true, 0.0f, 0.1f, false);
 		anim_after_smash = false;
+		smash_se->PlayOneShot();
 		{
 
 			Vector3 smash_velocity = owner_player->transform->AxisZ() * 70.0f;

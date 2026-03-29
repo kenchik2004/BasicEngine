@@ -25,6 +25,7 @@ public:
 	float radius = 200;
 	float volume = 1.0f;
 	bool loop = false;
+	bool is_3d = true;
 private:
 	Vector3 last_position = { 0,0,0 };
 };

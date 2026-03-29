@@ -13,10 +13,13 @@ namespace NeonFade {
 		float effect_timer = 0;
 		static constexpr float txt_time_delay = 1.0f;
 		static constexpr float txt_rank_delay = 3.0f;
+		SafeSharedPtr<AudioClip> score_se;
+
 
 	public:
 		USING_SUPER(FinishEffectObject);
 		FinishEffectObject(SceneGame* owner_scene) {
+			score_se = AudioManager::CloneByName(u8"score_se");
 
 			//半透明で背景を覆うオブジェクトの生成
 			//裏シーンでプレイヤーをアニメーションさせて、そのカメラの吐き出しバッファを背景に貼る
@@ -96,6 +99,7 @@ namespace NeonFade {
 				text_comp->TextColor() = Color::RED;
 				text_comp->SetFontSize(70);
 				txt_rank = rank_text_obj;
+				score_se->PlayOneShot();
 			}
 		}
 		~FinishEffectObject() {
@@ -113,29 +117,21 @@ namespace NeonFade {
 			return Input::GetKeyDown(KeyCode::Return) || Input::GetPadButtonDown(0, PadButton::Button1);
 			};
 		RegisterChangeRequest("KI", fin_to_exit, 0);
+		fin_se = AudioManager::CloneByName(u8"finish_se");
 
 	}
 	void SceneGameState_Fin::OnEnter(ISceneStateMachine* machine)
 	{
 		exit_timer = 0;
 		owner_scene_game->text_comp->SetText(u8"Fin State");
-		if constexpr (false)
-		{
-			float game_time = owner_scene_game->GetGameTimer();
-			std::string time_str = u8"かかった時間:\n " + std::format("{:.2f}", game_time) + u8"秒";
 
-			auto time_text_obj = SceneManager::Object::Create<UIObject>(owner_scene_game->shared_from_this());
-			time_text_obj->name = "TimeText";
-			time_text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
-			time_text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
-			time_text_obj->transform->scale = { 500, 200, 1 };
-			auto text_comp = time_text_obj->AddComponent<Text>();
-			text_comp->SetText(time_str);
-			text_comp->TextColor() = Color::WHITE;
-			text_comp->SetFontSize(45);
+		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"result_bgm");
+		owner_scene_game->audio_player->loop = true;
+		owner_scene_game->audio_player->volume = 0.8f;
+		owner_scene_game->audio_player->Play();
+		fin_se->PlayOneShot();
 
-			fin_text_obj = time_text_obj;
-		}
+
 		finish_effect = std::make_unique<FinishEffectObject>(owner_scene_game);
 
 

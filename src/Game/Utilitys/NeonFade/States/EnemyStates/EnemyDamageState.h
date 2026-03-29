@@ -21,6 +21,7 @@ namespace NeonFade {
 		Animator* animator = nullptr;
 		RigidBody* rb;
 		float hit_stop_timer = 0;
+		SafeSharedPtr<AudioClip> hit_se;
 	};
 
 }

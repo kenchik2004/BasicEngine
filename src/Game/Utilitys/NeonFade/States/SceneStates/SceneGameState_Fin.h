@@ -20,6 +20,7 @@ namespace NeonFade {
 		float exit_timer = 0;
 		static constexpr float EXIT_TIME = 5.0f;
 		UIObjectWP fin_text_obj;
+		SafeSharedPtr<AudioClip> fin_se;
 	};
 }
 

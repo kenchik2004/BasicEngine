@@ -35,7 +35,7 @@ void AudioPlayer::Play(float start_pos, int sample_rate)
 void AudioPlayer::Update()
 {
 	auto audio_listener = SceneManager::GetCurrentScene()->GetCurrentAudioListener();
-	if (audio && audio_listener) {
+	if (is_3d && audio && audio_listener) {
 		auto listener = audio_listener->owner.lock();
 		auto rb = listener->GetComponent<RigidBody>();
 		Vector3 vec_v_o = Vector3(0, 0, 0);
@@ -66,6 +66,10 @@ void AudioPlayer::Update()
 		ChangeVolumeSoundMem(volume * 255 * distance_attenuation, audio->handle);
 		//Set3DPositionSoundMem(cast(owner->transform->position), audio->handle);
 		//Set3DRadiusSoundMem(radius, audio->handle);
+	}
+	else if (audio) {
+		SetFrequencySoundMem((int)(default_frequency * pitch_rate), audio->handle);
+		ChangeVolumeSoundMem(volume * 255, audio->handle);
 	}
 }
 

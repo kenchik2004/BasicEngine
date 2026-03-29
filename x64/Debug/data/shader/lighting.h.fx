@@ -126,7 +126,7 @@ void lighting(in float3 lightColor, //
 #else
 	// Cook-Torrance BRDF ãﬂéóçÇë¨âª (Optimizing PBR SIGGRAPH2015)
     float roughness4 = roughness * roughness * roughness * roughness;
-    float denominator = (NdotH * NdotH * (roughness4 - 1.0) + 1.0) * LdotH;
+    float denominator = (NdotH * NdotH * (roughness4 - 1.0) + 1.0) * LdotH+0.00001;
 	
     float3 brdf = roughness4 * rcp(4.0 * PI * denominator * denominator * (roughness + 0.5));
 	

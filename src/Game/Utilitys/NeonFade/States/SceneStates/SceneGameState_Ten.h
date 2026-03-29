@@ -20,6 +20,7 @@ namespace NeonFade {
 		static constexpr float EXIT_TIME = 5.0f;
 		UIObjectWP fullscreen_panel = nullptr;
 		TextWP message_text = nullptr;
+		SafeSharedPtr<AudioClip> assert_se;
 	};
 }
 

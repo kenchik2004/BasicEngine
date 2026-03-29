@@ -15,6 +15,8 @@ namespace NeonFade {
 			return charge_timer >= MAX_CHARGE_TIME;
 			};
 		RegisterChangeRequest("smash_attack", to_smash, 0);
+		if (!charge_se)
+			charge_se = AudioManager::CloneByName(u8"smash_charge_se");
 	}
 	void PlayerSmashChargeState::OnEnter(IStateMachine* machine)
 	{
@@ -28,6 +30,9 @@ namespace NeonFade {
 			eff_player->Play();
 			charge_effect = eff;
 		}
+
+		charge_se->PlayOneShot();
+
 		//ビリビリしてそうな感じの動画テクスチャをマテリアルにセット
 		{
 			owner_player->SetElectroEffectTextureToMaterials();

@@ -39,6 +39,10 @@ namespace NeonFade {
 		exit_timer = 0;
 		movie_camera = SceneManager::Object::Create<CameraObject>(u8"movie_camera_KI");
 		movie_camera->camera->render_type = Camera::RenderType::Deferred;
+		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"bgm");
+		owner_scene_game->audio_player->loop = true;
+		owner_scene_game->audio_player->volume = 0.6f;
+		owner_scene_game->audio_player->Play();
 	}
 	void SceneGameState_KI::OnExit(ISceneStateMachine* machine)
 	{

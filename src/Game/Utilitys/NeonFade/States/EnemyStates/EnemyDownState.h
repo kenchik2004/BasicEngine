@@ -24,6 +24,8 @@ namespace NeonFade {
 		RigidBody* rb;
 		Vector3 knock_back_vec = { 0,0,0 };
 		float hit_stop_timer = 0;
+		SafeSharedPtr<AudioClip> knockout_se;
+		SafeSharedPtr<AudioClip> hit_se;
 	};
 }
 

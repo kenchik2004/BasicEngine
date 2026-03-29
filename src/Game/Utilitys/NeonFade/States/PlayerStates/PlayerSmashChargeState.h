@@ -23,6 +23,7 @@ namespace NeonFade {
 		LightManager* light_manager = nullptr;
 		std::vector<SafeSharedPtr<PointLight>> smash_lights;
 		static constexpr float MAX_CHARGE_TIME = 1.5f;
+		SafeSharedPtr<AudioClip> charge_se;
 	};
 }
 
