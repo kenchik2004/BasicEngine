@@ -1,4 +1,4 @@
-ï»¿#include "AudioManager.h"
+#include "AudioManager.h"
 
 
 
@@ -51,14 +51,14 @@ SafeSharedPtr<AudioClip> AudioManager::CloneByName(std::string_view name, std::s
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
 		audio->handle = DuplicateSoundMem(cache[resource->second.index]->handle);
-		//DXLibã¯3åˆ†ä»¥ä¸Šã®éŸ³å£°ã‚’ã‚¯ãƒ­ãƒ¼ãƒ³ã§ããªã„ã®ã§ã€ã—ã‚ƒã‚ãªã—ã§ã‚ªãƒªã‚¸ãƒŠãƒ«ã‚’æ¸¡ã™ã€‚
-		//ã‚ªãƒªã‚¸ãƒŠãƒ«ã®æ–¹ã¯ã€éåŒæœŸã§å†ãƒ­ãƒ¼ãƒ‰ã—ã€ã§ãã‚‹ã ã‘ãƒãƒ¼ã‚¿ã‚¤ãƒ ã§æ¬¡ã®ã‚¯ãƒ­ãƒ¼ãƒ³ãŒã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
+		//DXLib‚Í3•ªˆÈã‚Ì‰¹º‚ğƒNƒ[ƒ“‚Å‚«‚È‚¢‚Ì‚ÅA‚µ‚á‚ ‚È‚µ‚ÅƒIƒŠƒWƒiƒ‹‚ğ“n‚·B
+		//ƒIƒŠƒWƒiƒ‹‚Ì•û‚ÍA”ñ“¯Šú‚ÅÄƒ[ƒh‚µA‚Å‚«‚é‚¾‚¯ƒm[ƒ^ƒCƒ€‚ÅŸ‚ÌƒNƒ[ƒ“‚ª‚Å‚«‚é‚æ‚¤‚É‚·‚éB
 		if (audio->handle < 0) {
 			audio->handle = cache[resource->second.index]->handle;
-			//ã‚ªãƒªã‚¸ãƒŠãƒ«ãŒãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§handleã‚’æ¶ˆã—ã¦ã—ã¾ã†ã®ã§ã€ãƒãƒ³ãƒ‰ãƒ«ã‚’ç„¡åŠ¹ã«ã™ã‚‹
+			//ƒIƒŠƒWƒiƒ‹‚ªƒfƒXƒgƒ‰ƒNƒ^‚Åhandle‚ğÁ‚µ‚Ä‚µ‚Ü‚¤‚Ì‚ÅAƒnƒ“ƒhƒ‹‚ğ–³Œø‚É‚·‚é
 			cache[resource->second.index]->handle = -1;
 			std::string path = cache[resource->second.index]->path;
-			//ã‚ªãƒªã‚¸ãƒŠãƒ«ã¯ã„ãªã‹ã£ãŸã“ã¨ã«ã—ã¦ã€å†ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
+			//ƒIƒŠƒWƒiƒ‹‚Í‚¢‚È‚©‚Á‚½‚±‚Æ‚É‚µ‚ÄAÄƒ[ƒh‚·‚é
 			names.erase(name_);
 			paths.erase(path);
 			Load(path, name_);
@@ -80,14 +80,14 @@ SafeSharedPtr<AudioClip> AudioManager::CloneByPath(std::string_view path, std::s
 		if (resource->second.index < 0)
 			WaitHandleASyncLoad(resource->second.handle);
 		audio->handle = DuplicateSoundMem(cache[resource->second.index]->handle);
-		//DXLibã¯3åˆ†ä»¥ä¸Šã®éŸ³å£°ã‚’ã‚¯ãƒ­ãƒ¼ãƒ³ã§ããªã„ã®ã§ã€ã—ã‚ƒã‚ãªã—ã§ã‚ªãƒªã‚¸ãƒŠãƒ«ã‚’æ¸¡ã™ã€‚
-		//ã‚ªãƒªã‚¸ãƒŠãƒ«ã®æ–¹ã¯ã€éåŒæœŸã§å†ãƒ­ãƒ¼ãƒ‰ã—ã€ã§ãã‚‹ã ã‘ãƒãƒ¼ã‚¿ã‚¤ãƒ ã§æ¬¡ã®ã‚¯ãƒ­ãƒ¼ãƒ³ãŒã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
+		//DXLib‚Í3•ªˆÈã‚Ì‰¹º‚ğƒNƒ[ƒ“‚Å‚«‚È‚¢‚Ì‚ÅA‚µ‚á‚ ‚È‚µ‚ÅƒIƒŠƒWƒiƒ‹‚ğ“n‚·B
+		//ƒIƒŠƒWƒiƒ‹‚Ì•û‚ÍA”ñ“¯Šú‚ÅÄƒ[ƒh‚µA‚Å‚«‚é‚¾‚¯ƒm[ƒ^ƒCƒ€‚ÅŸ‚ÌƒNƒ[ƒ“‚ª‚Å‚«‚é‚æ‚¤‚É‚·‚éB
 		if (audio->handle < 0) {
 			audio->handle = cache[resource->second.index]->handle;
-			//ã‚ªãƒªã‚¸ãƒŠãƒ«ãŒãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§handleã‚’æ¶ˆã—ã¦ã—ã¾ã†ã®ã§ã€ãƒãƒ³ãƒ‰ãƒ«ã‚’ç„¡åŠ¹ã«ã™ã‚‹
+			//ƒIƒŠƒWƒiƒ‹‚ªƒfƒXƒgƒ‰ƒNƒ^‚Åhandle‚ğÁ‚µ‚Ä‚µ‚Ü‚¤‚Ì‚ÅAƒnƒ“ƒhƒ‹‚ğ–³Œø‚É‚·‚é
 			cache[resource->second.index]->handle = -1;
 			std::string name = cache[resource->second.index]->name;
-			//ã‚ªãƒªã‚¸ãƒŠãƒ«ã¯ã„ãªã‹ã£ãŸã“ã¨ã«ã—ã¦ã€å†ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
+			//ƒIƒŠƒWƒiƒ‹‚Í‚¢‚È‚©‚Á‚½‚±‚Æ‚É‚µ‚ÄAÄƒ[ƒh‚·‚é
 			names.erase(name);
 			paths.erase(path_);
 			Load(path, name);
@@ -109,10 +109,5 @@ void AudioManager::Exit()
 	cache.clear();
 	names.clear();
 	paths.clear();
-	if (AudioClip::instance > 0) {
-		std::string msg = typeid(AudioClip).name();
-#ifndef PACKAGE_BUILD
-		throw(MemoryLeakException(msg.c_str(), DEFAULT_EXCEPTION_PARAM));
-#endif
-	}
+
 }

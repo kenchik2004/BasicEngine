@@ -1,4 +1,4 @@
-ï»¿#include "precompile.h"
+#include "precompile.h"
 #include "EnemyDownState.h"
 
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"
@@ -81,11 +81,11 @@ void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 		knock_back_vec = -current_z;
 	Vector3 set_forward = knock_back_vec;
 	set_forward.normalize();
-	if (down_forward) {								// ã ã„ãŸã„å‰æ–¹ã«å€’ã‚Œã‚‹å ´åˆ	
+	if (down_forward) {								// ‚¾‚¢‚½‚¢‘O•û‚É“|‚ê‚éê‡	
 		enemy->transform->SetAxisZ(set_forward);
 		animator->Play("enemy_down_forward", false, 0.05f, 0.2f, true);
 	}
-	else {											//å€’ã‚Œã‚‹æ–¹å‘ã¨é€²è¡Œæ–¹å‘ãŒã‚ã¾ã‚Šã«ã‚‚é•ã†å ´åˆ
+	else {											//“|‚ê‚é•ûŒü‚Æis•ûŒü‚ª‚ ‚Ü‚è‚É‚àˆá‚¤ê‡
 		enemy->transform->SetAxisZ(-set_forward);
 		animator->Play("enemy_down", false, 0.05f, 0.2f, true);
 	}
@@ -97,7 +97,7 @@ void NeonFade::EnemyDownState::OnExit(IStateMachine* machine)
 	auto col = enemy->GetComponent<CapsuleCollider>();
 	col->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
 	col->position = { 0,0,0 };
-	col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon | Collider::Layer::Player);
+	col->SetHitGroup(Collider::Layer::Terrain | Collider::Layer::Vehicle | Collider::Layer::Wepon | Collider::Layer::Player | Collider::Layer::Enemy);
 
 }
 

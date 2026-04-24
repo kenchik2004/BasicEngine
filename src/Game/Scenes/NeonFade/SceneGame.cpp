@@ -1,4 +1,4 @@
-ï»¿#include "SceneGame.h"
+#include "SceneGame.h"
 
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
@@ -35,11 +35,7 @@ namespace NeonFade {
 				CreateEffect();
 			effect_duration_timer -= Time::UnscaledDeltaTime();
 			if (IsEffectActive() && effect_duration_timer < 0.0f) {
-				SceneManager::Object::Destroy(effect_obj.lock());
-				SceneManager::Object::Destroy(effect_text_obj.lock());
-				ClearAll();
-				effect_obj.reset();
-				effect_text_obj.reset();
+				ResetEffect();
 			}
 		}
 		void RegistEnemy() {
@@ -71,7 +67,15 @@ namespace NeonFade {
 		void ResetInterval() {
 			regist_timer = REGIST_INTERVAL;
 		}
-
+		void ResetEffect() {
+			if (effect_obj)
+				SceneManager::Object::Destroy(effect_obj.lock());
+			if (effect_text_obj)
+				SceneManager::Object::Destroy(effect_text_obj.lock());
+			ClearAll();
+			effect_obj.reset();
+			effect_text_obj.reset();
+		}
 		void CreateEffect() {
 			regist_available = false;
 			auto effect_scene = SceneManager::GetCurrentScene();
@@ -95,7 +99,7 @@ namespace NeonFade {
 				effect_text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 				effect_text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 				text->TextColor() = Color::RED;
-				text->SetText(u8"é€®æ•å®Œäº†!!");
+				text->SetText(u8"‘ß•ßŠ®—¹!!");
 				text->SetFontSize(80);
 				text->SetAlignment(Text::ALIGNMENT::AUTO);
 				text->text_speed = 4.0f;
@@ -108,7 +112,7 @@ namespace NeonFade {
 
 
 namespace NeonFade {
-	//1ãƒ“ãƒ«ã®ç¸¦æ¨ª...100mÃ—100m
+	//1ƒrƒ‹‚Ìc‰¡...100m~100m
 	std::array<Vector3, 4> buildings = {
 		Vector3(-100.0f,0.0f,290.0f),
 		Vector3(-100.0f,0.0f,130.0f),
@@ -145,7 +149,6 @@ namespace NeonFade {
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/Ground.mv1", "stage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/building-01_UV.mv1", "building");
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road.mv1", "high-way");
-		ModelManager::LoadAsModel(u8"data/car/police.mv1", "police");
 
 
 		ModelManager::LoadAsModel(u8"data/enemy/X Bot.mv1", "enemy_model");
@@ -177,12 +180,13 @@ namespace NeonFade {
 		AudioManager::Load(u8"data/sound/finish_se.mp3", "finish_se");
 		AudioManager::Load(u8"data/sound/result_bgm.mp3", "result_bgm");
 		AudioManager::Load(u8"data/sound/score_se.mp3", "score_se");
+		AudioManager::Load(u8"data/sound/welter_se.mp3", "welter_se");
 
 
 
 		{
 			std::array<std::string, 2> ui_name_table = { "txt_message","txt_time" };
-			std::array<std::string, 2> ui_txt_table = { u8"å…¨å“¡æ•ã¾ãˆã‚!",u8"" };
+			std::array<std::string, 2> ui_txt_table = { u8"",u8"" };
 			for (u32 i = 0; i < ui_name_table.size(); i++) {
 				auto txt_obj = SceneManager::Object::Create<UIObject>(shared_from_this());
 				txt_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
@@ -196,6 +200,9 @@ namespace NeonFade {
 				ui_texts[ui_name_table[i]] = txt_obj;
 
 			}
+			ui_texts["txt_time"]->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER_TOP;
+			ui_texts["txt_time"]->AnchorType() = UIObject::ANCHOR_TYPE::CENTER_TOP;
+			ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80);
 		}
 		CheckForLoading();
 	}
@@ -229,7 +236,7 @@ namespace NeonFade {
 
 		if (!light_manager) {
 
-			light_manager = SceneManager::Object::Create<LightManager>(u8"ãƒ©ã‚¤ãƒˆãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼");
+			light_manager = SceneManager::Object::Create<LightManager>(u8"ƒ‰ƒCƒgƒ}ƒl[ƒWƒƒ[");
 			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
 			auto rec_light_manager = SceneManager::Object::Create<LightManager>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
@@ -252,48 +259,51 @@ namespace NeonFade {
 
 		if (!CheckForLoading())
 			return 0;
-		auto audio_player_obj = SceneManager::Object::Create<GameObject>();
-		audio_player = audio_player_obj->AddComponent<AudioPlayer>();
-		audio_player->is_3d = false;
+		if (!audio_player) {
+			auto audio_player_obj = SceneManager::Object::Create<GameObject>();
+			audio_player = audio_player_obj->AddComponent<AudioPlayer>();
+			audio_player->is_3d = false;
+		}
+		if (!player) {
+			auto player_ = SceneManager::Object::Create<Player>(u8"ƒvƒŒƒCƒ„[");
 
-		auto player_ = SceneManager::Object::Create<Player>(u8"ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼");
+			player_->transform->position = { 0,20,100 };
+			for (u32 i = 0; i < buildings.size(); ++i)
+				for (u32 j = 0; j < 20; ++j) {
+					Vector3 rand_start = Vector3(-5, 20, -5);
+					Vector3 rand_end = Vector3(5, 100, 5);
+					Vector3 rand_pos = Random::Position(rand_start, rand_end);
+					Vector3 offset = Vector3(rand_pos.x, 0, rand_pos.z);
+					rand_pos += offset.getNormalized() * 60;
+					rand_pos += buildings[i];
+					light_manager->AddLight(LightType::Point, rand_pos, Random::Color({ 0,0,100 }, { 100,100,100 }), 50.0f, 4.0f);
 
-		player_->transform->position = { 0,20,100 };
-		for (u32 i = 0; i < buildings.size(); ++i)
-			for (u32 j = 0; j < 20; ++j) {
-				Vector3 rand_start = Vector3(-5, 20, -5);
-				Vector3 rand_end = Vector3(5, 100, 5);
-				Vector3 rand_pos = Random::Position(rand_start, rand_end);
-				Vector3 offset = Vector3(rand_pos.x, 0, rand_pos.z);
-				rand_pos += offset.getNormalized() * 60;
-				rand_pos += buildings[i];
-				light_manager->AddLight(LightType::Point, rand_pos, Random::Color({ 0,0,100 }, { 100,100,100 }), 50.0f, 4.0f);
+				}
 
+
+			{
+				auto ground = SceneManager::Object::Create<GameObject>("Ground");
+				ground->AddComponent<ModelRenderer>()->SetModel("stage");
+				ground->AddComponent<RigidBody>();
+				ground->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
+				ground->transform->scale = { 50,50,50 };
+				ground->transform->position = { 0,0,0 };
+			}
+			{
+				camera->transform->position = { 0,10,10 };
+				camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
+				camera->camera->render_type = Camera::RenderType::Deferred;
+				camera->camera->camera_far = 1000.0f;
+				camera->AddComponent<AudioListener>();
+				auto machine = camera->AddComponent<PlayerCameraMachine>();
+
+				player_->player_camera = camera;
+				player_->player_camera_machine = machine;
+				machine->SetTarget(player_);
 			}
 
-
-		{
-			auto ground = SceneManager::Object::Create<GameObject>("Ground");
-			ground->AddComponent<ModelRenderer>()->SetModel("stage");
-			ground->AddComponent<RigidBody>();
-			ground->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
-			ground->transform->scale = { 50,50,50 };
-			ground->transform->position = { 0,0,0 };
+			player = player_;
 		}
-		{
-			camera->transform->position = { 0,10,10 };
-			camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
-			camera->camera->render_type = Camera::RenderType::Deferred;
-			camera->camera->camera_far = 500.0f;
-			camera->AddComponent<AudioListener>();
-			auto machine = camera->AddComponent<PlayerCameraMachine>();
-
-			player_->player_camera = camera;
-			player_->player_camera_machine = machine;
-			machine->SetTarget(player_);
-		}
-
-		player = player_;
 		for (u32 i = 0; i < buildings.size(); ++i)
 		{
 			auto building = SceneManager::Object::Create<GameObject>("Building" + std::to_string(i));
@@ -302,7 +312,6 @@ namespace NeonFade {
 			building->transform->position = buildings[i];
 			auto rb = building->AddComponent<RigidBody>();
 			rb->ChangeToStatic();
-			//rb->mass = 0.01f;
 			auto collision = building->AddComponent<BoxCollider>();
 			collision->extension = { 100.0f, 200.0f, 100.0f };
 			collision->position = { 0,100.0f,0 };
@@ -321,9 +330,9 @@ namespace NeonFade {
 		}
 		constexpr float gravity_factor = -9.81f * 6;
 		GetPhysicsScene()->setGravity({ 0,gravity_factor,0 });
-
+		if (!text_obj)
 		{
-			text_obj = SceneManager::Object::Create<UIObject>(u8"ãƒ†ã‚­ã‚¹ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ");
+			text_obj = SceneManager::Object::Create<UIObject>(u8"ƒeƒLƒXƒgƒIƒuƒWƒFƒNƒg");
 			text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->transform->scale = { 300,50,1 };
@@ -335,8 +344,9 @@ namespace NeonFade {
 			text_comp->Sleep();
 #endif
 		}
+		if (!hud_obj)
 		{
-			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"Î±ç‰ˆHUD");
+			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"HUD");
 			hud_prototype->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
 			hud_prototype->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
 			hud_prototype->transform->scale = { 500, 200, 1 };
@@ -344,19 +354,19 @@ namespace NeonFade {
 			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
 			hud_text->TextColor() = Color::RED;
 			static std::string hud_text_str =
-				u8"NeonFade Î±ç‰ˆ HUD\nã‚«ãƒ¡ãƒ©æ“ä½œ:å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯\nç§»å‹•:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯\nãƒ€ãƒƒã‚·ãƒ¥(åˆ‡ã‚Šæ›¿ãˆ):å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯æŠ¼ã—è¾¼ã¿\nã‚¸ãƒ£ãƒ³ãƒ—:Bãƒœã‚¿ãƒ³\næ”»æ’ƒ(ã‚¸ãƒ£ãƒ³ãƒ—ãƒ»è½ä¸‹ä¸­ã‚‚å¯):ABXYã©ã‚Œã‹+ZRãƒˆãƒªã‚¬ãƒ¼\nå›é¿:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯+ZLãƒˆãƒªã‚¬ãƒ¼\nã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ã“ã®HUDã‚’é–‰ã˜ã‚‹";
+				u8"NeonFade  HUD\nƒJƒƒ‰‘€ì:‰EƒXƒeƒBƒbƒN\nˆÚ“®:¶ƒXƒeƒBƒbƒN\nƒ_ƒbƒVƒ…(Ø‚è‘Ö‚¦):¶ƒXƒeƒBƒbƒN‰Ÿ‚µ‚İ\nƒWƒƒƒ“ƒv:Bƒ{ƒ^ƒ“\nUŒ‚(ƒWƒƒƒ“ƒvE—‰º’†‚à‰Â):ABXY‚Ç‚ê‚©+ZRƒgƒŠƒK[\n‰ñ”ğ:¶ƒXƒeƒBƒbƒN+ZLƒgƒŠƒK[\nƒXƒ^[ƒgƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚±‚ÌHUD‚ğ•Â‚¶‚é";
 			hud_text->SetText(hud_text_str);
 			hud_obj = hud_prototype;
-			ui_texts["txt_message"]->GetComponent<Text>()->SetText(u8"å…¨å“¡æ•ã¾ãˆã‚!");
+			ui_texts["txt_message"]->GetComponent<Text>()->SetText(u8"‘Sˆõ•ß‚Ü‚¦‚ë!");
 		}
 
 
-
-		scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
+		if (!scene_state_machine)
+			scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
 		Time::ResetTime();
 
-		//ä»Šã®çŠ¶æ…‹ã§ã¯ã€æ•µã‚„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒéå¸¸ã«åºƒç¯„å›²ã«ç§»å‹•ã§ãã¦ã—ã¾ã†ã®ã§ã€
-		//è¦‹ãˆãªã„å£ã‚’ç”¨æ„
+		//¡‚Ìó‘Ô‚Å‚ÍA“G‚âƒvƒŒƒCƒ„[‚ª”ñí‚ÉL”ÍˆÍ‚ÉˆÚ“®‚Å‚«‚Ä‚µ‚Ü‚¤‚Ì‚ÅA
+		//Œ©‚¦‚È‚¢•Ç‚ğ—pˆÓ
 		{
 			std::array<Vector3, 4> wall_positions = {
 				Vector3(0,20,650),
@@ -383,7 +393,8 @@ namespace NeonFade {
 
 
 		}
-		hunted_effect_creater = std::make_unique<HuntedEffectCreater>();
+		if (!hunted_effect_creater)
+			hunted_effect_creater = std::make_unique<HuntedEffectCreater>();
 		return Super::Init();
 
 	}
@@ -398,11 +409,27 @@ namespace NeonFade {
 			hud_obj->GetComponent<Text>()->Sleep();
 
 		}
-		if (Input::GetKeyDown(KeyCode::F1))
-			hunted_effect_creater->RegistEnemy();
 		if (is_game_timer_started)
 			game_timer += Time::UnscaledDeltaTime();
+		int min_ = static_cast<int>(max(0.0f, GAME_TIMER_MAX - game_timer)) / 60;
+		float sec_ = max(0.0f, GAME_TIMER_MAX - game_timer) - min_ * 60;
+		std::string count_down_txt;
+		count_down_txt += u8"c‚èŠÔ ";
+		count_down_txt += std::format("{:d}", min_);
+		count_down_txt += u8":";
+		count_down_txt += std::format("{:.2f}", sec_);
 
+		ui_texts["txt_time"]->GetComponent<Text>()->SetText(count_down_txt);
+		if (sec_ < 10.0f) {
+			ui_texts["txt_time"]->GetComponent<Text>()->TextColor() = Color::RED;
+			if (sec_ < 5.0f) {
+				ui_texts["txt_time"]->GetComponent<Text>()->TextColor().a = sinf(Time::GetTimeFromStart()*5)*0.5f+1.0f;
+				ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80 + static_cast<int>(10 * sinf(Time::GetTimeFromStart()*5)));
+			}
+		}
+		else {
+			ui_texts["txt_time"]->GetComponent<Text>()->TextColor() = Color::YELLOW;
+		}
 
 
 	}
@@ -429,7 +456,7 @@ namespace NeonFade {
 		{
 			float cnt = Time::GetTimeFromStart();
 			int dot_cnt = int(cnt * 2) % 4;
-			std::string load_txt = u8"ãƒ­ãƒ¼ãƒ‰ä¸­";
+			std::string load_txt = u8"ƒ[ƒh’†";
 			for (int i = 0; i < dot_cnt; ++i)
 				load_txt += '.';
 			ui_texts["txt_message"]->GetComponent<Text>()->SetText(load_txt);
@@ -456,6 +483,17 @@ namespace NeonFade {
 		enemy_count -= min(cnt, enemy_count);
 		if (hunted_effect_creater)
 			hunted_effect_creater->RegistEnemy();
+	}
+
+	void SceneGame::ClearAllEnemy()
+	{
+		enemy_count = 0;
+		auto enems = SceneManager::Object::GetArray<Enemy>();
+		for (auto& enem : enems)
+			SceneManager::Object::Destroy(enem);
+
+		if (hunted_effect_creater)
+			hunted_effect_creater->ResetEffect();
 	}
 
 	bool SceneGame::IsEffectExsist() const

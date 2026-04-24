@@ -64,7 +64,7 @@ float4 main(PS_INPUT input) : SV_Target0
 
 		float2 uv = screen_position.xy * float2(0.5, -0.5) + 0.5;
 		uv = saturate(uv);
-		float2 resolution = float2(1280, 720);
+		float2 resolution = float2(1920, 1080);
 		SurfaceInfo depth_surface = GetSurfaceInfo(int2(uv * resolution));
 		float4 view_depth = mul(float4(screen_position.xy, depth_surface.depth_, 1), mat_proj_inv);
 		view_depth.xyz /= view_depth.w;
@@ -73,7 +73,7 @@ float4 main(PS_INPUT input) : SV_Target0
 			float3 dir_center = normalize(sample_center_position - view_position);
 			float3 dir_sample = normalize(sample_center_position - view_depth.xyz);
 			float cosine = dot(dir_center, dir_sample);
-			float step = smoothstep(0,0.0001, length(sample_center_position - view_position));
+			float step = smoothstep(0,0.001, length(sample_center_position - view_position));
 			ao += cosine / SAMPLE_COUNT*step;
 		}
 		//ao += 1.0f / SAMPLE_COUNT;
@@ -81,7 +81,7 @@ float4 main(PS_INPUT input) : SV_Target0
 		return float4(view_position.zzz * 0.01, 1);*/
 
 	}
-	ao *= 1 - smoothstep(0.1, 100.0, sample_center_position.z);
+	ao *= 1 - smoothstep(0.1, 1000.0, sample_center_position.z);
 
 	ao = 1.0 - ao;
 	// 出力パラメータを返す

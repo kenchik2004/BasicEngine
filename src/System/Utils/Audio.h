@@ -1,68 +1,65 @@
-﻿//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //!	@file	Audio.h
-//!	@brief	オーディオ関連のクラス定義。AudioSource と AudioClip を定義し、オーディオファイルの読み込みと再生を管理する。
-//!　@author　岩野 健太郎
+//!	@brief	�I�[�f�B�I�֘A�̃N���X��`�BAudioSource �� AudioClip ���`���A�I�[�f�B�I�t�@�C���̓ǂݍ��݂ƍĐ����Ǘ�����B
+//!�@@author�@��� �����Y
 //----------------------------------------------------------------------------
 
 #pragma once
 
 
 //----------------------------------------------------
-// @brief オーディオソースを表すクラス。オーディオファイルのパス、名前、ハンドルを管理し、読み込み状態を保持する。
-// フレンドクラス AudioManager からのみアクセス可能。
+// @brief �I�[�f�B�I�\�[�X��\���N���X�B�I�[�f�B�I�t�@�C���̃p�X�A���O�A�n���h�����Ǘ����A�ǂݍ��ݏ�Ԃ�ێ�����B
+// �t�����h�N���X AudioManager ����̂݃A�N�Z�X�\�B
 //----------------------------------------------------
 class AudioSource {
-	friend class AudioManager; /**< @brief AudioManager クラスがこのクラスの private メンバーにアクセスできるようにする。 */
-	std::string path; /**< @brief オーディオファイルのパス。 */
-	std::string name; /**< @brief オーディオソースの名前。 */
-	int handle = -1; /**< @brief DXLib のサウンドハンドル。初期値は -1 で、無効を表す。 */
-	bool is_loaded = false; /**< @brief オーディオファイルが読み込まれたかどうかを示すフラグ。 */
+	friend class AudioManager; /**< @brief AudioManager �N���X�����̃N���X�� private �����o�[�ɃA�N�Z�X�ł���悤�ɂ���B */
+	std::string path; /**< @brief �I�[�f�B�I�t�@�C���̃p�X�B */
+	std::string name; /**< @brief �I�[�f�B�I�\�[�X�̖��O�B */
+	int handle = -1; /**< @brief DXLib �̃T�E���h�n���h���B�����l�� -1 �ŁA������\���B */
+	bool is_loaded = false; /**< @brief �I�[�f�B�I�t�@�C�����ǂݍ��܂ꂽ���ǂ����������t���O�B */
 public:
 	//----------------------------------------------------
-	// @brief デストラクタ。サウンドハンドルが有効な場合、メモリから削除する。
+	// @brief �f�X�g���N�^�B�T�E���h�n���h�����L���ȏꍇ�A����������폜����B
 	//----------------------------------------------------
 	~AudioSource() {
 		if (handle >= 0) {
-			DeleteSoundMem(handle); /**< @brief DXLib の関数でサウンドメモリを削除。 */
+			DeleteSoundMem(handle); /**< @brief DXLib �̊֐��ŃT�E���h���������폜�B */
 		}
 	}
 };
 
 //----------------------------------------------------
-// @brief オーディオクリップを表すクラス。オーディオデータの再生を管理する。
-// フレンドクラス AudioManager と AudioPlayer からのみアクセス可能。
+// @brief �I�[�f�B�I�N���b�v��\���N���X�B�I�[�f�B�I�f�[�^�̍Đ����Ǘ�����B
+// �t�����h�N���X AudioManager �� AudioPlayer ����̂݃A�N�Z�X�\�B
 //----------------------------------------------------
 class AudioClip {
-	friend class AudioManager; /**< @brief AudioManager クラスがこのクラスの private メンバーにアクセスできるようにする。 */
-	friend class AudioPlayer; /**< @brief AudioPlayer クラスがこのクラスの private メンバーにアクセスできるようにする。 */
-	std::string name; /**< @brief オーディオクリップの名前。 */
-	int handle = -1; /**< @brief DXLib のサウンドハンドル。初期値は -1 で、無効を表す。 */
-	static inline int instance = 0; /**< @brief このクラスのインスタンス数をカウントする静的変数。 */
+	friend class AudioManager; /**< @brief AudioManager �N���X�����̃N���X�� private �����o�[�ɃA�N�Z�X�ł���悤�ɂ���B */
+	friend class AudioPlayer; /**< @brief AudioPlayer �N���X�����̃N���X�� private �����o�[�ɃA�N�Z�X�ł���悤�ɂ���B */
+	std::string name; /**< @brief �I�[�f�B�I�N���b�v�̖��O�B */
+	int handle = -1; /**< @brief DXLib �̃T�E���h�n���h���B�����l�� -1 �ŁA������\���B */
 public:
 	//----------------------------------------------------
-	// @brief デフォルトコンストラクタ。インスタンス数をインクリメントする。
+	// @brief �f�t�H���g�R���X�g���N�^�B
 	//----------------------------------------------------
-	AudioClip() { instance++; }
+	AudioClip() = default;
 	//----------------------------------------------------
-	// @brief コピーコンストラクタ。他の AudioClip から名前とハンドルをコピーし、インスタンス数をインクリメントする。
-	// @param other コピー元の AudioClip オブジェクト。
+	// @brief ���[�u�R���X�g���N�^�B���� AudioClip ���疼�O�ƃn���h�����R�s�[���A
+	// @param other ���[�u���� AudioClip �I�u�W�F�N�g�B
 	//----------------------------------------------------
-	AudioClip(const AudioClip& other) {
-		name = other.name; /**< @brief 名前をコピー。 */
-		handle = other.handle; /**< @brief ハンドルをコピー。 */
-		instance++; /**< @brief インスタンス数をインクリメント。 */
+	AudioClip(const AudioClip&& other) {
+		name = other.name; /**< @brief ���O���R�s�[�B */
+		handle = other.handle; /**< @brief �n���h�����R�s�[�B */
 	}
 	//----------------------------------------------------
-	// @brief デストラクタ。サウンドを停止し、メモリを削除する。インスタンス数をデクリメントする。
+	// @brief �f�X�g���N�^�B�T�E���h���~���A���������폜����B�C���X�^���X�����f�N�������g����B
 	//----------------------------------------------------
 	~AudioClip() {
-		StopSoundMem(handle); /**< @brief DXLib の関数でサウンド再生を停止。 */
-		DeleteSoundMem(handle); /**< @brief DXLib の関数でサウンドメモリを削除。 */
-		instance--; /**< @brief インスタンス数をデクリメント。 */
+		StopSoundMem(handle); /**< @brief DXLib �̊֐��ŃT�E���h�Đ����~�B */
+		DeleteSoundMem(handle); /**< @brief DXLib �̊֐��ŃT�E���h���������폜�B */
 	}
 	//----------------------------------------------------
-	// @brief オーディオクリップを一度だけ再生する。
-	// 音量を最大に設定し、バックグラウンドで再生する。
+	// @brief �I�[�f�B�I�N���b�v����x�����Đ�����B
+	// ���ʂ��ő�ɐݒ肵�A�o�b�N�O���E���h�ōĐ�����B
 	//----------------------------------------------------
 	void PlayOneShot();
 };

@@ -1,4 +1,4 @@
-ï»¿#include "AudioPlayer.h"
+#include "AudioPlayer.h"
 #include "RigidBody.h"
 #include "System/Components/AudioListener.h"
 void AudioPlayer::Construct()
@@ -27,8 +27,11 @@ void AudioPlayer::Play(float start_pos, int sample_rate)
 	if (sample_rate < 0)
 		sample_rate = default_frequency;
 	if (audio) {
+		if (is_playing)
+			Stop();
 		SetCurrentPositionSoundMem((long long)(start_pos * sample_rate), audio->handle);
 		PlaySoundMem(audio->handle, loop ? DX_PLAYTYPE_LOOP : DX_PLAYTYPE_BACK, false);
+		is_playing = true;
 	}
 }
 
@@ -52,7 +55,7 @@ void AudioPlayer::Update()
 		float v_s = vec_pos.getNormalized().dot(-vec_v_s);
 		float f_;
 		if (v_s < 0.01f)
-			v_s = 0.01f; //ã‚¼ãƒ­é™¤ç®—ã‚’é˜²ããŸã‚ã®æœ€å°å€¤
+			v_s = 0.01f; //ƒ[ƒœŽZ‚ð–h‚®‚½‚ß‚ÌÅ¬’l
 		f_ = ((340.0f - v_o) / (340.0f - v_s));
 		int frequency = (int)(default_frequency * f_ * pitch_rate);
 		if (frequency < 100)

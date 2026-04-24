@@ -1,4 +1,4 @@
-﻿#include "SceneGameState_Show.h"
+#include "SceneGameState_Show.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 
 #include "Game/Objects/NeonFade/Enemy.h"
@@ -10,6 +10,8 @@ namespace NeonFade
 		:ISceneState(static_cast<Scene*>(owner_scene_))
 	{
 		owner_scene_game = owner_scene_;
+
+		timer_text = owner_scene_game->ui_texts["txt_time"]->GetComponent<Text>();
 	}
 	void SceneGameState_Show::OnEnter(ISceneStateMachine* machine)
 	{
@@ -21,7 +23,9 @@ namespace NeonFade
 		enemy_teams = factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
 		owner_scene_game->AddEnemyCount(teams * enem_per_tems);
 		owner_scene_game->text_comp->SetText(u8"Show State");
+		owner_scene_game->ResetGameTimer();
 		owner_scene_game->StartGameTimer();
+		timer_text->WakeUp();
 	}
 	void SceneGameState_Show::OnExit(ISceneStateMachine* machine)
 	{

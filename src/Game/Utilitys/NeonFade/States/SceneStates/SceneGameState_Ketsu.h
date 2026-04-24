@@ -1,10 +1,10 @@
-ï»¿#pragma once
+#pragma once
 #include "Game/Utilitys/NeonFade/States/ISceneState.h"
 
 namespace NeonFade {
 	//----------------------------------------
-	// èµ·æ‰¿è»¢çµã®ã€Œçµã€
-	// ã»ã‹ã®åå‰ãŒæ€ã„ã¤ã‹ãªã‹ã£ãŸã€‚è¨±ã›ã€‚
+	// ‹N³“]Œ‹‚ÌuŒ‹v
+	// ‚Ù‚©‚Ì–¼‘O‚ªv‚¢‚Â‚©‚È‚©‚Á‚½B‹–‚¹B
 	//----------------------------------------
 	class SceneGame;
 	class EnemyTeam;
@@ -19,6 +19,7 @@ namespace NeonFade {
 	private:
 		SceneGame* owner_scene_game = nullptr;
 		std::vector<SafeUniquePtr<EnemyTeam>> enemy_teams;
+		TextWP timer_text = nullptr;
 	};
 }
 

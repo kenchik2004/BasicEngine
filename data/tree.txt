@@ -1,18 +1,7 @@
 root
 |-----NeonFade::FinishEffectObject
-|-----Sample::DicePair
 |-----Scene
-|        |-----Sample::SampleRoomScene
-|        |-----Sample::SampleMovingScene
-|        |-----Sample::SampleMaterialScene
-|        |-----Sample::SampleAnimationScene
-|        |-----Sample::SampleAnotherScene
-|        |-----Sample::DiceScene
-|        |-----NetWorkTest_Server::NetWorkSampleScene_Server
-|        |-----NetWorkTest_Client::NetWorkSampleScene_Client
-|        |-----NetWorkTest::NetWorkSampleScene
 |        |-----NeonFade::SceneGame
-|        |-----NeonFade_Debug::StageMakeScene
 |        end_of_node
 |        
 |-----Object
@@ -26,26 +15,7 @@ root
 |        |        end_of_node
 |        |        
 |        |-----GameObject
-|        |        |-----Sample::GroundObject
 |        |        |-----CameraObject
-|        |        |-----SampleMovingCharacter
-|        |        |-----Sample::SampleAnimationObject
-|        |        |-----Sample::DiceBase
-|        |        |        |-----Sample::DiceD8
-|        |        |        |-----Sample::DiceD6
-|        |        |        |-----Sample::DiceD4
-|        |        |        |-----Sample::DiceD20
-|        |        |        |-----Sample::DiceD12
-|        |        |        |-----Sample::DiceD10
-|        |        |        end_of_node
-|        |        |        
-|        |        |-----Sample::CardBase
-|        |        |        |-----Sample::CardUnpu
-|        |        |        |-----Sample::CardShinsoku
-|        |        |        |-----Sample::CardFist
-|        |        |        |-----Sample::CardDoman
-|        |        |        end_of_node
-|        |        |        
 |        |        |-----GameObject
 |        |        |-----GameObjectWithLifeTime
 |        |        |-----GameObject
@@ -64,9 +34,9 @@ root
 |        |-----AudioPlayer
 |        |-----ImageRenderer
 |        |-----Collider
+|        |        |-----ConvexMeshCollider
 |        |        |-----SphereCollider
 |        |        |-----MeshCollider
-|        |        |-----ConvexMeshCollider
 |        |        |-----BoxCollider
 |        |        |-----CapsuleCollider
 |        |        end_of_node

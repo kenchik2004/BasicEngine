@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "System/Scene.h"
 #include "Game/Utilitys/NeonFade/StateMachines/SceneGameStateMachine.h"
 USING_PTR(CameraObject);
@@ -27,6 +27,7 @@ namespace NeonFade {
 		void AddEnemyCount(u32 cnt = 1) { enemy_count += cnt; }
 		void SubtractEnemyCount(u32 cnt = 1);
 		int GetEnemyCount() const { return enemy_count; }
+		void ClearAllEnemy();
 		CameraObjectWP camera;
 		PlayerWP player;
 		UIObjectWP text_obj;
@@ -34,10 +35,12 @@ namespace NeonFade {
 		std::unordered_map<std::string, UIObjectWP> ui_texts;
 		TextWP text_comp;
 		SceneGameStateMachineUP scene_state_machine = nullptr;
+		static constexpr float GAME_TIMER_MAX = 500.0f;
 
 		ShadowMapObjectWP shadowmap = nullptr;
 		LightManagerWP light_manager = nullptr;
-		void StartGameTimer() { game_timer = 0.0f; is_game_timer_started = true; }
+		void StartGameTimer() { is_game_timer_started = true; }
+		void ResetGameTimer() { game_timer = 0.0f;}
 		void StopGameTimer() { is_game_timer_started = false; }
 		float GetGameTimer() const { return game_timer; }
 		bool IsEffectExsist() const;

@@ -1,4 +1,4 @@
-ï»¿#include "Main.h"
+#include "Main.h"
 #include <fstream>
 //#define DEBUG_WINDOW
 //#define USE_DEBUG_DRAW
@@ -10,12 +10,12 @@ int SCREEN_H = 1080;
 
 std::string window_classname[1] =
 {
-	"ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦1",
+	"ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE1",
 };
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
 
-// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†ç”¨é–¢æ•°
+// ƒƒbƒZ[ƒWˆ——pŠÖ”
 constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -25,7 +25,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 		break;
 	case WM_MOVING:
 	case WM_SIZE:
-		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç§»å‹•ä¸­ã¯æ™‚é£›ã°ã—ã‚’è¡Œã†(Physicsã‚„ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆå‡¦ç†ã®æš´èµ°ã‚’é˜²ããŸã‚)
+		//ƒEƒBƒ“ƒhƒEˆÚ“®’†‚Í”ò‚Î‚µ‚ğs‚¤(Physics‚âƒAƒbƒvƒf[ƒgˆ—‚Ì–\‘–‚ğ–h‚®‚½‚ß)
 		Time::ResetTime();
 		break;
 	default:
@@ -40,7 +40,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 	{
 	case WM_MOVING:
 	case WM_SIZE:
-		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç§»å‹•ä¸­ã¯æ™‚é£›ã°ã—ã‚’è¡Œã†(Physicsã‚„ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆå‡¦ç†ã®æš´èµ°ã‚’é˜²ããŸã‚)
+		//ƒEƒBƒ“ƒhƒEˆÚ“®’†‚Í”ò‚Î‚µ‚ğs‚¤(Physics‚âƒAƒbƒvƒf[ƒgˆ—‚Ì–\‘–‚ğ–h‚®‚½‚ß)
 		Time::ResetTime();
 		break;
 	}
@@ -53,7 +53,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
 
-	//ã‚‚ã†UTF-8ã—ã‹ä½¿ã‚ã‚“!SHIFT_JISã¯ã‚¯ã‚½!!
+	//‚à‚¤UTF-8‚µ‚©g‚í‚ñ!SHIFT_JIS‚ÍƒNƒ\!!
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
 	//==================================//
@@ -62,20 +62,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	HWND window[1];
 	WNDCLASS param;
 #endif
-	SRand((unsigned int)time(nullptr));
 	SetOutApplicationLogValidFlag(FALSE);
 
-	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/test.ini");
+	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/config.ini");
 	ChangeWindowMode(!not_full_screen);
-	SCREEN_W = FileSystem::IniFileManager::GetInt("StartConfig", "screen_width", 1920, "data/test.ini");
-	SCREEN_H = FileSystem::IniFileManager::GetInt("StartConfig", "screen_height", 1080, "data/test.ini");
+	SCREEN_W = FileSystem::IniFileManager::GetInt("StartConfig", "screen_width", 1920, "data/config.ini");
+	SCREEN_H = FileSystem::IniFileManager::GetInt("StartConfig", "screen_height", 1080, "data/config.ini");
 
 #ifdef FULL_SCREEN
 	//ChangeWindowMode(false);
 #endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
 	SetZBufferBitDepth(32);
-	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦", "data/test.ini");
+	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "ƒƒCƒ“ƒEƒBƒ“ƒhƒE", "data/config.ini");
 	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
 	//SetWindowStyleMode(4);
@@ -93,7 +92,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetWindowSizeChangeEnableFlag(true, false);
 
 
-	bool show_mouse = FileSystem::IniFileManager::GetBool("StartConfig", "show_mouse", true, "data/test.ini");
+	bool show_mouse = FileSystem::IniFileManager::GetBool("StartConfig", "show_mouse", true, "data/config.ini");
 
 	SetMouseDispFlag(show_mouse);
 
@@ -121,18 +120,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #if 0
 	ImGuiInit(false);
 #endif
-	//æç”»ã®FPSã‚’è¨­å®š
-	int d_fps = FileSystem::IniFileManager::GetInt("StartConfig", "draw_fps", 60, "data/test.ini");
+	//•`‰æ‚ÌFPS‚ğİ’è
+	int d_fps = FileSystem::IniFileManager::GetInt("StartConfig", "draw_fps", 60, "data/config.ini");
 	Time::SetDrawFPSMAX(d_fps);
 
-	//å†…éƒ¨å‡¦ç†ã®FPSã‚’è¨­å®š
-	int fps = FileSystem::IniFileManager::GetInt("StartConfig", "update_fps", 60, "data/test.ini");
+	//“à•”ˆ—‚ÌFPS‚ğİ’è
+	int fps = FileSystem::IniFileManager::GetInt("StartConfig", "update_fps", 60, "data/config.ini");
 	Time::SetFPSMAX(fps);
 
-	int fix_fps = FileSystem::IniFileManager::GetInt("StartConfig", "fixed_fps", 50, "data/test.ini");
+	int fix_fps = FileSystem::IniFileManager::GetInt("StartConfig", "fixed_fps", 50, "data/config.ini");
 	Time::SetFixedFPSMAX(fix_fps);
 
-	int time_scale = FileSystem::IniFileManager::GetInt("StartConfig", "time_scale", 1, "data/test.ini");
+	int time_scale = FileSystem::IniFileManager::GetInt("StartConfig", "time_scale", 1, "data/config.ini");
 	Time::SetTimeScale(time_scale);
 
 
@@ -148,13 +147,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetUseSetDrawScreenSettingReset(false);
 
 	//===============================================//
-#ifndef SECONDARY 
 
-	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "start_scene", "SceneSample", "data/test.ini");
-#else
-	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "secondary_start_scene", "SceneSample", "data/test.ini");
 
-#endif
+	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "start_scene", "SceneSample", "data/config.ini");
+
 	auto start_scene = CreateInstanceFromName<Scene>(start_scene_name);
 	SceneManager::Load<Scene>(start_scene);
 
@@ -165,7 +161,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		try {
 #ifdef DEBUG_WINDOW
 			//=======================//
-			//ç‰‡æ–¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒæ¶ˆã•ã‚ŒãŸã‚‰ã€ã‚‚ã†ç‰‡æ–¹ã‚‚çµ‚äº†ã™ã‚‹
+			//•Ğ•û‚ÌƒEƒBƒ“ƒhƒE‚ªÁ‚³‚ê‚½‚çA‚à‚¤•Ğ•û‚àI—¹‚·‚é
 			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
@@ -184,7 +180,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #if 0
 			ImGuiUpdate();
 #endif
-			//ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ
+			//ƒAƒbƒvƒf[ƒg
 			//GameUpdate();
 			SceneManager::PreUpdate();
 			SceneManager::Update();
@@ -196,13 +192,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			double real_delta = Time::RealDeltaTimeD();
 			double fixed_max = Time::GetFixedDeltaTimeMAXD();
 			double max = max(fixed_max, real_delta);
-			//PCã®ã‚¹ãƒšãƒƒã‚¯æ¬¡ç¬¬ã§ã¯å®Ÿéš›ã«å‡ºã¦ã„ã‚‹FPSã‚ˆã‚Šã‚‚ç‰©ç†æ›´æ–°ã‚’è¡ŒãŠã†ã¨ã™ã‚‹ã®ã§ã€
-			//FPSãŒç‰©ç†æ›´æ–°é »åº¦ã‚’ä¸‹å›ã£ãŸå ´åˆã¯FPSã‚’åŸºæº–ã«è¨ˆç®—é »åº¦ã‚’æ±ºã‚ã‚‹
+			//PC‚ÌƒXƒyƒbƒNŸ‘æ‚Å‚ÍÀÛ‚Éo‚Ä‚¢‚éFPS‚æ‚è‚à•¨—XV‚ğs‚¨‚¤‚Æ‚·‚é‚Ì‚ÅA
+			//FPS‚ª•¨—XV•p“x‚ğ‰º‰ñ‚Á‚½ê‡‚ÍFPS‚ğŠî€‚ÉŒvZ•p“x‚ğŒˆ‚ß‚é
 			SceneManager::PrePhysics();
 			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max);
 			for (int i = 0; i < loops; i++)
 			{
-				//ç‰©ç†
+				//•¨—
 				SceneManager::Physics();
 
 			}
@@ -210,7 +206,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::PostPhysics();
 
 			bool imgui_drawed = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());
-			//æç”»
+			//•`‰æ
 			if (!imgui_drawed)
 			{
 
@@ -219,27 +215,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				SceneManager::Draw();
 				//GameRender();
 #ifdef DEBUG_WINDOW
-				//æ›¸ãè¾¼ã¿ã‚’è¡Œã†ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ã€ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è¨­å®š
+				//‘‚«‚İ‚ğs‚¤ƒEƒBƒ“ƒhƒE‚ğAƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Éİ’è
 				SetScreenFlipTargetWindow(NULL);
 				ScreenFlip();
 				//============//
-				// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ˜ ã‚Šè¾¼ã¿ãŒã‚ã‚‹å ´åˆã¯ã€ç›´ä¸‹ã®è¡Œã‚’æœ‰åŠ¹åŒ–
+				// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì‰f‚è‚İ‚ª‚ ‚éê‡‚ÍA’¼‰º‚Ìs‚ğ—LŒø‰»
 				//WaitTimer(2);
 				ClearDrawScreen();
-				//ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸ã®æç”»
+				//ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚Ö‚Ì•`‰æ
 #endif
 #ifdef USE_DEBUG_DRAW
 				SceneManager::DebugDraw();
 				SceneManager::LateDebugDraw();
 #endif
 #ifdef DEBUG_WINDOW
-				//æ›¸ãè¾¼ã¿ã‚’è¡Œã†ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ã€ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è¨­å®š
+				//‘‚«‚İ‚ğs‚¤ƒEƒBƒ“ƒhƒE‚ğAƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚Éİ’è
 				SetScreenFlipTargetWindow(window[0]);
 #endif
 #if 0
 				ID3D11Texture2D* backBufferTex = reinterpret_cast<ID3D11Texture2D*>(const_cast<void*>(GetUseDirect3D11BackBufferTexture2D()));
 				ID3D11ShaderResourceView* g_BackBufferSRV = nullptr;
-				ID3D11Device* device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // DxLibã‹ã‚‰å–å¾—
+				ID3D11Device* device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // DxLib‚©‚çæ“¾
 
 				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 				srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -247,35 +243,35 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				srvDesc.Texture2D.MipLevels = 1;
 				HRESULT hr = device->CreateShaderResourceView(backBufferTex, &srvDesc, &g_BackBufferSRV);
 				if (FAILED(hr)) {
-					// ã‚¨ãƒ©ãƒ¼å‡¦ç†
+					// ƒGƒ‰[ˆ—
 					PostQuitMessage(0);
 				}
 				else {
-					//ã‹ã£ã¡ã‚‡ã„ã„ã®ã‚„ã‚Šã¾ã™ã€‚ImGuiã®ä¸­ã§æç”»ã™ã‚‹ãƒ³ã‚´
+					//‚©‚Á‚¿‚å‚¢‚¢‚Ì‚â‚è‚Ü‚·BImGui‚Ì’†‚Å•`‰æ‚·‚éƒ“ƒS
 					ImGui::Begin("Game View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 					auto size = ImGui::GetWindowSize();
 					auto real_size = ImVec2(SCREEN_W, SCREEN_H);
 					ImVec2 scale = size / real_size;
 					scale = scale.x < scale.y ? ImVec2(scale.x, scale.x) : ImVec2(scale.y, scale.y);
-					ImGui::Image((ImTextureID)g_BackBufferSRV, real_size * scale); // è§£åƒåº¦ã¯ç”»é¢ã‚µã‚¤ã‚ºã«å¿œã˜ã¦
+					ImGui::Image((ImTextureID)g_BackBufferSRV, real_size * scale); // ‰ğ‘œ“x‚Í‰æ–ÊƒTƒCƒY‚É‰‚¶‚Ä
 					ImGui::End();
 				}
 #endif
-				//æœ¬æ¥ã®ImGuiDrawã®ä½ç½®ã¯ã“ã“
-				//ãªã‚“ã‹æœ€å¾Œã«æç”»ã—ãŸã‚‚ã®ã ã‘ImGuiã«æç”»é ˜åŸŸãŒå¸ã‚ã‚Œã‚‹ã®ã§ã¨ã‚Šã‚ãˆãšç”»é¢å¤–ã«ä½•ã‹æ›¸ãè¾¼ã¿
+				//–{—ˆ‚ÌImGuiDraw‚ÌˆÊ’u‚Í‚±‚±
+				//‚È‚ñ‚©ÅŒã‚É•`‰æ‚µ‚½‚à‚Ì‚¾‚¯ImGui‚É•`‰æ—Ìˆæ‚ª‹z‚í‚ê‚é‚Ì‚Å‚Æ‚è‚ ‚¦‚¸‰æ–ÊŠO‚É‰½‚©‘‚«‚İ
 #if 0
 				ImGuiDraw();
 #endif
-				//ImGuiã®ä¸­ã§ãƒ‰ãƒ­ãƒ¼ã™ã‚‹ãªã‚‰ã€ã“ã£ã¡ã¯å‘¼ã°ãªãã¦ã„ã„
+				//ImGui‚Ì’†‚Åƒhƒ[‚·‚é‚È‚çA‚±‚Á‚¿‚ÍŒÄ‚Î‚È‚­‚Ä‚¢‚¢
 				ScreenFlip();
 				Time::FixDrawFPS();
 				//============//
 			}
 #if 0
-			else     //ImGuiã ã‘ã¯æ¯ãƒ•ãƒ¬ãƒ¼ãƒ æ›¸ã‹ãªãã‚ƒæ€’ã‚‰ã‚Œã‚‹ã®ã§ã€å¼·åˆ¶çš„ã«ãƒ‰ãƒ­ãƒ¼
+			else     //ImGui‚¾‚¯‚Í–ˆƒtƒŒ[ƒ€‘‚©‚È‚«‚á“{‚ç‚ê‚é‚Ì‚ÅA‹­§“I‚Éƒhƒ[
 				ImGuiDraw();
 #endif
-			//PostDrawã™ã‚‹
+			//PostDraw‚·‚é
 			SceneManager::PostDraw();
 
 			Time::FixFPS();
@@ -296,7 +292,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	std::quick_exit(0);
 	//ImGuiExit();
 #endif
-	//çµ‚äº†
+	//I—¹
 	try {
 		SceneManager::Exit();
 	}
@@ -329,8 +325,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		const TypeInfo* next = nullptr;
 		f << base_type.ClassName() << std::endl;
 		//----------------------------------------------------------
-		// ç¶™æ‰¿ãƒ„ãƒªãƒ¼æ§‹é€ ã‚’æ¢ç´¢
-		// ã‚¹ã‚¿ãƒƒã‚¯å†å¸°ã‚’ä½¿ã‚ãªã„é«˜é€Ÿãªãƒ„ãƒªãƒ¼æ¢ç´¢ (stackless tree traversal)
+		// Œp³ƒcƒŠ[\‘¢‚ğ’Tõ
+		// ƒXƒ^ƒbƒNÄ‹A‚ğg‚í‚È‚¢‚‘¬‚ÈƒcƒŠ[’Tõ (stackless tree traversal)
 		//----------------------------------------------------------
 		int nest = 0;
 		while (p && (p != &base_type)) {
@@ -340,18 +336,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				f << "|-----" << p->ClassName() << std::endl;
 			}
 			if (p->Child() && !returnFromTraverse) {
-				// å­ãŒã‚ã‚‹å ´åˆã¯å­ã‚’å…ˆã«èª¿ã¹ã‚‹ã€‚(å­ã‹ã‚‰æ¢ç´¢ã§æˆ»ã£ã¦ããŸå ´åˆã¯é™¤å¤–)
+				// q‚ª‚ ‚éê‡‚Íq‚ğæ‚É’²‚×‚éB(q‚©‚ç’Tõ‚Å–ß‚Á‚Ä‚«‚½ê‡‚ÍœŠO)
 				nest++;
 				next = p->Child();
 				returnFromTraverse = false;
 			}
 			else if (p->Sibling()) {
-				// å…„å¼ŸãŒã„ã‚‹å ´åˆã¯å…„å¼Ÿã‚’èª¿ã¹ã‚‹
+				// ŒZ’í‚ª‚¢‚éê‡‚ÍŒZ’í‚ğ’²‚×‚é
 				next = p->Sibling();
 				returnFromTraverse = false;
 			}
 			else {
-				// è¦ªã¸æˆ»ã‚‹ã€‚
+				// e‚Ö–ß‚éB
 				next = p->Parent();
 				for (int i = 0; i < nest; i++)
 					f << "|        " << std::flush;
@@ -374,21 +370,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 //---------------------------------------------------------------------------------
-//	åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›ã™ã‚‹é–¢æ•°
+//	“x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·‚·‚éŠÖ”
 //---------------------------------------------------------------------------------
 float TO_RADIAN(float degree)
 {
 	return degree * 3.14159265f / 180.0f;
 }
 //---------------------------------------------------------------------------------
-//	ãƒ©ã‚¸ã‚¢ãƒ³ã‚’åº¦ã«å¤‰æ›ã™ã‚‹é–¢æ•°
+//	ƒ‰ƒWƒAƒ“‚ğ“x‚É•ÏŠ·‚·‚éŠÖ”
 //---------------------------------------------------------------------------------
 float TO_DEGREE(float radian)
 {
 	return radian * 180.0f / 3.14159265f;
 }
 //---------------------------------------------------------------------------------
-//	ï¼¸ï¼ºæ–¹å‘ã«å††ã‚’æç”»ã™ã‚‹
+//	‚w‚y•ûŒü‚É‰~‚ğ•`‰æ‚·‚é
 //---------------------------------------------------------------------------------
 void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 {
@@ -412,7 +408,7 @@ void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 	}
 }
 //---------------------------------------------------------------------------------
-//	ï¼¸ï¼ºæ–¹å‘ã«å››è§’ã‚’æç”»ã™ã‚‹
+//	‚w‚y•ûŒü‚ÉlŠp‚ğ•`‰æ‚·‚é
 //---------------------------------------------------------------------------------
 void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fill)
 {
@@ -454,7 +450,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 	//==================================//
 
 
-// ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
+// ƒfƒoƒbƒOƒEƒCƒ“ƒhƒE‚Ìì¬
 	window_parameter.style = CS_HREDRAW | CS_VREDRAW;
 	window_parameter.lpfnWndProc = WndProc;
 	window_parameter.cbClsExtra = 0;
@@ -473,7 +469,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 
 	window = CreateWindow(
 		window_classname[0].c_str(),
-		"ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦",
+		"ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE",
 		WS_MINIMIZEBOX | WS_SYSMENU,
 		window_x * 0.5f, window_y * 0.5f, window_x, window_y,
 		NULL, NULL, hInstance, NULL

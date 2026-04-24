@@ -14,6 +14,7 @@ namespace NeonFade {
 		Enemy* enemy = nullptr;
 		RigidBody* rb = nullptr;
 		Animator* animator = nullptr;
+		SafeSharedPtr<AudioClip> welter_se;
 		float timer = 0.0f;
 		static constexpr float WELTER_TIME = 3.0f;
 	};

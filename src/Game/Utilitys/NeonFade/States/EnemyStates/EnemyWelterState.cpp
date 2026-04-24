@@ -13,11 +13,15 @@ namespace NeonFade
 			return timer >= WELTER_TIME;
 			};
 		RegisterChangeRequest("idle", default_change, 1);
+
+		if (!welter_se)
+			welter_se = AudioManager::CloneByName(u8"welter_se");
 	}
 	void EnemyWelterState::OnEnter(IStateMachine* machine)
 	{
 		timer = 0.0f;
 		enemy->animator.lock()->PlayIfNoSame("enemy_escape", true, 0.0f, 0.1f, false);
+		welter_se->PlayOneShot();
 	}
 	void EnemyWelterState::OnExit(IStateMachine* machine)
 	{

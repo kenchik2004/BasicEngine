@@ -1,4 +1,4 @@
-ï»¿#include "precompile.h"
+#include "precompile.h"
 #include "SceneGameState_KI.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Utilitys/NeonFade/StateMachines/SceneGameStateMachine.h"
@@ -27,6 +27,7 @@ namespace NeonFade {
 		camera_path->SetPoints(points, false);
 		scene_camera = owner_scene_game->camera;
 		message_text = owner_scene_game->ui_texts["txt_message"]->GetComponent<Text>();
+		timer_text = owner_scene_game->ui_texts["txt_time"]->GetComponent<Text>();
 
 	}
 	void SceneGameState_KI::OnEnter(ISceneStateMachine* machine)
@@ -35,7 +36,15 @@ namespace NeonFade {
 		auto cam_machine = owner_scene_game->player->player_camera_machine.lock();
 		controller->Sleep();
 		cam_machine->Sleep();
+		message_text->SetText(u8"‘Sˆõ•ß‚Ü‚¦‚ë!");
+		message_text->SetFontSize(170);
+		message_text->WakeUp();
+		timer_text->Sleep();
 		owner_scene_game->text_comp->SetText(u8"KI State");
+		owner_scene_game->player->transform->position = { 0,20,100 };
+		owner_scene_game->player->transform->rotation = Quaternion(PxIdentity);
+		owner_scene_game->player->player_camera->transform->position = { 0,10,10 };
+		owner_scene_game->player->player_camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
 		exit_timer = 0;
 		movie_camera = SceneManager::Object::Create<CameraObject>(u8"movie_camera_KI");
 		movie_camera->camera->render_type = Camera::RenderType::Deferred;

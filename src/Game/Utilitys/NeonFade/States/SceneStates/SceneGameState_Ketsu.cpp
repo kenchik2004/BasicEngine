@@ -1,4 +1,4 @@
-﻿#include "SceneGameState_Ketsu.h"
+#include "SceneGameState_Ketsu.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/EnemyTeam.h"
@@ -8,6 +8,8 @@ namespace NeonFade {
 		:ISceneState(static_cast<Scene*>(owner_scene_))
 	{
 		owner_scene_game = owner_scene_;
+
+		timer_text = owner_scene_game->ui_texts["txt_time"]->GetComponent<Text>();
 	}
 	void SceneGameState_Ketsu::OnEnter(ISceneStateMachine* machine)
 	{
@@ -24,6 +26,7 @@ namespace NeonFade {
 	void SceneGameState_Ketsu::OnExit(ISceneStateMachine* machine)
 	{
 		owner_scene_game->StopGameTimer();
+		timer_text->Sleep();
 	}
 	void SceneGameState_Ketsu::Update(ISceneStateMachine* machine, float dt)
 	{

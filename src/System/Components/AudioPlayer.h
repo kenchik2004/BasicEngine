@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 USING_PTR(AudioPlayer);
 class AudioPlayer :
@@ -16,6 +16,7 @@ public:
 	}
 
 	void Play(float start_pos = 0, int sample_rate = -1);
+	bool IsPlaying() const { return is_playing; }
 	void Update() override;
 	void Stop();
 	static void Load(std::string_view path, std::string_view name, bool use_3d = true);
@@ -27,6 +28,7 @@ public:
 	bool loop = false;
 	bool is_3d = true;
 private:
+	bool is_playing = false;
 	Vector3 last_position = { 0,0,0 };
 };
 

@@ -1,4 +1,4 @@
-ï»¿#pragma once
+#pragma once
 #include "Game/Utilitys/NeonFade/States/ISceneState.h"
 
 class CatmullRomPath;
@@ -6,8 +6,8 @@ class CameraObject;
 namespace NeonFade {
 
 	//----------------------------------------
-	// èµ·æ‰¿è»¢çµã®ã€Œèµ·ã€
-	// ã»ã‹ã®åå‰ãŒæ€ã„ã¤ã‹ãªã‹ã£ãŸã€‚è¨±ã›ã€‚
+	// ‹N³“]Œ‹‚Ìu‹Nv
+	// ‚Ù‚©‚Ì–¼‘O‚ªv‚¢‚Â‚©‚È‚©‚Á‚½B‹–‚¹B
 	//----------------------------------------
 	class SceneGame;
 	class SceneGameState_KI :
@@ -27,6 +27,7 @@ namespace NeonFade {
 
 		SafeUniquePtr<CatmullRomPath> camera_path = nullptr;
 		TextWP message_text = nullptr;
+		TextWP timer_text = nullptr;
 	};
 }
 
