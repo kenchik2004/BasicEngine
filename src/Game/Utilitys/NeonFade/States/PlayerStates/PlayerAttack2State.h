@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {
 	class Player;

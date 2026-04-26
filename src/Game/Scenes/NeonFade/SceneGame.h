@@ -35,7 +35,7 @@ namespace NeonFade {
 		std::unordered_map<std::string, UIObjectWP> ui_texts;
 		TextWP text_comp;
 		SceneGameStateMachineUP scene_state_machine = nullptr;
-		static constexpr float GAME_TIMER_MAX = 500.0f;
+		static constexpr float GAME_TIMER_MAX = 300.0f;
 
 		ShadowMapObjectWP shadowmap = nullptr;
 		LightManagerWP light_manager = nullptr;

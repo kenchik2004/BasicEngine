@@ -209,6 +209,8 @@ namespace NeonFade {
 
 	int SceneGame::Init()
 	{
+		for (int i = 0; i < 6; i++)
+			DxLib::SetTextureAddressMode(DX_TEXADDRESS_WRAP, i);
 
 		if (!camera) {
 			camera = SceneManager::Object::Create<CameraObject>();
@@ -283,11 +285,13 @@ namespace NeonFade {
 
 			{
 				auto ground = SceneManager::Object::Create<GameObject>("Ground");
-				ground->AddComponent<ModelRenderer>()->SetModel("stage");
+				auto ground_mdl = ground->AddComponent<ModelRenderer>();
+				ground_mdl->SetModel("stage");
 				ground->AddComponent<RigidBody>();
 				ground->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
-				ground->transform->scale = { 50,50,50 };
-				ground->transform->position = { 0,0,0 };
+				ground->transform->scale = { 5,5,5 };
+				ground->transform->position = { 0,0,200 };
+
 			}
 			{
 				camera->transform->position = { 0,10,10 };
@@ -420,11 +424,11 @@ namespace NeonFade {
 		count_down_txt += std::format("{:.2f}", sec_);
 
 		ui_texts["txt_time"]->GetComponent<Text>()->SetText(count_down_txt);
-		if (sec_ < 10.0f) {
+		if (min_ < 1 && sec_ < 10.0f) {
 			ui_texts["txt_time"]->GetComponent<Text>()->TextColor() = Color::RED;
 			if (sec_ < 5.0f) {
-				ui_texts["txt_time"]->GetComponent<Text>()->TextColor().a = sinf(Time::GetTimeFromStart()*5)*0.5f+1.0f;
-				ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80 + static_cast<int>(10 * sinf(Time::GetTimeFromStart()*5)));
+				ui_texts["txt_time"]->GetComponent<Text>()->TextColor().a = sinf(Time::GetTimeFromStart() * 5) * 0.5f + 1.0f;
+				ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80 + static_cast<int>(10 * sinf(Time::GetTimeFromStart() * 5)));
 			}
 		}
 		else {

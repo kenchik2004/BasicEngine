@@ -1,4 +1,4 @@
-ï»¿#include "PlayerAttack3State.h"
+#include "PlayerAttack3State.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
@@ -19,7 +19,7 @@ namespace NeonFade {
 			hit_box = std::move(col);
 			hit_box_created_time = exit_timer;
 			};
-		//ãƒ’ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ç”Ÿæˆã‚¿ã‚¤ãƒŸãƒ³ã‚°
+		//ƒqƒbƒgƒ{ƒbƒNƒX¶¬ƒ^ƒCƒ~ƒ“ƒO
 		animator->SetAnimationCallBack("leg_sweep", create_hit_box, 27, "create_hit_box");
 
 		std::function<bool()> default_exit =
@@ -75,7 +75,7 @@ namespace NeonFade {
 			}
 			if (hit_stop_timer <= 0.0f && stop_counter < MAX_STOP_COUNT) {
 				stop_counter++;
-				owner_player->player_camera_machine->ShakeCamera(0.2f, HIT_STOP_TIME);
+				owner_player->player_camera_machine->ShakeCamera(0.3f, CAMERA_SHAKE_TIME);
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.001f;
 

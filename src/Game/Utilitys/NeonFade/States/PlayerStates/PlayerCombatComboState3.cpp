@@ -1,4 +1,4 @@
-﻿#include "PlayerCombatComboState3.h"
+#include "PlayerCombatComboState3.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "System/Components/EffectPlayer.h"
@@ -127,7 +127,7 @@ namespace NeonFade {
 			player->GetScene()->physics_timescale = 0.0f;
 			if (hit_stop_timer <= 0.0f) {
 				hit_stop_timer = HIT_STOP_TIME;
-				player->player_camera_machine->ShakeCamera(0.2f, HIT_STOP_TIME);
+				player->player_camera_machine->ShakeCamera(0.4f, CAMERA_SHAKE_TIME);
 			}
 
 			if (knock_back) {

@@ -1,4 +1,4 @@
-ï»¿#include "PlayerSmashMainState.h"
+#include "PlayerSmashMainState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
@@ -30,6 +30,7 @@ namespace NeonFade {
 			Vector3 smash_velocity = owner_player->transform->AxisZ() * 70.0f;
 			smash_velocity += owner_player->transform->AxisY() * -20.0f;
 			rb->velocity = smash_velocity;
+			owner_player->player_camera_machine->ShakeCamera(0.5f, CAMERA_SHAKE_TIME);
 		}
 	}
 	void PlayerSmashMainState::OnExit(IStateMachine* machine)
@@ -39,7 +40,7 @@ namespace NeonFade {
 			hit_box->RemoveThisComponent();
 			hit_box = nullptr;
 		}
-		//ãšã£ã¨ãƒ“ãƒªãƒ“ãƒªã—ã¦ã‚‹ã®ã‚‚ã‚¢ãƒ¬ãªã®ã§ã€é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«æˆ»ã™
+		//‚¸‚Á‚ÆƒrƒŠƒrƒŠ‚µ‚Ä‚é‚Ì‚àƒAƒŒ‚È‚Ì‚ÅA’ÊíƒeƒNƒXƒ`ƒƒ‚É–ß‚·
 		{
 			owner_player->ResetMaterialsToDefault();
 		}

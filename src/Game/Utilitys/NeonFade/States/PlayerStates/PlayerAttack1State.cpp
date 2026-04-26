@@ -1,4 +1,4 @@
-ï»¿#include "PlayerAttack1State.h"
+#include "PlayerAttack1State.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
@@ -48,8 +48,8 @@ namespace NeonFade {
 		static constexpr float smoothstep_rottime = 1.0f / SPIN_TIME;
 		float cur_animspeed = 0.0f;
 		if (exit_timer <= SPIN_TIME) {
-			//ã„ããªã‚Šã‚¹ãƒ”ãƒ³ã—å§‹ã‚ãŸã‚‰ä¸è‡ªç„¶ãªã®ã§ã€å¾ã€…ã«åŠ é€Ÿ 1->2
-			//ã¤ã„ã§ã«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒé€†å›žè»¢ã«ãªã£ã¦ã„ã‚‹ã®ã§ã€é€†è»¢ã•ã›ã‚‹
+			//‚¢‚«‚È‚èƒXƒsƒ“‚µŽn‚ß‚½‚ç•sŽ©‘R‚È‚Ì‚ÅA™X‚É‰Á‘¬ 1->2
+			//‚Â‚¢‚Å‚ÉƒAƒjƒ[ƒVƒ‡ƒ“‚ª‹t‰ñ“]‚É‚È‚Á‚Ä‚¢‚é‚Ì‚ÅA‹t“]‚³‚¹‚é
 			cur_animspeed = exit_timer * smoothstep_rottime * -2.0f;
 			owner_player->transform->rotation = Slerp(start_rot, spin_rot, exit_timer * smoothstep_rottime);
 		}
@@ -104,7 +104,7 @@ namespace NeonFade {
 			}
 
 			if (hit_stop_timer <= 0.0f) {
-				owner_player->player_camera_machine->ShakeCamera(1.5f, HIT_STOP_TIME);
+				owner_player->player_camera_machine->ShakeCamera(1.5f, CAMERA_SHAKE_TIME);
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.01f;
 				{

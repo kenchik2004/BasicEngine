@@ -5,9 +5,12 @@
 //#define FULL_SCREEN
 
 //#define SECONDARY
+//! @brief 画面の横幅(初期値:1920)
 int SCREEN_W = 1920;
+//! @brief 画面の縦幅(初期値:1080)
 int SCREEN_H = 1080;
 
+//! @brief ウィンドウのクラス名一覧
 std::string window_classname[1] =
 {
 	"デバッグウィンドウ1",
@@ -15,7 +18,12 @@ std::string window_classname[1] =
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
 
-// メッセージ処理用関数
+//! @brief 標準的なWindowsメッセージ処理関数
+//! @param window ウィンドウハンドル
+//! @param msg ウィンドウメッセージ
+//! @param wParam パラメータ1
+//! @param lParam パラメータ2
+//! @return LRESULT ウィンドウメッセージ処理結果
 constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -33,6 +41,13 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 	}
 	return (0L);
 }
+
+//! @brief DxLib側のメッセージフック用のウィンドウメッセージ処理関数
+//! @param window ウィンドウハンドル
+//! @param msg ウィンドウメッセージ
+//! @param wParam パラメータ1
+//! @param lParam パラメータ2
+//! @return LRESULT ウィンドウメッセージ処理結果
 constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -48,7 +63,12 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 }
 //=====================================//
 //---------------------------------------------------------------------------------
-//	WinMain
+//! @brief Windowsアプリケーションのエントリポイント (WinMain)
+//! @param hInstance 現在のインスタンスハンドル
+//! @param hPrevInstance 以前のインスタンスハンドル (常にNULL)
+//! @param lpCmdLine コマンドライン引数
+//! @param nCmdShow ウィンドウの表示サイズや状態(最大・最小化等)を示す値
+//! @return プログラムの終了コード
 //---------------------------------------------------------------------------------
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -370,21 +390,29 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 //---------------------------------------------------------------------------------
-//	度をラジアンに変換する関数
+//! @brief 度をラジアンに変換する関数
+//! @param degree 角度(度数法)
+//! @return float 角度(ラジアン)
 //---------------------------------------------------------------------------------
 float TO_RADIAN(float degree)
 {
 	return degree * 3.14159265f / 180.0f;
 }
 //---------------------------------------------------------------------------------
-//	ラジアンを度に変換する関数
+//! @brief ラジアンを度に変換する関数
+//! @param radian 角度(ラジアン)
+//! @return float 角度(度数法)
 //---------------------------------------------------------------------------------
 float TO_DEGREE(float radian)
 {
 	return radian * 180.0f / 3.14159265f;
 }
 //---------------------------------------------------------------------------------
-//	ＸＺ方向に円を描画する
+//! @brief ＸＺ平面上に円を3D描画する
+//! @param center 円の中心座標
+//! @param radius 円の半径
+//! @param color 描画色
+//! @param fill 塗りつぶしフラグ(trueで塗りつぶし)
 //---------------------------------------------------------------------------------
 void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 {
@@ -408,7 +436,12 @@ void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 	}
 }
 //---------------------------------------------------------------------------------
-//	ＸＺ方向に四角を描画する
+//! @brief ＸＺ平面上に四角形を3D描画する
+//! @param center 四角形の中心座標
+//! @param half_w 横幅の半分
+//! @param half_h 縦幅の半分
+//! @param color 描画色
+//! @param fill 塗りつぶしフラグ(trueで塗りつぶし)
 //---------------------------------------------------------------------------------
 void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fill)
 {

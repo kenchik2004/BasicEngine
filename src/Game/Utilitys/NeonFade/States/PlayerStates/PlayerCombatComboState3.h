@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 namespace NeonFade {
@@ -25,7 +25,8 @@ namespace NeonFade {
 		float attack_timer = 0.0f;
 		static constexpr float ATTACK_TIME = 0.45f;
 		float hit_stop_timer = 0.0f;
-		static constexpr float HIT_STOP_TIME = 0.03f;
+		static constexpr float HIT_STOP_TIME = 0.15f;
+		static constexpr float CAMERA_SHAKE_TIME = 0.3f;
 	};
 }
 

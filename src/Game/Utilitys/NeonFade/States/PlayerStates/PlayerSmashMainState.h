@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {
 	class Player;
@@ -13,7 +13,8 @@ namespace NeonFade {
 		void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info) override;
 		void DebugDraw() override;
 		float smash_timer = 0.0f;
-		const float MAX_SMASH_TIME = 1.5f;
+		static constexpr float MAX_SMASH_TIME = 1.5f;
+		static constexpr float CAMERA_SHAKE_TIME = 0.5f;
 	private:
 		Player* owner_player = nullptr;
 		Animator* animator = nullptr;
