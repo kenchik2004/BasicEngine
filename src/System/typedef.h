@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿//---------------------------------------------------------------------------
+//! @file   typedef.h
+//! @brief  エンジン共通の型定義・スマートポインタラッパー・型情報クラスの宣言
+//---------------------------------------------------------------------------
+#pragma once
 
 constexpr float PI = 3.1415926535f;		//円周率
 constexpr float RADIAN = PI / 180;			//円周率/180(Euler->Radian)
@@ -43,6 +47,10 @@ using mat4x4 = physx::PxMat44;
 
 #include "System/Utils/Exception.h"
 
+//---------------------------------------------------------------------
+//! @class SafeUniquePtr
+//! @brief nullptr アクセス時に例外を投げる安全な unique_ptr ラッパー
+//---------------------------------------------------------------------
 template <class T>
 class SafeUniquePtr {
 	std::unique_ptr<T> u_p = nullptr;
@@ -94,6 +102,10 @@ public:
 	T* get() const { return u_p.get(); }
 };
 
+//---------------------------------------------------------------------
+//! @class SafeSharedPtr
+//! @brief nullptr アクセス時に例外を投げる安全な shared_ptr ラッパー
+//---------------------------------------------------------------------
 template <class T>
 class SafeSharedPtr {
 	std::shared_ptr<T> s_p = nullptr;
@@ -159,6 +171,10 @@ public:
 	T* get() const { return s_p.get(); }
 };
 
+//---------------------------------------------------------------------
+//! @class SafeWeakPtr
+//! @brief nullptr アクセス時に例外を投げる安全な weak_ptr ラッパー
+//---------------------------------------------------------------------
 template <class T, class... Args>
 class SafeWeakPtr {
 
@@ -249,6 +265,10 @@ SafeSharedPtr<To> SafeStaticCast(const SafeSharedPtr<From>& from) {
 }
 
 #if 1
+//---------------------------------------------------------------------
+//! @class TypeInfo
+//! @brief クラスの型情報（クラス名・サイズ・継承ツリー）を保持するクラス
+//---------------------------------------------------------------------
 class TypeInfo {
 public:
 	TypeInfo(std::string_view name, size_t size, TypeInfo* parent_info) {
@@ -343,6 +363,10 @@ public:
 };
 
 
+//---------------------------------------------------------------------
+//! @class ClassTypeInfo
+//! @brief テンプレートクラス用の型情報クラス。インスタンス生成機能を持つ
+//---------------------------------------------------------------------
 template <class T>
 class ClassTypeInfo :public TypeInfo {
 public:
@@ -354,6 +378,10 @@ public:
 	//  インスタンスを作成(クラスをnewしてポインタを返す)
 	SafeSharedPtr<void> Create() const override { return SafeStaticCast<void>(CreateInstance<T>::create()); }
 };
+//---------------------------------------------------------------------
+//! @class Class
+//! @brief 全エンジンオブジェクトの継承ツリーのルートとなる基底クラス
+//---------------------------------------------------------------------
 class Class {
 public:
 	static inline TypeInfo& info = TypeInfo::Root();

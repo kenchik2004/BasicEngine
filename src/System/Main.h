@@ -1,35 +1,39 @@
+//---------------------------------------------------------------------------
+//! @file   Main.h
+//! @brief  ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆãŠã‚ˆã³ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£é–¢æ•°ã®å®£è¨€
+//---------------------------------------------------------------------------
 #pragma once
 
 //! @file Main.h
-//! @brief ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+//! @brief ï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½Cï¿½ï¿½ï¿½wï¿½bï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½
 
-//! @brief ‰æ–Ê‚Ì‰¡•
+//! @brief ï¿½ï¿½Ê‚Ì‰ï¿½ï¿½ï¿½
 extern int SCREEN_W;
-//! @brief ‰æ–Ê‚Ìc•
+//! @brief ï¿½ï¿½Ê‚Ìcï¿½ï¿½
 extern int SCREEN_H;
 
-//! @brief “x”–@‚©‚çŒÊ“x–@(ƒ‰ƒWƒAƒ“)‚Ö‚Ì•ÏŠ·
-//! @param degree “x”–@‚Å‚ÌŠp“x
-//! @return ƒ‰ƒWƒAƒ“‚Å‚ÌŠp“x
+//! @brief ï¿½xï¿½ï¿½ï¿½@ï¿½ï¿½ï¿½ï¿½Ê“xï¿½@(ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½)ï¿½Ö‚Ì•ÏŠï¿½
+//! @param degree ï¿½xï¿½ï¿½ï¿½@ï¿½Å‚ÌŠpï¿½x
+//! @return ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½Å‚ÌŠpï¿½x
 float TO_RADIAN(float degree);
 
-//! @brief ŒÊ“x–@(ƒ‰ƒWƒAƒ“)‚©‚ç“x”–@‚Ö‚Ì•ÏŠ·
-//! @param radian ƒ‰ƒWƒAƒ“‚Å‚ÌŠp“x
-//! @return “x”–@‚Å‚ÌŠp“x
+//! @brief ï¿½Ê“xï¿½@(ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½@ï¿½Ö‚Ì•ÏŠï¿½
+//! @param radian ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½Å‚ÌŠpï¿½x
+//! @return ï¿½xï¿½ï¿½ï¿½@ï¿½Å‚ÌŠpï¿½x
 float TO_DEGREE(float radian);
 
-//! @brief XZ•½–Êã‚É3D‚Ì‰~‚ğ•`‰æ‚·‚é
-//! @param center ‰~‚Ì’†SÀ•W
-//! @param radius ‰~‚Ì”¼Œa
-//! @param color •`‰æF
-//! @param fill “h‚è‚Â‚Ô‚µƒtƒ‰ƒO (true: “h‚è‚Â‚Ô‚·, false: ˜g‚Ì‚İ)
+//! @brief XZï¿½ï¿½ï¿½Êï¿½ï¿½3Dï¿½Ì‰~ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½
+//! @param center ï¿½~ï¿½Ì’ï¿½ï¿½Sï¿½ï¿½ï¿½W
+//! @param radius ï¿½~ï¿½Ì”ï¿½ï¿½a
+//! @param color ï¿½`ï¿½ï¿½F
+//! @param fill ï¿½hï¿½ï¿½Â‚Ô‚ï¿½ï¿½tï¿½ï¿½ï¿½O (true: ï¿½hï¿½ï¿½Â‚Ô‚ï¿½, false: ï¿½gï¿½Ì‚ï¿½)
 void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill = false);
 
-//! @brief XZ•½–Êã‚É3D‚Ì‹éŒ`‚ğ•`‰æ‚·‚é
-//! @param center ‹éŒ`‚Ì’†SÀ•W
-//! @param half_w ‹éŒ`‚Ì‰¡•‚Ì”¼•ª
-//! @param half_h ‹éŒ`‚Ìc•‚Ì”¼•ª
-//! @param color •`‰æF
-//! @param fill “h‚è‚Â‚Ô‚µƒtƒ‰ƒO (true: “h‚è‚Â‚Ô‚·, false: ˜g‚Ì‚İ)
+//! @brief XZï¿½ï¿½ï¿½Êï¿½ï¿½3Dï¿½Ì‹ï¿½`ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½
+//! @param center ï¿½ï¿½`ï¿½Ì’ï¿½ï¿½Sï¿½ï¿½ï¿½W
+//! @param half_w ï¿½ï¿½`ï¿½Ì‰ï¿½ï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½
+//! @param half_h ï¿½ï¿½`ï¿½Ìcï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½
+//! @param color ï¿½`ï¿½ï¿½F
+//! @param fill ï¿½hï¿½ï¿½Â‚Ô‚ï¿½ï¿½tï¿½ï¿½ï¿½O (true: ï¿½hï¿½ï¿½Â‚Ô‚ï¿½, false: ï¿½gï¿½Ì‚ï¿½)
 void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fill = false);
 

@@ -1,10 +1,17 @@
-﻿#pragma once
+﻿//---------------------------------------------------------------------------
+//! @file   Scene.h
+//! @brief  シーン基底クラス。ゲームオブジェクトの管理・更新・描画処理を担う
+//---------------------------------------------------------------------------
+#pragma once
 
 USING_PTR(Object);
 USING_PTR(AudioListener);
 USING_PTR(Scene);
 USING_PTR(Camera);
 USING_PTR(DebugCamera);
+//---------------------------------------------------------------------
+//! @brief シーン内のクラス名と状態を保持する構造体
+//---------------------------------------------------------------------
 struct SceneStat {
 	friend class Scene;
 	std::string ClassName() { return class_name; }
@@ -12,10 +19,14 @@ private:
 	std::string class_name = "Scene";
 };
 
+//---------------------------------------------------------------------
+//! @class Scene
+//! @brief ゲームシーンの基底クラス。オブジェクトのライフサイクル管理・更新・描画・物理演算を統括する
+//---------------------------------------------------------------------
 class Scene :public std::enable_shared_from_this<Scene>
 {
 private:
-	physx::PxScene* physics_scene = nullptr;
+	physx::PxScene* physics_scene = nullptr; //!< PhysX の物理シーンへのポインタ
 public:
 
 	Scene() { physics_scene = PhysicsManager::AddScene(); }
@@ -26,15 +37,16 @@ public:
 		if (std::find(dirty_priority_objects.begin(), dirty_priority_objects.end(), who) == dirty_priority_objects.end())
 			dirty_priority_objects.push_back(who);
 	}
+	// シーンのロード状態を表す列挙型
 	enum class LOADING_STATUS :unsigned char {
 		LOADING,
 		LOADED,
 		UNLOADED
 	};
-	LOADING_STATUS loading_status = LOADING_STATUS::LOADING;
+	LOADING_STATUS loading_status = LOADING_STATUS::LOADING; //!< 現在のロード状態
 	virtual ~Scene() {}
 
-	float physics_timescale = 1.0f;
+	float physics_timescale = 1.0f; //!< 物理演算のタイムスケール
 	inline physx::PxScene* GetPhysicsScene() { return physics_scene; }
 	inline bool RayCast(const Ray& ray, RayCastInfo& info,
 		const physx::PxQueryFilterData& filter_data = physx::PxQueryFilterData())
@@ -125,21 +137,21 @@ public:
 
 
 private:
-	bool in_simulation = false;
-	ObjectPVec objects;
-	ObjectPVec dirty_priority_objects;
-	std::vector<std::function<void()>> waiting_functions;
-	std::vector<physx::PxActor*> waiting_remove_actors;
-	std::vector<physx::PxShape*> waiting_remove_shapes;
+	bool in_simulation = false;  //!< 物理シミュレーション実行中かどうかのフラグ
+	ObjectPVec objects;  //!< シーン内のゲームオブジェクトリスト(優先度順)
+	ObjectPVec dirty_priority_objects;  //!< 優先度変更のあったオブジェクトリスト(次フレームで再ソートされる)
+	std::vector<std::function<void()>> waiting_functions;  //!< シミュレーション終了後に呼び出す関数リスト
+	std::vector<physx::PxActor*> waiting_remove_actors;  //!< シミュレーション後に削除待ちのアクターリスト
+	std::vector<physx::PxShape*> waiting_remove_shapes;  //!< シミュレーション後に削除待ちのシェイプリスト
 	//std::vector<std::function<void()>> draw_calls;//ドローコールをキャッシュしておく設計
-	ObjectWPVec leak_objects;
+	ObjectWPVec leak_objects;  //!< メモリリーク検出用の弱参照リスト
 	void SyncGameObjectsPriority();
 	size_t FindInsertPositionByPriority(unsigned int priority);
-	bool is_any_destroyed = false;
+	bool is_any_destroyed = false;  //!< 削除マーク済みオブジェクトが存在するかどうかのフラグ
 	void DestroyMarkedGameObjects();
-	AudioListenerWP current_audio_listener;
-	CameraWP current_camera;
-	CameraWPVec active_cameras;
+	AudioListenerWP current_audio_listener;  //!< 現在アクティブなオーディオリスナー
+	CameraWP current_camera;  //!< 現在のメインカメラ
+	CameraWPVec active_cameras;  //!< アクティブなカメラリスト
 #if 0
 	DebugCameraWP debug_camera;
 #endif

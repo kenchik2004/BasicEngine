@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿//---------------------------------------------------------------------------
+//! @file   Float3.h
+//! @brief  3次元浮動小数点ベクトルクラスおよび関連ユーティリティ
+//---------------------------------------------------------------------------
+#pragma once
 
 //---------------------------------------------------------------------------------
 //	float3 クラス（ x y z があるクラス）
@@ -6,9 +10,9 @@
 class float3
 {
 public:
-	float	x;
-	float	y;
-	float	z;
+	float	x; //!< X成分
+	float	y; //!< Y成分
+	float	z; //!< Z成分
 
 	float3();									//	コンストラクタ
 	float3(float x, float y, float z);
@@ -55,10 +59,12 @@ float3 GetFloat3Cross(float3& v1, float3& v2);
 float3 GetFloat3VTransform(float3& v, MATRIX& mat);
 //	float3のベクトルを平面上に投影
 float3 ProjectOnPlane(float3 vec, float3 plane_normal);
+// Vector3 から float3 への変換
 inline float3 cast(const Vector3& vec) {
 	float3 vec_ = vec;
 	return vec_;
 }
+// Vector3 同士の要素別除算演算子
 inline Vector3 operator/(const Vector3& base, const Vector3& denuminator)
 {
 	Vector3 f_;
@@ -67,10 +73,12 @@ inline Vector3 operator/(const Vector3& base, const Vector3& denuminator)
 	f_.z = physx::PxAbs(denuminator.z) > FLT_EPSILON ? 1.0f / denuminator.z : 0;
 	return Vector3(base.x * f_.x, base.y * f_.y, base.z * f_.z);
 }
+// VECTOR から float3 への変換
 inline float3 cast(const VECTOR& vec) {
 	float3 vec_ = vec;
 	return vec_;
 }
+// mat4x4 から MATRIX への変換
 inline MATRIX cast(const mat4x4& mat)
 {
 	return {
@@ -80,6 +88,7 @@ inline MATRIX cast(const mat4x4& mat)
 		mat.column3.x, mat.column3.y, mat.column3.z, mat.column3.w
 	};
 }
+// MATRIX から mat4x4 への変換
 inline mat4x4 cast(const MATRIX& mat)
 {
 	return mat4x4(
@@ -98,6 +107,7 @@ inline Vector3 CastPhysXVec(const float3& v) {
 inline Quaternion CastPhysXQuat(const Quaternion& q) {
 	return Quaternion(-q.x, -q.y, -q.z, q.w);
 }
+// PhysX受け渡し用のマトリクス変換(左手系→右手系)
 inline mat4x4 CastPhysXMat(const mat4x4& mat) {
 	return mat4x4(
 		Vector4(mat.column0.x, mat.column1.x, mat.column2.x, mat.column0.w).getNormalized(),
@@ -107,6 +117,7 @@ inline mat4x4 CastPhysXMat(const mat4x4& mat) {
 	);
 }
 
+// クォータニオンをオイラー角(度数法)に変換する
 inline Vector3 QuaternionToEuler(const Quaternion& q) {
 	// Roll (X-axis rotation)
 	float roll = RAD2DEG(physx::PxAtan2(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y)));
@@ -119,6 +130,7 @@ inline Vector3 QuaternionToEuler(const Quaternion& q) {
 
 	return Vector3(roll, pitch, yaw);  // X, Y, Z に対応するオイラー角を返す
 }
+// クォータニオンをオイラー角(ラジアン)に変換する
 inline Vector3 QuaternionToRadians(const Quaternion& q) {
 	// Roll (X-axis rotation)
 	float roll = physx::PxAtan2(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
@@ -128,6 +140,7 @@ inline Vector3 QuaternionToRadians(const Quaternion& q) {
 	float yaw = physx::PxAtan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z));
 	return Vector3(roll, pitch, yaw);  // X, Y, Z に対応するオイラー角を返す
 }
+// クォータニオンの逆数を返す
 inline Quaternion Inverse(Quaternion q) {
 	if (fabsf(q.magnitudeSquared()) < FLT_EPSILON)
 		return Quaternion(0, 0, 0, 1);
@@ -137,6 +150,7 @@ inline Quaternion Inverse(Quaternion q) {
 
 }
 
+// Vector3 の線形補間(t は 0.0〜1.0 にクランプされる)
 inline Vector3 Lerp(const Vector3& start, const  Vector3& end, const float& t) {
 	Vector3 lerp_v;
 	float t_ = physx::PxClamp(t, 0.0f, 1.0f);
@@ -145,6 +159,7 @@ inline Vector3 Lerp(const Vector3& start, const  Vector3& end, const float& t) {
 	lerp_v.z = physx::PxLerp(start.z, end.z, t_);
 	return lerp_v;
 }
+// Vector3 の線形補間(クランプなし)
 inline Vector3 LerpUnClamped(const Vector3& start, const  Vector3& end, const float& t) {
 	Vector3 lerp_v;
 	lerp_v.x = physx::PxLerp(start.x, end.x, t);
@@ -153,6 +168,7 @@ inline Vector3 LerpUnClamped(const Vector3& start, const  Vector3& end, const fl
 	return lerp_v;
 }
 
+// Vector3 の球面線形補間
 inline Vector3 Slerp(const Vector3& from, const Vector3& to, float t)
 {
 	// 正規化（方向ベクトルを前提とする）
@@ -178,12 +194,14 @@ inline Vector3 Slerp(const Vector3& from, const Vector3& to, float t)
 	Vector3 result = (v0 * w1) + (v1 * w2);
 	return result.getNormalized();
 }
+// クォータニオンの球面線形補間
 inline Quaternion Slerp(const Quaternion& start, const Quaternion& end, const float& t) {
 	Quaternion slerp_q;
 	slerp_q = physx::PxSlerp(t, start, end);
 	return slerp_q;
 }
 
+// オイラー角(度数法)からクォータニオンに変換する
 inline Quaternion EulerToQuaternion(const Vector3& euler) {
 	Quaternion qx = Quaternion(DEG2RAD(euler.x), Vector3(1, 0, 0));
 	Quaternion qy = Quaternion(DEG2RAD(euler.y), Vector3(0, 1, 0));

@@ -5,25 +5,25 @@
 //#define FULL_SCREEN
 
 //#define SECONDARY
-//! @brief ‰æ–Ê‚Ì‰¡•(‰Šú’l:1920)
+//! @brief ï¿½ï¿½Ê‚Ì‰ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½l:1920)
 int SCREEN_W = 1920;
-//! @brief ‰æ–Ê‚Ìc•(‰Šú’l:1080)
+//! @brief ï¿½ï¿½Ê‚Ìcï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½l:1080)
 int SCREEN_H = 1080;
 
-//! @brief ƒEƒBƒ“ƒhƒE‚ÌƒNƒ‰ƒX–¼ˆê——
+//! @brief ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ê——
 std::string window_classname[1] =
 {
-	"ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE1",
+	"ï¿½fï¿½oï¿½bï¿½Oï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½E1",
 };
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
 
-//! @brief •W€“I‚ÈWindowsƒƒbƒZ[ƒWˆ—ŠÖ”
-//! @param window ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-//! @param msg ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒW
-//! @param wParam ƒpƒ‰ƒ[ƒ^1
-//! @param lParam ƒpƒ‰ƒ[ƒ^2
-//! @return LRESULT ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWˆ—Œ‹‰Ê
+//! @brief ï¿½Wï¿½ï¿½ï¿½Iï¿½ï¿½Windowsï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½
+//! @param window ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½
+//! @param msg ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½W
+//! @param wParam ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^1
+//! @param lParam ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^2
+//! @return LRESULT ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -33,7 +33,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 		break;
 	case WM_MOVING:
 	case WM_SIZE:
-		//ƒEƒBƒ“ƒhƒEˆÚ“®’†‚Í”ò‚Î‚µ‚ğs‚¤(Physics‚âƒAƒbƒvƒf[ƒgˆ—‚Ì–\‘–‚ğ–h‚®‚½‚ß)
+		//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ú“ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½Î‚ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½(Physicsï¿½ï¿½Aï¿½bï¿½vï¿½fï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Ì–\ï¿½ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		Time::ResetTime();
 		break;
 	default:
@@ -42,12 +42,12 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 	return (0L);
 }
 
-//! @brief DxLib‘¤‚ÌƒƒbƒZ[ƒWƒtƒbƒN—p‚ÌƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWˆ—ŠÖ”
-//! @param window ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-//! @param msg ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒW
-//! @param wParam ƒpƒ‰ƒ[ƒ^1
-//! @param lParam ƒpƒ‰ƒ[ƒ^2
-//! @return LRESULT ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWˆ—Œ‹‰Ê
+//! @brief DxLibï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½tï¿½bï¿½Nï¿½pï¿½ÌƒEï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½
+//! @param window ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½
+//! @param msg ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½W
+//! @param wParam ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^1
+//! @param lParam ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^2
+//! @return LRESULT ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -55,7 +55,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 	{
 	case WM_MOVING:
 	case WM_SIZE:
-		//ƒEƒBƒ“ƒhƒEˆÚ“®’†‚Í”ò‚Î‚µ‚ğs‚¤(Physics‚âƒAƒbƒvƒf[ƒgˆ—‚Ì–\‘–‚ğ–h‚®‚½‚ß)
+		//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ú“ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½Î‚ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½(Physicsï¿½ï¿½Aï¿½bï¿½vï¿½fï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Ì–\ï¿½ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		Time::ResetTime();
 		break;
 	}
@@ -63,17 +63,17 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 }
 //=====================================//
 //---------------------------------------------------------------------------------
-//! @brief WindowsƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg (WinMain)
-//! @param hInstance Œ»İ‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-//! @param hPrevInstance ˆÈ‘O‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹ (í‚ÉNULL)
-//! @param lpCmdLine ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”
-//! @param nCmdShow ƒEƒBƒ“ƒhƒE‚Ì•\¦ƒTƒCƒY‚âó‘Ô(Å‘åEÅ¬‰»“™)‚ğ¦‚·’l
-//! @return ƒvƒƒOƒ‰ƒ€‚ÌI—¹ƒR[ƒh
+//! @brief Windowsï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÌƒGï¿½ï¿½ï¿½gï¿½ï¿½ï¿½|ï¿½Cï¿½ï¿½ï¿½g (WinMain)
+//! @param hInstance ï¿½ï¿½ï¿½İ‚ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½nï¿½ï¿½ï¿½hï¿½ï¿½
+//! @param hPrevInstance ï¿½È‘Oï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ (ï¿½ï¿½ï¿½NULL)
+//! @param lpCmdLine ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//! @param nCmdShow ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ì•\ï¿½ï¿½ï¿½Tï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½(ï¿½Å‘ï¿½Eï¿½Åï¿½ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½l
+//! @return ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ÌIï¿½ï¿½ï¿½Rï¿½[ï¿½h
 //---------------------------------------------------------------------------------
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
 
-	//‚à‚¤UTF-8‚µ‚©g‚í‚ñ!SHIFT_JIS‚ÍƒNƒ\!!
+	//ï¿½ï¿½ï¿½ï¿½UTF-8ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½!SHIFT_JISï¿½ÍƒNï¿½\!!
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
 	//==================================//
@@ -94,7 +94,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
 	SetZBufferBitDepth(32);
-	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "ƒƒCƒ“ƒEƒBƒ“ƒhƒE", "data/config.ini");
+	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½E", "data/config.ini");
 	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
 	//SetWindowStyleMode(4);
@@ -140,11 +140,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #if 0
 	ImGuiInit(false);
 #endif
-	//•`‰æ‚ÌFPS‚ğİ’è
+	//ï¿½`ï¿½ï¿½ï¿½FPSï¿½ï¿½İ’ï¿½
 	int d_fps = FileSystem::IniFileManager::GetInt("StartConfig", "draw_fps", 60, "data/config.ini");
 	Time::SetDrawFPSMAX(d_fps);
 
-	//“à•”ˆ—‚ÌFPS‚ğİ’è
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½FPSï¿½ï¿½İ’ï¿½
 	int fps = FileSystem::IniFileManager::GetInt("StartConfig", "update_fps", 60, "data/config.ini");
 	Time::SetFPSMAX(fps);
 
@@ -181,7 +181,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		try {
 #ifdef DEBUG_WINDOW
 			//=======================//
-			//•Ğ•û‚ÌƒEƒBƒ“ƒhƒE‚ªÁ‚³‚ê‚½‚çA‚à‚¤•Ğ•û‚àI—¹‚·‚é
+			//ï¿½Ğ•ï¿½ï¿½ÌƒEï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Ğ•ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
@@ -200,7 +200,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #if 0
 			ImGuiUpdate();
 #endif
-			//ƒAƒbƒvƒf[ƒg
+			//ï¿½Aï¿½bï¿½vï¿½fï¿½[ï¿½g
 			//GameUpdate();
 			SceneManager::PreUpdate();
 			SceneManager::Update();
@@ -212,13 +212,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			double real_delta = Time::RealDeltaTimeD();
 			double fixed_max = Time::GetFixedDeltaTimeMAXD();
 			double max = max(fixed_max, real_delta);
-			//PC‚ÌƒXƒyƒbƒNŸ‘æ‚Å‚ÍÀÛ‚Éo‚Ä‚¢‚éFPS‚æ‚è‚à•¨—XV‚ğs‚¨‚¤‚Æ‚·‚é‚Ì‚ÅA
-			//FPS‚ª•¨—XV•p“x‚ğ‰º‰ñ‚Á‚½ê‡‚ÍFPS‚ğŠî€‚ÉŒvZ•p“x‚ğŒˆ‚ß‚é
+			//PCï¿½ÌƒXï¿½yï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½Å‚Íï¿½ï¿½Û‚Éoï¿½Ä‚ï¿½ï¿½ï¿½FPSï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½Ì‚ÅA
+			//FPSï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Vï¿½pï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ï¿½FPSï¿½ï¿½ï¿½î€ï¿½ÉŒvï¿½Zï¿½pï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 			SceneManager::PrePhysics();
 			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max);
 			for (int i = 0; i < loops; i++)
 			{
-				//•¨—
+				//ï¿½ï¿½ï¿½ï¿½
 				SceneManager::Physics();
 
 			}
@@ -226,7 +226,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			SceneManager::PostPhysics();
 
 			bool imgui_drawed = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());
-			//•`‰æ
+			//ï¿½`ï¿½ï¿½
 			if (!imgui_drawed)
 			{
 
@@ -235,27 +235,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				SceneManager::Draw();
 				//GameRender();
 #ifdef DEBUG_WINDOW
-				//‘‚«‚İ‚ğs‚¤ƒEƒBƒ“ƒhƒE‚ğAƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Éİ’è
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½sï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Éİ’ï¿½
 				SetScreenFlipTargetWindow(NULL);
 				ScreenFlip();
 				//============//
-				// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì‰f‚è‚İ‚ª‚ ‚éê‡‚ÍA’¼‰º‚Ìs‚ğ—LŒø‰»
+				// ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ì‰fï¿½èï¿½İ‚ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍAï¿½ï¿½ï¿½ï¿½ï¿½Ìsï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½
 				//WaitTimer(2);
 				ClearDrawScreen();
-				//ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚Ö‚Ì•`‰æ
+				//ï¿½fï¿½oï¿½bï¿½Oï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ö‚Ì•`ï¿½ï¿½
 #endif
 #ifdef USE_DEBUG_DRAW
 				SceneManager::DebugDraw();
 				SceneManager::LateDebugDraw();
 #endif
 #ifdef DEBUG_WINDOW
-				//‘‚«‚İ‚ğs‚¤ƒEƒBƒ“ƒhƒE‚ğAƒfƒoƒbƒOƒEƒBƒ“ƒhƒE‚Éİ’è
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½sï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½Aï¿½fï¿½oï¿½bï¿½Oï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Éİ’ï¿½
 				SetScreenFlipTargetWindow(window[0]);
 #endif
 #if 0
 				ID3D11Texture2D* backBufferTex = reinterpret_cast<ID3D11Texture2D*>(const_cast<void*>(GetUseDirect3D11BackBufferTexture2D()));
 				ID3D11ShaderResourceView* g_BackBufferSRV = nullptr;
-				ID3D11Device* device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // DxLib‚©‚çæ“¾
+				ID3D11Device* device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // DxLibï¿½ï¿½ï¿½ï¿½æ“¾
 
 				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 				srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -263,35 +263,35 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				srvDesc.Texture2D.MipLevels = 1;
 				HRESULT hr = device->CreateShaderResourceView(backBufferTex, &srvDesc, &g_BackBufferSRV);
 				if (FAILED(hr)) {
-					// ƒGƒ‰[ˆ—
+					// ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½
 					PostQuitMessage(0);
 				}
 				else {
-					//‚©‚Á‚¿‚å‚¢‚¢‚Ì‚â‚è‚Ü‚·BImGui‚Ì’†‚Å•`‰æ‚·‚éƒ“ƒS
+					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å‚¢ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½Ü‚ï¿½ï¿½BImGuiï¿½Ì’ï¿½ï¿½Å•`ï¿½æ‚·ï¿½éƒ“ï¿½S
 					ImGui::Begin("Game View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 					auto size = ImGui::GetWindowSize();
 					auto real_size = ImVec2(SCREEN_W, SCREEN_H);
 					ImVec2 scale = size / real_size;
 					scale = scale.x < scale.y ? ImVec2(scale.x, scale.x) : ImVec2(scale.y, scale.y);
-					ImGui::Image((ImTextureID)g_BackBufferSRV, real_size * scale); // ‰ğ‘œ“x‚Í‰æ–ÊƒTƒCƒY‚É‰‚¶‚Ä
+					ImGui::Image((ImTextureID)g_BackBufferSRV, real_size * scale); // ï¿½ğ‘œ“xï¿½Í‰ï¿½ÊƒTï¿½Cï¿½Yï¿½É‰ï¿½ï¿½ï¿½ï¿½ï¿½
 					ImGui::End();
 				}
 #endif
-				//–{—ˆ‚ÌImGuiDraw‚ÌˆÊ’u‚Í‚±‚±
-				//‚È‚ñ‚©ÅŒã‚É•`‰æ‚µ‚½‚à‚Ì‚¾‚¯ImGui‚É•`‰æ—Ìˆæ‚ª‹z‚í‚ê‚é‚Ì‚Å‚Æ‚è‚ ‚¦‚¸‰æ–ÊŠO‚É‰½‚©‘‚«‚İ
+				//ï¿½{ï¿½ï¿½ï¿½ï¿½ImGuiDrawï¿½ÌˆÊ’uï¿½Í‚ï¿½ï¿½ï¿½
+				//ï¿½È‚ñ‚©ÅŒï¿½É•`ï¿½æ‚µï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ImGuiï¿½É•`ï¿½ï¿½Ìˆæ‚ªï¿½zï¿½ï¿½ï¿½ï¿½Ì‚Å‚Æ‚è‚ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÊŠOï¿½É‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #if 0
 				ImGuiDraw();
 #endif
-				//ImGui‚Ì’†‚Åƒhƒ[‚·‚é‚È‚çA‚±‚Á‚¿‚ÍŒÄ‚Î‚È‚­‚Ä‚¢‚¢
+				//ImGuiï¿½Ì’ï¿½ï¿½Åƒhï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½È‚ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍŒÄ‚Î‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 				ScreenFlip();
 				Time::FixDrawFPS();
 				//============//
 			}
 #if 0
-			else     //ImGui‚¾‚¯‚Í–ˆƒtƒŒ[ƒ€‘‚©‚È‚«‚á“{‚ç‚ê‚é‚Ì‚ÅA‹­§“I‚Éƒhƒ[
+			else     //ImGuiï¿½ï¿½ï¿½ï¿½ï¿½Í–ï¿½ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½{ï¿½ï¿½ï¿½ï¿½Ì‚ÅAï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½Éƒhï¿½ï¿½ï¿½[
 				ImGuiDraw();
 #endif
-			//PostDraw‚·‚é
+			//PostDrawï¿½ï¿½ï¿½ï¿½
 			SceneManager::PostDraw();
 
 			Time::FixFPS();
@@ -312,7 +312,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	std::quick_exit(0);
 	//ImGuiExit();
 #endif
-	//I—¹
+	//ï¿½Iï¿½ï¿½
 	try {
 		SceneManager::Exit();
 	}
@@ -345,8 +345,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		const TypeInfo* next = nullptr;
 		f << base_type.ClassName() << std::endl;
 		//----------------------------------------------------------
-		// Œp³ƒcƒŠ[\‘¢‚ğ’Tõ
-		// ƒXƒ^ƒbƒNÄ‹A‚ğg‚í‚È‚¢‚‘¬‚ÈƒcƒŠ[’Tõ (stackless tree traversal)
+		// ï¿½pï¿½ï¿½ï¿½cï¿½ï¿½ï¿½[ï¿½\ï¿½ï¿½ï¿½ï¿½Tï¿½ï¿½
+		// ï¿½Xï¿½^ï¿½bï¿½Nï¿½Ä‹Aï¿½ï¿½ï¿½gï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èƒcï¿½ï¿½ï¿½[ï¿½Tï¿½ï¿½ (stackless tree traversal)
 		//----------------------------------------------------------
 		int nest = 0;
 		while (p && (p != &base_type)) {
@@ -356,18 +356,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				f << "|-----" << p->ClassName() << std::endl;
 			}
 			if (p->Child() && !returnFromTraverse) {
-				// q‚ª‚ ‚éê‡‚Íq‚ğæ‚É’²‚×‚éB(q‚©‚ç’Tõ‚Å–ß‚Á‚Ä‚«‚½ê‡‚ÍœŠO)
+				// ï¿½qï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Íqï¿½ï¿½ï¿½É’ï¿½ï¿½×‚ï¿½B(ï¿½qï¿½ï¿½ï¿½ï¿½Tï¿½ï¿½ï¿½Å–ß‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Íï¿½ï¿½O)
 				nest++;
 				next = p->Child();
 				returnFromTraverse = false;
 			}
 			else if (p->Sibling()) {
-				// ŒZ’í‚ª‚¢‚éê‡‚ÍŒZ’í‚ğ’²‚×‚é
+				// ï¿½Zï¿½í‚ªï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍŒZï¿½ï¿½ğ’²‚×‚ï¿½
 				next = p->Sibling();
 				returnFromTraverse = false;
 			}
 			else {
-				// e‚Ö–ß‚éB
+				// ï¿½eï¿½Ö–ß‚ï¿½B
 				next = p->Parent();
 				for (int i = 0; i < nest; i++)
 					f << "|        " << std::flush;
@@ -390,29 +390,29 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 //---------------------------------------------------------------------------------
-//! @brief “x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·‚·‚éŠÖ”
-//! @param degree Šp“x(“x”–@)
-//! @return float Šp“x(ƒ‰ƒWƒAƒ“)
+//! @brief ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½
+//! @param degree ï¿½pï¿½x(ï¿½xï¿½ï¿½ï¿½@)
+//! @return float ï¿½pï¿½x(ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½)
 //---------------------------------------------------------------------------------
 float TO_RADIAN(float degree)
 {
 	return degree * 3.14159265f / 180.0f;
 }
 //---------------------------------------------------------------------------------
-//! @brief ƒ‰ƒWƒAƒ“‚ğ“x‚É•ÏŠ·‚·‚éŠÖ”
-//! @param radian Šp“x(ƒ‰ƒWƒAƒ“)
-//! @return float Šp“x(“x”–@)
+//! @brief ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½ï¿½xï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½
+//! @param radian ï¿½pï¿½x(ï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½)
+//! @return float ï¿½pï¿½x(ï¿½xï¿½ï¿½ï¿½@)
 //---------------------------------------------------------------------------------
 float TO_DEGREE(float radian)
 {
 	return radian * 180.0f / 3.14159265f;
 }
 //---------------------------------------------------------------------------------
-//! @brief ‚w‚y•½–Êã‚É‰~‚ğ3D•`‰æ‚·‚é
-//! @param center ‰~‚Ì’†SÀ•W
-//! @param radius ‰~‚Ì”¼Œa
-//! @param color •`‰æF
-//! @param fill “h‚è‚Â‚Ô‚µƒtƒ‰ƒO(true‚Å“h‚è‚Â‚Ô‚µ)
+//! @brief ï¿½wï¿½yï¿½ï¿½ï¿½Êï¿½É‰~ï¿½ï¿½3Dï¿½`ï¿½æ‚·ï¿½ï¿½
+//! @param center ï¿½~ï¿½Ì’ï¿½ï¿½Sï¿½ï¿½ï¿½W
+//! @param radius ï¿½~ï¿½Ì”ï¿½ï¿½a
+//! @param color ï¿½`ï¿½ï¿½F
+//! @param fill ï¿½hï¿½ï¿½Â‚Ô‚ï¿½ï¿½tï¿½ï¿½ï¿½O(trueï¿½Å“hï¿½ï¿½Â‚Ô‚ï¿½)
 //---------------------------------------------------------------------------------
 void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 {
@@ -436,12 +436,12 @@ void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 	}
 }
 //---------------------------------------------------------------------------------
-//! @brief ‚w‚y•½–Êã‚ÉlŠpŒ`‚ğ3D•`‰æ‚·‚é
-//! @param center lŠpŒ`‚Ì’†SÀ•W
-//! @param half_w ‰¡•‚Ì”¼•ª
-//! @param half_h c•‚Ì”¼•ª
-//! @param color •`‰æF
-//! @param fill “h‚è‚Â‚Ô‚µƒtƒ‰ƒO(true‚Å“h‚è‚Â‚Ô‚µ)
+//! @brief ï¿½wï¿½yï¿½ï¿½ï¿½Êï¿½Élï¿½pï¿½`ï¿½ï¿½3Dï¿½`ï¿½æ‚·ï¿½ï¿½
+//! @param center ï¿½lï¿½pï¿½`ï¿½Ì’ï¿½ï¿½Sï¿½ï¿½ï¿½W
+//! @param half_w ï¿½ï¿½ï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½
+//! @param half_h ï¿½cï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½
+//! @param color ï¿½`ï¿½ï¿½F
+//! @param fill ï¿½hï¿½ï¿½Â‚Ô‚ï¿½ï¿½tï¿½ï¿½ï¿½O(trueï¿½Å“hï¿½ï¿½Â‚Ô‚ï¿½)
 //---------------------------------------------------------------------------------
 void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fill)
 {
@@ -478,12 +478,13 @@ void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fil
 
 
 
+// ãƒ‡ãƒãƒƒã‚°ç”¨ã‚µãƒ–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow)
 {
 	//==================================//
 
 
-// ƒfƒoƒbƒOƒEƒCƒ“ƒhƒE‚Ìì¬
+// ï¿½fï¿½oï¿½bï¿½Oï¿½Eï¿½Cï¿½ï¿½ï¿½hï¿½Eï¿½Ìì¬
 	window_parameter.style = CS_HREDRAW | CS_VREDRAW;
 	window_parameter.lpfnWndProc = WndProc;
 	window_parameter.cbClsExtra = 0;
@@ -502,7 +503,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 
 	window = CreateWindow(
 		window_classname[0].c_str(),
-		"ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE",
+		"ï¿½fï¿½oï¿½bï¿½Oï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½E",
 		WS_MINIMIZEBOX | WS_SYSMENU,
 		window_x * 0.5f, window_y * 0.5f, window_x, window_y,
 		NULL, NULL, hInstance, NULL
