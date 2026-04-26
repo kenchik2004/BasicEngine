@@ -1,8 +1,13 @@
-﻿#include "System/Objects/Object.h"
+﻿//---------------------------------------------------------------------------
+//! @file   Component.cpp
+//! @brief  コンポーネント基底クラスの実装（Sleep/WakeUp/優先度設定など）
+//---------------------------------------------------------------------------
+#include "System/Objects/Object.h"
 #include "Component.h"
 
 
 
+// コンポーネントを非アクティブ化する（既に非アクティブなら何もしない）
 void Component::Sleep()
 {
 	if (!status.status_bit.is(CompStat::STATUS::ACTIVE) && !status.status_bit.is(CompStat::STATUS::DRAW))
@@ -12,6 +17,7 @@ void Component::Sleep()
 	status.status_bit.set(CompStat::STATUS::DRAW, false);
 }
 
+// コンポーネントをアクティブ化する（既にアクティブなら何もしない）
 void Component::WakeUp()
 {
 	if (status.status_bit.is(CompStat::STATUS::ACTIVE) && status.status_bit.is(CompStat::STATUS::DRAW))
