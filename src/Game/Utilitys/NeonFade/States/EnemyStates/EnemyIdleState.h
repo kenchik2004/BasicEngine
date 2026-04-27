@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   EnemyIdleState.h
+//! @brief  敵の待機状態クラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 namespace NeonFade {

@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_Ten.h
+//! @brief  ゲームの転（中盤）シーン状態クラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/ISceneState.h"
 
 namespace NeonFade {

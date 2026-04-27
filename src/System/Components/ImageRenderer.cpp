@@ -1,4 +1,8 @@
-﻿#include "Precompile.h"
+//---------------------------------------------------------------------------
+//! @file   ImageRenderer.cpp
+//! @brief  ImageRendererコンポーネントの実装。2D画像の描画処理を管理する
+//---------------------------------------------------------------------------
+#include "Precompile.h"
 #include "System/Components/ImageRenderer.h"
 
 

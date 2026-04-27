@@ -1,4 +1,8 @@
-﻿#include "SceneGameState_Ten.h"
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_Ten.cpp
+//! @brief  SceneGameState_Tenの実装。ゲームの転（中盤）シーン状態処理を行う
+//---------------------------------------------------------------------------
+#include "SceneGameState_Ten.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 

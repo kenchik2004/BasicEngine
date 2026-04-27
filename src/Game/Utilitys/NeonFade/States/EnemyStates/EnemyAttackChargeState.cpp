@@ -1,4 +1,8 @@
-﻿#include "EnemyAttackChargeState.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyAttackChargeState.cpp
+//! @brief  EnemyAttackChargeStateの実装。敵の攻撃チャージ状態の処理を行う
+//---------------------------------------------------------------------------
+#include "EnemyAttackChargeState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 
 namespace NeonFade {

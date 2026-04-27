@@ -1,4 +1,8 @@
-﻿#include "Precompile.h"
+//---------------------------------------------------------------------------
+//! @file   ButtonObject.cpp
+//! @brief  ButtonObjectの実装。UIボタンオブジェクトの処理を行う
+//---------------------------------------------------------------------------
+#include "Precompile.h"
 #include "ButtonObject.h"
 #include <System/Components/Button.h>
 #include <System/Components/Text.h>

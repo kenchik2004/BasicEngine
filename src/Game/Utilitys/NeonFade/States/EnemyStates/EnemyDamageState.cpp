@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyDamageState.cpp
+//! @brief  EnemyDamageStateの実装。敵のダメージ状態の処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "EnemyDamageState.h"
 
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"

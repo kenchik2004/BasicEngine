@@ -1,4 +1,8 @@
-﻿#include "EnemyDieState.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyDieState.cpp
+//! @brief  EnemyDieStateの実装。敵の死亡状態の処理を行う
+//---------------------------------------------------------------------------
+#include "EnemyDieState.h"
 #include "Game/Objects/NeonFade/Enemy.h"	
 #include "Game/Scenes/NeonFade/SceneGame.h"
 namespace NeonFade

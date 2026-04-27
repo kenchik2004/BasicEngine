@@ -1,4 +1,8 @@
-﻿#include "Animator.h"
+//---------------------------------------------------------------------------
+//! @file   Animator.cpp
+//! @brief  Animatorコンポーネントの実装。モデルのアニメーション再生・ブレンドを管理する
+//---------------------------------------------------------------------------
+#include "Animator.h"
 #include "ModelRenderer.h"
 #include "System/Managers/ModelManager.h"
 

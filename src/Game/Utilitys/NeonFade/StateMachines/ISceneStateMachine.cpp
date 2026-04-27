@@ -1,4 +1,8 @@
-﻿#include "ISceneStateMachine.h"
+//---------------------------------------------------------------------------
+//! @file   ISceneStateMachine.cpp
+//! @brief  ISceneStateMachineの実装。シーンステートマシンの基底処理を定義する
+//---------------------------------------------------------------------------
+#include "ISceneStateMachine.h"
 
 
 namespace NeonFade {

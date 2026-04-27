@@ -1,4 +1,8 @@
-﻿#include "PlayerDamageState.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerDamageState.cpp
+//! @brief  PlayerDamageStateの実装。プレイヤーのダメージ状態の処理を行う
+//---------------------------------------------------------------------------
+#include "PlayerDamageState.h"
 #include "Game/Objects/NeonFade/Player.h"
 
 namespace NeonFade

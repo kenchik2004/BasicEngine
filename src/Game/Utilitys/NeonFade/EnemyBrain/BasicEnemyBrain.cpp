@@ -1,4 +1,8 @@
-﻿#include "BasicEnemyBrain.h"
+//---------------------------------------------------------------------------
+//! @file   BasicEnemyBrain.cpp
+//! @brief  BasicEnemyBrainの実装。基本的な敵AI思考ロジックを実装する
+//---------------------------------------------------------------------------
+#include "BasicEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"

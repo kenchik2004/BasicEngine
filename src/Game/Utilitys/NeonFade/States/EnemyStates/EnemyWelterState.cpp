@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyWelterState.cpp
+//! @brief  EnemyWelterStateの実装。敵のよろめき状態の処理を行う
+//---------------------------------------------------------------------------
 #include "EnemyWelterState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 

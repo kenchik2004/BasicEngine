@@ -1,4 +1,8 @@
-﻿#include "GameObjectWithLifeTime.h"
+//---------------------------------------------------------------------------
+//! @file   GameObjectWithLifeTime.cpp
+//! @brief  GameObjectWithLifeTimeの実装。有効期限付きゲームオブジェクトの処理を行う
+//---------------------------------------------------------------------------
+#include "GameObjectWithLifeTime.h"
 
 int GameObjectWithLifeTime::Init()
 {

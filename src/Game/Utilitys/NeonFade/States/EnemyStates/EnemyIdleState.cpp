@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyIdleState.cpp
+//! @brief  EnemyIdleStateの実装。敵の待機状態の処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "EnemyIdleState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"

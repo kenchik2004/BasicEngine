@@ -1,4 +1,8 @@
-﻿#include "TeamMemberEnemyBrain.h"
+//---------------------------------------------------------------------------
+//! @file   TeamMemberEnemyBrain.cpp
+//! @brief  TeamMemberEnemyBrainの実装。チームメンバー敵のAI思考ロジックを実装する
+//---------------------------------------------------------------------------
+#include "TeamMemberEnemyBrain.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Components/PlayerController.h"

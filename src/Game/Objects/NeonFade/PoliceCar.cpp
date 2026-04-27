@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PoliceCar.cpp
+//! @brief  PoliceCarオブジェクトの実装。パトカーオブジェクトのゲームロジックを管理する
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PoliceCar.h"
 #include "Game/Utilitys/NeonFade/CatmullRomPath.h"
 #include "Game/Managers/LightManager.h"

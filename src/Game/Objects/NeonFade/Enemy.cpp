@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   Enemy.cpp
+//! @brief  Enemyオブジェクトの実装。敵キャラクターのゲームロジックを管理する
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "Enemy.h"
 #include "Game/Components/EnemyController.h"
 

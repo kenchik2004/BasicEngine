@@ -1,4 +1,8 @@
-﻿#include "ShadowMapObject.h"
+//---------------------------------------------------------------------------
+//! @file   ShadowMapObject.cpp
+//! @brief  ShadowMapObjectの実装。シャドウマップ描画オブジェクトの処理を行う
+//---------------------------------------------------------------------------
+#include "ShadowMapObject.h"
 #include "System/Components/Camera.h"
 #include "System/Utils/Render.h"
 #include "System/Components/ModelRenderer.h"

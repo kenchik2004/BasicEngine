@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyLeaderStepBackState.cpp
+//! @brief  EnemyLeaderStepBackStateの実装。リーダー敵の後退状態の処理を行う
+//---------------------------------------------------------------------------
 #include "EnemyLeaderStepBackState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 
@@ -36,7 +40,7 @@ namespace NeonFade {
 	{
 		step_back_timer += dt;
 		if (step_back_timer >= 0.5f && !jumped) {
-			//���
+			//後退
 			Vector3 back_dir = -enemy->transform->AxisZ();
 			back_dir.y = 1.0f;
 			rb->AddForce(back_dir * 20.0f, ForceMode::VelocityCange);

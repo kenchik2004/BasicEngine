@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   EnemyDieState.h
+//! @brief  敵の死亡状態クラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade
 {

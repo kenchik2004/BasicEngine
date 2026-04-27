@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyDownState.cpp
+//! @brief  EnemyDownStateã®å®Ÿè£…ã€‚æ•µã®ãƒ€ã‚¦ãƒ³çŠ¶æ…‹ã®å‡¦ç†ã‚’è¡Œã†
+//---------------------------------------------------------------------------
 #include "precompile.h"
 #include "EnemyDownState.h"
 
@@ -81,11 +85,11 @@ void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 		knock_back_vec = -current_z;
 	Vector3 set_forward = knock_back_vec;
 	set_forward.normalize();
-	if (down_forward) {								// ‚¾‚¢‚½‚¢‘O•û‚É“|‚ê‚éê‡	
+	if (down_forward) {								// ã ã„ãŸã„å‰æ–¹ã«å€’ã‚Œã‚‹å ´åˆ	
 		enemy->transform->SetAxisZ(set_forward);
 		animator->Play("enemy_down_forward", false, 0.05f, 0.2f, true);
 	}
-	else {											//“|‚ê‚é•ûŒü‚Æis•ûŒü‚ª‚ ‚Ü‚è‚É‚àˆá‚¤ê‡
+	else {											//å€’ã‚Œã‚‹æ–¹å‘ã¨é€²è¡Œæ–¹å‘ãŒã‚ã¾ã‚Šã«ã‚‚é•ã†å ´åˆ
 		enemy->transform->SetAxisZ(-set_forward);
 		animator->Play("enemy_down", false, 0.05f, 0.2f, true);
 	}

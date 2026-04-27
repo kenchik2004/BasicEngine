@@ -1,4 +1,8 @@
-﻿#include "ModelRenderer.h"
+//---------------------------------------------------------------------------
+//! @file   ModelRenderer.cpp
+//! @brief  ModelRendererコンポーネントの実装。3Dモデルの描画処理を管理する
+//---------------------------------------------------------------------------
+#include "ModelRenderer.h"
 
 void ModelRenderer::Construct()
 {

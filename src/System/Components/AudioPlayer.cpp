@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   AudioPlayer.cpp
+//! @brief  AudioPlayerコンポーネントの実装。音声の再生・停止・ループを管理する
+//---------------------------------------------------------------------------
 #include "AudioPlayer.h"
 #include "RigidBody.h"
 #include "System/Components/AudioListener.h"
@@ -55,7 +59,7 @@ void AudioPlayer::Update()
 		float v_s = vec_pos.getNormalized().dot(-vec_v_s);
 		float f_;
 		if (v_s < 0.01f)
-			v_s = 0.01f; //�[�����Z��h�����߂̍ŏ��l
+			v_s = 0.01f; //ゼロ除算を防ぐための最小値
 		f_ = ((340.0f - v_o) / (340.0f - v_s));
 		int frequency = (int)(default_frequency * f_ * pitch_rate);
 		if (frequency < 100)

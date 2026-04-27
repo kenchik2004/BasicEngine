@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerJumpState.cpp
+//! @brief  PlayerJumpStateの実装。プレイヤーのジャンプ状態の処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PlayerJumpState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"

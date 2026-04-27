@@ -1,4 +1,8 @@
-﻿#include "PlayerJumpAttackState.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerJumpAttackState.cpp
+//! @brief  PlayerJumpAttackStateの実装。プレイヤーのジャンプ攻撃状態の処理を行う
+//---------------------------------------------------------------------------
+#include "PlayerJumpAttackState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "System/Components/Text3D.h"

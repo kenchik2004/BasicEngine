@@ -1,4 +1,8 @@
-﻿#include "PlayerSmashChargeState.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerSmashChargeState.cpp
+//! @brief  PlayerSmashChargeStateの実装。プレイヤーのスマッシュチャージ状態の処理を行う
+//---------------------------------------------------------------------------
+#include "PlayerSmashChargeState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 #include "Game/Managers/LightManager.h"

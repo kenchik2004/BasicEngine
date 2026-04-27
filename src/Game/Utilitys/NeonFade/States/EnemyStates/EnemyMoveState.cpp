@@ -1,4 +1,8 @@
-﻿#include "EnemyMoveState.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyMoveState.cpp
+//! @brief  EnemyMoveStateの実装。敵の移動状態の処理を行う
+//---------------------------------------------------------------------------
+#include "EnemyMoveState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"
 

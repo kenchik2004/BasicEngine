@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyLeaderAttackState.cpp
+//! @brief  EnemyLeaderAttackStateã®å®Ÿè£…ã€‚ãƒªãƒ¼ãƒ€ãƒ¼æ•µã®æ”»æ’ƒçŠ¶æ…‹ã®å‡¦ç†ã‚’è¡Œã†
+//---------------------------------------------------------------------------
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyLeaderAttackState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 
@@ -26,10 +30,10 @@ namespace NeonFade {
 	{
 		attack_timer += dt;
 		if (attack_timer >= ATTACK_TIME) {
-			//UŒ‚I—¹
+			//æ”»æ’ƒçµ‚äº†
 			attack_timer = 0.0f;
 		}
-		//ƒvƒŒƒCƒ„[‚Ì•û‚ğŒü‚«Aè‚ğU‚Á‚Ä•”‰º‚ğî“®‚·‚é(ƒvƒŒƒCƒ„[‚ğø‚éƒCƒ[ƒW)
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ–¹ã‚’å‘ãã€æ‰‹ã‚’æŒ¯ã£ã¦éƒ¨ä¸‹ã‚’æ‰‡å‹•ã™ã‚‹(ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç…½ã‚‹ã‚¤ãƒ¡ãƒ¼ã‚¸)
 		Vector3 player_pos = player.lock()->transform->position;
 		Vector3 to_player = player_pos - enemy->transform->position;
 		to_player.y = 0;
@@ -37,7 +41,7 @@ namespace NeonFade {
 			enemy->transform->SetAxisZ(to_player);
 
 
-		//0.5•b‚²‚Æ‚ÉƒWƒƒƒ“ƒv‚µ‚Äî“®‚µ‚Ä‚éŠ´‚ğo‚·
+		//0.5ç§’ã”ã¨ã«ã‚¸ãƒ£ãƒ³ãƒ—ã—ã¦æ‰‡å‹•ã—ã¦ã‚‹æ„Ÿã‚’å‡ºã™
 		if (fmodf(attack_timer, 0.5f) <= dt) {
 			rb->AddForce(Vector3(0, 10, 0), ForceMode::VelocityCange);
 		}

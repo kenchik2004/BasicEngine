@@ -1,4 +1,8 @@
-﻿#include "RigidBody.h"
+//---------------------------------------------------------------------------
+//! @file   SphereCollider.cpp
+//! @brief  SphereColliderコンポーネントの実装。球形状の当たり判定を提供する
+//---------------------------------------------------------------------------
+#include "RigidBody.h"
 #include "SphereCollider.h"
 #include <System/Components/ModelRenderer.h>
 

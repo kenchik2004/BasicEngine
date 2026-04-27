@@ -1,4 +1,8 @@
-﻿#include "System/Scene.h"
+﻿//---------------------------------------------------------------------------
+//! @file   Scene.cpp
+//! @brief  シーン基底クラスの実装。物理演算・オブジェクト管理・カメラ管理を行う
+//---------------------------------------------------------------------------
+#include "System/Scene.h"
 #include "System/Objects/Object.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/Collider.h"
@@ -6,6 +10,7 @@
 
 
 
+// 物理シミュレーションを1ステップ実行し、待機中の処理を呼び出す
 void Scene::Physics()
 {
 #ifndef PACKAGE_BUILD
@@ -53,6 +58,7 @@ void Scene::Physics()
 	waiting_remove_shapes.clear();
 }
 
+// PhysX アクターをシミュレーション終了後に安全に削除登録する
 void Scene::DeleteActor(physx::PxRigidActor* actor)
 {
 	if (!actor)
@@ -71,6 +77,7 @@ void Scene::DeleteActor(physx::PxRigidActor* actor)
 	physics_scene->unlockWrite();// PhysX のスレッドをアンロック
 }
 
+// PhysX シェイプをシミュレーション終了後に安全に削除登録する
 void Scene::DeleteShape(physx::PxShape* shape)
 {
 	if (!shape)
@@ -87,6 +94,7 @@ void Scene::DeleteShape(physx::PxShape* shape)
 }
 
 
+// シーン内の全オブジェクトを破棄し、物理シーンを最終更新する
 void Scene::Destroy()
 {
 	ObjectWPVec w_vec;
@@ -122,6 +130,7 @@ void Scene::Destroy()
 
 }
 
+// PhysX の物理シーンを解放する
 void Scene::DestroyPhysics()
 {
 	//PhysXシーンを削除(relese)
@@ -129,6 +138,7 @@ void Scene::DestroyPhysics()
 	physics_scene = nullptr;
 }
 
+// ゲームオブジェクトの所有権を別シーンへ移動する
 void Scene::MoveGameObjectPtrFromThis(ObjectP move_object, SceneP to_where) {
 
 	//どちらかがnullptrの場合は論外。何もしない
@@ -196,6 +206,7 @@ void Scene::MoveGameObjectPtrFromThis(ObjectP move_object, SceneP to_where) {
 
 }
 
+// アクティブカメラリストにカメラを登録する
 void Scene::RegisterActiveCamera(CameraWP camera)
 {
 	if (!camera)
@@ -206,6 +217,7 @@ void Scene::RegisterActiveCamera(CameraWP camera)
 	}
 }
 
+// アクティブカメラリストからカメラを登録解除する
 void Scene::UnregisterActiveCamera(CameraWP camera)
 {
 	if (!camera)
@@ -216,6 +228,7 @@ void Scene::UnregisterActiveCamera(CameraWP camera)
 	}
 }
 
+// 優先度変更のあったオブジェクトを objects リストに正しい順序で再挿入する
 void Scene::SyncGameObjectsPriority()
 {
 
@@ -285,6 +298,7 @@ void Scene::DestroyMarkedGameObjects()
 }
 
 
+// 指定した優先度に対して挿入すべき位置を二分探索で求める
 size_t Scene::FindInsertPositionByPriority(unsigned int priority)
 {
 

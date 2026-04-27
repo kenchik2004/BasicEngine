@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyLeaderAttackState.h
+//! @brief  リーダー敵の攻撃状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {

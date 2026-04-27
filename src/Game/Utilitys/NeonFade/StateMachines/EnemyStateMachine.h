@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   EnemyStateMachine.h
+//! @brief  敵キャラクター用ステートマシンクラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "IStateMachine.h"
 namespace NeonFade {
 	class Enemy;

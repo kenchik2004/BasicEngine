@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGameStateMachine.cpp
+//! @brief  SceneGameStateMachineの実装。ゲームシーンのステートマシン処理を行う
+//---------------------------------------------------------------------------
 #include "SceneGameStateMachine.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_KI.h"

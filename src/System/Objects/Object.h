@@ -1,7 +1,14 @@
-﻿#pragma once
+﻿//---------------------------------------------------------------------------
+//! @file   Object.h
+//! @brief  ゲームオブジェクトの基底クラスおよびコンポーネント管理
+//---------------------------------------------------------------------------
+#pragma once
 
 
-
+//---------------------------------------------------------------------
+//! @struct ObjStat
+//! @brief  オブジェクトの状態・優先度・種別を管理する構造体
+//---------------------------------------------------------------------
 struct ObjStat {
 	friend class Scene;
 	friend class Object;
@@ -9,30 +16,35 @@ struct ObjStat {
 	friend class UIObject;
 public:
 	enum OBJ_TYPE {
-		NORMAL,
-		UI,
+		NORMAL,	//!< 通常の3Dオブジェクト
+		UI,		//!< UIオブジェクト
 	};
 	enum struct STATUS :u32 {
-		CONSTRUCTED = 0,
-		INITIALIZED = 1,
-		ACTIVE = 1 << 1,
-		DRAW = 1 << 2,
-		REMOVED = 1 << 3,
+		CONSTRUCTED = 0,	//!< 構築済み
+		INITIALIZED = 1,	//!< 初期化済み
+		ACTIVE = 1 << 1,	//!< アクティブ状態
+		DRAW = 1 << 2,		//!< 描画有効状態
+		REMOVED = 1 << 3,	//!< 削除済み
 	};
 
-	SBit <STATUS> status_bit;
+	SBit <STATUS> status_bit;		//!< 状態フラグビット
 	const OBJ_TYPE& Type() const { return obj_type; }
 private:
-	std::string class_name = "Object";
-	OBJ_TYPE obj_type = NORMAL;
-	unsigned int priority = 10;
-	unsigned int draw_priority = 10;
+	std::string class_name = "Object";	//!< クラス名
+	OBJ_TYPE obj_type = NORMAL;			//!< オブジェクト種別
+	unsigned int priority = 10;			//!< 更新優先度
+	unsigned int draw_priority = 10;	//!< 描画優先度
 };
 
 USING_PTR(Component);
 USING_PTR(Transform);
 USING_PTR(Object);
 USING_PTR(Scene);
+
+//---------------------------------------------------------------------
+//! @class Object
+//! @brief ゲームオブジェクトの基底クラス（コンポーネント管理・ライフサイクル管理）
+//---------------------------------------------------------------------
 class Object :public std::enable_shared_from_this<Object>
 {
 	friend class Scene;
@@ -44,20 +56,20 @@ public:
 	virtual ~Object() {}
 
 	USING_SUPER(Object);
-	ObjStat status;
+	ObjStat status;				//!< オブジェクトの状態情報
 	enum TAG {
-		Untaged,
-		Player,
-		Enemy,
-		Stage,
-		UI,
-		GameManager,
+		Untaged,	//!< タグなし
+		Player,		//!< プレイヤー
+		Enemy,		//!< 敵
+		Stage,		//!< ステージ
+		UI,			//!< UI
+		GameManager,//!< ゲームマネージャー
 
 		__TagMax,
 	};
-	TAG tag = Untaged;
-	std::string name = "EmptyObject";
-	TransformP transform = nullptr;
+	TAG tag = Untaged;			//!< オブジェクトのタグ
+	std::string name = "EmptyObject";	//!< オブジェクト名
+	TransformP transform = nullptr;		//!< トランスフォームコンポーネント
 private:
 
 
@@ -77,19 +89,21 @@ private:
 	bool CheckForSingleComponent(ComponentP comp);
 
 
-	ComponentPVec components;
-	ComponentPVec dirty_priority_components;
-	trigger_bool is_any_component_removed = false;
-	SceneP scene;
+	ComponentPVec components;						//!< 保持するコンポーネントのリスト
+	ComponentPVec dirty_priority_components;		//!< 優先度変更待ちコンポーネントのリスト
+	trigger_bool is_any_component_removed = false;	//!< コンポーネントが削除されたかのフラグ
+	SceneP scene;									//!< 所属シーンへの参照
 
 
 public:
+	//! @brief コンポーネントの優先度を設定する
 	void SetComponentPriority(unsigned int prio, ComponentP who) {
 		who->status.priority = prio;
 		if (std::find(dirty_priority_components.begin(), dirty_priority_components.end(), who) != dirty_priority_components.end())
 			dirty_priority_components.push_back(who);
 	}
 
+	//! @brief コンポーネントを新規作成して追加する
 	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0, typename... Args>
 	SafeSharedPtr<T> AddComponent(Args&& ...args) {
 		auto comp = make_safe_shared<T>(std::forward<Args>(args)...);
@@ -130,6 +144,7 @@ public:
 		return component;
 	}
 
+	//! @brief 指定型のコンポーネントを取得する
 	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0>
 	SafeSharedPtr<T> GetComponent() {
 		for (auto& comp : components) {
@@ -140,6 +155,7 @@ public:
 		}
 		return nullptr;
 	}
+	//! @brief 指定型のコンポーネントを全て取得する
 	template <class T, std::enable_if_t<std::is_convertible_v<T*, Component*>, int> = 0>
 	std::vector<SafeSharedPtr<T>> GetComponents() {
 		std::vector<SafeSharedPtr<T>> vec(0);
@@ -154,6 +170,7 @@ public:
 		return vec;
 	}
 
+	//! @brief コンポーネントを削除する（右辺値参照）
 	void RemoveComponent(ComponentP&& remove_comp) {
 
 		if (auto comp = std::find(dirty_priority_components.begin(), dirty_priority_components.end(), remove_comp); comp != dirty_priority_components.end())
@@ -169,6 +186,7 @@ public:
 		}
 
 	}
+	//! @brief コンポーネントを削除する（参照）
 	void RemoveComponent(ComponentP& remove_comp) {
 
 		if (auto comp = std::find(dirty_priority_components.begin(), dirty_priority_components.end(), remove_comp); comp != dirty_priority_components.end())
@@ -185,8 +203,11 @@ public:
 
 	}
 
+	//! @brief 更新優先度を設定する
 	void SetPriority(unsigned int prio);
+	//! @brief 更新優先度を取得する
 	inline unsigned int GetPriority() { return status.priority; }
+	//! @brief 所属シーンを取得する
 	inline SceneP GetScene() { return scene; }
 
 
@@ -246,6 +267,11 @@ public:
 };
 
 USING_PTR(GameObject);
+
+//---------------------------------------------------------------------
+//! @class GameObject
+//! @brief 3D空間に配置される通常のゲームオブジェクトクラス
+//---------------------------------------------------------------------
 class GameObject :public Object {
 public:
 	USING_SUPER(GameObject);
@@ -259,6 +285,11 @@ public:
 
 
 USING_PTR(UIObject);
+
+//---------------------------------------------------------------------
+//! @class UIObject
+//! @brief UIに使用されるオブジェクトの基底クラス（アンカー・背景色管理）
+//---------------------------------------------------------------------
 class UIObject : public Object
 {
 public:
@@ -273,31 +304,36 @@ public:
 	virtual Color& BackGroundColor() { return back_ground_color; }
 	virtual bool& UseBackGround() { return use_back_color; }
 
+	//! @brief 描画位置を取得する
 	inline const Vector3& GetDrawPos() { return draw_pos; }
+
+	//! @brief アンカータイプの列挙型
 	enum ANCHOR_TYPE
 	{
-		LEFT_TOP,
-		CENTER_TOP,
-		RIGHT_TOP,
-		LEFT_MIDDLE,
-		CENTER,
-		RIGHT_MIDDLE,
-		LEFT_BOTTOM,
-		CENTER_BOTTOM,
-		RIGHT_BOTTOM
+		LEFT_TOP,		//!< 左上
+		CENTER_TOP,		//!< 中央上
+		RIGHT_TOP,		//!< 右上
+		LEFT_MIDDLE,	//!< 左中央
+		CENTER,			//!< 中央
+		RIGHT_MIDDLE,	//!< 右中央
+		LEFT_BOTTOM,	//!< 左下
+		CENTER_BOTTOM,	//!< 中央下
+		RIGHT_BOTTOM	//!< 右下
 	};
+	//! @brief 自身のアンカータイプを取得・設定する
 	inline ANCHOR_TYPE& AnchorType() { return anchor_type; }
+	//! @brief キャンバスアンカータイプを取得・設定する
 	inline ANCHOR_TYPE& CanvasAnchorType() { return canvas_anchor_type; }
 
 
 
 protected:
-	int          draw_priolity = 0;
-	bool         use_back_color = false;
-	Color back_ground_color = Color::GRAY;
-	Vector3       anchor_point;
-	Vector3       canvas_anchor_point;
-	Vector3       draw_pos;
-	ANCHOR_TYPE  anchor_type = CENTER;
-	ANCHOR_TYPE  canvas_anchor_type = CENTER;
+	int          draw_priolity = 0;					//!< 描画優先度
+	bool         use_back_color = false;			//!< 背景色を使用するか
+	Color back_ground_color = Color::GRAY;			//!< 背景色
+	Vector3       anchor_point;						//!< アンカー基準点
+	Vector3       canvas_anchor_point;				//!< キャンバスアンカー基準点
+	Vector3       draw_pos;							//!< 実際の描画位置
+	ANCHOR_TYPE  anchor_type = CENTER;				//!< アンカータイプ
+	ANCHOR_TYPE  canvas_anchor_type = CENTER;		//!< キャンバスアンカータイプ
 };

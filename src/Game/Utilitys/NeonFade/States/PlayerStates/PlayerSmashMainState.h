@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerSmashMainState.h
+//! @brief  プレイヤーのスマッシュメイン状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {

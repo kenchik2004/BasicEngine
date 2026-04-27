@@ -1,4 +1,8 @@
-﻿#include "RigidBody.h"
+//---------------------------------------------------------------------------
+//! @file   RigidBody.cpp
+//! @brief  RigidBodyコンポーネントの実装。剛体物理演算を管理する
+//---------------------------------------------------------------------------
+#include "RigidBody.h"
 
 using namespace physx;
 void RigidBody::Construct()

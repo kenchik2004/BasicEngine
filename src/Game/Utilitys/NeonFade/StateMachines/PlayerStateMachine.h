@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   PlayerStateMachine.h
+//! @brief  プレイヤー用ステートマシンクラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/StateMachines/IStateMachine.h"
 
 namespace NeonFade

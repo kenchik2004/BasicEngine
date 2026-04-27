@@ -1,4 +1,8 @@
-﻿#include <System/Components/RigidBody.h>
+//---------------------------------------------------------------------------
+//! @file   BoxCollider.cpp
+//! @brief  BoxColliderコンポーネントの実装。直方体の当たり判定を提供する
+//---------------------------------------------------------------------------
+#include <System/Components/RigidBody.h>
 #include "BoxCollider.h"
 #include <System/Components/ModelRenderer.h>
 

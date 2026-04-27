@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   PlayerFallState.h
+//! @brief  プレイヤーの落下状態クラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 class RigidBody;

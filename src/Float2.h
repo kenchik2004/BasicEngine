@@ -1,46 +1,50 @@
+//---------------------------------------------------------------------------
+//! @file   Float2.h
+//! @brief  2æ¬¡å…ƒæµ®å‹•å°æ•°ç‚¹ãƒ™ã‚¯ãƒˆãƒ«ã‚¯ãƒ©ã‚¹
+//---------------------------------------------------------------------------
 #pragma once
 
 //---------------------------------------------------------------------------------
-//	float2 ƒNƒ‰ƒX
+//	float2 ï¿½Nï¿½ï¿½ï¿½X
 //---------------------------------------------------------------------------------
 class float2
 {
 public:
-	float x;
-	float y;
+	float x; //!< Xæˆåˆ†
+	float y; //!< Yæˆåˆ†
 
-	float2();									//	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	float2();									//	ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 	float2(float x, float y);
 
-	void clear();								//	ƒ[ƒ‰Šú‰»
-	void set(float x, float y);				//	’l‚ÌƒZƒbƒg
+	void clear();								//	ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	void set(float x, float y);				//	ï¿½lï¿½ÌƒZï¿½bï¿½g
 	void set(float2& v);
 
-	float GetLength();							//	’·‚³æ“¾
-	void normalize();							//	³‹K‰»
-	float2 normalized();							//	³‹K‰»‚³‚ê‚½ƒxƒNƒgƒ‹‚Ìæ“¾(ƒxƒNƒgƒ‹©‘Ì‚É•Ï‰»‚Í‰Á‚¦‚È‚¢)
-	void SetLength(float length);				//	’·‚³İ’è
+	float GetLength();							//	ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
+	void normalize();							//	ï¿½ï¿½ï¿½Kï¿½ï¿½
+	float2 normalized();							//	ï¿½ï¿½ï¿½Kï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½Ìæ“¾(ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Ì‚É•Ï‰ï¿½ï¿½Í‰ï¿½ï¿½ï¿½ï¿½È‚ï¿½)
+	void SetLength(float length);				//	ï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
 
-	float2& operator = (const float2& v);		//	= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+	float2& operator = (const float2& v);		//	= ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
 
-	float2& operator += (const float2& v);	//	+= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float2& operator -= (const float2& v);	//	-= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float2& operator *= (const float f);		//	*= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
-	float2& operator /= (const float f);		//	/= ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+	float2& operator += (const float2& v);	//	+= ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
+	float2& operator -= (const float2& v);	//	-= ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
+	float2& operator *= (const float f);		//	*= ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
+	float2& operator /= (const float f);		//	/= ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
 };
 
-//	+ ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	+ ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
 float2 operator + (const float2& v1, const float2& v2);
-//	- ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	- ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
 float2 operator - (const float2& v1, const float2& v2);
-//	* ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	* ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
 float2 operator * (const float2& v, const float f);
-//	/ ‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh
+//	/ ï¿½ï¿½ï¿½Zï¿½qï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½[ï¿½h
 float2 operator / (const float2& v, const float f);
 
-//	‚Q‚Â‚Ì float2 ‚Ì‹——£‚ğ‹‚ß‚é
+//	ï¿½Qï¿½Â‚ï¿½ float2 ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 float GetFloat2Distance(float2& pos1, float2& pos2);
-//	‚Q‚Â‚Ì float2 ‚Ì“àÏ‚ğ‹‚ß‚é
+//	ï¿½Qï¿½Â‚ï¿½ float2 ï¿½Ì“ï¿½ï¿½Ï‚ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 float GetFloat2Dot(float2& v1, float2& v2);
-//	‚Q‚Â‚Ì float2 ‚ÌŠOÏ‚ğ‹‚ß‚é
+//	ï¿½Qï¿½Â‚ï¿½ float2 ï¿½ÌŠOï¿½Ï‚ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
 float GetFloat2Cross(float2& v1, float2& v2);

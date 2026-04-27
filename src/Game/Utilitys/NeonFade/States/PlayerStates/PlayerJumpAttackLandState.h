@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   PlayerJumpAttackLandState.h
+//! @brief  プレイヤーのジャンプ攻撃着地状態クラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 namespace NeonFade {

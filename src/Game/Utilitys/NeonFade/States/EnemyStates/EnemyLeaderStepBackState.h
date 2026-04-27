@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyLeaderStepBackState.h
+//! @brief  リーダー敵の後退状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {

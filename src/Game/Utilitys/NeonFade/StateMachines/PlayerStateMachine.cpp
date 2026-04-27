@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerStateMachine.cpp
+//! @brief  PlayerStateMachineの実装。プレイヤーのステートマシン処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PlayerStateMachine.h"
 #include "Game/Objects/NeonFade/Player.h"
 

@@ -1,4 +1,8 @@
-﻿#include "NetWorkManager_Server.h"
+//---------------------------------------------------------------------------
+//! @file   NetWorkManager_Server.cpp
+//! @brief  NetWorkManager_Serverの実装。サーバー側のネットワーク通信を管理する
+//---------------------------------------------------------------------------
+#include "NetWorkManager_Server.h"
 
 
 

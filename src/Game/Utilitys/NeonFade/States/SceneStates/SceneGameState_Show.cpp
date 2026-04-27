@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_Show.cpp
+//! @brief  SceneGameState_Showの実装。ゲームの演出シーン状態処理を行う
+//---------------------------------------------------------------------------
 #include "SceneGameState_Show.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 

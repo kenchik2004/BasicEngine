@@ -1,4 +1,8 @@
-﻿#include "System/Components/ConvexMeshCollider.h"
+//---------------------------------------------------------------------------
+//! @file   ConvexMeshCollider.cpp
+//! @brief  ConvexMeshColliderコンポーネントの実装。凸メッシュ形状の当たり判定を提供する
+//---------------------------------------------------------------------------
+#include "System/Components/ConvexMeshCollider.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/ModelRenderer.h"
 #include "fstream"

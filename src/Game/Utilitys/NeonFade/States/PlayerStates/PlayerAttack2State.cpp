@@ -1,4 +1,8 @@
-﻿#include "PlayerAttack2State.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerAttack2State.cpp
+//! @brief  PlayerAttack2Stateの実装。プレイヤーの第2攻撃状態の処理を行う
+//---------------------------------------------------------------------------
+#include "PlayerAttack2State.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"

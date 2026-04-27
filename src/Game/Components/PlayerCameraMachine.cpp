@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerCameraMachine.cpp
+//! @brief  PlayerCameraMachineコンポーネントの実装。プレイヤー追従カメラの動作を管理する
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PlayerCameraMachine.h"
 #include "Game/Objects/NeonFade/Player.h"
 

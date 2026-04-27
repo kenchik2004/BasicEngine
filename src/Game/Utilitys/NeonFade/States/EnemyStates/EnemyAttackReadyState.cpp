@@ -1,4 +1,8 @@
-﻿#include "EnemyAttackReadyState.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyAttackReadyState.cpp
+//! @brief  EnemyAttackReadyStateの実装。敵の攻撃準備状態の処理を行う
+//---------------------------------------------------------------------------
+#include "EnemyAttackReadyState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 
