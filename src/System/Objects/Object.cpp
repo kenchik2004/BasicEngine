@@ -1,4 +1,8 @@
-﻿#include "System/Objects/Object.h"
+//---------------------------------------------------------------------------
+//! @file   Object.cpp
+//! @brief  Objectクラスの実装。ゲームオブジェクトのライフサイクル・コンポーネント管理を行う
+//---------------------------------------------------------------------------
+#include "System/Objects/Object.h"
 #include "System/Scene.h"
 #include <algorithm>
 

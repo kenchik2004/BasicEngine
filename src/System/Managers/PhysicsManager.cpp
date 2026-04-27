@@ -1,4 +1,8 @@
-﻿#include "..\PhysX\PhysX-5.5.1\include\cooking\PxCooking.h"
+//---------------------------------------------------------------------------
+//! @file   PhysicsManager.cpp
+//! @brief  PhysicsManagerの実装。PhysXを使った物理演算の初期化・管理を行う
+//---------------------------------------------------------------------------
+#include "..\PhysX\PhysX-5.5.1\include\cooking\PxCooking.h"
 #include "PhysicsManager.h"
 #include "System/Objects/Object.h"
 #include <System/Components/Collider.h>

@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyStateMachine.cpp
+//! @brief  EnemyStateMachineの実装。敵キャラクターのステートマシン処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "EnemyStateMachine.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 

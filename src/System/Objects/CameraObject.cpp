@@ -1,4 +1,8 @@
-﻿#include "CameraObject.h"
+//---------------------------------------------------------------------------
+//! @file   CameraObject.cpp
+//! @brief  CameraObjectの実装。カメラオブジェクトの処理を行う
+//---------------------------------------------------------------------------
+#include "CameraObject.h"
 #include "System/Components/Camera.h"
 
 int CameraObject::Init()

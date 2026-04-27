@@ -1,4 +1,8 @@
-﻿#include "Precompile.h"
+//---------------------------------------------------------------------------
+//! @file   Button.cpp
+//! @brief  Buttonコンポーネントの実装。UIボタンのクリックイベント処理を管理する
+//---------------------------------------------------------------------------
+#include "Precompile.h"
 #include <System/Components/Button.h>
 
 int Button::Init()

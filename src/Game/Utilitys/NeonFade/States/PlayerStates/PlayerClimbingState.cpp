@@ -1,4 +1,8 @@
-﻿#include "PlayerClimbingState.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerClimbingState.cpp
+//! @brief  PlayerClimbingStateの実装。プレイヤーのよじ登り状態の処理を行う
+//---------------------------------------------------------------------------
+#include "PlayerClimbingState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
 namespace NeonFade

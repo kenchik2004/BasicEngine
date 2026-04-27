@@ -1,4 +1,8 @@
-﻿#include "System/Managers/SceneManager.h"
+//---------------------------------------------------------------------------
+//! @file   SceneManager.cpp
+//! @brief  SceneManagerクラスの実装
+//---------------------------------------------------------------------------
+#include "System/Managers/SceneManager.h"
 #include "System/Scene.h"
 #include "System/DontDestroyOnLoadScene.h"
 #include "System/Objects/Object.h"

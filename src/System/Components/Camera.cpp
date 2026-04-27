@@ -1,4 +1,8 @@
-﻿#include "Camera.h"
+//---------------------------------------------------------------------------
+//! @file   Camera.cpp
+//! @brief  Cameraクラスの実装
+//---------------------------------------------------------------------------
+#include "Camera.h"
 #include "System/Scene.h"
 #include <System/Objects/ShadowMapObject.h>
 

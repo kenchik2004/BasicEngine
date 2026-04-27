@@ -1,4 +1,8 @@
-﻿#include "MaterialManager.h"
+//---------------------------------------------------------------------------
+//! @file   MaterialManager.cpp
+//! @brief  MaterialManagerの実装。マテリアルリソースの管理を行う
+//---------------------------------------------------------------------------
+#include "MaterialManager.h"
 #include "System/Utils/Render.h"
 
 class ShaderInstance {

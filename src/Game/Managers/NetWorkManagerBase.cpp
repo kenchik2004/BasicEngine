@@ -1,4 +1,8 @@
-﻿#include "NetWorkManagerBase.h"
+//---------------------------------------------------------------------------
+//! @file   NetWorkManagerBase.cpp
+//! @brief  NetWorkManagerBaseの実装。ネットワーク通信の基底処理を提供する
+//---------------------------------------------------------------------------
+#include "NetWorkManagerBase.h"
 
 
 void NetWork::Send(const void* data, size_t data_size)

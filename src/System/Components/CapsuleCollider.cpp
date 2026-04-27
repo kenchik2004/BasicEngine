@@ -1,4 +1,8 @@
-﻿#include <System/Components/RigidBody.h>
+//---------------------------------------------------------------------------
+//! @file   CapsuleCollider.cpp
+//! @brief  CapsuleColliderコンポーネントの実装。カプセル形状の当たり判定を提供する
+//---------------------------------------------------------------------------
+#include <System/Components/RigidBody.h>
 #include "System/Components/CapsuleCollider.h"
 #include "System/Components/ModelRenderer.h"
 

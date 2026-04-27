@@ -1,4 +1,8 @@
-﻿#include "IniFileManager.h"
+//---------------------------------------------------------------------------
+//! @file   IniFileManager.cpp
+//! @brief  IniFileManagerの実装。INIファイルの読み書きを管理する
+//---------------------------------------------------------------------------
+#include "IniFileManager.h"
 #include "algorithm"
 
 namespace FileSystem {

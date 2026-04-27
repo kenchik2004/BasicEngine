@@ -1,4 +1,8 @@
-﻿#include "Transform.h"
+//---------------------------------------------------------------------------
+//! @file   Transform.cpp
+//! @brief  Transformコンポーネントの実装。ゲームオブジェクトの位置・回転・スケールを管理する
+//---------------------------------------------------------------------------
+#include "Transform.h"
 #include "algorithm"
 
 void WrapAngles0_360(Vector3* euler) {

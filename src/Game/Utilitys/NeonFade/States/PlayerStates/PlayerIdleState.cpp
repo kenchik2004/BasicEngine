@@ -1,4 +1,8 @@
-﻿#include "PlayerIdleState.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerIdleState.cpp
+//! @brief  PlayerIdleStateクラスの実装
+//---------------------------------------------------------------------------
+#include "PlayerIdleState.h"
 
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"

@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGame.cpp
+//! @brief  SceneGameã®å®Ÿè£…ã€‚ãƒ¡ã‚¤ãƒ³ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã®åˆæœŸåŒ–ãƒ»æ›´æ–°ãƒ»æç”»å‡¦ç†ã‚’è¡Œã†
+//---------------------------------------------------------------------------
 #include "SceneGame.h"
 
 #include "Game/Objects/NeonFade/Player.h"
@@ -99,7 +103,7 @@ namespace NeonFade {
 				effect_text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 				effect_text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 				text->TextColor() = Color::RED;
-				text->SetText(u8"‘ß•ßŠ®—¹!!");
+				text->SetText(u8"é€®æ•å®Œäº†!!");
 				text->SetFontSize(80);
 				text->SetAlignment(Text::ALIGNMENT::AUTO);
 				text->text_speed = 4.0f;
@@ -112,7 +116,7 @@ namespace NeonFade {
 
 
 namespace NeonFade {
-	//1ƒrƒ‹‚Ìc‰¡...100m~100m
+	//1ãƒ“ãƒ«ã®ç¸¦æ¨ª...100mÃ—100m
 	std::array<Vector3, 4> buildings = {
 		Vector3(-100.0f,0.0f,290.0f),
 		Vector3(-100.0f,0.0f,130.0f),
@@ -238,7 +242,7 @@ namespace NeonFade {
 
 		if (!light_manager) {
 
-			light_manager = SceneManager::Object::Create<LightManager>(u8"ƒ‰ƒCƒgƒ}ƒl[ƒWƒƒ[");
+			light_manager = SceneManager::Object::Create<LightManager>(u8"ãƒ©ã‚¤ãƒˆãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼");
 			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
 			auto rec_light_manager = SceneManager::Object::Create<LightManager>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
@@ -267,7 +271,7 @@ namespace NeonFade {
 			audio_player->is_3d = false;
 		}
 		if (!player) {
-			auto player_ = SceneManager::Object::Create<Player>(u8"ƒvƒŒƒCƒ„[");
+			auto player_ = SceneManager::Object::Create<Player>(u8"ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼");
 
 			player_->transform->position = { 0,20,100 };
 			for (u32 i = 0; i < buildings.size(); ++i)
@@ -336,7 +340,7 @@ namespace NeonFade {
 		GetPhysicsScene()->setGravity({ 0,gravity_factor,0 });
 		if (!text_obj)
 		{
-			text_obj = SceneManager::Object::Create<UIObject>(u8"ƒeƒLƒXƒgƒIƒuƒWƒFƒNƒg");
+			text_obj = SceneManager::Object::Create<UIObject>(u8"ãƒ†ã‚­ã‚¹ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ");
 			text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->transform->scale = { 300,50,1 };
@@ -358,10 +362,10 @@ namespace NeonFade {
 			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
 			hud_text->TextColor() = Color::RED;
 			static std::string hud_text_str =
-				u8"NeonFade  HUD\nƒJƒƒ‰‘€ì:‰EƒXƒeƒBƒbƒN\nˆÚ“®:¶ƒXƒeƒBƒbƒN\nƒ_ƒbƒVƒ…(Ø‚è‘Ö‚¦):¶ƒXƒeƒBƒbƒN‰Ÿ‚µ‚İ\nƒWƒƒƒ“ƒv:Bƒ{ƒ^ƒ“\nUŒ‚(ƒWƒƒƒ“ƒvE—‰º’†‚à‰Â):ABXY‚Ç‚ê‚©+ZRƒgƒŠƒK[\n‰ñ”ğ:¶ƒXƒeƒBƒbƒN+ZLƒgƒŠƒK[\nƒXƒ^[ƒgƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚±‚ÌHUD‚ğ•Â‚¶‚é";
+				u8"NeonFade  HUD\nã‚«ãƒ¡ãƒ©æ“ä½œ:å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯\nç§»å‹•:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯\nãƒ€ãƒƒã‚·ãƒ¥(åˆ‡ã‚Šæ›¿ãˆ):å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯æŠ¼ã—è¾¼ã¿\nã‚¸ãƒ£ãƒ³ãƒ—:Bãƒœã‚¿ãƒ³\næ”»æ’ƒ(ã‚¸ãƒ£ãƒ³ãƒ—ãƒ»è½ä¸‹ä¸­ã‚‚å¯):ABXYã©ã‚Œã‹+ZRãƒˆãƒªã‚¬ãƒ¼\nå›é¿:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯+ZLãƒˆãƒªã‚¬ãƒ¼\nã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ã“ã®HUDã‚’é–‰ã˜ã‚‹";
 			hud_text->SetText(hud_text_str);
 			hud_obj = hud_prototype;
-			ui_texts["txt_message"]->GetComponent<Text>()->SetText(u8"‘Sˆõ•ß‚Ü‚¦‚ë!");
+			ui_texts["txt_message"]->GetComponent<Text>()->SetText(u8"å…¨å“¡æ•ã¾ãˆã‚!");
 		}
 
 
@@ -369,8 +373,8 @@ namespace NeonFade {
 			scene_state_machine = make_safe_unique<SceneGameStateMachine>(this);
 		Time::ResetTime();
 
-		//¡‚Ìó‘Ô‚Å‚ÍA“G‚âƒvƒŒƒCƒ„[‚ª”ñí‚ÉL”ÍˆÍ‚ÉˆÚ“®‚Å‚«‚Ä‚µ‚Ü‚¤‚Ì‚ÅA
-		//Œ©‚¦‚È‚¢•Ç‚ğ—pˆÓ
+		//ä»Šã®çŠ¶æ…‹ã§ã¯ã€æ•µã‚„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒéå¸¸ã«åºƒç¯„å›²ã«ç§»å‹•ã§ãã¦ã—ã¾ã†ã®ã§ã€
+		//è¦‹ãˆãªã„å£ã‚’ç”¨æ„
 		{
 			std::array<Vector3, 4> wall_positions = {
 				Vector3(0,20,650),
@@ -418,7 +422,7 @@ namespace NeonFade {
 		int min_ = static_cast<int>(max(0.0f, GAME_TIMER_MAX - game_timer)) / 60;
 		float sec_ = max(0.0f, GAME_TIMER_MAX - game_timer) - min_ * 60;
 		std::string count_down_txt;
-		count_down_txt += u8"c‚èŠÔ ";
+		count_down_txt += u8"æ®‹ã‚Šæ™‚é–“ ";
 		count_down_txt += std::format("{:d}", min_);
 		count_down_txt += u8":";
 		count_down_txt += std::format("{:.2f}", sec_);
@@ -460,7 +464,7 @@ namespace NeonFade {
 		{
 			float cnt = Time::GetTimeFromStart();
 			int dot_cnt = int(cnt * 2) % 4;
-			std::string load_txt = u8"ƒ[ƒh’†";
+			std::string load_txt = u8"ãƒ­ãƒ¼ãƒ‰ä¸­";
 			for (int i = 0; i < dot_cnt; ++i)
 				load_txt += '.';
 			ui_texts["txt_message"]->GetComponent<Text>()->SetText(load_txt);

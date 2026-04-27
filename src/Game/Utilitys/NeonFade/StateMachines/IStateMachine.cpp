@@ -1,4 +1,8 @@
-﻿#include "IStateMachine.h"
+//---------------------------------------------------------------------------
+//! @file   IStateMachine.cpp
+//! @brief  IStateMachineの実装。汎用ステートマシンの基底処理を定義する
+//---------------------------------------------------------------------------
+#include "IStateMachine.h"
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 namespace NeonFade

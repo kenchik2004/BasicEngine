@@ -1,4 +1,8 @@
-﻿#include "PlayerController.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerController.cpp
+//! @brief  PlayerControllerコンポーネントの実装。プレイヤーキャラクターの入力処理を管理する
+//---------------------------------------------------------------------------
+#include "PlayerController.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"
 #include "Game/Objects/NeonFade/Player.h"
 

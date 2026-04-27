@@ -1,4 +1,8 @@
-﻿#include "Collider.h"
+//---------------------------------------------------------------------------
+//! @file   Collider.cpp
+//! @brief  Colliderコンポーネントの実装。物理衝突判定の基底処理を提供する
+//---------------------------------------------------------------------------
+#include "Collider.h"
 #include <System/Components/RigidBody.h>
 #include <System/Components/ModelRenderer.h>
 

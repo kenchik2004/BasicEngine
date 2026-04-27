@@ -1,4 +1,8 @@
-﻿#include "HuntedEffect.h"
+//---------------------------------------------------------------------------
+//! @file   HuntedEffect.cpp
+//! @brief  HuntedEffectの実装。追跡エフェクトオブジェクトの処理を行う
+//---------------------------------------------------------------------------
+#include "HuntedEffect.h"
 
 namespace NeonFade {
 

@@ -1,4 +1,8 @@
-﻿#include "EnemyAttackMainState.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyAttackMainState.cpp
+//! @brief  EnemyAttackMainStateの実装。敵の攻撃メイン状態の処理を行う
+//---------------------------------------------------------------------------
+#include "EnemyAttackMainState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"

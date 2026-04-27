@@ -1,4 +1,8 @@
-﻿#include "EnemyEscapeState.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyEscapeState.cpp
+//! @brief  EnemyEscapeStateの実装。敵の逃走状態の処理を行う
+//---------------------------------------------------------------------------
+#include "EnemyEscapeState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 

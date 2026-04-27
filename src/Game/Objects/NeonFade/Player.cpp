@@ -1,4 +1,8 @@
-﻿#include "Player.h"
+//---------------------------------------------------------------------------
+//! @file   Player.cpp
+//! @brief  Playerオブジェクトの実装。プレイヤーキャラクターのゲームロジックを管理する
+//---------------------------------------------------------------------------
+#include "Player.h"
 #include "System/Components/RigidBody.h"
 #include "System/Components/ModelRenderer.h"
 #include "System/Components/Animator.h"

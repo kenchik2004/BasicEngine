@@ -1,4 +1,8 @@
-﻿#include "DamageUIObject.h"
+//---------------------------------------------------------------------------
+//! @file   DamageUIObject.cpp
+//! @brief  DamageUIObjectの実装。ダメージ表示UIオブジェクトの処理を行う
+//---------------------------------------------------------------------------
+#include "DamageUIObject.h"
 
 namespace NeonFade {
 	int DamageUIObject::Init()

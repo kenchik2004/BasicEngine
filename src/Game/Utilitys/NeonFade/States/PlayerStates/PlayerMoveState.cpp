@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerMoveState.cpp
+//! @brief  PlayerMoveStateの実装。プレイヤーの移動状態の処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PlayerMoveState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "System/Components/RigidBody.h"

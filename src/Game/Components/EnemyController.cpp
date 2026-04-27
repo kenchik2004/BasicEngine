@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   EnemyController.cpp
+//! @brief  EnemyControllerコンポーネントの実装。敵キャラクターの行動制御を管理する
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "EnemyController.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"

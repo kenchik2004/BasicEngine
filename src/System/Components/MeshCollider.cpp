@@ -1,4 +1,8 @@
-﻿#include "System/Components/RigidBody.h"
+//---------------------------------------------------------------------------
+//! @file   MeshCollider.cpp
+//! @brief  MeshColliderコンポーネントの実装。メッシュ形状の当たり判定を提供する
+//---------------------------------------------------------------------------
+#include "System/Components/RigidBody.h"
 #include "MeshCollider.h"
 #include "System/Components/ModelRenderer.h"
 

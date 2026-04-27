@@ -1,4 +1,8 @@
-﻿#include "PlayerDodgeState.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerDodgeState.cpp
+//! @brief  PlayerDodgeStateの実装。プレイヤーの回避状態の処理を行う
+//---------------------------------------------------------------------------
+#include "PlayerDodgeState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Components/PlayerController.h"
 

@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerCombatComboState3.cpp
+//! @brief  PlayerCombatComboState3の実装。プレイヤーの連続攻撃コンボ第3段の処理を行う
+//---------------------------------------------------------------------------
 #include "PlayerCombatComboState3.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"

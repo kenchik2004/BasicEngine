@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerFallState.cpp
+//! @brief  PlayerFallStateの実装。プレイヤーの落下状態の処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PlayerFallState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Utilitys/NeonFade/StateMachines/PlayerStateMachine.h"

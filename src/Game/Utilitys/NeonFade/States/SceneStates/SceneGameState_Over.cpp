@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_Over.cpp
+//! @brief  SceneGameState_Overã®å®Ÿè£…ã€‚ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼æ™‚ã®ã‚·ãƒ¼ãƒ³çŠ¶æ…‹å‡¦ç†ã‚’è¡Œã†
+//---------------------------------------------------------------------------
 #include "SceneGameState_Over.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 namespace NeonFade {
@@ -19,7 +23,7 @@ namespace NeonFade {
 		}
 
 		bool IsEffectFinished() const {
-			return effect_timer > txt_navi_delay + 1.0f; //ƒiƒrƒeƒLƒXƒg‚ªŠ®‘S‚É•\¦‚³‚ê‚Ä‚©‚çƒGƒtƒFƒNƒgI—¹‚Æ‚·‚é
+			return effect_timer > txt_navi_delay + 1.0f; //ãƒŠãƒ“ãƒ†ã‚­ã‚¹ãƒˆãŒå®Œå…¨ã«è¡¨ç¤ºã•ã‚Œã¦ã‹ã‚‰ã‚¨ãƒ•ã‚§ã‚¯ãƒˆçµ‚äº†ã¨ã™ã‚‹
 		}
 
 		void Update(const float dt) {
@@ -50,8 +54,8 @@ namespace NeonFade {
 		SceneGame* owner_scene_game = nullptr;
 
 		void CreateBackgroundEffect(SceneGame* owner_scene) {
-			//”¼“§–¾‚Å”wŒi‚ğ•¢‚¤ƒIƒuƒWƒFƒNƒg‚Ì¶¬
-			//‚½‚¾‚Ì•”wŒi(”¼“§–¾)
+			//åŠé€æ˜ã§èƒŒæ™¯ã‚’è¦†ã†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
+			//ãŸã ã®é»’èƒŒæ™¯(åŠé€æ˜)
 			{
 				auto bg_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());
 				bg_obj->transform->scale = { 1920,1080,1 };
@@ -82,7 +86,7 @@ namespace NeonFade {
 			navi_obj->transform->scale = { 600, 150, 1 };
 			navi_obj->transform->position.y -= 200;
 			auto text_comp = navi_obj->AddComponent<Text>();
-			text_comp->SetText(u8"EnterƒL[‚Ü‚½‚ÍBƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚ÄƒŠƒXƒ^[ƒg");
+			text_comp->SetText(u8"Enterã‚­ãƒ¼ã¾ãŸã¯Bãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ãƒªã‚¹ã‚¿ãƒ¼ãƒˆ");
 			text_comp->TextColor() = Color::WHITE;
 			text_comp->SetFontSize(60);
 			txt_navi_text_comp = text_comp;

@@ -1,4 +1,8 @@
-﻿#include "precompile.h"
+//---------------------------------------------------------------------------
+//! @file   PlayerJumpAttackLandState.cpp
+//! @brief  PlayerJumpAttackLandStateの実装。プレイヤーのジャンプ攻撃着地状態の処理を行う
+//---------------------------------------------------------------------------
+#include "precompile.h"
 #include "PlayerJumpAttackLandState.h"
 #include "Game/Objects/NeonFade/Player.h"
 

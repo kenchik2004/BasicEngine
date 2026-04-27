@@ -1,4 +1,8 @@
-﻿#include "ModelManager.h"
+//---------------------------------------------------------------------------
+//! @file   ModelManager.cpp
+//! @brief  ModelManagerクラスの実装
+//---------------------------------------------------------------------------
+#include "ModelManager.h"
 
 using namespace physx;
 

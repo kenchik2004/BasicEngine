@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_Ketsu.cpp
+//! @brief  SceneGameState_Ketsuの実装。ゲームの結（終盤）シーン状態処理を行う
+//---------------------------------------------------------------------------
 #include "SceneGameState_Ketsu.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/Enemy.h"

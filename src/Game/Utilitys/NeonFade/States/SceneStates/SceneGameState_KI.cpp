@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_KI.cpp
+//! @brief  SceneGameState_KIの実装。ゲームの起（序盤）シーン状態処理を行う
+//---------------------------------------------------------------------------
 #include "precompile.h"
 #include "SceneGameState_KI.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
@@ -36,7 +40,7 @@ namespace NeonFade {
 		auto cam_machine = owner_scene_game->player->player_camera_machine.lock();
 		controller->Sleep();
 		cam_machine->Sleep();
-		message_text->SetText(u8"�S���߂܂���!");
+		message_text->SetText(u8"全員捕まえろ!");
 		message_text->SetFontSize(170);
 		message_text->WakeUp();
 		timer_text->Sleep();

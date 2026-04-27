@@ -1,4 +1,8 @@
-﻿#include "EffectPlayer.h"
+//---------------------------------------------------------------------------
+//! @file   EffectPlayer.cpp
+//! @brief  EffectPlayerコンポーネントの実装。エフェクトの再生・停止を管理する
+//---------------------------------------------------------------------------
+#include "EffectPlayer.h"
 #include "../Effekseer/EffekseerForDXLib.h"
 
 std::unordered_map<std::string, int> EffectPlayer::effect_handle_map = {};

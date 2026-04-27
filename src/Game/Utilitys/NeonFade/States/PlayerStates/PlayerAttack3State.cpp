@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerAttack3State.cpp
+//! @brief  PlayerAttack3Stateの実装。プレイヤーの第3攻撃状態の処理を行う
+//---------------------------------------------------------------------------
 #include "PlayerAttack3State.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
@@ -19,7 +23,7 @@ namespace NeonFade {
 			hit_box = std::move(col);
 			hit_box_created_time = exit_timer;
 			};
-		//�q�b�g�{�b�N�X�����^�C�~���O
+		//ヒットボックス生成タイミング
 		animator->SetAnimationCallBack("leg_sweep", create_hit_box, 27, "create_hit_box");
 
 		std::function<bool()> default_exit =

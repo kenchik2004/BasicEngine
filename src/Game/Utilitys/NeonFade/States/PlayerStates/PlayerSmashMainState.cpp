@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerSmashMainState.cpp
+//! @brief  PlayerSmashMainStateの実装。プレイヤーのスマッシュメイン状態の処理を行う
+//---------------------------------------------------------------------------
 #include "PlayerSmashMainState.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
@@ -40,7 +44,7 @@ namespace NeonFade {
 			hit_box->RemoveThisComponent();
 			hit_box = nullptr;
 		}
-		//�����ƃr���r�����Ă�̂��A���Ȃ̂ŁA�ʏ�e�N�X�`���ɖ߂�
+		//ずっとビリビリしてるのもアレなので、通常テクスチャに戻す
 		{
 			owner_player->ResetMaterialsToDefault();
 		}

@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   SceneGameState_Clear.cpp
+//! @brief  SceneGameState_Clearã®å®Ÿè£…ã€‚ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢æ™‚ã®ã‚·ãƒ¼ãƒ³çŠ¶æ…‹å‡¦ç†ã‚’è¡Œã†
+//---------------------------------------------------------------------------
 #include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_Clear.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 
@@ -23,8 +27,8 @@ namespace NeonFade {
 			if (!score_se)
 				score_se = AudioManager::CloneByName(u8"score_se");
 
-			//”¼“§–¾‚Å”wŒi‚ğ•¢‚¤ƒIƒuƒWƒFƒNƒg‚Ì¶¬
-			//— ƒV[ƒ“‚ÅƒvƒŒƒCƒ„[‚ğƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚ÄA‚»‚ÌƒJƒƒ‰‚Ì“f‚«o‚µƒoƒbƒtƒ@‚ğ”wŒi‚É“\‚é
+			//åŠé€æ˜ã§èƒŒæ™¯ã‚’è¦†ã†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
+			//è£ã‚·ãƒ¼ãƒ³ã§ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã•ã›ã¦ã€ãã®ã‚«ãƒ¡ãƒ©ã®åãå‡ºã—ãƒãƒƒãƒ•ã‚¡ã‚’èƒŒæ™¯ã«è²¼ã‚‹
 
 			{
 				auto bg_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());
@@ -56,7 +60,7 @@ namespace NeonFade {
 			if (effect_timer > txt_time_delay && !txt_time.lock())
 			{
 				float game_time = owner_scene->GetGameTimer();
-				std::string time_str = u8"‚©‚©‚Á‚½ŠÔ:\n " + std::format("{:.2f}", game_time) + u8"•b";
+				std::string time_str = u8"ã‹ã‹ã£ãŸæ™‚é–“:\n " + std::format("{:.2f}", game_time) + u8"ç§’";
 				auto time_text_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());
 				time_text_obj->BackGroundColor() = Color(0.2f, 0.2f, 0.2f, 0.5f);
 				time_text_obj->UseBackGround() = true;
@@ -76,19 +80,19 @@ namespace NeonFade {
 				std::string rank_str;
 				Color rank_color;
 				if (game_time < 120.0f) {
-					rank_str = u8"ƒ‰ƒ“ƒN: S";
+					rank_str = u8"ãƒ©ãƒ³ã‚¯: S";
 					rank_color = Color::YELLOW;
 				}
 				else if (game_time < 180.0f) {
-					rank_str = u8"ƒ‰ƒ“ƒN: A";
+					rank_str = u8"ãƒ©ãƒ³ã‚¯: A";
 					rank_color = Color::RED;
 				}
 				else if (game_time < 270.0f) {
-					rank_str = u8"ƒ‰ƒ“ƒN: B";
+					rank_str = u8"ãƒ©ãƒ³ã‚¯: B";
 					rank_color = Color::GREEN;
 				}
 				else {
-					rank_str = u8"ƒ‰ƒ“ƒN: C";
+					rank_str = u8"ãƒ©ãƒ³ã‚¯: C";
 					rank_color = Color::BLUE;
 				}
 				auto rank_text_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());

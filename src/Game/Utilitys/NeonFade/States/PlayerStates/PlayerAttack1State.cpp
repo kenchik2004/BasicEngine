@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerAttack1State.cpp
+//! @brief  PlayerAttack1Stateã®å®Ÿè£…ã€‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç¬¬1æ”»æ’ƒçŠ¶æ…‹ã®å‡¦ç†ã‚’è¡Œã†
+//---------------------------------------------------------------------------
 #include "PlayerAttack1State.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Objects/NeonFade/Enemy.h"
@@ -48,8 +52,8 @@ namespace NeonFade {
 		static constexpr float smoothstep_rottime = 1.0f / SPIN_TIME;
 		float cur_animspeed = 0.0f;
 		if (exit_timer <= SPIN_TIME) {
-			//‚¢‚«‚È‚èƒXƒsƒ“‚µn‚ß‚½‚ç•s©‘R‚È‚Ì‚ÅA™X‚É‰Á‘¬ 1->2
-			//‚Â‚¢‚Å‚ÉƒAƒjƒ[ƒVƒ‡ƒ“‚ª‹t‰ñ“]‚É‚È‚Á‚Ä‚¢‚é‚Ì‚ÅA‹t“]‚³‚¹‚é
+			//ã„ããªã‚Šã‚¹ãƒ”ãƒ³ã—å§‹ã‚ãŸã‚‰ä¸è‡ªç„¶ãªã®ã§ã€å¾ã€…ã«åŠ é€Ÿ 1->2
+			//ã¤ã„ã§ã«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒé€†å›è»¢ã«ãªã£ã¦ã„ã‚‹ã®ã§ã€é€†è»¢ã•ã›ã‚‹
 			cur_animspeed = exit_timer * smoothstep_rottime * -2.0f;
 			owner_player->transform->rotation = Slerp(start_rot, spin_rot, exit_timer * smoothstep_rottime);
 		}

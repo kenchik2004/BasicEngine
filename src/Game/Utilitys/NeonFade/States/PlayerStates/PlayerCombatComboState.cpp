@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerCombatComboState.cpp
+//! @brief  PlayerCombatComboStateの実装。プレイヤーの連続攻撃コンボ状態の処理を行う
+//---------------------------------------------------------------------------
 #include "precompile.h"
 #include "PlayerCombatComboState.h"
 #include "Game/Objects/NeonFade/Player.h"
