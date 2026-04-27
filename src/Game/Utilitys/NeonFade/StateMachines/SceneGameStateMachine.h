@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   SceneGameStateMachine.h
+//! @brief  ゲームシーン用ステートマシンクラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "ISceneStateMachine.h"
 namespace NeonFade {
 	class SceneGame;

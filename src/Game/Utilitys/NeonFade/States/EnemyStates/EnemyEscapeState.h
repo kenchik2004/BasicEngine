@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyEscapeState.h
+//! @brief  敵の逃走状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade

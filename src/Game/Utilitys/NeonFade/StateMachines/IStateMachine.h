@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   IStateMachine.h
+//! @brief  汎用ステートマシンの基底インタフェースの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h" 
 class GameObject;
 

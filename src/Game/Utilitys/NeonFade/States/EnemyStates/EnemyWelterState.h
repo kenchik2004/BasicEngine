@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyWelterState.h
+//! @brief  敵のよろめき状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {

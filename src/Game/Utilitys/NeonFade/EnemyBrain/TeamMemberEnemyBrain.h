@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   TeamMemberEnemyBrain.h
+//! @brief  チームメンバー敵AI思考クラスの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/EnemyBrain/AbstractEnemyBrain.h"
 namespace NeonFade {
 

@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   EnemyTeam.h
+//! @brief  敵チームの管理・連携処理クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/EnemyBrain/TeamMemberEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/LeaderEnemyBrain.h"

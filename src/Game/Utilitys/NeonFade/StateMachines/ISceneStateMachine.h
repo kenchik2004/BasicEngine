@@ -1,4 +1,8 @@
-﻿#pragma once
+//---------------------------------------------------------------------------
+//! @file   ISceneStateMachine.h
+//! @brief  シーンステートマシンの基底インタフェースの定義
+//---------------------------------------------------------------------------
+#pragma once
 #include "Game/Utilitys/NeonFade/States/ISceneState.h"
 namespace NeonFade {
 

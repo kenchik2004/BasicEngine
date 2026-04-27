@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerAttack1State.h
+//! @brief  プレイヤーの第1攻撃状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {

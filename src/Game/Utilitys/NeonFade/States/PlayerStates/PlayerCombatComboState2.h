@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------------
+//! @file   PlayerCombatComboState2.h
+//! @brief  プレイヤーの連続攻撃コンボ第2段状態クラスの定義
+//---------------------------------------------------------------------------
 #pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {
