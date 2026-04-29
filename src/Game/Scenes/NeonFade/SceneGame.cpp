@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneGame.cpp
 //! @brief  SceneGameの実装。メインゲームシーンの初期化・更新・描画処理を行う
 //---------------------------------------------------------------------------
@@ -340,7 +340,7 @@ namespace NeonFade {
 		GetPhysicsScene()->setGravity({ 0,gravity_factor,0 });
 		if (!text_obj)
 		{
-			text_obj = SceneManager::Object::Create<UIObject>(u8"テキストオブジェクト");
+			text_obj = SceneManager::Object::Create<UIObject>(u8"TextObj");
 			text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
 			text_obj->transform->scale = { 300,50,1 };

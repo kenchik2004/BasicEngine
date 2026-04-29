@@ -108,8 +108,6 @@
     <ClCompile Include="src\System\Components\ImageRenderer.cpp" />
     <ClCompile Include="src\Game\Managers\LightManager.cpp" />
     <ClCompile Include="src\precompile.cpp" />
-    <ClCompile Include="src\Game\Scenes\Sample\SampleRoomScene.cpp" />
-    <ClCompile Include="src\Game\Objects\Sample\SampleAnimationObject.cpp" />
     <ClCompile Include="src\Game\Components\PlayerController.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\Player.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\SceneGame.cpp" />
@@ -284,8 +282,6 @@
     <ClInclude Include="src\System\Managers\MaterialManager.h" />
     <ClInclude Include="src\System\Components\ImageRenderer.h" />
     <ClInclude Include="src\Game\Managers\LightManager.h" />
-    <ClInclude Include="src\Game\Scenes\Sample\SampleRoomScene.h" />
-    <ClInclude Include="src\Game\Objects\Sample\SampleAnimationObject.h" />
     <ClInclude Include="src\Game\Components\PlayerController.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneGame.h" />

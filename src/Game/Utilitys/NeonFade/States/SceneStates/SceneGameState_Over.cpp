@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneGameState_Over.cpp
 //! @brief  SceneGameState_Overの実装。ゲームオーバー時のシーン状態処理を行う
 //---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ namespace NeonFade {
 			navi_obj->transform->scale = { 600, 150, 1 };
 			navi_obj->transform->position.y -= 200;
 			auto text_comp = navi_obj->AddComponent<Text>();
-			text_comp->SetText(u8"EnterキーまたはBボタンを押してリスタート");
+			text_comp->SetText(ShiftJISToUTF8("EnterキーまたはBボタンを押してリスタート\n"));
 			text_comp->TextColor() = Color::WHITE;
 			text_comp->SetFontSize(60);
 			txt_navi_text_comp = text_comp;

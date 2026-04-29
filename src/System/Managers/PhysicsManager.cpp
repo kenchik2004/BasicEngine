@@ -77,7 +77,7 @@ void PhysicsManager::Init()
 {
 	if (!(m_pFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator, m_defaultErrorCallback))) {
 #ifndef PACKAGE_BUILD
-		throw Exception("PhysXの初期化に失敗しました。", DEFAULT_EXCEPTION_PARAM);
+		throw Exception(u8"PhysXの初期化に失敗しました。\n", DEFAULT_EXCEPTION_PARAM);
 #endif
 	}
 	// PVDと接続する設定
@@ -100,7 +100,7 @@ void PhysicsManager::Init()
 	// Physicsのインスタンス化
 	if (!(m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, physx::PxTolerancesScale(), true, m_pPvd))) {
 #ifndef PACKAGE_BUILD
-		throw(Exception("PhysXのインスタンス生成に失敗しました。", DEFAULT_EXCEPTION_PARAM));
+		throw(Exception(u8"PhysXのインスタンス生成に失敗しました。\n", DEFAULT_EXCEPTION_PARAM));
 #endif
 	}
 	// 拡張機能用

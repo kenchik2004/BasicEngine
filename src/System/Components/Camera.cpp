@@ -323,7 +323,7 @@ int DebugCamera::Init()
 	if (!gbuffer0)
 		gbuffer0 = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16_FLOAT);
 	if (!gbuffer1)
-		gbuffer1 = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_SNORM);
+		gbuffer1 = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
 	if (!gbuffer2)
 		gbuffer2 = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
 

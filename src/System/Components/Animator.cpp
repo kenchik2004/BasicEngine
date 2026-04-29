@@ -163,7 +163,6 @@ void Animator::LateDebugDraw() {
 		ijiru_mat[2] = Vector4(Lerp(mat_c[2].getXYZ(), anim_mat_c[2].getXYZ(), current_anim->blend_rate), 0);
 		ijiru_mat[3] = Vector4(Lerp(mat_c[3].getXYZ(), anim_mat_c[3].getXYZ(), current_anim->blend_rate), 1);
 		ijiru_mat[3][1] = mat.m[3][1];//Y座標だけ書き換え、あとはアニメーションの行列を使う
-		std::string _name = MV1GetFrameName(model->GetModelHandle(), 0);
 	}
 }
 

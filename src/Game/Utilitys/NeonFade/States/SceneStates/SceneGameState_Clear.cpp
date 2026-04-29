@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneGameState_Clear.cpp
 //! @brief  SceneGameState_Clearの実装。ゲームクリア時のシーン状態処理を行う
 //---------------------------------------------------------------------------
@@ -60,7 +60,7 @@ namespace NeonFade {
 			if (effect_timer > txt_time_delay && !txt_time.lock())
 			{
 				float game_time = owner_scene->GetGameTimer();
-				std::string time_str = u8"かかった時間:\n " + std::format("{:.2f}", game_time) + u8"秒";
+				std::string time_str = u8"かかった時間:\n " + std::format("{:.2f}", game_time) + u8"秒\n";
 				auto time_text_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());
 				time_text_obj->BackGroundColor() = Color(0.2f, 0.2f, 0.2f, 0.5f);
 				time_text_obj->UseBackGround() = true;

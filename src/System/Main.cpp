@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Main.cpp
 //! @brief  Mainクラスの実装
 //---------------------------------------------------------------------------
@@ -9,25 +9,25 @@
 //#define FULL_SCREEN
 
 //#define SECONDARY
-//! @brief ��ʂ̉���(�����l:1920)
+//! @brief ウィンドウの幅(初期値:1920)
 int SCREEN_W = 1920;
-//! @brief ��ʂ̏c��(�����l:1080)
+//! @brief ウィンドウの高さ(初期値:1080)
 int SCREEN_H = 1080;
 
-//! @brief �E�B���h�E�̃N���X���ꗗ
+//! @brief Windowsのウィンドウクラス名
 std::string window_classname[1] =
 {
-	"�f�o�b�O�E�B���h�E1",
+	"メインウィンドウ",
 };
 int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
 //====================================//
 
-//! @brief �W���I��Windows���b�Z�[�W�����֐�
-//! @param window �E�B���h�E�n���h��
-//! @param msg �E�B���h�E���b�Z�[�W
-//! @param wParam �p�����[�^1
-//! @param lParam �p�����[�^2
-//! @return LRESULT �E�B���h�E���b�Z�[�W��������
+//! @brief Windowsのウィンドウプロシージャ
+//! @param windowのハンドル
+//! @param msg Windowsのメッセージコード
+//! @param wParam Windowsのメッセージコードに付随するパラメータ1
+//! @param lParam Windowsのメッセージコードに付随するパラメータ2
+//! @return LRESULT Windowsのウィンドウプロシージャの処理結果
 constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -37,7 +37,7 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 		break;
 	case WM_MOVING:
 	case WM_SIZE:
-		//�E�B���h�E�ړ����͎���΂����s��(Physics��A�b�v�f�[�g�����̖\����h������)
+		//ウィンドウの移動やサイズ変更の際に、時間をリセットすることで、物理演算などの挙動が不安定になるのを防ぐ
 		Time::ResetTime();
 		break;
 	default:
@@ -46,12 +46,12 @@ constexpr LRESULT CALLBACK WndProc(HWND window, UINT msg, WPARAM wParam, LPARAM 
 	return (0L);
 }
 
-//! @brief DxLib���̃��b�Z�[�W�t�b�N�p�̃E�B���h�E���b�Z�[�W�����֐�
-//! @param window �E�B���h�E�n���h��
-//! @param msg �E�B���h�E���b�Z�[�W
-//! @param wParam �p�����[�^1
-//! @param lParam �p�����[�^2
-//! @return LRESULT �E�B���h�E���b�Z�[�W��������
+//! @brief Windowsのウィンドウプロシージャ(DxLib用)
+//! @param windowのハンドル
+//! @param msg Windowsのメッセージコード
+//! @param wParam Windowsのメッセージコードに付随するパラメータ1
+//! @param lParam Windowsのメッセージコードに付随するパラメータ2
+//! @return LRESULT Windowsのウィンドウプロシージャの処理結果
 constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -59,7 +59,7 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 	{
 	case WM_MOVING:
 	case WM_SIZE:
-		//�E�B���h�E�ړ����͎���΂����s��(Physics��A�b�v�f�[�g�����̖\����h������)
+		//ウィンドウの移動やサイズ変更の際に、時間をリセットすることで、物理演算などの挙動が不安定になるのを防ぐ
 		Time::ResetTime();
 		break;
 	}
@@ -67,17 +67,18 @@ constexpr LRESULT CALLBACK DxWndProc(HWND window, UINT msg, WPARAM wParam, LPARA
 }
 //=====================================//
 //---------------------------------------------------------------------------------
-//! @brief Windows�A�v���P�[�V�����̃G���g���|�C���g (WinMain)
-//! @param hInstance ���݂̃C���X�^���X�n���h��
-//! @param hPrevInstance �ȑO�̃C���X�^���X�n���h�� (���NULL)
-//! @param lpCmdLine �R�}���h���C������
-//! @param nCmdShow �E�B���h�E�̕\���T�C�Y����(�ő�E�ŏ�����)�������l
-//! @return �v���O�����̏I���R�[�h
+//! @brief Windowsアプリケーションのエントリーポイント
+//! @param hInstance Windowsアプリケーションのインスタンスハンドル
+//! @param hPrevInstance Windowsアプリケーションの前のインスタンスハンドル(常にNULL)
+//! @param lpCmdLine Windowsアプリケーションのコマンドライン引数(文字列)
+//! @param nCmdShow Windowsアプリケーションの表示方法を指定するフラグ
+//! @return int Windowsアプリケーションの終了コード
 //---------------------------------------------------------------------------------
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
 
-	//����UTF-8�����g���!SHIFT_JIS�̓N�\!!
+	//もうSJISは使わん!!UTF-8しか勝たん!!
+	//MSもいい加減UTF標準にしやがれ!!
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
 	//==================================//
@@ -98,11 +99,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
 	SetZBufferBitDepth(32);
+	//iniファイルからウィンドウのタイトルを取得して設定する
 	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "���C���E�B���h�E", "data/config.ini");
 	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
-	//SetWindowStyleMode(4);
-	//SetWindowSizeChangeEnableFlag(true, true);
 	SetHookWinProc(DxWndProc);
 	SetDoubleStartValidFlag(true);
 	SetAlwaysRunFlag(TRUE);
@@ -115,7 +115,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	SetWindowSizeChangeEnableFlag(true, false);
 
-
+	//マウスポインタの表示設定をiniファイルから取得して設定する
 	bool show_mouse = FileSystem::IniFileManager::GetBool("StartConfig", "show_mouse", true, "data/config.ini");
 
 	SetMouseDispFlag(show_mouse);
@@ -144,17 +144,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #if 0
 	ImGuiInit(false);
 #endif
-	//�`���FPS��ݒ�
+	//DrawFPSの上限をiniファイルから取得して設定する
 	int d_fps = FileSystem::IniFileManager::GetInt("StartConfig", "draw_fps", 60, "data/config.ini");
 	Time::SetDrawFPSMAX(d_fps);
 
-	//����������FPS��ݒ�
+	//内部更新頻度の上限をiniファイルから取得して設定する
 	int fps = FileSystem::IniFileManager::GetInt("StartConfig", "update_fps", 60, "data/config.ini");
 	Time::SetFPSMAX(fps);
 
+	//物理演算の更新頻度の上限をiniファイルから取得して設定する
 	int fix_fps = FileSystem::IniFileManager::GetInt("StartConfig", "fixed_fps", 50, "data/config.ini");
 	Time::SetFixedFPSMAX(fix_fps);
 
+	//時間のスケールをiniファイルから取得して設定する
 	int time_scale = FileSystem::IniFileManager::GetInt("StartConfig", "time_scale", 1, "data/config.ini");
 	Time::SetTimeScale(time_scale);
 
@@ -173,6 +175,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//===============================================//
 
 
+	//iniファイルから開始シーンのクラス名を取得して、シーンマネージャーにロードする
 	auto start_scene_name = FileSystem::IniFileManager::GetString("StartConfig", "start_scene", "SceneSample", "data/config.ini");
 
 	auto start_scene = CreateInstanceFromName<Scene>(start_scene_name);
@@ -185,7 +188,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		try {
 #ifdef DEBUG_WINDOW
 			//=======================//
-			//�Е��̃E�B���h�E�������ꂽ��A�����Е����I������
+			// デバッグウィンドウのメッセージ処理
 			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
@@ -204,7 +207,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #if 0
 			ImGuiUpdate();
 #endif
-			//�A�b�v�f�[�g
+			//シーンの更新
 			//GameUpdate();
 			SceneManager::PreUpdate();
 			SceneManager::Update();
@@ -216,22 +219,23 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			double real_delta = Time::RealDeltaTimeD();
 			double fixed_max = Time::GetFixedDeltaTimeMAXD();
 			double max = max(fixed_max, real_delta);
-			//PC�̃X�y�b�N����ł͎��ۂɏo�Ă���FPS���������X�V���s�����Ƃ���̂ŁA
-			//FPS�������X�V�p�x����������ꍇ��FPS����Ɍv�Z�p�x�����߂�
+			//PCの性能によっては、物理演算の更新頻度の上限を超えるほどフレームレートが高くなってしまうことがあるため、
+			//その場合は物理演算の更新頻度の上限に合わせて、物理演算の更新を複数回行うようにする
 			SceneManager::PrePhysics();
 			u64 loops = static_cast<u64>(Time::FixedDeltaTimeD() / max);
 			for (int i = 0; i < loops; i++)
 			{
-				//����
+				//物理演算の更新
 				SceneManager::Physics();
 
 			}
 			Time::FixFixedFPS(loops);
 			SceneManager::PostPhysics();
 
-			bool imgui_drawed = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());
-			//�`��
-			if (!imgui_drawed)
+			//描画FPSを越えてしまう場合は、描画をスキップする
+			bool draw_current_frame = !(Time::DrawDeltaTimeD() >= Time::GetDrawDeltaTimeMAXD());
+			//描画
+			if (!draw_current_frame)
 			{
 
 
@@ -239,63 +243,32 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				SceneManager::Draw();
 				//GameRender();
 #ifdef DEBUG_WINDOW
-				//�������݂��s���E�B���h�E���A���C���E�B���h�E�ɐݒ�
+				//Presentの書き込み先をデフォルトのウィンドウにする
 				SetScreenFlipTargetWindow(NULL);
 				ScreenFlip();
 				//============//
-				// ���C���E�B���h�E�̉f�荞�݂�����ꍇ�́A�����̍s��L����
+				//たまに描画が追いつかないことがあるため、描画が追いついていない場合は、描画が追いつくまで待つ
 				//WaitTimer(2);
 				ClearDrawScreen();
-				//�f�o�b�O�E�B���h�E�ւ̕`��
+				//バックバッファをクリア
 #endif
 #ifdef USE_DEBUG_DRAW
+				//デバッグ描画
 				SceneManager::DebugDraw();
 				SceneManager::LateDebugDraw();
 #endif
 #ifdef DEBUG_WINDOW
-				//�������݂��s���E�B���h�E���A�f�o�b�O�E�B���h�E�ɐݒ�
+				//Presentの書き込み先をデバッグウィンドウにする
 				SetScreenFlipTargetWindow(window[0]);
 #endif
-#if 0
-				ID3D11Texture2D* backBufferTex = reinterpret_cast<ID3D11Texture2D*>(const_cast<void*>(GetUseDirect3D11BackBufferTexture2D()));
-				ID3D11ShaderResourceView* g_BackBufferSRV = nullptr;
-				ID3D11Device* device = reinterpret_cast<ID3D11Device*>(const_cast<void*>(GetUseDirect3D11Device())); // DxLib����擾
-
-				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-				srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-				srvDesc.Texture2D.MipLevels = 1;
-				HRESULT hr = device->CreateShaderResourceView(backBufferTex, &srvDesc, &g_BackBufferSRV);
-				if (FAILED(hr)) {
-					// �G���[����
-					PostQuitMessage(0);
-				}
-				else {
-					//�������傢���̂��܂��BImGui�̒��ŕ`�悷�郓�S
-					ImGui::Begin("Game View", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
-					auto size = ImGui::GetWindowSize();
-					auto real_size = ImVec2(SCREEN_W, SCREEN_H);
-					ImVec2 scale = size / real_size;
-					scale = scale.x < scale.y ? ImVec2(scale.x, scale.x) : ImVec2(scale.y, scale.y);
-					ImGui::Image((ImTextureID)g_BackBufferSRV, real_size * scale); // �𑜓x�͉�ʃT�C�Y�ɉ�����
-					ImGui::End();
-				}
-#endif
-				//�{����ImGuiDraw�̈ʒu�͂���
-				//�Ȃ񂩍Ō�ɕ`�悵�����̂���ImGui�ɕ`��̈悪�z����̂łƂ肠������ʊO�ɉ�����������
-#if 0
-				ImGuiDraw();
-#endif
-				//ImGui�̒��Ńh���[����Ȃ�A�������͌Ă΂Ȃ��Ă���
+				
 				ScreenFlip();
+				//描画FPSを計測し、描画delta_timeをリセットする
 				Time::FixDrawFPS();
 				//============//
 			}
-#if 0
-			else     //ImGui�����͖��t���[�������Ȃ���{����̂ŁA�����I�Ƀh���[
-				ImGuiDraw();
-#endif
-			//PostDraw����
+
+			//PostDraw
 			SceneManager::PostDraw();
 
 			Time::FixFPS();
@@ -306,17 +279,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		catch (Exception& ex) {
 			ex.Show();
-			//ImGuiDraw();
 			goto MAIN_LOOP;
 
 		}
 
 	}
 #ifdef PACKAGE_BUILD
+	//パッケージビルドの場合は、終了コードを0にしてすぐに終了する
 	std::quick_exit(0);
-	//ImGuiExit();
 #endif
-	//�I��
+	//終了処理
 	try {
 		SceneManager::Exit();
 	}
@@ -339,6 +311,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	timeEndPeriod(1);
 	DxLib::DxLib_End();
+	//継承ツリーの構造をテキストファイルに出力する
 	std::ofstream f("data/tree.txt");
 	if (!f.fail()) {
 
@@ -349,8 +322,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		const TypeInfo* next = nullptr;
 		f << base_type.ClassName() << std::endl;
 		//----------------------------------------------------------
-		// �p���c���[�\����T��
-		// �X�^�b�N�ċA���g��Ȃ������ȃc���[�T�� (stackless tree traversal)
+		// 継承ツリーの構造をテキストファイルに出力するための高速なツリー探索アルゴリズム
+		// 高速なツリー探索 (stackless tree traversal)
 		//----------------------------------------------------------
 		int nest = 0;
 		while (p && (p != &base_type)) {
@@ -360,18 +333,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				f << "|-----" << p->ClassName() << std::endl;
 			}
 			if (p->Child() && !returnFromTraverse) {
-				// �q������ꍇ�͎q���ɒ��ׂ�B(�q����T���Ŗ߂��Ă����ꍇ�͏��O)
+				// 子ノードがある場合は子ノードに移動する
 				nest++;
 				next = p->Child();
 				returnFromTraverse = false;
 			}
 			else if (p->Sibling()) {
-				// �Z�킪����ꍇ�͌Z��𒲂ׂ�
+				// 子ノードがない場合は兄弟ノードに移動する
 				next = p->Sibling();
 				returnFromTraverse = false;
 			}
 			else {
-				// �e�֖߂�B
+				// 子ノードも兄弟ノードもない場合は親ノードに移動する
 				next = p->Parent();
 				for (int i = 0; i < nest; i++)
 					f << "|        " << std::flush;
@@ -388,35 +361,34 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		f.close();
 	}
-	//system("pause");
 	return 0;
 }
 
 
 //---------------------------------------------------------------------------------
-//! @brief �x�����W�A���ɕϊ�����֐�
-//! @param degree �p�x(�x���@)
-//! @return float �p�x(���W�A��)
+//! @brief degree角をradian角に変換する
+//! @param degree degree角(0~360で表される)
+//! @return float radian角(0~2πで表される)
 //---------------------------------------------------------------------------------
 float TO_RADIAN(float degree)
 {
 	return degree * 3.14159265f / 180.0f;
 }
 //---------------------------------------------------------------------------------
-//! @brief ���W�A����x�ɕϊ�����֐�
-//! @param radian �p�x(���W�A��)
-//! @return float �p�x(�x���@)
+//! @brief radian角をdegree角に変換する
+//! @param radian radian角(0~2πで表される)
+//! @return float degree角(0~360で表される)
 //---------------------------------------------------------------------------------
 float TO_DEGREE(float radian)
 {
 	return radian * 180.0f / 3.14159265f;
 }
 //---------------------------------------------------------------------------------
-//! @brief �w�y���ʏ�ɉ~��3D�`�悷��
-//! @param center �~�̒��S���W
-//! @param radius �~�̔��a
-//! @param color �`��F
-//! @param fill �h��Ԃ��t���O(true�œh��Ԃ�)
+//! @brief XZ平面における円を描画する
+//! @param center 円の中心座標
+//! @param radius 円の半径
+//! @param color 円の色
+//! @param fill 円を塗りつぶすかどうか(trueで塗りつぶす、falseで線のみ)
 //---------------------------------------------------------------------------------
 void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 {
@@ -440,12 +412,12 @@ void DrawCircle3D_XZ(float3 center, float radius, int color, bool fill)
 	}
 }
 //---------------------------------------------------------------------------------
-//! @brief �w�y���ʏ�Ɏl�p�`��3D�`�悷��
-//! @param center �l�p�`�̒��S���W
-//! @param half_w �����̔���
-//! @param half_h �c���̔���
-//! @param color �`��F
-//! @param fill �h��Ԃ��t���O(true�œh��Ԃ�)
+//! @brief XZ平面における矩形を描画する
+//! @param center 矩形の中心座標
+//! @param half_w 横幅の半分
+//! @param half_h 高さの半分
+//! @param color 矩形の色
+//! @param fill 矩形を塗りつぶすかどうか(trueで塗りつぶす、falseで線のみ)
 //---------------------------------------------------------------------------------
 void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fill)
 {
@@ -488,7 +460,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 	//==================================//
 
 
-// �f�o�b�O�E�C���h�E�̍쐬
+// ウィンドウクラスの設定
 	window_parameter.style = CS_HREDRAW | CS_VREDRAW;
 	window_parameter.lpfnWndProc = WndProc;
 	window_parameter.cbClsExtra = 0;
@@ -507,7 +479,7 @@ int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int wind
 
 	window = CreateWindow(
 		window_classname[0].c_str(),
-		"�f�o�b�O�E�B���h�E",
+		"デバッグウィンドウ",
 		WS_MINIMIZEBOX | WS_SYSMENU,
 		window_x * 0.5f, window_y * 0.5f, window_x, window_y,
 		NULL, NULL, hInstance, NULL
