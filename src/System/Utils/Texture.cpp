@@ -140,7 +140,8 @@ bool Texture::Init(ID3D11Resource* d3d_resource)
 			// ID3D11Texture2DからDxLibグラフィックハンドルを作成
 			if (handle < 0 && desc.Format != DXGI_FORMAT_R11G11B10_FLOAT
 				&& desc.Format != DXGI_FORMAT_R8G8B8A8_SNORM
-				&& desc.Format != DXGI_FORMAT_R8G8B8A8_TYPELESS) {
+				&& desc.Format != DXGI_FORMAT_R8G8B8A8_TYPELESS
+				&& desc.Format != DXGI_FORMAT_R10G10B10A2_UNORM) {
 				handle = CreateGraphFromID3D11Texture2D(d3d_resource); // DxLib ハンドルを作成
 			}
 		}

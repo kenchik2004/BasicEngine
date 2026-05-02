@@ -15,13 +15,6 @@ struct VS_OUTPUT_MODEL
 
 typedef VS_OUTPUT_MODEL PS_INPUT_MODEL;
 
-struct PS_OUTPUT_MRT
-{
-	float4 color0_ : SV_Target0;
-	float4 color1_ : SV_Target1;
-	float4 color2_ : SV_Target2;
-};
-
 
 cbuffer SampleCB : register(b5) {
 	float sampleparam1;

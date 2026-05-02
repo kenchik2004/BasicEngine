@@ -49,6 +49,8 @@ namespace NeonFade {
 		owner_scene_game->player->transform->rotation = Quaternion(PxIdentity);
 		owner_scene_game->player->player_camera->transform->position = { 0,10,10 };
 		owner_scene_game->player->player_camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
+		owner_scene_game->player->pl_controller->GetStateMachine()->ChangeState("idle");
+		owner_scene_game->player->rb->velocity = Vector3(physx::PxZero);
 		exit_timer = 0;
 		movie_camera = SceneManager::Object::Create<CameraObject>(u8"movie_camera_KI");
 		movie_camera->camera->render_type = Camera::RenderType::Deferred;

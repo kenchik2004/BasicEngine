@@ -105,16 +105,3 @@ public:
 	float perspective = 45.0f;  //!< 透視投影の視野角（度）
 };
 
-#if 0
-class DebugCamera :
-	public Camera
-{
-public:
-	void Construct() override;
-	int Init() override;
-	void Update() override;
-	void PreDraw() override;
-	void PrepareCamera() override;
-	void Exit() override;
-};
-#endif

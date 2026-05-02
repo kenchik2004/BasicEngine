@@ -6,6 +6,8 @@
 #include "System/Scene.h"
 #include <System/Objects/ShadowMapObject.h>
 
+#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODE
+
 namespace {
 	SafeSharedPtr<Model> sky_dome = nullptr;
 	SafeSharedPtr<Texture> sky_texture = nullptr;
@@ -124,7 +126,11 @@ int Camera::Init()
 	constant_buffer_handle = CreateShaderConstantBuffer(sizeof(CBufferCameraInfo));
 
 	gbuffer_texture_[0] = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+#ifdef SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODE
+	gbuffer_texture_[1] = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R10G10B10A2_UNORM);
+#else
 	gbuffer_texture_[1] = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
+#endif
 	gbuffer_texture_[2] = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	gbuffer_texture_[3] = TextureManager::Create("gbuffer3", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
 
@@ -300,107 +306,6 @@ SafeSharedPtr<Camera> Camera::GetCurrentCamera()
 	return SafeStaticCast<Camera>(owner->GetScene()->GetCurrentCamera().lock());
 }
 
-
-#if 0
-void DebugCamera::Construct()
-{
-	if (auto another = owner->GetScene()->GetDebugCamera().lock())
-	{
-		if (another.raw_shared().get() != this) {
-			RemoveThisComponent();
-			return;
-		}
-	}
-	SetPriority(1);
-	status.status_bit.on(CompStat::STATUS::SINGLE);
-}
-
-int DebugCamera::Init()
-{
-	hdr = TextureManager::Create(owner->name + "d_camerascreen", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
-	depth = TextureManager::Create(owner->name + "d_camerascreendepth", SCREEN_W, SCREEN_H, DXGI_FORMAT_D32_FLOAT);
-
-	if (!gbuffer0)
-		gbuffer0 = TextureManager::Create("gbuffer0", SCREEN_W, SCREEN_H, DXGI_FORMAT_R16G16_FLOAT);
-	if (!gbuffer1)
-		gbuffer1 = TextureManager::Create("gbuffer1", SCREEN_W, SCREEN_H, DXGI_FORMAT_R8G8B8A8_UNORM);
-	if (!gbuffer2)
-		gbuffer2 = TextureManager::Create("gbuffer2", SCREEN_W, SCREEN_H, DXGI_FORMAT_R11G11B10_FLOAT);
-
-
-	return 0;
-}
-
-void DebugCamera::Update()
-{
-	if (Input::GetMouseButtonRepeat(MouseButton::ButtonRight)) {
-		auto parent = owner->transform->parent.lock();
-		auto owner_trns = owner->transform;
-		if (Input::GetKey(KeyCode::W))
-			parent->position += (owner_trns->AxisZ() * 10 * Time::RealDeltaTime());
-		if (Input::GetKey(KeyCode::S))
-			parent->position += (-owner_trns->AxisZ() * 10 * Time::RealDeltaTime());
-		if (Input::GetKey(KeyCode::A))
-			parent->position += (-owner_trns->AxisX() * 10 * Time::RealDeltaTime());
-		if (Input::GetKey(KeyCode::D))
-			parent->position += (owner_trns->AxisX() * 10 * Time::RealDeltaTime());
-		if (Input::GetKey(KeyCode::Q))
-			parent->position += (-owner_trns->AxisY() * 10 * Time::RealDeltaTime());
-		if (Input::GetKey(KeyCode::E))
-			parent->position += (owner_trns->AxisY() * 10 * Time::RealDeltaTime());
-		Vector2 mouse_move = Input::GetMouseDelta();
-		Quaternion qx = Quaternion(mouse_move.x * Time::RealDeltaTime() * 0.2f, { 0,1,0 });
-		Quaternion qy = Quaternion(mouse_move.y * Time::RealDeltaTime() * 0.2f, { 1,0,0 });
-
-		owner->transform->local_rotation = qy * owner->transform->local_rotation;
-		parent->AddRotation(qx);
-	}
-}
-
-void DebugCamera::PreDraw()
-{
-	PrepareCamera();
-}
-
-
-void DebugCamera::PrepareCamera()
-{
-
-	ClearColor(hdr.raw_shared().get(), { 0,0,0,0 });
-	ClearDepth(depth.raw_shared().get(), 1.0f);
-	TransformP owner_trns = owner->transform;
-	std::array<Texture*, 4> gbuffers = { hdr.get(), gbuffer0.get(), gbuffer1.get(), gbuffer2.get() };
-	SetRenderTarget(hdr.raw_shared().get(), depth.raw_shared().get());
-	SetRenderTarget(4, gbuffers.data(), depth.get());
-
-	SetupCamera_Perspective(DEG2RAD(perspective));
-	SetCameraPositionAndTargetAndUpVec(cast(owner_trns->position), cast(owner_trns->position + owner_trns->AxisZ()), cast(owner_trns->AxisY()));
-	SetCameraNearFar(camera_near, camera_far);
-}
-
-void DebugCamera::Exit()
-{
-	owner->GetScene()->SetDebugCamera(nullptr);
-	hdr.reset();
-	depth.reset();
-	if (gbuffer0)
-		gbuffer0.reset();
-	if (gbuffer1)
-		gbuffer1.reset();
-	if (gbuffer2)
-		gbuffer2.reset();
-	auto targets = GetRenderTarget();
-	//もし自分のレンダーターゲットがセットされていたらデフォルトに戻す
-	if (targets.color_targets_[0]) {
-		if (targets.color_targets_[0] == hdr.raw_shared().get())
-		{
-			auto current = GetCurrentCamera();
-			SetRenderTarget(current->hdr.raw_shared().get(), current->depth.raw_shared().get());
-		}
-	}
-
-}
-#endif
 
 void SetUpSkyboxResources(const SafeSharedPtr<Texture>& default_texture)
 {

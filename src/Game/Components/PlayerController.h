@@ -43,7 +43,7 @@ namespace NeonFade
 		//! @brief トリガー終了イベント
 		void OnTriggerExit(const HitInfo& hit_info);
 		//! @brief ステートマシンを取得する
-		const PlayerStateMachine* GetStateMachine() const { return state_machine.get(); }
+		PlayerStateMachine* GetStateMachine() const { return state_machine.get(); }
 
 	private:
 		PlayerStateMachineUP state_machine; //!< プレイヤーのステートマシン
