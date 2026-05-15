@@ -423,9 +423,9 @@ namespace NeonFade {
 		float sec_ = max(0.0f, GAME_TIMER_MAX - game_timer) - min_ * 60;
 		std::string count_down_txt;
 		count_down_txt += u8"残り時間 ";
-		count_down_txt += std::format("{:d}", min_);
+		count_down_txt += std::format("{:02d}", min_);
 		count_down_txt += u8":";
-		count_down_txt += std::format("{:.2f}", sec_);
+		count_down_txt += std::format("{:05.2f}", sec_);
 
 		ui_texts["txt_time"]->GetComponent<Text>()->SetText(count_down_txt);
 		if (min_ < 1 && sec_ < 10.0f) {

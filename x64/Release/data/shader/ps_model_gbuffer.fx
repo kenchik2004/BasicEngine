@@ -1,103 +1,73 @@
-ï»¿//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //!	@file	ps_model_gbuffer.fx
-//!	@brief	MV1ãƒ¢ãƒ‡ãƒ«ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ / GBufferå‡ºåŠ›
+//!	@brief	MV1ƒ‚ƒfƒ‹ƒsƒNƒZƒ‹ƒVƒF[ƒ_[ / GBuffero—Í
 //----------------------------------------------------------------------------
 #include "dxlib_ps.h.fx"
-#include "gbuffer.h.fx"
 #include "shadow.h.fx"
+#include "gbuffer.h.fx"
 
-// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å‡ºåŠ›
+// ’¸“_ƒVƒF[ƒ_[‚Ìo—Í
 struct VS_OUTPUT_MODEL
 {
-	float4 position_ : SV_Position; //!< åº§æ¨™       (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-	float4 curr_position_ : CURR_POSITION; //!< ç¾åœ¨ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
-	float3 world_position_ : WORLD_POSITION; //!< ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
-	float3 normal_ : NORMAL0; //!< æ³•ç·š
-	float4 diffuse_ : COLOR0; //!< Diffuseã‚«ãƒ©ãƒ¼
-	float2 uv0_ : TEXCOORD0; //!< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
-	float4 prev_position_ : PREV_POSITION; //!< 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“) â€»æœ«å°¾ã«è¿½åŠ ã•ã‚Œã¦ã„ã‚‹ãŸã‚æ³¨æ„
+    float4 position_ : SV_Position; //!< À•W       (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+    float4 curr_position_ : CURR_POSITION; //!< Œ»İ‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ)
+    float3 world_position_ : WORLD_POSITION; //!< ƒ[ƒ‹ƒhÀ•W
+    float3 normal_ : NORMAL0; //!< –@ü
+    float4 diffuse_ : COLOR0; //!< DiffuseƒJƒ‰[
+    float2 uv0_ : TEXCOORD0; //!< ƒeƒNƒXƒ`ƒƒÀ•W
+    float4 prev_position_ : PREV_POSITION; //!< 1ƒtƒŒ[ƒ€‘O‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ) ¦––”ö‚É’Ç‰Á‚³‚ê‚Ä‚¢‚é‚½‚ß’ˆÓ
 };
 
 typedef VS_OUTPUT_MODEL PS_INPUT_MODEL;
 
-struct PS_OUTPUT_MRT
-{
-	float4 color0_ : SV_Target0;
-	float4 color1_ : SV_Target1;
-	float4 color2_ : SV_Target2;
-};
-
-
-
-
-
 
 //----------------------------------------------------------------------------
-// ãƒ¡ã‚¤ãƒ³é–¢æ•°
+// ƒƒCƒ“ŠÖ”
 //----------------------------------------------------------------------------
 PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 {
-	float2 uv = input.uv0_;
+    float2 uv = input.uv0_;
 
-	float3 N = normalize(input.normal_); // æ³•ç·š
-
-	//------------------------------------------------------------
-	// æ³•ç·šãƒãƒƒãƒ—
-	//------------------------------------------------------------
-	N = Normalmap(N, input.world_position_, uv);
+    float3 N = normalize(input.normal_); // –@ü
 
 	//------------------------------------------------------------
-	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚«ãƒ©ãƒ¼ã‚’èª­ã¿è¾¼ã¿
+	// –@üƒ}ƒbƒv
 	//------------------------------------------------------------
-	float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
-	textureColor = saturate(textureColor);
-	textureColor.rgb = pow(textureColor.rgb, 2.2);
+    N = Normalmap(N, input.world_position_, uv);
 
-	// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆ
-	if (textureColor.a < 0.5)
-		discard;
+	//------------------------------------------------------------
+	// ƒeƒNƒXƒ`ƒƒƒJƒ‰[‚ğ“Ç‚İ‚İ
+	//------------------------------------------------------------
+    float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
+    textureColor = saturate(textureColor);
+    textureColor.rgb = pow(textureColor.rgb, 2.2);
 
-	float3 albedo = textureColor.rgb * input.diffuse_.rgb;
+	// ƒAƒ‹ƒtƒ@ƒeƒXƒg
+    if (textureColor.a < 0.5)
+        discard;
 
+    float3 albedo = textureColor.rgb * input.diffuse_.rgb;
 
-#if 1	
-	float roughness = 0.7; // ãƒ©ãƒ•åº¦ 0.0:ã¤ã‚‹ã¤ã‚‹ ï½ 1.0:ã–ã‚‰ã–ã‚‰ (åˆ¥å:glossiness, shininess)
-	float metallic = 0.1; // é‡‘å±åº¦ 0.0:éé‡‘å±   ï½ 1.0:é‡‘å±     (åˆ¥å:metalness)
+	
+    float roughness = 0.7; // ƒ‰ƒt“x 0.0:‚Â‚é‚Â‚é ` 1.0:‚´‚ç‚´‚ç (•Ê–¼:glossiness, shininess)
+    float metallic = 0.1; // ‹à‘®“x 0.0:”ñ‹à‘®   ` 1.0:‹à‘®     (•Ê–¼:metalness)
 
-	roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
-    //roughness = 0.99;
-	metallic = MetallicTexture.Sample(MetallicSampler, uv).r;
-    metallic = 0.5;
-#else
-	//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒãƒƒãƒ—ãŒã‚ã‚‹ã‚‚ã§ã‚‹ã¯ã“ã£ã¡
-	float3 specularColor = SpecularTexture.Sample(SpecularSampler, uv).rgb;
+	//—pˆÓ‚µ‚Ä‚Í‚¢‚é‚ªADxLbib‚ªŸè‚ÉƒTƒ“ƒvƒ‰[‚ğ·‚µ‘Ö‚¦‚Ä‚­‚é‚½‚ßA
+	//d•û‚È‚­DiffuseƒTƒ“ƒvƒ‰[‚ğ—¬—p‚·‚éB
+    roughness = RoughnessTexture.Sample(DiffuseSampler, uv).r;
+    metallic = MetallicTexture.Sample(DiffuseSampler, uv).r;
 
-	// ç–‘ä¼¼çš„ã« "metallic" ã‚’æ¨å®šã™ã‚‹ï¼ˆæ˜ã‚‹ã„ï¼é‡‘å±ã£ã½ã„ï¼‰
-	float metallic = saturate(dot(specularColor, float3(0.333, 0.333, 0.333)) * 2.0);
-
-	// ç–‘ä¼¼çš„ã« "roughness" ã‚’æ¨å®šï¼ˆæ˜ã‚‹ã„ã»ã©ãƒ„ãƒ«ãƒ„ãƒ«ï¼‰
-	float roughness = 1.0 - saturate(dot(specularColor, float3(0.333, 0.333, 0.333)));
-#endif
-	float ao = 1.0f;
-
+    float ao = 1.0f;
+	
+    float3 emissive = EmissionTexture.Sample(DiffuseSampler, uv).rgb * 2;
+    emissive += DxLib_Common.Material.Ambient_Emissive.rgb;
+	
+	
 	//----------------------------------------------------------
-	// å‡ºåŠ›
+	// o—Í
 	//----------------------------------------------------------
-	PS_OUTPUT_MRT output;
-	float3 emissive = EmissionTexture.Sample(EmissionSampler, uv).rgb*2;
-	//emissive = saturate(emissive * 2 - 1)*0.5;
-	emissive += DxLib_Common.Material.Ambient_Emissive.rgb;
+    PS_OUTPUT_MRT output = PackSurfaceInfo(albedo, ao, N, roughness, metallic, input.world_position_.xyz, emissive);
 
-
-
-	float emissive_strength = dot(emissive.rgb, float3(0.299, 0.597, 0.114));
-	emissive_strength = saturate(emissive_strength * (1.0 / 64.0));
-	float metal_emissive = saturate(metallic) * 0.5;
-	metal_emissive = emissive_strength > 0.0001 ? (emissive_strength * 0.5 + 0.5) : metal_emissive;
-	output.color0_ = float4(albedo, ao);
-	//output.color0_ = float4(emissive, ao);
-	output.color1_ = float4(NormalEncode(N).xy, roughness, metal_emissive);
-	output.color2_ = float4(input.world_position_.xyz, 1);
-	// å‡ºåŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿”ã™
-	return output;
+	// o—Íƒpƒ‰ƒ[ƒ^‚ğ•Ô‚·
+    return output;
 }

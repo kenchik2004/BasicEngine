@@ -6,7 +6,11 @@
 #include "System/Scene.h"
 #include <System/Objects/ShadowMapObject.h>
 
-#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODE
+//実は、OctahedronNormalEncondingの改良に成功したのだが、
+//現在の実装でも十分な精度が実現できているため、実装は保留している。
+//必要があればコメントアウトを外すだけで切り替えが可能にしてある。
+//その際は、data/Shader/gbuffer.h.fxのコメントアウトも外す必要がある。
+//#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODE
 
 namespace {
 	SafeSharedPtr<Model> sky_dome = nullptr;

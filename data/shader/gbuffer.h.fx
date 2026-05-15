@@ -5,6 +5,12 @@
 #ifndef GBUFFER_H_FX
 #define GBUFFER_H_FX
 #define FLT_MAX 3.402823466e+38F
+
+
+//実は、OctahedronNormalEncondingの改良に成功したのだが、
+//現在の実装でも十分な精度が実現できているため、実装は保留している。
+//必要があればコメントアウトを外すだけで切り替えが可能にしてある。
+//その際は、System/Components/Camera.cppのコメントアウトも外す必要がある。
 #define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODING
 
 //--------------------------------------------------------------
