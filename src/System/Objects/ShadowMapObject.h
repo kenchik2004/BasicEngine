@@ -105,5 +105,5 @@ private:
 	std::vector<ShadowInfo> shadow_infos;	//カスケードシャドウマップ用情報
 
 	//シャドウマップ用サンプラー
-	ID3D11SamplerState* shadow_sampler = nullptr;	//!< シャドウマップ用サンプラーステート
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> shadow_sampler = nullptr;	//!< シャドウマップ用サンプラーステート
 };

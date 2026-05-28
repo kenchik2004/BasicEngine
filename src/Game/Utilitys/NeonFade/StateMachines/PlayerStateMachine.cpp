@@ -326,13 +326,14 @@ namespace NeonFade
 		AddState("damage", std::move(damage_state));
 	}
 	PlayerStateMachine::~PlayerStateMachine()
-	{
-	}
+	{}
 	void PlayerStateMachine::DebugDraw()
 	{
 		__super::DebugDraw();
+#if 0
 		if (current_state)
 			current_state->DebugDraw();
+#endif
 	}
 	void PlayerStateMachine::Update(float dt)
 	{
@@ -362,6 +363,7 @@ namespace NeonFade
 				attack_index = 1; //空中攻撃はsmash_chargeに固定
 			}
 #ifdef _DEBUG
+#if 0
 			int i = 0;
 			printfDx("attack_index:%d\n", attack_index);
 			for (auto& state : attack_states_vec) {
@@ -374,6 +376,7 @@ namespace NeonFade
 				}
 				i++;
 			}
+#endif
 #endif // _DEBUG
 			//前フレームと違う攻撃が選択されたら状態を入れ替え
 

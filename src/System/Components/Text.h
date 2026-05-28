@@ -38,9 +38,9 @@ public:
 	//! @brief テキストボックス位置への参照を返す
 	inline Vector3& BoxPos() { return text_box_pos; }
 	//! @brief フォントサイズを設定する
-	inline int SetFontSize(u32 font_size_ = DEFAULT_FONT_SIZE);
+	int SetFontSize(u32 font_size_ = DEFAULT_FONT_SIZE);
 	//! @brief フォント名を設定する
-	inline void  SetFont(std::string_view font_name) { font = font_name; }
+	void  SetFont(std::string_view font_name);
 	//! @brief 描画済み文字数をリセットする
 	inline void           ResetDrawChar() { draw_char_num = 0; }
 	//! @brief テキスト配置方式の列挙型

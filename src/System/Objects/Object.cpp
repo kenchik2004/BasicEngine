@@ -25,8 +25,7 @@ GameObject::GameObject(std::string name_)
 }
 
 void GameObject::DebugDraw()
-{
-}
+{}
 
 size_t Object::FindInsertPositionByPriority(unsigned int priority)
 {
@@ -259,4 +258,10 @@ void UIObject::LateDraw()
 		DrawBoxAA(draw_pos.x, draw_pos.y, draw_pos.x + scale.x, draw_pos.y + scale.y, back_ground_color, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
+}
+
+void UIObject::DebugDraw()
+{
+	Vector3 scale = transform->scale;
+	DrawBoxAA(draw_pos.x, draw_pos.y, draw_pos.x + scale.x, draw_pos.y + scale.y, 0x00ff00, false);
 }

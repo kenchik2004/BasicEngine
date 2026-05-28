@@ -87,7 +87,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	HWND window[1];
 	WNDCLASS param;
 #endif
-	SetOutApplicationLogValidFlag(FALSE);
+	SetOutApplicationLogValidFlag(true);
 
 	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/config.ini");
 	ChangeWindowMode(!not_full_screen);
@@ -261,7 +261,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				//Presentの書き込み先をデバッグウィンドウにする
 				SetScreenFlipTargetWindow(window[0]);
 #endif
-				
+
 				ScreenFlip();
 				//描画FPSを計測し、描画delta_timeをリセットする
 				Time::FixDrawFPS();

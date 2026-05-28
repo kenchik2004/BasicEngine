@@ -25,39 +25,20 @@ namespace ShadowMapHelper {
 	// 8点から外接球（バウンディング球）を求める
 	void ComputeBoundingSphere(const Vector3* points, u32 count, Vector3& outCenter, float& outRadius)
 	{
-		// (1) 8点の重心を初期中心とする
+		// 8点の重心を初期中心とする
 		Vector3 center = Vector3(0.0f, 0.0f, 0.0f);
 		for (u32 i = 0; i < count; ++i) {
 			center += points[i];
 		}
 		center /= float(count);
 
-		// (2) 最も遠い点までの距離を半径とする
+		// 最も遠い点までの距離を半径とする
 		float radius = 0.0f;
 		for (u32 i = 0; i < count; ++i) {
 			float d = distance(center, points[i]);
 			if (d > radius)
 				radius = d;
 		}
-
-		// (3) 収束まで中心を調整（数回繰り返す）
-		if (0)
-			for (u32 iter = 0; iter < 8; ++iter) {
-				int   farthest = 0;
-				float maxDist = 0.0f;
-				for (u32 i = 0; i < count; ++i) {
-					float d = distance(center, points[i]);
-					if (d > maxDist) {
-						maxDist = d;
-						farthest = i;
-					}
-				}
-				if (maxDist <= radius + 1e-5f)
-					break;
-				Vector3 dir = (points[farthest] - center).getNormalized();
-				center += dir * (maxDist - radius) * 0.5f;
-				radius = (radius + maxDist) * 0.5f;
-			}
 
 		outCenter = center;
 		outRadius = radius;
@@ -101,8 +82,7 @@ void ShadowMapObject::Exit()
 	model_renderers.clear();
 	shadow_map.reset();
 	if (shadow_sampler) {
-		shadow_sampler->Release();
-		shadow_sampler = nullptr;
+		shadow_sampler.Reset();
 	}
 	shadow_infos.clear();
 }
@@ -148,7 +128,7 @@ bool ShadowMapObject::InitializeShadowMap()
 				   .MinLOD = -FLT_MAX, // 最小のLOD
 				   .MaxLOD = +FLT_MAX, // 最大のLOD
 		};
-		if (FAILED(d3d_device->CreateSamplerState(&desc, &shadow_sampler)))
+		if (FAILED(d3d_device->CreateSamplerState(&desc, shadow_sampler.ReleaseAndGetAddressOf())))
 			return false;
 
 	}
@@ -167,6 +147,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 	if (!camera)
 		return;
 	ClearDepth(shadow_map.raw_shared().get(), 1.0f);
+
 
 	mat4x4 mat_camera_world = mat4x4(camera->owner.lock()->transform->rotation);
 	mat_camera_world[3] = Vector4(camera->owner.lock()->transform->position, 1.0f);
@@ -229,6 +210,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 		vp.Height = static_cast<FLOAT>(shadow_map_size);
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
+
 		SetRenderTarget(nullptr, shadow_map.raw_shared().get());
 
 		d3d_context->RSSetViewports(1, &vp);
@@ -252,6 +234,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 
 
 
+
 	}
 
 
@@ -266,7 +249,7 @@ void ShadowMapObject::ShadowMapDrawEnd()
 	auto camera = GetScene()->GetCurrentCameraRef();
 	if (camera)
 		camera->PrepareCamera();
-	d3d_context->PSSetSamplers(13, 1, &shadow_sampler);
+	d3d_context->PSSetSamplers(13, 1, shadow_sampler.GetAddressOf());
 
 
 

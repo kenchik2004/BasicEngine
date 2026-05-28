@@ -47,6 +47,7 @@ namespace NeonFade {
 		float shake_intensity = 0.0f; //!< シェイク強度
 		float shake_duration = 0.0f; //!< シェイク持続時間
 		bool reverse_y = false; //!< Y軸反転フラグ
+		bool reverse_x = false; //!< X軸反転フラグ
 
 		Vector2 camera_rot = { 0,0 }; //!< カメラ回転角度
 		Vector3 cinematic_offset = { 0,0,-1 }; //!< シネマティックオフセット

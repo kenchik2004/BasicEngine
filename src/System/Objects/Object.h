@@ -96,6 +96,45 @@ private:
 
 
 public:
+
+	virtual void OnSleep() {}
+	virtual void OnWakeUp() {}
+
+	void Sleep() {
+		status.status_bit.off(ObjStat::STATUS::ACTIVE);
+		status.status_bit.off(ObjStat::STATUS::DRAW);
+		for (auto& comp : components) {
+			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
+				comp->Sleep();
+		}
+		OnSleep();
+		for (auto& child : transform->GetChildren())
+		{
+			if (auto child_obj = child->owner)
+			{
+				child_obj->Sleep();
+			}
+		}
+	}
+	void WakeUp() {
+		status.status_bit.on(ObjStat::STATUS::ACTIVE);
+		status.status_bit.on(ObjStat::STATUS::DRAW);
+		for (auto& comp : components) {
+			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
+				comp->WakeUp();
+		}
+		OnWakeUp();
+		for (auto& child : transform->GetChildren())
+		{
+			if (auto child_obj = child->owner)
+			{
+				child_obj->WakeUp();
+			}
+		}
+	}
+
+
+
 	//! @brief コンポーネントの優先度を設定する
 	void SetComponentPriority(unsigned int prio, ComponentP who) {
 		who->status.priority = prio;
@@ -301,6 +340,7 @@ public:
 	void          Update() override;
 	void          PreDraw() override final;
 	void          LateDraw() override final;
+	void		  DebugDraw() override;
 	virtual Color& BackGroundColor() { return back_ground_color; }
 	virtual bool& UseBackGround() { return use_back_color; }
 

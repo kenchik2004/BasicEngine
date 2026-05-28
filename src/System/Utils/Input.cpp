@@ -18,6 +18,7 @@ namespace Input {
 	unsigned int mouse_buffer_prev;
 	// ゲームパッドの状態バッファ
 	std::vector<std::pair<XINPUT_STATE, XINPUT_STATE>> pad_buffers;
+	std::vector<Vector2> dead_zones;
 
 	// 現在のマウス位置
 	Vector2 mouse_pos(0.0f, 0.0f);
@@ -57,8 +58,10 @@ namespace Input {
 
 		// 毎フレーム接続されているコントローラーの数を取得し、バッファをリサイズ
 		u64 pad_nums = GetJoypadNum();
-		if (pad_buffers.size() != pad_nums)
+		if (pad_buffers.size() != pad_nums) {
 			pad_buffers.resize(pad_nums);
+			dead_zones.resize(pad_nums, Vector2(0.0f, 0.0f));
+		}
 		// 各コントローラーの状態を取得
 		for (u64 i = 0; i < pad_nums; i++) {
 			pad_buffers[i].first = pad_buffers[i].second;
@@ -194,10 +197,21 @@ namespace Input {
 		if (pad_buffers.size() <= pad_index)
 			return { 0,0 };
 		constexpr float denominator = 1.0f / 32768.0f;
-		return Vector2(
+		Vector2 raw_input = {
 			static_cast<float>(pad_buffers[pad_index].second.ThumbLX) * denominator,
 			static_cast<float>(pad_buffers[pad_index].second.ThumbLY) * denominator
-		);
+		};
+		// デッドゾーンを考慮して入力を加工
+		Vector2& dead_zone = dead_zones[pad_index];
+		Vector2 processed_input = raw_input;
+		if (raw_input.magnitude() < dead_zone.x) {
+			processed_input = Vector2(0, 0);
+		}
+		else {
+			float scale = (raw_input.magnitude() - dead_zone.x) / (1.0f - dead_zone.x);
+			processed_input = raw_input.getNormalized() * scale;
+		}
+		return processed_input;
 	}
 
 	//----------------------------------------------------
@@ -210,10 +224,21 @@ namespace Input {
 		if (pad_buffers.size() <= pad_index)
 			return { 0,0 };
 		constexpr float denominator = 1.0f / 32768.0f;
-		return Vector2(
+		Vector2 raw_input = {
 			static_cast<float>(pad_buffers[pad_index].second.ThumbRX) * denominator,
 			static_cast<float>(pad_buffers[pad_index].second.ThumbRY) * denominator
-		);
+		};
+		// デッドゾーンを考慮して入力を加工
+		Vector2& dead_zone = dead_zones[pad_index];
+		Vector2 processed_input = raw_input;
+		if (raw_input.magnitude() < dead_zone.y) {
+			processed_input = Vector2(0, 0);
+		}
+		else {
+			float scale = (raw_input.magnitude() - dead_zone.y) / (1.0f - dead_zone.y);
+			processed_input = raw_input.getNormalized() * scale;
+		}
+		return processed_input;
 	}
 
 	//----------------------------------------------------
@@ -238,6 +263,20 @@ namespace Input {
 		mouse_pos = GetMousePosition();
 		if (reset_delta)
 			mouse_pos_prev = mouse_pos;
+	}
+
+	void SetPadLeftDeadZone(u64 pad_index, float dead_zone)
+	{
+		if (pad_index >= dead_zones.size())
+			return;
+		dead_zones[pad_index].x = dead_zone;
+	}
+
+	void SetPadRightDeadZone(u64 pad_index, float dead_zone)
+	{
+		if (pad_index >= dead_zones.size())
+			return;
+		dead_zones[pad_index].y = dead_zone;
 	}
 
 	//----------------------------------------------------

@@ -2,6 +2,7 @@ root
 |-----NeonFade::FinishEffectObject
 |-----Scene
 |        |-----NeonFade::SceneGame
+|        |-----NeonFade::SceneTitle
 |        end_of_node
 |        
 |-----Object
@@ -10,6 +11,17 @@ root
 |        |-----UIObject
 |        |        |-----ButtonObject
 |        |        |-----TextObject
+|        |        |-----NeonFade::SettingsManager
+|        |        |-----NeonFade::OptionManager
+|        |        |-----NeonFade::OptionData
+|        |        |        |-----NeonFade::OptionSetting
+|        |        |        |-----NeonFade::OptionExit
+|        |        |        |-----NeonFade::OptionStart
+|        |        |        |-----NeonFade::OptionVolume
+|        |        |        |-----NeonFade::OptionCamera
+|        |        |        end_of_node
+|        |        |        
+|        |        |-----NeonFade::TitleLogo
 |        |        |-----UIObject
 |        |        |-----NeonFade::DamageUIObject
 |        |        end_of_node
@@ -28,9 +40,9 @@ root
 |        |-----Button
 |        |-----EffectPlayer
 |        |-----Text3D
-|        |-----Text
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
+|        |-----Text
 |        |-----AudioPlayer
 |        |-----ImageRenderer
 |        |-----Collider

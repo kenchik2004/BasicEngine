@@ -1,10 +1,10 @@
-ï»¿#include "dxlib_ps.h.fx"
+#include "dxlib_ps.h.fx"
 
-Texture2D ReductionTexture0 : register(t30); // ãƒªãƒ€ã‚¯ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£0
-Texture2D ReductionTexture1 : register(t31); // ãƒªãƒ€ã‚¯ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£1
-Texture2D ReductionTexture2 : register(t32); // ãƒªãƒ€ã‚¯ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£2
-Texture2D ReductionTexture3 : register(t33); // ãƒªãƒ€ã‚¯ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£3
-Texture2D ReductionTexture4 : register(t34); // ãƒªãƒ€ã‚¯ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£4
+Texture2D ReductionTexture0 : register(t30); // ƒŠƒ_ƒNƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ0
+Texture2D ReductionTexture1 : register(t31); // ƒŠƒ_ƒNƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ1
+Texture2D ReductionTexture2 : register(t32); // ƒŠƒ_ƒNƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ2
+Texture2D ReductionTexture3 : register(t33); // ƒŠƒ_ƒNƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ3
+Texture2D ReductionTexture4 : register(t34); // ƒŠƒ_ƒNƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ4
 
 PS_OUTPUT main(PS_INPUT input) {
 	PS_OUTPUT output = (PS_OUTPUT)0;
@@ -13,9 +13,9 @@ PS_OUTPUT main(PS_INPUT input) {
 	output.color0_ += ReductionTexture2.Sample(DiffuseSampler, input.uv0_);
 	output.color0_ += ReductionTexture3.Sample(DiffuseSampler, input.uv0_);
 	output.color0_ += ReductionTexture4.Sample(DiffuseSampler, input.uv0_);
-	//åŠ ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ã«ã‚ˆã‚Šåˆæˆå¾Œã®ã‚¢ãƒ«ãƒ•ã‚¡ãŒæš´èµ°ã™ã‚‹ã®ã‚’é˜²ããŸã‚ã€ã‚¢ãƒ«ãƒ•ã‚¡ã¯0ã«ã™ã‚‹
+	//‰ÁZƒuƒŒƒ“ƒh‚É‚æ‚è‡¬Œã‚ÌƒAƒ‹ƒtƒ@‚ª–\‘–‚·‚é‚Ì‚ğ–h‚®‚½‚ßAƒAƒ‹ƒtƒ@‚Í0‚É‚·‚é
     output.color0_.a = 0.0;
 	
-
+	
 	return output;
 }
