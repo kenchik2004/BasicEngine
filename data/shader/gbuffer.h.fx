@@ -11,7 +11,7 @@
 //現在の実装でも十分な精度が実現できているため、実装は保留している。
 //必要があればコメントアウトを外すだけで切り替えが可能にしてある。
 //その際は、System/Components/Camera.cppのコメントアウトも外す必要がある。
-#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODING
+//#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODING
 
 //--------------------------------------------------------------
 // Gbuffer

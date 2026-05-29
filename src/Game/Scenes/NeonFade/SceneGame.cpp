@@ -159,12 +159,12 @@ namespace NeonFade {
 		ModelManager::LoadAsModel(u8"data/enemy/X Bot_LOD.mv1", "enemy_model_LOD");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_fighting_idle.mv1", "enemy_idle");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_damage.mv1", "enemy_damage");
-		ModelManager::LoadAsAnimation(u8"data/enemy/bl_down_edit.mv1", "enemy_down");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_t_pose.mv1", "enemy_die");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_charge.mv1", "enemy_attack_charge");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_main.mv1", "enemy_attack_main");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_walk.mv1", "enemy_walk");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_escaping.mv1", "enemy_escape");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down.mv1", "enemy_down");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down_forward.mv1", "enemy_down_forward");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_instructing.mv1", "enemy_instruct");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_stepback.mv1", "enemy_stepback");
@@ -215,7 +215,6 @@ namespace NeonFade {
 	{
 		for (int i = 0; i < 6; i++)
 			DxLib::SetTextureAddressMode(DX_TEXADDRESS_WRAP, i);
-
 		if (!camera) {
 			camera = SceneManager::Object::Create<CameraObject>();
 			auto rec_cam = SceneManager::Object::Create<CameraObject>(SceneManager::GetDontDestoryOnLoadScene());
@@ -413,7 +412,7 @@ namespace NeonFade {
 			return;
 		hunted_effect_creater->Update();
 		scene_state_machine->Update(Time::DeltaTime());
-		if (Input::GetPadButtonDown(0, PadButton::Start)) {
+		if (Input::GetPadButtonDown(0, PadButton::Start) || Input::GetKeyDown(KeyCode::Minus)) {
 			hud_obj->GetComponent<Text>()->Sleep();
 
 		}
@@ -443,8 +442,7 @@ namespace NeonFade {
 	}
 
 	void SceneGame::PreDraw()
-	{
-	}
+	{}
 
 	void SceneGame::LateDebugDraw()
 	{
@@ -452,7 +450,10 @@ namespace NeonFade {
 	}
 	void SceneGame::LateDraw()
 	{
-
+		SetUseLighting(false);
+		if (light_manager && Input::GetKey(KeyCode::Alpha9))
+			light_manager->LateDebugDraw();
+		SetUseLighting(true);
 	}
 	void SceneGame::OnLateDrawFinish()
 	{

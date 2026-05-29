@@ -12,6 +12,10 @@ namespace NeonFade
 	int PlayerCameraMachine::Init()
 	{
 		mode = MANIPULATE;
+
+		reverse_x = FileSystem::IniFileManager::GetBool("Camera", "InvertX", false, "data/config.ini");
+		reverse_y = FileSystem::IniFileManager::GetBool("Camera", "InvertY", false, "data/config.ini");
+
 		return Super::Init();
 	}
 
@@ -44,6 +48,10 @@ namespace NeonFade
 						camera_rot.y -= Time::DrawDeltaTime() * 90;
 					if (Input::GetKey(KeyCode::Right))
 						camera_rot.y += Time::DrawDeltaTime() * 90;
+					if (Input::GetKey(KeyCode::Up))
+						camera_rot.x += Time::DrawDeltaTime() * 90;
+					if (Input::GetKey(KeyCode::Down))
+						camera_rot.x -= Time::DrawDeltaTime() * 90;
 				}
 			}
 
@@ -87,10 +95,7 @@ namespace NeonFade
 	}
 
 	void PlayerCameraMachine::Update()
-	{
-		if (Input::GetPadButtonDown(0, PadButton::Back))
-			reverse_y = !reverse_y;
-	}
+	{}
 
 
 	void PlayerCameraMachine::ShakeCamera(float intensity, float duration)

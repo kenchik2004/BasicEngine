@@ -49,6 +49,8 @@ public:
 	void PostUpdate() override;
 	//! @brief デバッグ描画処理
 	void DebugDraw() override;
+	//! @brief 終了処理
+	void Exit() override;
 	//! @brief 指定インデックスの子Transformを取得する
 	TransformWP GetChild(size_t index) const;
 	//! @brief 子Transformのリストを取得する

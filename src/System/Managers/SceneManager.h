@@ -162,8 +162,8 @@ public:
 
 		}
 
-		if (!SafeDynamicCast<Scene>(ptr))
-			return SafeSharedPtr<T>(nullptr);
+		//if (!SafeDynamicCast<Scene>(ptr))
+		//	return SafeSharedPtr<T>(nullptr);
 		//(いなかったら、ロードの必要あり)
 		SafeSharedPtr<Scene> scene;
 		//ただし、CreateInstance等でnewされたポインタがあれば、そいつをmake_sharedせず直接Sharedに渡して登録する

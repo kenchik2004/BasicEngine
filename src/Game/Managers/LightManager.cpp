@@ -314,7 +314,6 @@ void LightManager::LateDraw()
 
 void LightManager::LateDebugDraw()
 {
-	return;
 	int canceled_light_num = 0;
 	for (auto& light : lights) {
 		if (!light)
@@ -334,7 +333,8 @@ void LightManager::LateDebugDraw()
 				screen_box.z,
 				screen_box.w,
 				Color::RED,
-				FALSE
+				FALSE,
+				2.0f
 			);
 			DrawSphere3D(
 				cast(light->position),
@@ -346,7 +346,7 @@ void LightManager::LateDebugDraw()
 			DrawSphere3D(
 				cast(light->position),
 				point_light->range,
-				16,
+				8,
 				Color::GREEN,
 				Color::GREEN,
 				FALSE
@@ -422,7 +422,7 @@ void PointLight::DrawToAccumulationBuffer()
 		return;
 	Vector4 screen_box = CalculateBoundingBoxInScreen(position, range, my_manager->GetCameraViewProj());
 
-	if (screen_box.x > screen_box.z || screen_box.y > screen_box.w)
+	if ((screen_box.x > screen_box.z || screen_box.y > screen_box.w) && Input::GetKey(KeyCode::Alpha0))
 		return; //画面外にある場合は描画しない
 
 	SetLightConstantBuffer();

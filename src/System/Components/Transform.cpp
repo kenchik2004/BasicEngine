@@ -136,6 +136,12 @@ void Transform::DebugDraw()
 
 }
 
+void Transform::Exit()
+{
+	if (parent)
+		ResetParent();
+}
+
 TransformWP Transform::GetChild(size_t index) const
 {
 	if (index >= children.size())

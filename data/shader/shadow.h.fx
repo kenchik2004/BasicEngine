@@ -59,39 +59,43 @@ float2 VogelDiskSample(int index, int numSamples, float angleBias = 0.0f)
 #endif
 }
 
+int GetCascadeIndex(float distance)
+{
+    static const float split_distance[4] =
+    {
+        50.0f,
+       200.0f,
+       600.0f,
+       1200.0f
+    };
+    
+    int cascadeIndex = 0;
+    if (split_distance[0] < distance)
+        cascadeIndex++;
+    if (split_distance[1] < distance)
+        cascadeIndex++;
+    if (split_distance[2] < distance)
+        cascadeIndex++;
+    if (split_distance[3] < distance)
+        cascadeIndex++;
+    
+    return cascadeIndex;
+}
 
 float getShadow(float4 inputPosition, float3 worldPosition)
 {
     //----------------------------------------------------------
    	// カスケード番号を選択する
     //----------------------------------------------------------
-    int cascadeIndex = 0;
-	{
-        static const float split_distance[4] =
-        {
-            50.0f,
-	   200.0f,
-	   600.0f,
-	   1200.0f
-        };
-		
-        float distance = inputPosition.w; // カメラからの距離(m)
-  
-        if (split_distance[0] < distance)
-            cascadeIndex++;
-        if (split_distance[1] < distance)
-            cascadeIndex++;
-        if (split_distance[2] < distance)
-            cascadeIndex++;
-        if (split_distance[3] < distance)
-            cascadeIndex++;
-    }
+    // カスケードシャドウマップを使用する場合、距離に応じて適切なカスケードを選択
+    int cascadeIndex = GetCascadeIndex(inputPosition.w); // inputPosition.w はカメラからの距離
     
     //----------------------------------------------------------
    	// ソフトシャドウサンプリング PCF(Percentage Closer Filtering)
     //----------------------------------------------------------
     float shadow = 1.0f; // シャドウの初期値 (1.0:影なし, 0.0:影あり)
 	{
+        // ワールド座標をライトのスクリーン空間に投影
         float4 screenPosition = mul(float4(worldPosition, 1.0f), light_view_proj_[cascadeIndex]);
         screenPosition.xyz /= screenPosition.w; // 正規化
 
@@ -99,10 +103,11 @@ float getShadow(float4 inputPosition, float3 worldPosition)
  
 		
         shadowUv.x = shadowUv.x * 0.25f + 0.25f * cascadeIndex;
+        
 		
 		
         shadow = 0.0f;
-       float thetaBias = InterleavedGradientNoise(inputPosition.xy) * (2.0f * PI);
+        float thetaBias = InterleavedGradientNoise(inputPosition.xy) * (2.0f * PI);
         //float thetaBias = rand(input.position_.xy) * 2.0f * PI;
 		
         const int SAMPLE_NUM = 16; // サンプリング数 
@@ -114,12 +119,12 @@ float getShadow(float4 inputPosition, float3 worldPosition)
 			// シャドウマップの深度値と比較
 			// シャドウバイアス (深度値のオフセット)
             static const float shadowBias[4] =
-        {
-            0.00025f,
+            {
+                0.00025f,
 	   0.0005f,
 	   0.001f,
 	   0.002f
-        };
+            };
 
             shadow += ShadowmapTexture.SampleCmp(ShadowmapSampler, shadowUv + offset * float2(0.25f, 1.0f), screenPosition.z - shadowBias[cascadeIndex]);
         }
@@ -129,7 +134,22 @@ float getShadow(float4 inputPosition, float3 worldPosition)
 //shadow=shadow*0.5+0.1;
     return cascadeIndex < 4 ? shadow : 1.0;
 }
-
+float GetShadowWithCascadeColor(float4 inputPosition, float3 worldPosition, out float3 cascadeColor)
+{
+    float shadow = getShadow(inputPosition, worldPosition);
+    int cascadeIndex = GetCascadeIndex(inputPosition.w);
+    static const float3 cascadeColors[4] =
+    {
+        float3(1.0f, 0.0f, 0.0f), // カスケード1: 赤
+        float3(0.0f, 1.0f, 0.0f), // カスケード2: 緑
+        float3(0.0f, 0.0f, 1.0f), // カスケード3: 青
+        float3(1.0f, 1.0f, 0.0f) // カスケード4: 黄
+    };
+    // カスケードインデックスに応じた色を設定
+    // 範囲外のインデックスの場合は白色を使用
+    cascadeColor = cascadeIndex < 4 ? cascadeColors[cascadeIndex] : float3(1.0f, 1.0f, 1.0f);
+    return shadow;
+}
 
 
 

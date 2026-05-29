@@ -199,7 +199,7 @@ void Text::SetText(std::string new_text) {
 	tokens = parseTextWithTags(text, txt_color);
 }
 
-inline int Text::SetFontSize(u32 font_size_)
+int Text::SetFontSize(u32 font_size_)
 {
 	if (font_size_ != font_size) {
 		DeleteFontToHandle(font_handle);
@@ -207,5 +207,16 @@ inline int Text::SetFontSize(u32 font_size_)
 		font_size = font_size_;
 	}
 	return font_size;
+}
+
+void Text::SetFont(std::string_view font_name)
+{
+	font = font_name;
+	int font_handle_ = DxLib::CreateFontToHandle(font_name.data(), font_size, -1, DX_FONTTYPE_ANTIALIASING);
+	if (font_handle_ != -1) {
+		DeleteFontToHandle(font_handle);
+		font_handle = font_handle_;
+	}
+
 }
 

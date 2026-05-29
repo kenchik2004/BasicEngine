@@ -5,6 +5,7 @@
 #include "dxlib_ps.h.fx"
 #include "shadow.h.fx"
 #include "gbuffer.h.fx"
+//#define DEBUG_CASCADE
 
 // 頂点シェーダーの出力
 struct VS_OUTPUT_MODEL
@@ -45,9 +46,10 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	// アルファテスト
     if (textureColor.a < 0.5)
         discard;
-
     float3 albedo = textureColor.rgb * input.diffuse_.rgb;
-
+#ifdef DEBUG_CASCADE
+    float shadow = GetShadowWithCascadeColor(input.position_, input.world_position_, albedo);
+#endif
 	
     float roughness = 0.7; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
     float metallic = 0.1; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
