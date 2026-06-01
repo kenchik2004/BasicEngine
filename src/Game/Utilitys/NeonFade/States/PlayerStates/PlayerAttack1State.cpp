@@ -10,12 +10,16 @@
 #include "Game/Components/PlayerCameraMachine.h"
 
 namespace NeonFade {
+	//! @brief 第1攻撃状態を構築し、参照コンポーネントと遷移条件を初期化する。
+	//! @param player_ この状態を所有するプレイヤーオブジェクト。
 	PlayerAttack1State::PlayerAttack1State(Player* player_)
 		:IState(static_cast<GameObject*>(player_))
 	{
+		// 所有プレイヤーと使用コンポーネントへの参照を保持する。
 		owner_player = player_;
 		rb = player_->rb.lock().get();
 		animator = player_->animator.lock().get();
+		// 既定では一定時間経過で idle へ遷移させる。
 		std::function<bool()> default_exit =
 			[this]() {
 			return exit_timer >= EXIT_TIME;
@@ -23,6 +27,8 @@ namespace NeonFade {
 		RegisterChangeRequest("idle", default_exit, 0);
 
 	}
+	//! @brief 攻撃開始時の初期化（アニメーション・回転・突進速度・演出生成）。
+	//! @param machine 状態機械本体。
 	void PlayerAttack1State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -44,8 +50,12 @@ namespace NeonFade {
 		}
 
 	}
+	//! @brief 回転攻撃の進行、ヒット判定生成/破棄、演出追従を行う更新処理。
+	//! @param machine 状態機械本体。
+	//! @param dt 前フレームからの経過時間。
 	void PlayerAttack1State::Update(IStateMachine* machine, float dt)
 	{
+			// 経過時間を更新し、段階ごとに攻撃挙動を切り替える。
 			exit_timer += dt;
 
 
@@ -84,6 +94,8 @@ namespace NeonFade {
 			eff->transform->position = cast(pos);
 		}
 	}
+	//! @brief 攻撃終了時に回転・アニメ速度・演出オブジェクトを後始末する。
+	//! @param machine 状態機械本体。
 	void PlayerAttack1State::OnExit(IStateMachine* machine)
 	{
 		owner_player->transform->rotation = start_rot;
@@ -93,6 +105,9 @@ namespace NeonFade {
 
 		}
 	}
+	//! @brief 攻撃ヒット時にダメージ/吹き飛ばしとヒットストップ演出を適用する。
+	//! @param machine 状態機械本体。
+	//! @param hit_info トリガー衝突情報。
 	void PlayerAttack1State::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{
 		if (hit_info.collision == hit_box) {

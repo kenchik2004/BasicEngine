@@ -10,12 +10,16 @@
 #include "Game/Components/PlayerCameraMachine.h"
 
 namespace NeonFade {
+	//! @brief 第3攻撃状態を構築し、参照コンポーネントとヒット判定生成コールバックを設定する。
+	//! @param player_ この状態を所有するプレイヤーオブジェクト。
 	PlayerAttack3State::PlayerAttack3State(Player* player_)
 		:IState(static_cast<GameObject*>(player_))
 	{
+		// 所有プレイヤーと使用コンポーネントへの参照を保持する。
 		owner_player = player_;
 		rb = player_->rb.lock().get();
 		animator = player_->animator.lock().get();
+		// アニメーションの特定フレームで回転蹴り用ヒットボックスを生成する。
 		std::function<void()> create_hit_box = [this]() {
 			auto col = owner_player->AddComponent<BoxCollider>
 				(Vector3(0, -3, 3.5f), Quaternion(DEG2RAD(90), { 0,1,0 }), Vector3(2, 2, 9),
@@ -32,6 +36,8 @@ namespace NeonFade {
 			};
 		RegisterChangeRequest("idle", default_exit, 0);
 	}
+	//! @brief 第3攻撃開始時の初期化（アニメ再生・速度調整・停止演出リセット）。
+	//! @param machine 状態機械本体。
 	void PlayerAttack3State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -41,6 +47,9 @@ namespace NeonFade {
 		hit_stop_timer = 0.0f;
 		stop_counter = 0;
 	}
+	//! @brief 攻撃更新処理。ヒットストップ制御とヒットボックス回転更新を行う。
+	//! @param machine 状態機械本体。
+	//! @param dt 前フレームからの経過時間。
 	void PlayerAttack3State::Update(IStateMachine* machine, float dt)
 	{
 
@@ -55,6 +64,8 @@ namespace NeonFade {
 			hit_box->rotation = Slerp(Quaternion(DEG2RAD(90), { 0,1,0 }), Quaternion(DEG2RAD(-90), { 0,1,0 }), (exit_timer - hit_box_created_time) / (EXIT_TIME - 0.1f - hit_box_created_time));
 		}
 	}
+	//! @brief 攻撃終了時にヒットボックスとアニメ速度を後始末する。
+	//! @param machine 状態機械本体。
 	void PlayerAttack3State::OnExit(IStateMachine* machine)
 	{
 		if (hit_box)
@@ -64,6 +75,9 @@ namespace NeonFade {
 		}
 		animator->anim_speed = 1.0f;
 	}
+	//! @brief 攻撃ヒット時にダメージ・吹き飛ばし・ヒットストップ演出を適用する。
+	//! @param machine 状態機械本体。
+	//! @param hit_info トリガー衝突情報。
 	void PlayerAttack3State::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{
 		if (hit_info.collision == hit_box)
