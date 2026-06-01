@@ -242,7 +242,7 @@ namespace NeonFade {
 		if (!light_manager) {
 
 			light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
-			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
+			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 15,8,10 }, 0, 0, { 0,-8,5 });
 			auto rec_light_manager = SceneManager::Object::Create<LightManager>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
 

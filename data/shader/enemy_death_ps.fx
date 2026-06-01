@@ -118,23 +118,13 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 
 	float3 albedo = textureColor.rgb * input.diffuse_.rgb;
 
-
-#if 1	
+	
 	float roughness = 0.5; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
 	float metallic = 1.0; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
 
 	roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
 	metallic = MetallicTexture.Sample(MetallicSampler, uv).r;
-#else
-	//スペキュラマップがあるもでるはこっち
-	float3 specularColor = SpecularTexture.Sample(SpecularSampler, uv).rgb;
 
-	// 疑似的に "metallic" を推定する（明るい＝金属っぽい）
-	float metallic = saturate(dot(specularColor, float3(0.333, 0.333, 0.333)) * 2.0);
-
-	// 疑似的に "roughness" を推定（明るいほどツルツル）
-	float roughness = 1.0 - saturate(dot(specularColor, float3(0.333, 0.333, 0.333)));
-#endif
 	float ao = 1.0f;
 
 	//----------------------------------------------------------
@@ -142,9 +132,7 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	//----------------------------------------------------------
 	PS_OUTPUT_MRT output;
 	float3 emissive = EmissionTexture.Sample(EmissionSampler, uv).rgb;
-	output.color0_ = float4(albedo, ao);
-	output.color1_ = float4(NormalEncode(N).xy, roughness, metallic);
-	output.color2_ = float4(input.world_position_.xyz, 1);
+    output = PackSurfaceInfo(albedo, ao, N, roughness, metallic, input.world_position_.xyz, emissive);
 	// 出力パラメータを返す
 	return output;
 }

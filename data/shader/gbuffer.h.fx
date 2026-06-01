@@ -139,7 +139,7 @@ SurfaceInfo GetSurfaceInfo(int2 position)
 	s.normal_ = NormalDecode(gbuffer1.rg);
 	s.roughness_ = gbuffer1.b;
 	s.metallic_ = saturate(metal_emisive *(metal_emisive<0.5? 2.0:0));
-	s.emissive_ = saturate(metal_emisive * 2.0 - 1.0) * 64.0*100;
+	s.emissive_ = saturate(metal_emisive * 2.0 - 1.0) * 10000;
 	s.world_position_ = gbuffer2.rgb;
 	s.depth_ = depth;
 

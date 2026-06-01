@@ -80,8 +80,8 @@ int LightManager::Init() {
 		DXGI_FORMAT dxgi_format = DXGI_FORMAT_R11G11B10_FLOAT;
 		bloom_work_texture = make_safe_shared<Texture>(w, h, dxgi_format);
 		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
-			w = max(1u, w >> 1);
-			h = max(1u, h >> 1);
+			w = max(1u, w >> 1);	//bitシフトで1/2解像度にする
+			h = max(1u, h >> 1);	//bitシフトで1/2解像度にする
 			bloom_reduction_textures[i].first = make_safe_shared<Texture>(w, h, dxgi_format);
 			bloom_reduction_textures[i].second = make_safe_shared<Texture>(w, h, dxgi_format);
 		}
@@ -126,7 +126,7 @@ void LightManager::Draw()
 	}
 	std::array<LightBase*, MAX_FORWARD_LIGHTS> forward_lights = { nullptr };
 	u8 set_light_count = 0;
-	// 1.平行光源のセット
+	// まず平行光源のセット(これは最優先)
 	for (auto& light : lights) {
 		if (!light)
 			continue;
@@ -139,14 +139,14 @@ void LightManager::Draw()
 		}
 	}
 	//この時点で最大数に達していなければ、
-	// 2.点光源のセット
+	// 点光源のセット(余裕があれば使う)
 	if (set_light_count < MAX_FORWARD_LIGHTS) {
 		for (auto& light : lights) {
 			if (!light)
 				continue;
 			//平行光源でないことを確認
 			if (light->type != LightType::Directional && set_light_count < MAX_FORWARD_LIGHTS) {
-				Vector4 screen_box = CalculateBoundingBoxInScreen(light->position, static_cast<PointLight*>(light.get())->range, camera_view_proj);
+				Vector4 screen_box = CalculateBoundingBoxInScreen(light->position, static_cast<PointLight*>(light.get())->range * 0.5f, camera_view_proj);
 				//画面外にある場合はスキップ
 				if (screen_box.x > screen_box.z || screen_box.y > screen_box.w) {
 					continue;
@@ -216,10 +216,10 @@ void LightManager::LateDraw()
 			true,
 			DX_BLEND_ONE,
 			DX_BLEND_ONE,
-			DX_BLENDOP_MIX,
+			DX_BLENDOP_MIX,		//MIXと書いてあるが、DxLibの誤字で、実際はMIN
 			DX_BLEND_ONE,
 			DX_BLEND_ONE,
-			DX_BLENDOP_MIX,
+			DX_BLENDOP_MIX,		//MIXと書いてあるが、DxLibの誤字で、実際はMIN
 			255
 
 		);
@@ -273,7 +273,7 @@ void LightManager::LateDraw()
 		CopyToRenderTarget(bloom_work_texture.get(), current_rt.color_targets_[0], *nd_filter);
 		float inv_w = 1.0f / bloom_work_texture->Width();	//1ピクセル当たりのU幅
 		float inv_h = 1.0f / bloom_work_texture->Height();	//1ピクセル当たりのV高さ
-		int offset_radius = 1; //ガウシアンフィルタのオフセット半径
+		int offset_radius = 10; //ガウシアンフィルタのオフセット半径
 		Texture* upper_mip_tex = bloom_work_texture.get();
 		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
 			//1段上の階層テクスチャから縮小コピー
@@ -420,9 +420,9 @@ void PointLight::DrawToAccumulationBuffer()
 {
 	if (!my_manager)
 		return;
-	Vector4 screen_box = CalculateBoundingBoxInScreen(position, range, my_manager->GetCameraViewProj());
+	Vector4 screen_box = CalculateBoundingBoxInScreen(position, range * 0.5f, my_manager->GetCameraViewProj());
 
-	if ((screen_box.x > screen_box.z || screen_box.y > screen_box.w) && Input::GetKey(KeyCode::Alpha0))
+	if ((screen_box.x > screen_box.z || screen_box.y > screen_box.w))
 		return; //画面外にある場合は描画しない
 
 	SetLightConstantBuffer();

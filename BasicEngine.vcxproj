@@ -42,6 +42,7 @@
     <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\HuntedEffect.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\DebugCameraScene.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\SceneTitle.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="src\Game\Objects\NeonFade\HuntedEffect.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\DebugCameraScene.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneGame.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneTitle.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\CatmullRomPath.h" />

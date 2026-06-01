@@ -16,7 +16,7 @@ PS_OUTPUT main(PS_INPUT input)
 
 	// 出力カラー = テクスチャカラー
     output.color0_ = color;
-    if (dot(normalize(color.rgb), float3(0, 0, 1)) >= 0.9)
+    if (dot(normalize(color.rgb), float3(0, 0, 1)) >= 0.99)
     {
         float4 cutin_color = EmissionTexture.Sample(EmissionSampler, input.uv0_);
         output.color0_ = cutin_color;

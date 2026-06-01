@@ -8,7 +8,6 @@ USING_PTR(Object);
 USING_PTR(AudioListener);
 USING_PTR(Scene);
 USING_PTR(Camera);
-USING_PTR(DebugCamera);
 //---------------------------------------------------------------------
 //! @brief シーン内のクラス名と状態を保持する構造体
 //---------------------------------------------------------------------
@@ -126,11 +125,7 @@ public:
 	void SetCurrentCamera(CameraP camera) { current_camera = camera; }
 	CameraWP GetCurrentCamera() { return current_camera; }
 	CameraWP& GetCurrentCameraRef() { return current_camera; }
-#if 0
-	void SetDebugCamera(DebugCameraP camera) { debug_camera = camera; }
-	DebugCameraWP GetDebugCamera() { return debug_camera; }
-	DebugCameraWP& GetDebugCameraRef() { return debug_camera; }
-#endif
+
 	void RegisterActiveCamera(CameraWP camera);
 	void UnregisterActiveCamera(CameraWP camera);
 	CameraWPVec& GetActiveCamerasRef() { return active_cameras; }
@@ -152,9 +147,7 @@ private:
 	AudioListenerWP current_audio_listener;  //!< 現在アクティブなオーディオリスナー
 	CameraWP current_camera;  //!< 現在のメインカメラ
 	CameraWPVec active_cameras;  //!< アクティブなカメラリスト
-#if 0
-	DebugCameraWP debug_camera;
-#endif
+
 protected:
 
 	template<class T, typename...Args>

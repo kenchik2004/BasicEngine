@@ -288,4 +288,13 @@ namespace Input {
 		return mouse_pos - mouse_pos_prev;
 	}
 
+	//----------------------------------------------------
+	// @brief マウスホイールの回転量を取得する。
+	// @return マウスホイールの回転量。
+	//----------------------------------------------------
+	float GetMouseWheelRotation()
+	{
+		return GetMouseWheelRotVolF();
+	}
+
 }

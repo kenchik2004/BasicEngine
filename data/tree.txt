@@ -2,7 +2,10 @@ root
 |-----NeonFade::FinishEffectObject
 |-----Scene
 |        |-----NeonFade::SceneGame
-|        |-----NeonFade::SceneTitle
+|        |-----NeonFade::DebugCameraScene
+|        |        |-----NeonFade::SceneTitle
+|        |        end_of_node
+|        |        
 |        end_of_node
 |        
 |-----Object
@@ -28,6 +31,9 @@ root
 |        |        
 |        |-----GameObject
 |        |        |-----CameraObject
+|        |        |        |-----DebugCameraObject
+|        |        |        end_of_node
+|        |        |        
 |        |        |-----GameObject
 |        |        |-----GameObjectWithLifeTime
 |        |        |-----GameObject
