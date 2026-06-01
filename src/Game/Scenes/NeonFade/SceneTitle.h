@@ -1,4 +1,5 @@
 #pragma once
+#include "DebugCameraScene.h"
 
 namespace NeonFade {
 	USING_PTR(SceneGame);
@@ -6,7 +7,7 @@ namespace NeonFade {
 	//! @class SceneTitle
 	//! @brief タイトルシーンクラス
 	//---------------------------------------------------------------------
-	class SceneTitle :public Scene
+	class SceneTitle :public DebugCameraScene
 	{
 	public:
 		USING_SUPER(SceneTitle);
