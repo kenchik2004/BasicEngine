@@ -11,17 +11,23 @@
 #include "System/Components/EffectPlayer.h"
 
 namespace NeonFade {
+	//! @brief ジャンプ攻撃状態を構築し、参照コンポーネントと遷移条件を初期化する。
+	//! @param player_ この状態を所有するプレイヤーオブジェクト。
 	PlayerJumpAttackState::PlayerJumpAttackState(Player* player_)
 		:IState(static_cast<GameObject*>(player_))
 	{
+		// 所有プレイヤーと使用コンポーネントへの参照を保持する。
 		owner_player = player_;
 		rb = player_->rb.lock().get();
 		animator = player_->animator.lock().get();
+		// 終了時間到達後に着地攻撃状態へ遷移する。
 		std::function exit_request = [this]() {
 			return exit_timer > exit_time;
 			};
 		RegisterChangeRequest("jump_attack_land", exit_request, 0);
 	}
+	//! @brief ジャンプ攻撃開始時の初期化（探索トリガー生成、各種タイマ初期化）。
+	//! @param machine 状態機械本体。
 	void PlayerJumpAttackState::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -38,6 +44,8 @@ namespace NeonFade {
 			atk_range_trigger->is_trigger = true;
 		}
 	}
+	//! @brief ジャンプ攻撃終了時に物理状態を復帰し、対象への締めダメージと演出を適用する。
+	//! @param machine 状態機械本体。
 	void PlayerJumpAttackState::OnExit(IStateMachine* machine)
 	{
 		rb->is_kinematic = false;
@@ -67,6 +75,9 @@ namespace NeonFade {
 		}
 		target = nullptr;
 	}
+	//! @brief ターゲット接近、連撃開始、連続ダメージ処理を進行時間に応じて行う。
+	//! @param machine 状態機械本体。
+	//! @param dt 前フレームからの経過時間。
 	void PlayerJumpAttackState::Update(IStateMachine* machine, float dt)
 	{
 		exit_timer += dt;
@@ -119,6 +130,9 @@ namespace NeonFade {
 		}
 
 	}
+	//! @brief 探索トリガーに敵が入ったときに攻撃対象を取得する。
+	//! @param machine 状態機械本体。
+	//! @param hit_info トリガー衝突情報。
 	void PlayerJumpAttackState::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{
 		if (hit_info.collision == atk_range_trigger) {
@@ -129,6 +143,7 @@ namespace NeonFade {
 			}
 		}
 	}
+	//! @brief デバッグ表示用に攻撃状態の簡易ログを出力する。
 	void PlayerJumpAttackState::DebugDraw()
 	{
 
