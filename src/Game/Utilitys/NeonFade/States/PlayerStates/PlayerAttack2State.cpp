@@ -25,7 +25,7 @@ namespace NeonFade {
 		RegisterChangeRequest("idle", default_exit, 0);
 	}
 	//! @brief 第2攻撃開始時の初期化（逆再生アニメ、速度減衰、ヒット停止の初期化）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerAttack2State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -37,7 +37,7 @@ namespace NeonFade {
 		hit_stop_timer = 0.0f;
 	}
 	//! @brief 攻撃進行に応じて当たり判定生成・拡張とエフェクト再生を行う。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerAttack2State::Update(IStateMachine* machine, float dt)
 	{
@@ -74,7 +74,7 @@ namespace NeonFade {
 		}
 	}
 	//! @brief 攻撃終了時にアニメ速度と当たり判定を後始末する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerAttack2State::OnExit(IStateMachine* machine)
 	{
 		animator->anim_speed = 1.0f;
@@ -85,7 +85,7 @@ namespace NeonFade {
 
 	}
 	//! @brief 攻撃ヒット時にダメージとヒットストップを適用する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info トリガー衝突情報。
 	void PlayerAttack2State::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{

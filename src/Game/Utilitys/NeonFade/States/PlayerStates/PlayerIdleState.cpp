@@ -22,19 +22,19 @@ namespace NeonFade
 		animator = player->animator.lock().get();
 	}
 	//! @brief 待機状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerIdleState::OnEnter(IStateMachine* machine)
 	{
 		// アイドルアニメーションをループ再生して待機姿勢を表現する。
 		animator->Play("idle", true, 0.0f, 0.1f, false);
 	}
 	//! @brief 待機状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerIdleState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief 慣性の打ち消しとキー/スティック入力の検出を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerIdleState::Update(IStateMachine* machine, float dt)
 	{
@@ -58,7 +58,7 @@ namespace NeonFade
 		//rb->velocity = { 0,current_velocity.y,0 };
 	}
 	//! @brief 地面接触継続イベント（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info 衝突情報。
 	void PlayerIdleState::OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info)
 	{

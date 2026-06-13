@@ -65,7 +65,7 @@ namespace NeonFade {
 		//プレイヤーポインタとステートマシンで初期化する必要がある
 		//なんかモダンで推奨されてるらしいからstd::tupleで構造化束縛してみよう
 		//! @brief 未完全初期化の敵を生成してコントローラーとステートマシンを返す
-		std::tuple<EnemyController*, EnemyStateMachine*> MakeAbstractEnemy();
+		auto MakeAbstractEnemy();
 
 		//シンプルな単体行動を行う脳をセットされた敵を作成して、脳のポインタを返す
 		//! @brief 単体行動用の脳を持つ敵を生成する

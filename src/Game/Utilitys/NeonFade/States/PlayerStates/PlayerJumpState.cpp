@@ -29,7 +29,7 @@ namespace NeonFade
 	}
 
 	//! @brief ジャンプ状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerJumpState::OnEnter(IStateMachine* machine)
 	{
 		// アニメーション速度を通常に戻す。
@@ -43,7 +43,7 @@ namespace NeonFade
 	}
 
 	//! @brief ジャンプ状態を抜ける際に重力を有効化する終了処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerJumpState::OnExit(IStateMachine* machine)
 	{
 		// 重力を有効に戻して着地後の落下を正常に処理する。
@@ -51,11 +51,11 @@ namespace NeonFade
 	}
 
 	//! @brief 空中での向き更新と水平移動速度設定を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerJumpState::Update(IStateMachine* machine, float dt)
 	{
-		// 状態機械から現在の移動入力を取得する。
+		// ステートマシンから現在の移動入力を取得する。
 		auto pl_machine = static_cast<PlayerStateMachine*>(machine);
 
 		Vector3 input = static_cast<PlayerStateMachine*>(machine)->move_input;
@@ -89,7 +89,7 @@ namespace NeonFade
 	}
 
 	//! @brief 地面接触継続イベント（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info 衝突情報。
 	void PlayerJumpState::OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info)
 	{

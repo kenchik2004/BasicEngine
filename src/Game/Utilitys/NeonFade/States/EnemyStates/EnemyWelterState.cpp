@@ -27,7 +27,7 @@ namespace NeonFade
 
 	}
 	//! @brief よろめき状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyWelterState::OnEnter(IStateMachine* machine)
 	{
 		// よろめきタイマを初期化して経過時間の計測を開始する。
@@ -36,12 +36,12 @@ namespace NeonFade
 		enemy->animator.lock()->PlayIfNoSame("enemy_escape", true, 0.0f, 0.1f, false);
 	}
 	//! @brief よろめき状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyWelterState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief ランダム回転と前進速度の設定を行うよろめき更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyWelterState::Update(IStateMachine* machine, float dt)
 	{

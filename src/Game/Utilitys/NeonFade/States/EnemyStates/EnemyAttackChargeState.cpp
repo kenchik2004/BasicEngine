@@ -21,11 +21,11 @@ namespace NeonFade {
 		std::function<bool()> charge_to_attack = [this]() {
 			return charge_timer >= CHARGE_TIME;
 			};
-		// 遷移先「attack_main」とチャージ完了条件を状態機械へ登録する。
+		// 遷移先「attack_main」とチャージ完了条件をステートマシンへ登録する。
 		RegisterChangeRequest("attack_main", charge_to_attack, 0);
 	}
 	//! @brief 攻撃チャージ状態に入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyAttackChargeState::OnEnter(IStateMachine* machine)
 	{
 		// チャージ専用アニメーションを再生して予備動作を開始する。
@@ -36,12 +36,12 @@ namespace NeonFade {
 		rb->velocity = { 0,0,0 };
 	}
 	//! @brief 攻撃チャージ状態を抜ける際の終了処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyAttackChargeState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief 攻撃チャージ中の向き補正と移動制御を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyAttackChargeState::Update(IStateMachine* machine, float dt)
 	{
@@ -49,7 +49,7 @@ namespace NeonFade {
 		charge_timer += dt;
 		// チャージ前半のみ移動ベクトルに追従させ、後半はその場で溜めを維持する。
 		if (charge_timer < 0.6f) {
-			// 敵専用状態機械へダウンキャストして入力移動ベクトルを取得する。
+			// 敵専用ステートマシンへダウンキャストして入力移動ベクトルを取得する。
 			auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 			Vector3 mov = enem_machine->move_vec;
 			// 地面法線方向の成分を除去し、水平面上の移動成分のみを扱う。

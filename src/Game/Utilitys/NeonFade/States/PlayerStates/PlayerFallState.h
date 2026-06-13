@@ -18,19 +18,19 @@ namespace NeonFade {
 		//! @param player_ この状態を所有するプレイヤーオブジェクト。
 		PlayerFallState(Player* player_);
 		//! @brief 状態遷移直後に落下ループアニメーションと初期落下速度を設定する初期化処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnEnter(IStateMachine* machine) override;
 		//! @brief 状態遷移直前に実行する終了処理（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnExit(IStateMachine* machine) override;
 		//! @brief 毎フレーム実行する更新処理（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param dt 前フレームからの経過時間。
 		void Update(IStateMachine* machine, float dt) override;
 		//! @brief コリジョン侵入イベント（落下状態では処理なし）。
 		void OnCollisionEnter(IStateMachine* machine, const HitInfo& hit_info) override {}
 		//! @brief 地面接触継続イベント（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param hit_info 衝突情報。
 		void OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info) override;
 		//! @brief コリジョン離脱イベント（落下状態では処理なし）。

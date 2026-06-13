@@ -24,11 +24,11 @@ namespace NeonFade {
 		std::function<bool()> request = [this]() {
 			return next;
 			};
-		// 遷移先「attack_charge」と遷移条件を優先度 1 で状態機械へ登録する。
+		// 遷移先「attack_charge」と遷移条件を優先度 1 でステートマシンへ登録する。
 		RegisterChangeRequest("attack_charge", request, 1);
 	}
 	//! @brief 攻撃準備状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyAttackReadyState::OnEnter(IStateMachine* machine)
 	{
 		// 前回の攻撃遷移フラグをリセットする。
@@ -43,7 +43,7 @@ namespace NeonFade {
 		animator->Play("enemy_walk", true, Random::Float01());
 	}
 	//! @brief 目標へ接近し、条件が整い次第攻撃チャージへ遷移を要求する更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyAttackReadyState::Update(IStateMachine* machine, float dt)
 	{
@@ -51,7 +51,7 @@ namespace NeonFade {
 		ready_timer -= dt;
 		Vector3 mov_vec;
 
-		// 敵専用状態機械へダウンキャストして状態情報を利用できる形にする。
+		// 敵専用ステートマシンへダウンキャストして状態情報を利用できる形にする。
 		auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 		// 自身からプレイヤーへのベクトルを求める。
 		mov_vec = target->transform->position - owner_enemy->transform->position;
@@ -76,7 +76,7 @@ namespace NeonFade {
 		next = true;
 	}
 	//! @brief 攻撃準備状態を抜ける際の終了処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyAttackReadyState::OnExit(IStateMachine* machine)
 	{
 		// 速度倍率を通常値に戻し、次状態のアニメーション再生に影響を与えないようにする。

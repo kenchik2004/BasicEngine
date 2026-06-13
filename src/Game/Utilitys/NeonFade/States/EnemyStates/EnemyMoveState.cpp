@@ -21,19 +21,19 @@ namespace NeonFade
 		animator = enemy_->animator.lock().get();
 	}
 	//! @brief 移動状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyMoveState::OnEnter(IStateMachine* machine)
 	{
 		// 歩行アニメーションをランダムな開始位置からループ再生し、敵間の動き均一化を防ぐ。
 		animator->Play("enemy_walk", true, Random::Float01(), 0.1f);
 	}
 	//! @brief 移動方向への向き更新と速度設定を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyMoveState::Update(IStateMachine* machine, float dt)
 	{
 		//進行方向に向ける
-		// 状態機械から移動ベクトルを取得する。
+		// ステートマシンから移動ベクトルを取得する。
 		auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 		Vector3 move_vec = enem_machine->move_vec;
 		// 垂直成分を除去して水平面上での向き変更のみ行う。
@@ -52,7 +52,7 @@ namespace NeonFade
 
 	}
 	//! @brief 移動状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyMoveState::OnExit(IStateMachine* machine)
 	{
 	}

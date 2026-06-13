@@ -27,7 +27,7 @@ namespace NeonFade
 		RegisterChangeRequest("fall", dodge_to_idle, 0);
 	}
 	//! @brief 回避状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerDodgeState::OnEnter(IStateMachine* machine)
 	{
 		// バック転アニメーションをループなしで再生して回避モーションを表現する。
@@ -56,12 +56,12 @@ namespace NeonFade
 		rb->velocity = dodge_dir;
 	}
 	//! @brief 回避状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerDodgeState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief 回避タイマを加算する更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerDodgeState::Update(IStateMachine* machine, float dt)
 	{

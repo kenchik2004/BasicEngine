@@ -120,7 +120,7 @@ float getShadow(float4 inputPosition, float3 worldPosition)
 			// シャドウバイアス (深度値のオフセット)
             static const float shadowBias[4] =
             {
-                0.00025f,
+                0.00002f,
 	   0.0005f,
 	   0.001f,
 	   0.002f

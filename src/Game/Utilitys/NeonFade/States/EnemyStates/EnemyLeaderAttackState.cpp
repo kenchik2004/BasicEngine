@@ -28,7 +28,7 @@ namespace NeonFade {
 		player = player_;
 	}
 	//! @brief リーダー攻撃状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyLeaderAttackState::OnEnter(IStateMachine* machine)
 	{
 		// 攻撃タイマを初期化して扇動時間の計測を開始する。
@@ -37,12 +37,12 @@ namespace NeonFade {
 		animator->Play("enemy_instruct", true, 0.0f, 0.2f, false);
 	}
 	//! @brief リーダー攻撃状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyLeaderAttackState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief プレイヤーへの向き更新と定期ジャンプによる扇動表現を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyLeaderAttackState::Update(IStateMachine* machine, float dt)
 	{

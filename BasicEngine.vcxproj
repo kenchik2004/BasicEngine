@@ -37,13 +37,24 @@
   <ItemGroup>
     <ClCompile Include="src\Game\Components\EnemyController.cpp" />
     <ClCompile Include="src\Game\Components\PlayerCameraMachine.cpp" />
+    <ClCompile Include="src\Game\Objects\DevelopTools\LightEditor.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\DamageUIObject.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\Enemy.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.cpp" />
-    <ClCompile Include="src\Game\Objects\NeonFade\HuntedEffect.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\TitlePlayer.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\DebugCameraScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionCamera.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionData.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionDeadZone.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionExit.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionManager.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionSetting.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionStart.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\OptionVolume.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\SettingsManager.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\TitleLogo.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.cpp" />
@@ -60,6 +71,7 @@
     <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\Player.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\SceneGame.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\TitlePlayerStateMachine.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.cpp" />
@@ -101,6 +113,9 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ten.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_KI.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Show.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\TitlePlayerStates\TitlePlayerStartDiveState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\TitlePlayerStates\TitlePlayerStartFlipState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\TitlePlayerStates\TitlePlayerStartSpawnState.cpp" />
     <ClCompile Include="src\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Secondary|x64'">Create</PrecompiledHeader>
@@ -165,15 +180,26 @@
     <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
+    <ClInclude Include="src\Game\Objects\DevelopTools\LightEditor.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\DamageUIObject.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Enemy.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\GameObjectWithLifeTime.h" />
-    <ClInclude Include="src\Game\Objects\NeonFade\HuntedEffect.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\TitlePlayer.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\DebugCameraScene.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionCamera.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionData.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionDeadZone.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionExit.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionManager.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionSetting.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionStart.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\OptionVolume.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneGame.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneTitle.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\SettingsManager.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\TitleLogo.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\CatmullRomPath.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.h" />
@@ -181,6 +207,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\TeamMemberEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyTeam.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\EnemyStateMachine.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\TitlePlayerStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackChargeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackMainState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyAttackReadyState.h" />
@@ -222,6 +249,9 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Ten.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_KI.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\SceneStates\SceneGameState_Show.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\TitlePlayerStates\TitlePlayerStartDiveState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\TitlePlayerStates\TitlePlayerStartFlipState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\TitlePlayerStates\TitlePlayerStartSpawnState.h" />
     <ClInclude Include="src\precompile.h" />
     <ClInclude Include="src\System\Components\EffectPlayer.h" />
     <ClInclude Include="src\System\Components\Text3D.h" />

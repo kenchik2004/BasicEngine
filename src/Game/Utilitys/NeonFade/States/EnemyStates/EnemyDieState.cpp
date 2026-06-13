@@ -31,7 +31,7 @@ namespace NeonFade
 		instance_count--;
 	}
 	//! @brief 死亡状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyDieState::OnEnter(IStateMachine* machine)
 	{
 		// 死亡後は物理演算が不要になるため剛体コンポーネントを除去する。
@@ -48,12 +48,12 @@ namespace NeonFade
 		exit_timer = 0;
 	}
 	//! @brief 死亡状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyDieState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief 死亡シェーダパラメータを更新し、演出終了後にオブジェクトを破棄する更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyDieState::Update(IStateMachine* machine, float dt)
 	{

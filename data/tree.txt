@@ -9,33 +9,36 @@ root
 |        end_of_node
 |        
 |-----Object
-|        |-----ShadowMapObject
-|        |-----LightManager
 |        |-----UIObject
 |        |        |-----ButtonObject
 |        |        |-----TextObject
+|        |        |-----NeonFade::TitleLogo
 |        |        |-----NeonFade::SettingsManager
 |        |        |-----NeonFade::OptionManager
 |        |        |-----NeonFade::OptionData
+|        |        |        |-----NeonFade::OptionVolume
+|        |        |        |-----NeonFade::OptionStart
 |        |        |        |-----NeonFade::OptionSetting
 |        |        |        |-----NeonFade::OptionExit
-|        |        |        |-----NeonFade::OptionStart
-|        |        |        |-----NeonFade::OptionVolume
+|        |        |        |-----NeonFade::OptionDeadZone
 |        |        |        |-----NeonFade::OptionCamera
 |        |        |        end_of_node
 |        |        |        
-|        |        |-----NeonFade::TitleLogo
-|        |        |-----UIObject
 |        |        |-----NeonFade::DamageUIObject
 |        |        end_of_node
 |        |        
+|        |-----LightManager
+|        |-----ShadowMapObject
 |        |-----GameObject
 |        |        |-----CameraObject
 |        |        |        |-----DebugCameraObject
 |        |        |        end_of_node
 |        |        |        
+|        |        |-----NeonFade::TitlePlayer
 |        |        |-----GameObject
 |        |        |-----GameObjectWithLifeTime
+|        |        |-----LightObject
+|        |        |-----LightEditor
 |        |        |-----GameObject
 |        |        |-----NeonFade::Enemy
 |        |        end_of_node
@@ -45,12 +48,12 @@ root
 |-----Component
 |        |-----Button
 |        |-----EffectPlayer
+|        |-----ImageRenderer
 |        |-----Text3D
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
 |        |-----Text
 |        |-----AudioPlayer
-|        |-----ImageRenderer
 |        |-----Collider
 |        |        |-----ConvexMeshCollider
 |        |        |-----SphereCollider

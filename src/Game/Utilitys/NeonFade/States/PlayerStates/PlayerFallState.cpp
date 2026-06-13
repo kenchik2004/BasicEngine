@@ -23,7 +23,7 @@ namespace NeonFade {
 		rb = player->rb.lock().get();
 	}
 	//! @brief 落下状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerFallState::OnEnter(IStateMachine* machine)
 	{
 		// 落下ループアニメーションをブレンド付きで再生する。
@@ -32,18 +32,18 @@ namespace NeonFade {
 		rb->velocity.y = -10;
 	}
 	//! @brief 落下状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerFallState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief 毎フレーム実行する更新処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerFallState::Update(IStateMachine* machine, float dt)
 	{
 	}
 	//! @brief 地面接触継続イベント（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info 衝突情報。
 	void PlayerFallState::OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info)
 	{

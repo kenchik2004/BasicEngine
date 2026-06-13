@@ -28,7 +28,7 @@ namespace NeonFade {
 		player = player_;
 	}
 	//! @brief リーダー後退状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyLeaderStepBackState::OnEnter(IStateMachine* machine)
 	{
 		// 後退タイマを初期化して後退時間の計測を開始する。
@@ -51,12 +51,12 @@ namespace NeonFade {
 		jumped = false;
 	}
 	//! @brief リーダー後退状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyLeaderStepBackState::OnExit(IStateMachine* machine)
 	{
 	}
 	//! @brief 後退ジャンプのタイミング制御を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyLeaderStepBackState::Update(IStateMachine* machine, float dt)
 	{

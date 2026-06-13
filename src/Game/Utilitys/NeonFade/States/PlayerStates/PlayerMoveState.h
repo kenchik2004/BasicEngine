@@ -18,23 +18,23 @@ namespace NeonFade
 		//! @param owner_ この状態を所有するプレイヤーオブジェクト。
 		PlayerMoveState(Player* owner_);
 		//! @brief 状態遷移直後に走行またはダッシュアニメーションを再生する初期化処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnEnter(IStateMachine* machine) override;
 		//! @brief 状態遷移直前に落下タイマをリセットする終了処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnExit(IStateMachine* machine) override;
 		//! @brief 毎フレーム実行する入力処理・向き更新・速度設定処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param dt 前フレームからの経過時間。
 		void Update(IStateMachine* machine, float dt) override;
 		//! @brief コリジョン侵入イベント（移動中は処理なし）。
 		void OnCollisionEnter(IStateMachine* machine, const HitInfo& hit_info) override {}
 		//! @brief 地面接触継続イベントで落下タイマをリセットする。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param hit_info 衝突情報。
 		void OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info) override;
 		//! @brief コリジョン離脱イベントで落下タイマをリセットする。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param hit_info 衝突情報。
 		void OnCollisionExit(IStateMachine* machine, const HitInfo& hit_info) override;
 		//! @brief デバッグ用の移動方向ライン描画処理。

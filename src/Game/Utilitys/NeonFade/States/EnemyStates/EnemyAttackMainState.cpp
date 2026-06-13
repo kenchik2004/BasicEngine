@@ -55,7 +55,7 @@ namespace NeonFade
 
 	}
 	//! @brief 攻撃メイン状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyAttackMainState::OnEnter(IStateMachine* machine)
 	{
 		// 攻撃状態の継続時間を計測するタイマを初期化する。
@@ -66,7 +66,7 @@ namespace NeonFade
 
 	}
 	//! @brief 攻撃メイン状態を抜ける際の終了処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyAttackMainState::OnExit(IStateMachine* machine)
 	{
 		// 状態終了時に残存ヒットボックスを確実に除去する。
@@ -76,7 +76,7 @@ namespace NeonFade
 		}
 	}
 	//! @brief 攻撃メイン状態中の経過時間を更新する処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyAttackMainState::Update(IStateMachine* machine, float dt)
 	{
@@ -85,7 +85,7 @@ namespace NeonFade
 
 	}
 	//! @brief 攻撃判定が他オブジェクトへ接触した際にダメージを与える処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info 接触したコライダ情報。
 	void EnemyAttackMainState::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{

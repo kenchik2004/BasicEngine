@@ -33,6 +33,9 @@ class LightBase {
 	friend class LightManager;
 public:
 	virtual ~LightBase() {}
+
+	//! @brief コンストラクタ
+	LightBase(const Vector3& pos, const Color& col, const LightType& l_type) : position(pos), color(col), type(l_type) {}
 	//! @brief 初期化処理
 	void Init();
 	LightType type; //!< ライトの種類
@@ -57,7 +60,10 @@ class DirectionalLight :public LightBase
 {
 public:
 	Vector3 direction; //!< ライトの照射方向
-	DirectionalLight() { type = LightType::Directional; direction = { 0,-1,0 }; }
+	DirectionalLight(const Vector3& pos, const Color& col, const Vector3& dir)
+		: LightBase(pos, col, LightType::Directional) {
+		direction = dir.getNormalized();
+	}
 protected:
 	//! @brief 蓄積バッファへの描画
 	void DrawToAccumulationBuffer() override;
@@ -74,7 +80,12 @@ class PointLight :public LightBase
 public:
 	float intensity; //!< 減衰率
 	float range; //!< 影響範囲
-	PointLight() { type = LightType::Point; intensity = 1.0f; range = 10.0f; }
+	PointLight(const Vector3& pos, const Color& col, float inten, float rng)
+		: LightBase(pos, col, LightType::Point) {
+		intensity = inten;
+		range = rng;
+	}
+
 protected:
 	//! @brief 蓄積バッファへの描画
 	void DrawToAccumulationBuffer() override;
@@ -120,16 +131,12 @@ public:
 		auto light = SafeSharedPtr<LightBase>(nullptr);
 		switch (type) {
 		case LightType::Directional: {
-			auto dir_light = make_safe_shared<DirectionalLight>();
-			dir_light->direction = direction.getNormalized();
-			dir_light->color = color;
+			auto dir_light = make_safe_shared<DirectionalLight>(position, color, direction);
 			light = dir_light;
 			break;
 		}
 		case LightType::Point: {
-			auto point_light = make_safe_shared<PointLight>();
-			point_light->intensity = intensity;
-			point_light->range = range;
+			auto point_light = make_safe_shared<PointLight>(position, color, intensity, range);
 			light = point_light;
 			break;
 		}

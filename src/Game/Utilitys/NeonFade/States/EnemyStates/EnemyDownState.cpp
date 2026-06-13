@@ -92,7 +92,7 @@ NeonFade::EnemyDownState::EnemyDownState(Enemy* owner_)
 }
 
 //! @brief ダウン状態へ入った瞬間の初期化処理。ノックバック方向を算出し対応する倒れアニメーションを再生する。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 {
 	// ヒットストップタイマとダウン経過タイマを初期化する。
@@ -101,7 +101,7 @@ void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 	// ヒット効果音を一回再生してダメージ受け付け開始を演出する。
 	if (hit_se)
 		hit_se->PlayOneShot();
-	// 敵専用状態機械へダウンキャストして入力移動ベクトルを取得する。
+	// 敵専用ステートマシンへダウンキャストして入力移動ベクトルを取得する。
 	auto enem_machine = static_cast<EnemyStateMachine*>(machine);
 	// ノックバック方向を移動ベクトルから取得し、垂直成分を除去する。
 	knock_back_vec = enem_machine->move_vec;
@@ -131,7 +131,7 @@ void NeonFade::EnemyDownState::OnEnter(IStateMachine* machine)
 }
 
 //! @brief ダウン状態を抜ける際にコライダを通常の立ち姿勢に戻す終了処理。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 void NeonFade::EnemyDownState::OnExit(IStateMachine* machine)
 {
 	// アニメーション速度を通常値へ戻す。
@@ -147,7 +147,7 @@ void NeonFade::EnemyDownState::OnExit(IStateMachine* machine)
 }
 
 //! @brief ダウン中のヒットストップ解除とノックバック速度の適用を行う更新処理。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 //! @param dt 前フレームからの経過時間。
 void NeonFade::EnemyDownState::Update(IStateMachine* machine, float dt)
 {

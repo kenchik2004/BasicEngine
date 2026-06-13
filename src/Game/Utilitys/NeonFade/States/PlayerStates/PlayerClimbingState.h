@@ -16,13 +16,13 @@ namespace NeonFade
 		//! @param owner_ この状態を所有するプレイヤーオブジェクト。
 		PlayerClimbingState(Player* owner_);
 		//! @brief 状態遷移直後によじ登りアニメーションと物理設定を初期化する処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnEnter(IStateMachine* machine) override;
 		//! @brief 状態遷移直前に重力と物理シミュレーションを復元する終了処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnExit(IStateMachine* machine) override;
 		//! @brief 毎フレーム実行するよじ登り進行と位置補間処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param dt 前フレームからの経過時間。
 		void Update(IStateMachine* machine, float dt) override;
 		//! @brief コリジョン侵入イベント（よじ登り中は処理なし）。

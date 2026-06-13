@@ -21,6 +21,7 @@ bool USE_DEBUG_DRAW = false;
 ScenePVec SceneManager::scenes = ScenePVec(0);			//!<シーンの配列
 ScenePVec SceneManager::another_scenes = ScenePVec(1);	//!<裏シーンの配列
 SceneP SceneManager::current_scene = nullptr;			//!<カレントシーン
+SceneP SceneManager::next_scene = nullptr;				//!<次のシーン(変更先シーン)へのポインタ
 std::vector<std::function<void()>> SceneManager::func_on_loop_finish(0);
 //SafeUniquePtr<ShaderPs> post_effect_filter = nullptr;
 
@@ -37,18 +38,18 @@ bool shader_runtime_compilation_enabled = true;
 ////////////////////////////////////////////////////////////////////// 
 void SceneManager::ForEachObjAndComp(ObjectPVec& objs, const std::function<void(::Object*)>& objFn, const std::function<void(Component*)>& compFn, const std::function<bool(::Object*)>& objFilter, const std::function<bool(Component*)>& compFilter) {
 	for (u64 obj_it = 0; obj_it < objs.size(); ++obj_it) {
-		auto& obj = objs[obj_it];
+		auto obj = objs[obj_it].get();
 		if (!obj) continue;
-		if (!objFilter || !objFilter(obj.get())) continue;
-		try { objFn(obj.get()); }
+		if (!objFilter || !objFilter(obj)) continue;
+		try { objFn(obj); }
 		catch (Exception& ex) { ex.Show(); }
 
 		for (u64 comp_it = 0; comp_it < obj->components.size(); ++comp_it) {
-			auto& comp = obj->components[comp_it];
+			auto comp = obj->components[comp_it].get();
 			if (!comp) continue;
-			if (!compFilter || !compFilter(comp.get())) continue;
+			if (!compFilter || !compFilter(comp)) continue;
 
-			try { compFn(comp.get()); }
+			try { compFn(comp); }
 			catch (Exception& ex) { ex.Show(); }
 		}
 	}
@@ -713,27 +714,21 @@ void SceneManager::PostDraw()
 		scene->DestroyMarkedGameObjects();
 
 	}
-	return;
-	if (!current_scene)
-		return;
-	current_scene->PostDraw();
-	{
-		ObjectPVec& objs = current_scene->objects;
-		ForEachObjAndComp(objs,
-			std::bind(&::Object::PostDraw, std::placeholders::_1),
-			std::bind(&Component::PostDraw, std::placeholders::_1),
-			//オブジェクトのUpdate条件フィルター(アクティブ)
-			[](::Object* obj)
-			{ return obj->status.status_bit.is(ObjStat::STATUS::ACTIVE) &&
-			!obj->status.status_bit.is(ObjStat::STATUS::REMOVED); },
-			//コンポーネントのUpdate条件フィルター(アクティブかつ未削除)
-			[](Component* comp) {
-				return comp->status.status_bit.is(CompStat::STATUS::ACTIVE) &&
-					!comp->status.status_bit.is(CompStat::STATUS::REMOVED);
-			}
-		);
+
+
+	if (is_scene_changing) {
+
+		//カレントシーンがいる場合は終了してロード
+		current_scene->Exit();
+		current_scene->Destroy();
+		current_scene = next_scene;
+		next_scene->Init();
+		//ロード中にdeltatimeが蓄積し、物理がぶっ壊れることがあるため時飛ばし
+		Time::ResetTime();
+		is_scene_changing = false;
+		next_scene = nullptr;
 	}
-	current_scene->OnPostDrawFinish();
+	return;
 }
 
 void SceneManager::Exit()

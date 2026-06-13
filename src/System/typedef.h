@@ -77,7 +77,7 @@ public:
 	T* operator->() const {
 #ifndef PACKAGE_BUILD
 		if (!u_p) {
-			throw NullptrException("もう知らん!ぬるぽ!");
+			throw NullptrException(u8"もう知らん!ぬるぽ!");
 		}
 #endif
 		return u_p.get();
@@ -86,7 +86,7 @@ public:
 	T& operator*() const {
 #ifndef PACKAGE_BUILD
 		if (!u_p) {
-			throw NullptrException("もう知らん!ぬるぽ!");
+			throw NullptrException(u8"もう知らん!ぬるぽ!");
 		}
 #endif
 		return *(u_p.get());
@@ -128,7 +128,7 @@ public:
 		operator*() const {
 #ifndef PACKAGE_BUILD
 		if (!s_p) {
-			throw NullptrException("もう知らん!ぬるぽ!");
+			throw NullptrException(u8"もう知らん!ぬるぽ!");
 		}
 #endif
 		return *s_p;
@@ -140,7 +140,7 @@ public:
 		operator->() const {
 #ifndef PACKAGE_BUILD
 		if (!s_p) {
-			throw NullptrException("もう知らん!ぬるぽ!");
+			throw NullptrException(u8"もう知らん!ぬるぽ!");
 		}
 #endif
 		return s_p.get();
@@ -199,7 +199,7 @@ public:
 	std::shared_ptr<T> operator->() const {
 #ifndef PACKAGE_BUILD
 		if (w_p.expired())
-			throw NullptrException("もう知らん!ぬるぽ!");
+			throw NullptrException(u8"もう知らん!ぬるぽ!");
 #endif
 		auto lock = w_p.lock();
 		return lock;
@@ -209,7 +209,7 @@ public:
 
 #ifndef PACKAGE_BUILD
 		if (w_p.expired()) {
-			throw NullptrException("もう知らん!ぬるぽ!");
+			throw NullptrException(u8"もう知らん!ぬるぽ!");
 		}
 #endif
 		return *(w_p.lock());

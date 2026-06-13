@@ -33,13 +33,13 @@ void Log(std::string log) {
 Exception::Exception(const char* main_message, const char* file_name, int line, const char* func_name)
 {
 	// メッセージを構築
-	message = "ファイル名: ";
+	message = u8"ファイル名: ";
 	message += file_name;
-	message += "\n行: ";
+	message += u8"\n行: ";
 	message += std::to_string(line);
-	message += "\n関数名: ";
+	message += u8"\n関数名: ";
 	message += func_name;
-	message += "\nで例外スロー: \n";
+	message += u8"\nで例外スロー: \n";
 	message += main_message;
 }
 
@@ -51,9 +51,6 @@ void Exception::Show()
 	// メッセージを表示
 	printfDx(message.c_str());
 	printfDx("\n");
-	//#ifndef PACKAGE_BUILD
-		//Log(message);
-	//#endif
 #ifndef NDEBUG
 	std::wstring wstr = Str2Wstr(message); /**< @brief メッセージをワイド文字列に変換。 */
 	if (is_assert)
@@ -70,15 +67,15 @@ void Exception::Show()
 NullptrException::NullptrException(const char* integer_name, const char* file_name, int line, const char* func_name)
 {
 	// メッセージを構築
-	message = "ファイル名: ";
+	message = u8"ファイル名: ";
 	message += file_name;
-	message += "\n行: ";
+	message += u8"\n行: ";
 	message += std::to_string(line);
-	message += "\n関数名: ";
+	message += u8"\n関数名: ";
 	message += func_name;
-	message += "\nで例外スロー: \n";
+	message += u8"\nで例外スロー: \n";
 	message += integer_name;
-	message += " がnullptrでした。\n";
+	message += u8" がnullptrでした。\n";
 }
 
 //----------------------------------------------------
@@ -96,19 +93,19 @@ NullptrException::NullptrException(const char* message_)
 OutOfRangeException::OutOfRangeException(int index, int array_size, const char* array_name, const char* file_name, int line, const char* func_name)
 {
 	// メッセージを構築
-	message = "ファイル名: ";
+	message = u8"ファイル名: ";
 	message += file_name;
-	message += "\n行: ";
+	message += u8"\n行: ";
 	message += std::to_string(line);
-	message += "\n関数名: ";
+	message += u8"\n関数名: ";
 	message += func_name;
-	message += "\nで例外スロー: \n";
+	message += u8"\nで例外スロー: \n";
 	message += std::to_string(index);
-	message += "は、";
+	message += u8"は、";
 	message += array_name;
-	message += "のサイズ [";
+	message += u8"のサイズ [";
 	message += std::to_string(array_size);
-	message += "] を超えています。\n";
+	message += u8"] を超えています。\n";
 }
 
 //----------------------------------------------------
@@ -118,13 +115,13 @@ MemoryLeakException::MemoryLeakException(const char* integer_name, const char* f
 {
 	is_assert = true; /**< @brief アサートフラグをtrueに設定。 */
 	// メッセージを構築
-	message = "ファイル名: ";
+	message = u8"ファイル名: ";
 	message += file_name;
-	message += "\n行: ";
+	message += u8"\n行: ";
 	message += std::to_string(line);
-	message += "\n関数名: ";
+	message += u8"\n関数名: ";
 	message += func_name;
-	message += "\nで例外スロー: \n";
+	message += u8"\nで例外スロー: \n";
 	message += integer_name;
-	message += "が解放できませんでした。循環参照が起こっている可能性があります。\n 変数をstd::weak_ptrで保持、メモリ解放時にstd::shared_ptrにnullptrを代入などを試してみてください。";
+	message += u8"が解放できませんでした。循環参照が起こっている可能性があります。\n 変数をstd::weak_ptrで保持、メモリ解放時にstd::shared_ptrにnullptrを代入などを試してみてください。";
 }

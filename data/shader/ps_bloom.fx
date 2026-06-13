@@ -16,6 +16,6 @@ PS_OUTPUT main(PS_INPUT input) {
 	//加算ブレンドにより合成後のアルファが暴走するのを防ぐため、アルファは0にする
     output.color0_.a = 1.0;
 	
-	
+    //output.color0_.rgb = float3(0, 0, 0);
 	return output;
 }

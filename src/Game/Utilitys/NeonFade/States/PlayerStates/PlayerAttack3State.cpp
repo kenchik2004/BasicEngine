@@ -37,7 +37,7 @@ namespace NeonFade {
 		RegisterChangeRequest("idle", default_exit, 0);
 	}
 	//! @brief 第3攻撃開始時の初期化（アニメ再生・速度調整・停止演出リセット）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerAttack3State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -48,7 +48,7 @@ namespace NeonFade {
 		stop_counter = 0;
 	}
 	//! @brief 攻撃更新処理。ヒットストップ制御とヒットボックス回転更新を行う。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerAttack3State::Update(IStateMachine* machine, float dt)
 	{
@@ -65,7 +65,7 @@ namespace NeonFade {
 		}
 	}
 	//! @brief 攻撃終了時にヒットボックスとアニメ速度を後始末する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerAttack3State::OnExit(IStateMachine* machine)
 	{
 		if (hit_box)
@@ -76,7 +76,7 @@ namespace NeonFade {
 		animator->anim_speed = 1.0f;
 	}
 	//! @brief 攻撃ヒット時にダメージ・吹き飛ばし・ヒットストップ演出を適用する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info トリガー衝突情報。
 	void PlayerAttack3State::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{

@@ -4,23 +4,12 @@
 //---------------------------------------------------------------------------
 #include "Main.h"
 #include <fstream>
-//#define DEBUG_WINDOW
-//#define USE_DEBUG_DRAW
-//#define FULL_SCREEN
 
-//#define SECONDARY
 //! @brief ウィンドウの幅(初期値:1920)
 int SCREEN_W = 1920;
 //! @brief ウィンドウの高さ(初期値:1080)
 int SCREEN_H = 1080;
 
-//! @brief Windowsのウィンドウクラス名
-std::string window_classname[1] =
-{
-	"メインウィンドウ",
-};
-int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow);
-//====================================//
 
 //! @brief Windowsのウィンドウプロシージャ
 //! @param windowのハンドル
@@ -82,11 +71,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
 	//==================================//
-#ifdef DEBUG_WINDOW
-	MSG msg;
-	HWND window[1];
-	WNDCLASS param;
-#endif
+
 	SetOutApplicationLogValidFlag(true);
 
 	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/config.ini");
@@ -94,13 +79,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SCREEN_W = FileSystem::IniFileManager::GetInt("StartConfig", "screen_width", 1920, "data/config.ini");
 	SCREEN_H = FileSystem::IniFileManager::GetInt("StartConfig", "screen_height", 1080, "data/config.ini");
 
-#ifdef FULL_SCREEN
-	//ChangeWindowMode(false);
-#endif
 	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
 	SetZBufferBitDepth(32);
 	//iniファイルからウィンドウのタイトルを取得して設定する
-	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "���C���E�B���h�E", "data/config.ini");
+	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "BasicEngine", "data/config.ini");
 	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
 	SetHookWinProc(DxWndProc);
@@ -120,20 +102,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	SetMouseDispFlag(show_mouse);
 
-#ifdef DEBUG_WINDOW
-
-
-	RECT rect;
-	GetWindowCRect(&rect);
-	if (CreateDebugWindow(hInstance, window[0], rect.right - rect.left, rect.bottom - rect.top, param, nCmdShow) == -1) return -1;
-#endif // DEBUG_WINDOW
 
 
 	timeBeginPeriod(1);
 	SetDrawScreen(DX_SCREEN_BACK);
 	SetTransColor(255, 0, 255);
 	srand(GetNowCount() % RAND_MAX);
-	//SetWindowPosition(0, 0);
 
 	Time::Init();
 	Input::Init();
@@ -184,22 +158,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	while (TRUE)
 	{
 
-	MAIN_LOOP:
 		try {
-#ifdef DEBUG_WINDOW
-			//=======================//
-			// デバッグウィンドウのメッセージ処理
-			if (PeekMessage(&msg, window[0], 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-			if (PeekMessage(&msg, GetMainWindowHandle(), 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-#endif
+
 
 			//=======================//
 			Time::Update();
@@ -242,25 +202,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				ClearDrawScreen();
 				SceneManager::Draw();
 				//GameRender();
-#ifdef DEBUG_WINDOW
-				//Presentの書き込み先をデフォルトのウィンドウにする
-				SetScreenFlipTargetWindow(NULL);
-				ScreenFlip();
-				//============//
-				//たまに描画が追いつかないことがあるため、描画が追いついていない場合は、描画が追いつくまで待つ
-				//WaitTimer(2);
-				ClearDrawScreen();
-				//バックバッファをクリア
-#endif
-#ifdef USE_DEBUG_DRAW
-				//デバッグ描画
-				SceneManager::DebugDraw();
-				SceneManager::LateDebugDraw();
-#endif
-#ifdef DEBUG_WINDOW
-				//Presentの書き込み先をデバッグウィンドウにする
-				SetScreenFlipTargetWindow(window[0]);
-#endif
 
 				ScreenFlip();
 				//描画FPSを計測し、描画delta_timeをリセットする
@@ -277,9 +218,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			if (Input::GetKey(KeyCode::Escape))	break;
 			if (SceneManager::IsApplicationClosing())	break;
 		}
+		//本当は非常によくない。
+		//ここでは最低限の良心として、Log出力を行うことにとどめる。
+		//また、std::exceptionをキャッチしないようにし、自作フレームワークのみを対象とする。
+		//(std::exceptionは予想外の致命的な例外である可能性が高いため、キャッチしてしまうと、バグの原因を見つけるのが非常に困難になる)
 		catch (Exception& ex) {
 			ex.Show();
-			goto MAIN_LOOP;
 
 		}
 
@@ -450,43 +394,4 @@ void DrawBox3D_XZ(float3 center, float half_w, float half_h, int color, bool fil
 		DrawLine3D(pos4, pos1, color);
 	}
 
-}
-
-
-
-// デバッグ用サブウィンドウを作成する
-int CreateDebugWindow(HINSTANCE& hInstance, HWND& window, int window_x, int window_y, WNDCLASS& window_parameter, int nCmdShow)
-{
-	//==================================//
-
-
-// ウィンドウクラスの設定
-	window_parameter.style = CS_HREDRAW | CS_VREDRAW;
-	window_parameter.lpfnWndProc = WndProc;
-	window_parameter.cbClsExtra = 0;
-	window_parameter.cbWndExtra = 0;
-	window_parameter.hInstance = hInstance;
-	window_parameter.hIcon = NULL;
-	window_parameter.hCursor = LoadCursor(NULL, IDC_ARROW);
-	window_parameter.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-	window_parameter.lpszMenuName = NULL;
-	window_parameter.lpszClassName = window_classname[0].c_str();
-
-	if (!RegisterClass(&window_parameter))
-	{
-		return -1;
-	}
-
-	window = CreateWindow(
-		window_classname[0].c_str(),
-		"デバッグウィンドウ",
-		WS_MINIMIZEBOX | WS_SYSMENU,
-		window_x * 0.5f, window_y * 0.5f, window_x, window_y,
-		NULL, NULL, hInstance, NULL
-	);
-	ShowWindow(window, nCmdShow);
-	UpdateWindow(window);
-
-	return 0;
-	//==================================//
 }

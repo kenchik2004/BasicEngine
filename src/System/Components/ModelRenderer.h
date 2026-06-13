@@ -79,6 +79,8 @@ public:
 	void SetMaterial(Material* material, size_t index);
 	//! @brief 指定インデックスのマテリアルを取得する
 	Material* GetMaterial(size_t index);
+	//! @brief マテリアルの数を取得する
+	size_t GetMaterialsNum();
 	//Vector3 pos = { 0,0,0 };
 	//Quaternion rot = { 0,0,0,1 };
 	//Vector3 scale = { 1,1,1 };

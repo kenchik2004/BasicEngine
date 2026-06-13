@@ -17,27 +17,7 @@ namespace NeonFade {
 	int Enemy::Init()
 	{
 
-		if constexpr (false) {
 
-			rb = AddComponent<RigidBody>();
-			//		rb->mass = 0.1f;
-			auto model_obj = SceneManager::Object::Create<GameObject>("pl_model");
-			model_obj->transform->SetParent(transform);
-			model_obj->transform->scale = { 0.05f,0.05f,0.05f };
-			model_obj->transform->local_rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
-			model = model_obj->AddComponent<ModelRenderer>();
-			animator = model_obj->AddComponent<Animator>();
-
-			rb->freeze_rotation = { 1,1,1 };
-
-			enem_controller = AddComponent<EnemyController>();
-
-			auto col_ = AddComponent<CapsuleCollider>(7.5f, 1.5f, Vector3(-5.4f, 0, 0), Quaternion(DEG2RAD(90), { 0,0,-1 }), false,
-				Collider::Layer::Enemy, Collider::Layer::Player | Collider::Layer::Terrain | Collider::Layer::Wepon | Collider::Layer::Vehicle);
-			//col_->SetMaterial(PhysicMaterial::ZeroFriction);
-			col = col_;
-		}
-		else
 		{
 
 			rb = AddComponent<RigidBody>();
@@ -84,23 +64,13 @@ namespace NeonFade {
 			death_material = MaterialManager::CreateMaterial("neonfade_enemy_death_material");
 			death_material->SetShaderPs(death_shader, true);
 			death_material->SetTexture(death_texture, Material::TextureType::Specular);
+			auto default_diffuse = model->GetMaterial(0)->GetTexture(Material::TextureType::Diffuse);
+			death_material->SetTexture(default_diffuse, Material::TextureType::Diffuse);
 		}
 		return 0;
 	}
 	void Enemy::Update()
-	{
-		if (Input::GetKeyDown(KeyCode::Y)) {
-			//Down({ 0,0,1 }, 50);
-			col->WakeUp();
-			rb->use_gravity = true;
-		}
-		if (Input::GetKeyDown(KeyCode::U)) {
-			//Down({ 0,0,1 }, 50);
-			col->Sleep();
-			rb->use_gravity = false;
-
-		}
-	}
+	{}
 	void Enemy::Damage(int damage, bool ignore_i_frame)
 	{
 		enem_controller->Damage(damage, ignore_i_frame);
@@ -128,7 +98,7 @@ namespace NeonFade {
 	//脳が作成・セットされてないので、
 	//プレイヤーポインタとステートマシンで初期化する必要がある
 	//なんかモダンで推奨されてるらしいから構造化束縛してみよう
-	std::tuple<EnemyController*, EnemyStateMachine*> EnemyFactory::MakeAbstractEnemy() {
+	auto EnemyFactory::MakeAbstractEnemy() {
 		//オブジェクト作成軽量化のためカウンタを使い名前をユニークにする
 		auto team_member = SceneManager::Object::Create<Enemy>(u8"Enemy" + std::to_string(counter));
 		Vector3 pos = spawn_pos;
@@ -138,7 +108,8 @@ namespace NeonFade {
 		auto controller = team_member->enem_controller.lock().get();
 		auto state_machine = controller->GetStateMachine();
 		counter++;
-		return { controller, state_machine };
+		struct { EnemyController* controller; EnemyStateMachine* state_machine; } result = { controller, state_machine };
+		return result;
 	}
 
 	//シンプルな単体行動を行う脳をセットされた敵を作成して、脳のポインタを返す

@@ -8,10 +8,9 @@
 
 
 //実は、OctahedronNormalEncondingの改良に成功したのだが、
-//現在の実装でも十分な精度が実現できているため、実装は保留している。
 //必要があればコメントアウトを外すだけで切り替えが可能にしてある。
 //その際は、System/Components/Camera.cppのコメントアウトも外す必要がある。
-//#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODING
+#define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODING
 
 //--------------------------------------------------------------
 // Gbuffer
@@ -181,9 +180,9 @@ PS_OUTPUT_MRT PackSurfaceInfo(float3 albedo_, float ao_, float3 normal_, float r
     PS_OUTPUT_MRT output;
 	
     float emissive_strength = dot(emissive_.rgb, float3(0.299, 0.597, 0.114));
-    emissive_strength = saturate(emissive_strength * (1.0 / 64.0));
+    emissive_strength = emissive_strength;
     float metal_emissive = saturate(metallic_) * 0.5;
-    metal_emissive = emissive_strength > 0.0001 ? (emissive_strength * 0.5 + 0.5) : metal_emissive;
+    metal_emissive = emissive_strength > 0.0001 ? (emissive_strength + 0.5) : metal_emissive;
 	
     float3 normal_encoded = NormalEncode(normal_);
     output.color0_ = float4(albedo_, ao_);
@@ -213,7 +212,7 @@ SurfaceInfo GetSurfaceInfo(int2 position)
     s.normal_ = NormalDecode(gbuffer1.rga);
     s.roughness_ = gbuffer1.b;
     s.metallic_ = saturate(metal_emissive * (metal_emissive < 0.5 ? 2.0 : 0));
-    s.emissive_ = saturate(metal_emissive * 2.0 - 1.0) * 64.0 * 100;
+    s.emissive_ = metal_emissive < 0.5 ? 0 : (metal_emissive - 0.5);
     s.world_position_ = gbuffer2.rgb;
     s.depth_ = depth;
 

@@ -145,102 +145,7 @@ namespace NeonFade
 		idle_state->RegisterChangeRequest("attack", idle_to_attack, 1);
 		AddState("idle", std::move(idle_state));
 
-#if 0
-		if constexpr (false) {
-			auto attack1_state = make_safe_unique<PlayerAttack1State>(player);
 
-			//AddState("attack", std::move(attack1_state));
-			attack_states_vec[0] = std::move(attack1_state);
-		}
-		else if constexpr (false) {
-			auto attack2_state = make_safe_unique<PlayerAttack2State>(player);
-
-			//AddState("attack", std::move(attack2_state));
-			attack_states_vec[1] = std::move(attack2_state);
-		}
-		else if constexpr (false) {
-			auto attack3_state = make_safe_unique<PlayerAttack3State>(player);
-			//AddState("attack", std::move(attack3_state));
-			attack_states_vec[2] = std::move(attack3_state);
-		}
-		else if constexpr (false) {
-			auto attack_state = make_safe_unique<PlayerCombatComboState>(player);
-			std::function<bool()> attack_to_jump = [this]() {
-				return is_jumping;
-				};
-			std::function<bool()> attack_to_dodge = [this]() {
-				return is_dodging;
-				};
-			std::function<bool()> attack_to_damage = [this]() {
-				return is_damaged;
-				};
-			attack_state->RegisterChangeRequest("dodge", attack_to_dodge, 0);
-			attack_state->RegisterChangeRequest("jump", attack_to_jump, 0);
-			attack_state->RegisterChangeRequest("damage", attack_to_damage, 1);
-			AddState("attack", std::move(attack_state));
-			auto attack2_state = make_safe_unique<PlayerCombatComboState2>(player);
-			std::function<bool()> attack2_to_jump = [this]() {
-				return is_jumping;
-				};
-			std::function<bool()> attack2_to_dodge = [this]() {
-				return is_dodging;
-				};
-			std::function<bool()> attack2_to_damage = [this]() {
-				return is_damaged;
-				};
-			attack2_state->RegisterChangeRequest("dodge", attack2_to_dodge, 0);
-			attack2_state->RegisterChangeRequest("jump", attack2_to_jump, 0);
-			attack2_state->RegisterChangeRequest("damage", attack2_to_damage, 1);
-			AddState("attack2", std::move(attack2_state));
-			auto attack3_state = make_safe_unique<PlayerCombatComboState3>(player);
-			std::function<bool()> attack3_to_jump = [this]() {
-				return is_jumping;
-				};
-			std::function<bool()> attack3_to_dodge = [this]() {
-				return is_dodging;
-				};
-			std::function<bool()> attack3_to_damage = [this]() {
-				return is_damaged;
-				};
-			attack3_state->RegisterChangeRequest("dodge", attack3_to_dodge, 0);
-			attack3_state->RegisterChangeRequest("jump", attack3_to_jump, 0);
-			attack3_state->RegisterChangeRequest("damage", attack3_to_damage, 1);
-			AddState("attack3", std::move(attack3_state));
-		}
-
-		if constexpr (false) {
-
-			auto jump_atk_state = make_safe_unique<PlayerJumpAttackState>(player);
-			std::function<bool()> jump_atk_to_idle = [this]() {
-				return is_landed;
-				};
-			jump_atk_state->RegisterChangeRequest("idle", jump_atk_to_idle, 0);
-			AddState("jump_attack", std::move(jump_atk_state));
-			auto jump_atk_land_state = make_safe_unique<PlayerJumpAttackLandState>(player);
-
-			std::function<bool()> atk_land_to_idle = [this]() {
-				return is_landed && player->animator->IsPaused();
-				};
-			std::function<bool()> atk_land_to_fall = [this]() {
-				return is_falling && player->animator->IsPaused();
-				};
-			std::function<bool()> atk_land_to_damage = [this]() {
-				return is_damaged;
-				};
-
-			jump_atk_land_state->RegisterChangeRequest("idle", atk_land_to_idle, 0);
-			jump_atk_land_state->RegisterChangeRequest("fall", atk_land_to_fall, 1);
-			jump_atk_land_state->RegisterChangeRequest("damage", atk_land_to_damage, 1);
-			AddState("jump_attack_land", std::move(jump_atk_land_state));
-		}
-		else {
-			auto smash_charge_state = make_safe_unique<PlayerSmashChargeState>(player);
-			AddState("jump_attack", std::move(smash_charge_state));
-			auto smash_main_state = make_safe_unique<PlayerSmashMainState>(player);
-			AddState("smash_attack", std::move(smash_main_state));
-		}
-
-#else
 
 		auto attack1_state = make_safe_unique<PlayerAttack1State>(player);
 		attack1_state->SetName("attack1");
@@ -312,7 +217,6 @@ namespace NeonFade
 
 
 
-#endif
 
 
 

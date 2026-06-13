@@ -220,6 +220,9 @@ float3 Normalmap(float3 N, float3 p, float2 uv)
 {
 	// 法線マップテクスチャを読み込み
     float3 texture_normal = NormalTexture.Sample(NormalSampler, uv).rgb;
+    //DxLib側の内部状態の不一致により、法線マップがセットされていない場合があるため、
+    //その場合はnull法線を避けるために(0.5, 0.5, 1.0)を使用する。
+    texture_normal = length(texture_normal) < 0.1 ? float3(0.5, 0.5, 1.0) : texture_normal;
 	// デコード
     texture_normal = texture_normal * 2 - 1;
 

@@ -146,7 +146,7 @@ void LightManager::Draw()
 				continue;
 			//平行光源でないことを確認
 			if (light->type != LightType::Directional && set_light_count < MAX_FORWARD_LIGHTS) {
-				Vector4 screen_box = CalculateBoundingBoxInScreen(light->position, static_cast<PointLight*>(light.get())->range * 0.5f, camera_view_proj);
+				Vector4 screen_box = CalculateBoundingBoxInScreen(light->position, static_cast<PointLight*>(light.get())->range, camera_view_proj);
 				//画面外にある場合はスキップ
 				if (screen_box.x > screen_box.z || screen_box.y > screen_box.w) {
 					continue;
@@ -273,7 +273,7 @@ void LightManager::LateDraw()
 		CopyToRenderTarget(bloom_work_texture.get(), current_rt.color_targets_[0], *nd_filter);
 		float inv_w = 1.0f / bloom_work_texture->Width();	//1ピクセル当たりのU幅
 		float inv_h = 1.0f / bloom_work_texture->Height();	//1ピクセル当たりのV高さ
-		int offset_radius = 10; //ガウシアンフィルタのオフセット半径
+		int offset_radius = 1.0f; //ガウシアンフィルタのオフセット半径
 		Texture* upper_mip_tex = bloom_work_texture.get();
 		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
 			//1段上の階層テクスチャから縮小コピー
@@ -420,7 +420,7 @@ void PointLight::DrawToAccumulationBuffer()
 {
 	if (!my_manager)
 		return;
-	Vector4 screen_box = CalculateBoundingBoxInScreen(position, range * 0.5f, my_manager->GetCameraViewProj());
+	Vector4 screen_box = CalculateBoundingBoxInScreen(position, range, my_manager->GetCameraViewProj());
 
 	if ((screen_box.x > screen_box.z || screen_box.y > screen_box.w))
 		return; //画面外にある場合は描画しない

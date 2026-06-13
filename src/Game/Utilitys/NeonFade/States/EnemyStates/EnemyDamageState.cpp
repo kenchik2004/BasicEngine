@@ -41,7 +41,7 @@ NeonFade::EnemyDamageState::EnemyDamageState(Enemy* owner_) :
 }
 
 //! @brief ダメージ状態へ入った瞬間の初期化処理。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 void NeonFade::EnemyDamageState::OnEnter(IStateMachine* machine)
 {
 	// ダメージモーションを再生して被ダメージ演出を開始する。
@@ -56,7 +56,7 @@ void NeonFade::EnemyDamageState::OnEnter(IStateMachine* machine)
 }
 
 //! @brief ダメージ状態を抜ける際の終了処理。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 void NeonFade::EnemyDamageState::OnExit(IStateMachine* machine)
 {
 	//animator->Stop();
@@ -65,7 +65,7 @@ void NeonFade::EnemyDamageState::OnExit(IStateMachine* machine)
 }
 
 //! @brief ダメージ演出中のヒットストップ制御を行う更新処理。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 //! @param dt 前フレームからの経過時間。
 void NeonFade::EnemyDamageState::Update(IStateMachine* machine, float dt)
 {

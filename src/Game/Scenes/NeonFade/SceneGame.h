@@ -5,6 +5,7 @@
 #pragma once
 #include "System/Scene.h"
 #include "Game/Utilitys/NeonFade/StateMachines/SceneGameStateMachine.h"
+#include "Game/Scenes/NeonFade/DebugCameraScene.h"
 USING_PTR(CameraObject);
 USING_PTR(ShadowMapObject);
 USING_PTR(LightManager);
@@ -17,6 +18,7 @@ namespace NeonFade {
 	//---------------------------------------------------------------------
 	class SceneGame :
 		public Scene
+		//public DebugCameraScene
 	{
 	public:
 		USING_SUPER(SceneGame);
@@ -38,7 +40,9 @@ namespace NeonFade {
 		//! @brief 終了処理
 		void Exit() override;
 		//! @brief ローディング状態を確認する
-		bool CheckForLoading();
+		//! @param init 初期化フラグ(確認したときに初期化処理も行うかどうか)
+		//! @return ロード完了ならtrue、まだロード中ならfalse
+		bool CheckForLoading(bool init = true);
 
 
 		//! @brief 敵カウントを加算する
@@ -68,11 +72,10 @@ namespace NeonFade {
 		void StopGameTimer() { is_game_timer_started = false; }
 		//! @brief ゲームタイマーの値を取得する
 		float GetGameTimer() const { return game_timer; }
-		//! @brief エフェクトが存在するか確認する
-		bool IsEffectExsist() const;
-		//! @brief エフェクトが準備中か確認する
-		bool IsEffectPreparing() const;
 		AudioPlayerP audio_player; //!< オーディオプレイヤー
+
+		//! シーンで使用するリソースをまとめて読み込む静的関数
+		static void LoadResources(); 
 	private:
 		float game_timer = 0.0f; //!< ゲームタイマー
 		bool is_game_timer_started = false; //!< タイマー動作中フラグ

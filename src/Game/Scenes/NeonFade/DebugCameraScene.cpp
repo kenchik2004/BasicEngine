@@ -35,7 +35,7 @@ void DebugCameraObject::PostPhysics() {
 
 	Vector2 mouse_delta = Input::GetMouseDelta();
 	// マウスのX軸とY軸を入れ替える(水平回転と垂直回転を対応させるため)
-	std::swap(mouse_delta.x, mouse_delta.y); 
+	std::swap(mouse_delta.x, mouse_delta.y);
 
 	rot_euler += mouse_delta * rot_speed; // マウスの移動量に応じて回転角を更新
 	rot_euler.x = std::clamp(rot_euler.x, -89.0f, 89.0f); // 上下の回転角を制限(ジンバルロックを防止)
@@ -81,6 +81,25 @@ void DebugCameraObject::PostPhysics() {
 
 
 	transform->position += mov_local; // カメラの位置を更新
+
+	static bool tick_freeze = false;
+	static double common_time_scale = 1.0;
+	static float common_physics_time_scale = 1.0f;
+	if (Input::GetKeyDown(KeyCode::F1))
+	{
+		tick_freeze = !tick_freeze;
+		if (tick_freeze) {
+			common_time_scale = Time::TimeScaleD();
+			common_physics_time_scale = GetScene()->physics_timescale;
+			GetScene()->physics_timescale = 0.0f;
+			Time::SetTimeScale(0.0);
+		}
+		else {
+			GetScene()->physics_timescale = common_physics_time_scale;
+			Time::SetTimeScale(common_time_scale);
+		}
+	}
+
 
 
 

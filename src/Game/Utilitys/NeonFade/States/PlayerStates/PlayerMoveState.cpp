@@ -27,7 +27,7 @@ namespace NeonFade
 		animator = player->animator.lock().get();
 	}
 	//! @brief 移動状態に入った際にアニメーションと落下判定タイマを初期化する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerMoveState::OnEnter(IStateMachine* machine)
 	{
 
@@ -39,13 +39,13 @@ namespace NeonFade
 		fall_timer = 0.0f;	// タイマーリセット
 	}
 	//! @brief 移動状態を抜ける際に落下判定タイマをリセットする。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerMoveState::OnExit(IStateMachine* machine)
 	{
 		fall_timer = 0.0f;	// タイマーリセット
 	}
 	//! @brief 入力に応じて向き・移動速度を更新し、落下判定を行う。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerMoveState::Update(IStateMachine* machine, float dt)
 	{
@@ -58,7 +58,7 @@ namespace NeonFade
 		}
 		Transform* pl_trns = player->transform.get();
 
-		// 状態機械から渡された移動入力ベクトルを取得する。
+		// ステートマシンから渡された移動入力ベクトルを取得する。
 		Vector3 input = static_cast<PlayerStateMachine*>(machine)->move_input;
 		// Shiftキーまたは左スティック押し込みでダッシュ状態をトグルする。
 		if (Input::GetKeyDown(KeyCode::LShift) || Input::GetPadButtonDown(0, PadButton::LeftStick)) {
@@ -100,14 +100,14 @@ namespace NeonFade
 		rb->velocity = input;
 	}
 	//! @brief 接地中は落下判定タイマをリセットする。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info 衝突情報。
 	void PlayerMoveState::OnCollisionStay(IStateMachine* machine, const HitInfo& hit_info)
 	{
 		fall_timer = 0.0f;// 地面に接触している間は常にタイマーをリセット
 	}
 	//! @brief 接地判定離脱時に落下判定タイマをリセットする。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info 衝突情報。
 	void PlayerMoveState::OnCollisionExit(IStateMachine* machine, const HitInfo& hit_info)
 	{

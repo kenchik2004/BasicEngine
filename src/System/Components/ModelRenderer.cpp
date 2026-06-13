@@ -211,4 +211,11 @@ Material* ModelRenderer::GetMaterial(size_t index)
 	return model->materials[index];
 }
 
+size_t ModelRenderer::GetMaterialsNum()
+{
+	if (!model)
+		return 0;
+	return model->materials.size();
+}
+
 

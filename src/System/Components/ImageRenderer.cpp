@@ -15,8 +15,7 @@ int ImageRenderer::Init()
 }
 
 void ImageRenderer::Update()
-{
-}
+{}
 
 void ImageRenderer::LateDraw()
 {
@@ -26,6 +25,7 @@ void ImageRenderer::LateDraw()
 
 void ImageRenderer::DrawMain()
 {
+	RenderVertex();
 	Vector3 draw_pos = ui_owner->GetDrawPos();
 	Vector3 scale = ui_owner->transform->scale;
 	VERTEX2DSHADER vert[4];
@@ -60,18 +60,11 @@ void ImageRenderer::DrawMain()
 	vert[3].v = 1.0f;
 
 	SetUsePixelShader(*material->GetPixelShader());
-	for (u32 i = 0; i < 16; i++)
-	{
-		SetUseTextureToShader(i, -1);
-	}
+
 	for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
 		auto texture = material->GetTexture(static_cast<Material::TextureType>(i));
-		if (texture) {
-			SetUseTextureToShader(i, *texture.get());
-		}
-		else {
-			SetUseTextureToShader(i, -1);
-		}
+		SetTexture(i, texture.get());
+		SetUseTextureToShader(i, -1);
 	}
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
@@ -79,7 +72,7 @@ void ImageRenderer::DrawMain()
 	DrawPrimitive2DToShader(vert, 4, DX_PRIMTYPE_TRIANGLESTRIP);
 	SetUsePixelShader(-1);
 	for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
-		SetUseTextureToShader(i, -1);
+		SetTexture(i, nullptr);
 	}
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	SetDrawMode(DX_DRAWMODE_NEAREST);

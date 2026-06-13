@@ -16,13 +16,13 @@ namespace NeonFade
 		//! @param owner_ この状態を所有するプレイヤーオブジェクト。
 		PlayerDodgeState(Player* owner_);
 		//! @brief 状態遷移直後に回避アニメーションと速度ベクトルを設定する初期化処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		virtual void OnEnter(IStateMachine* machine) override;
 		//! @brief 状態遷移直前に実行する終了処理（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		virtual void OnExit(IStateMachine* machine) override;
 		//! @brief 毎フレーム回避タイマを加算する更新処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param dt 前フレームからの経過時間。
 		virtual void Update(IStateMachine* machine, float dt) override;
 		//! @brief 回避開始からの経過時間。

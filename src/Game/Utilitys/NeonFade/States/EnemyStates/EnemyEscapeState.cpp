@@ -35,7 +35,7 @@ namespace NeonFade {
 	}
 
 	//! @brief 逃走状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyEscapeState::OnEnter(IStateMachine* machine)
 	{
 		// 逃走タイマを最大値でリセットして逃走を再開始する。
@@ -47,13 +47,13 @@ namespace NeonFade {
 	}
 
 	//! @brief 逃走状態を抜ける際の終了処理（現在は空実装）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void EnemyEscapeState::OnExit(IStateMachine* machine)
 	{
 	}
 
 	//! @brief リーダーまたはプレイヤーを基準に逃走移動を行い、タイムアップで終了する更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void EnemyEscapeState::Update(IStateMachine* machine, float dt)
 	{

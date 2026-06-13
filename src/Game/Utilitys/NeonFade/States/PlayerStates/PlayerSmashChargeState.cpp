@@ -44,13 +44,11 @@ namespace NeonFade {
 		{
 			if (!light_manager)
 				light_manager = SceneManager::Object::Get<LightManager>().get();
-			auto light = make_safe_shared<PointLight>();
-			light->intensity = 0.001f;
-			light->range = 50.0f;
 			Color light_color = Random::Color({ 0,0,0,1 }, { 1,1,1,1 });
-			light_color = light_color * 100.0f;
-			light->color = light_color;
-			light->position = owner_player->transform->position;
+			light_color = light_color * 10000.0f;
+			static const float intensity = 0.001f;
+			static const float range = 50.0f;
+			auto light = make_safe_shared<PointLight>(owner_player->transform->position, light_color, intensity, range);
 			light_manager->AddLight(light);
 			smash_lights.push_back(light);
 
@@ -91,7 +89,7 @@ namespace NeonFade {
 			light->position = cast(mat.getPosition());
 
 			Color light_color = Random::Color({ 0,0,0,1 }, { 1,1,1,1 });
-			light_color = light_color * 100.0f;
+			light_color = light_color * 10000.0f;
 			light->color = light_color;
 		}
 	}

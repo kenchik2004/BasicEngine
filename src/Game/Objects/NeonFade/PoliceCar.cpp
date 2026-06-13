@@ -88,18 +88,21 @@ namespace NeonFade
 		}
 		{
 			auto light_manager = SceneManager::Object::Get<LightManager>(GetScene());
-			moving_light_red = make_safe_shared<PointLight>();
-			moving_light_red->color = { 100,0,0,0 };
-			moving_light_red->position = { 0,0,90 };
-			moving_light_red->intensity = 1.0f;
-			moving_light_red->range = 50.0f;
-			light_manager->AddLight(moving_light_red);
-			moving_light_blue = make_safe_shared<PointLight>();
-			moving_light_blue->color = { 0,0,100,0 };
-			moving_light_blue->position = { 0,0,90 };
-			moving_light_blue->intensity = 1.0f;
-			moving_light_blue->range = 25.0f;
-			light_manager->AddLight(moving_light_blue);
+
+			static const Color light_color_red = { 100,0,0,0 };
+			static const Color light_color_blue = { 0,0,100,0 };
+			static const Vector3 light_pos = { 0,0,90 };
+			static const float light_intensity = 1.0f;
+			static const float light_range = 50.0f;
+
+			{
+				moving_light_red = make_safe_shared<PointLight>(light_pos, light_color_red, light_intensity, light_range);
+				light_manager->AddLight(moving_light_red);
+			}
+			{
+				moving_light_blue = make_safe_shared<PointLight>(light_pos, light_color_blue, light_intensity, light_range);
+				light_manager->AddLight(moving_light_blue);
+			}
 
 		}
 		return Super::Init();

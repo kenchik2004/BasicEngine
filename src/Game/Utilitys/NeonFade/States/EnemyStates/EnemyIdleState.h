@@ -16,13 +16,13 @@ namespace NeonFade {
 		//! @param owner_ この状態を所有する敵オブジェクト。
 		EnemyIdleState(Enemy* owner_);
 		//! @brief 状態遷移直後に待機アニメーションを開始する初期化処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnEnter(IStateMachine* machine) override;
 		//! @brief 状態遷移直前に実行する終了処理（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnExit(IStateMachine* machine) override;
 		//! @brief 毎フレーム実行する待機状態の更新処理（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param dt 前フレームからの経過時間。
 		void Update(IStateMachine* machine, float dt) override;
 		//! @brief 衝突開始時のコールバック（このクラスでは未使用）。

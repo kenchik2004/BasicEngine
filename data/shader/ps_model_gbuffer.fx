@@ -61,8 +61,8 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 
     float ao = 1.0f;
 	
-    float3 emissive = EmissionTexture.Sample(DiffuseSampler, uv).rgb * 2;
-    emissive += DxLib_Common.Material.Ambient_Emissive.rgb*2;
+    float3 emissive = EmissionTexture.Sample(DiffuseSampler, uv).rgb * 200;
+    emissive += DxLib_Common.Material.Ambient_Emissive.rgb*2000;
 	
 	
 	//----------------------------------------------------------

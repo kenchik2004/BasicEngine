@@ -27,7 +27,7 @@ namespace NeonFade {
 		RegisterChangeRequest("jump_attack_land", exit_request, 0);
 	}
 	//! @brief ジャンプ攻撃開始時の初期化（探索トリガー生成、各種タイマ初期化）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerJumpAttackState::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -45,7 +45,7 @@ namespace NeonFade {
 		}
 	}
 	//! @brief ジャンプ攻撃終了時に物理状態を復帰し、対象への締めダメージと演出を適用する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerJumpAttackState::OnExit(IStateMachine* machine)
 	{
 		rb->is_kinematic = false;
@@ -76,7 +76,7 @@ namespace NeonFade {
 		target = nullptr;
 	}
 	//! @brief ターゲット接近、連撃開始、連続ダメージ処理を進行時間に応じて行う。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerJumpAttackState::Update(IStateMachine* machine, float dt)
 	{
@@ -131,7 +131,7 @@ namespace NeonFade {
 
 	}
 	//! @brief 探索トリガーに敵が入ったときに攻撃対象を取得する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info トリガー衝突情報。
 	void PlayerJumpAttackState::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{

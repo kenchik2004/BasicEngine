@@ -107,13 +107,9 @@ public:
 			Time::ResetTime();
 			return;
 		}
-		//カレントシーンがいる場合は終了してロード
-		current_scene->Exit();
-		current_scene->Destroy();
-		current_scene = scene;
-		scene->Init();
-		//ロード中にdeltatimeが蓄積し、物理がぶっ壊れることがあるため時飛ばし
-		Time::ResetTime();
+		//カレントシーンがいるなら、その場で切り替えずに1フレーム待ってから切り替える(PostDrawの後)
+		is_scene_changing = true;
+		next_scene = scene;
 
 	}
 
@@ -352,6 +348,9 @@ public:
 	static std::vector<std::function<void()>> func_on_loop_finish;
 private:
 	static inline bool is_application_closing = false;	//!<アプリケーション終了要求フラグ
+	static inline bool is_scene_changing = false;	//!<シーン変更中フラグ
+	 static SceneP next_scene;		//!<次のシーン(変更先シーン)へのポインタ
+
 	static ScenePVec scenes;			//!<作成済みシーンの配列
 	static ScenePVec another_scenes;	//!<裏シーンの配列
 	static SceneP current_scene;		//!<現在シーン(カレントシーン)へのポインタ

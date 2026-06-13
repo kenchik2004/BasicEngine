@@ -28,7 +28,7 @@ namespace NeonFade {
 
 	}
 	//! @brief 攻撃開始時の初期化（アニメーション・回転・突進速度・演出生成）。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerAttack1State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
@@ -51,7 +51,7 @@ namespace NeonFade {
 
 	}
 	//! @brief 回転攻撃の進行、ヒット判定生成/破棄、演出追従を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerAttack1State::Update(IStateMachine* machine, float dt)
 	{
@@ -95,7 +95,7 @@ namespace NeonFade {
 		}
 	}
 	//! @brief 攻撃終了時に回転・アニメ速度・演出オブジェクトを後始末する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerAttack1State::OnExit(IStateMachine* machine)
 	{
 		owner_player->transform->rotation = start_rot;
@@ -106,7 +106,7 @@ namespace NeonFade {
 		}
 	}
 	//! @brief 攻撃ヒット時にダメージ/吹き飛ばしとヒットストップ演出を適用する。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param hit_info トリガー衝突情報。
 	void PlayerAttack1State::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
 	{

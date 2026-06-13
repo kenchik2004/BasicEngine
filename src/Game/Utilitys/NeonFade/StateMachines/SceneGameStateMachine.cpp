@@ -32,9 +32,7 @@ namespace NeonFade {
 
 		std::function<bool()> show_to_ten = [this]() {
 			return
-				owner_scene_game->GetEnemyCount() == 0 &&
-				!owner_scene_game->IsEffectExsist() &&
-				!owner_scene_game->IsEffectPreparing();
+				owner_scene_game->GetEnemyCount() == 0;
 			};
 		std::function<bool()> show_to_over = [this]() {
 			return owner_scene_game->GetGameTimer() > SceneGame::GAME_TIMER_MAX;
@@ -53,9 +51,7 @@ namespace NeonFade {
 
 		std::function<bool()> ketsu_to_fin = [this]() {
 			return
-				owner_scene_game->GetEnemyCount() == 0 &&
-				!owner_scene_game->IsEffectExsist() &&
-				!owner_scene_game->IsEffectPreparing();
+				owner_scene_game->GetEnemyCount() == 0;
 			};
 		std::function<bool()> ketsu_to_over = [this]() {
 			return owner_scene_game->GetGameTimer() > SceneGame::GAME_TIMER_MAX;

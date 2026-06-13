@@ -266,6 +266,6 @@ Texture::Texture(u32 width_, u32 height_, DXGI_FORMAT format)
 Texture::operator int()
 {
 	if (!is_initialized)
-		return DX_NONE_GRAPH; // 初期化されていない場合は無効
-	return handle >= 0 ? handle : DX_NONE_GRAPH; // ハンドルを返す
+		return -1; // 初期化されていない場合は無効
+	return handle >= 0 ? handle : -1; // ハンドルを返す
 }

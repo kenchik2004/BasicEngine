@@ -16,13 +16,13 @@ namespace NeonFade
 		//! @param leader_ 追従先リーダーオブジェクトの弱参照（なければ単独逃走）。
 		EnemyEscapeState(Enemy* owner_, SafeWeakPtr<Object> leader_);
 		//! @brief 状態遷移直後に逃走タイマとアニメーションを初期化する処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnEnter(IStateMachine* machine) override;
 		//! @brief 状態遷移直前に実行する終了処理（現在は空実装）。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		void OnExit(IStateMachine* machine) override;
 		//! @brief 毎フレーム実行する逃走移動と終了判定の更新処理。
-		//! @param machine 状態機械本体。
+		//! @param machine ステートマシン本体。
 		//! @param dt 前フレームからの経過時間。
 		void Update(IStateMachine* machine, float dt) override;
 	private:

@@ -23,6 +23,11 @@ void CatmullRomPath::Evaluate(float s, Vector3& outPos, PxQuat& outRot, bool uni
 		}
 		segStartDist += segments[i].length;
 	}
+	if (!loop && segIdx >= (int)segments.size()) {
+		// 非ループで終端を超えた場合は最後のセグメントに固定
+		segIdx = (int)segments.size() - 1;
+		segStartDist = totalLength - segments.back().length;
+	}
 
 	const SegmentInfo& seg = segments[segIdx];
 	float localS = s - segStartDist;
@@ -36,7 +41,9 @@ void CatmullRomPath::Evaluate(float s, Vector3& outPos, PxQuat& outRot, bool uni
 	// 制御点を取得（ループ考慮）
 	auto Get = [&](int i) -> Vector3 {
 		int N = (int)controlPoints.size();
-		return controlPoints[(i + N) % N];
+		if (loop)
+			return controlPoints[(i + N) % N];
+		return controlPoints[std::clamp(i, 0, N - 1)];
 		};
 
 	Vector3 p0 = Get(segIdx - 1);

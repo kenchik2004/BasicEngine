@@ -11,107 +11,7 @@
 #include "Game/Managers/LightManager.h"
 #include "Game/Utilitys/NeonFade/CatmullRomPath.h"
 #include "Game/Components/PlayerCameraMachine.h"
-#include "Game/Objects/NeonFade/HuntedEffect.h"
-
-
-namespace NeonFade {
-	class HuntedEffectCreater {
-	private:
-		float regist_timer = -0.1f;
-		static constexpr float REGIST_INTERVAL = 0.3f;
-		std::vector<GameObjectP> effect_enemys;
-		bool regist_available = true;
-
-		float effect_duration_timer = 0.0f;
-		static constexpr float EFFECT_DURATION = 2.0f;
-		UIObjectWP effect_obj;
-		UIObjectWP effect_text_obj;
-		SafeWeakPtr<AudioClip> hunt_se;
-	public:
-		HuntedEffectCreater() {
-			hunt_se = AudioManager::CloneByName(u8"hunt_se");
-		}
-		bool IsEffectActive() const { return effect_obj.lock() != nullptr; }
-		bool IsEffectPreparing() const { return effect_enemys.size() > 0; }
-		void Update() {
-			regist_timer -= Time::UnscaledDeltaTime();
-			if (!IsEffectActive() && effect_enemys.size() > 0 && regist_timer < 0.0f)
-				CreateEffect();
-			effect_duration_timer -= Time::UnscaledDeltaTime();
-			if (IsEffectActive() && effect_duration_timer < 0.0f) {
-				ResetEffect();
-			}
-		}
-		void RegistEnemy() {
-			if (!regist_available && effect_duration_timer > 0.0f)
-				return;
-			if (!regist_available)
-				regist_available = true;
-			auto scene = SceneManager::GetDontDestoryOnLoadScene();
-			auto enem = SceneManager::Object::Create<GameObject>(scene);
-
-			enem->AddComponent<ModelRenderer>()->SetModel("enemy_model_LOD");
-			Vector3 rand_pos = Random::Position({ -3,0,-3 }, { 3,0,3 });
-			enem->transform->position = Vector3(-2, -5, 20) + rand_pos;
-			enem->transform->scale = { 0.05f,0.05f,0.05f };
-			auto anim = enem->AddComponent<Animator>();
-			anim->SetAnimation("enemy_hunted", 0);
-			anim->Play("enemy_hunted", true, Random::Float01() * 0.2f);
-			effect_enemys.push_back(enem);
-			ResetInterval();
-		}
-		void ClearAll() {
-			auto scene = SceneManager::GetDontDestoryOnLoadScene();
-			for (auto enem = effect_enemys.begin(); enem != effect_enemys.end();) {
-				auto enem_ptr = *enem;
-				SceneManager::Object::Destroy(enem_ptr->GetScene(), enem_ptr);
-				enem = effect_enemys.erase(enem);
-			}
-		}
-		void ResetInterval() {
-			regist_timer = REGIST_INTERVAL;
-		}
-		void ResetEffect() {
-			if (effect_obj)
-				SceneManager::Object::Destroy(effect_obj.lock());
-			if (effect_text_obj)
-				SceneManager::Object::Destroy(effect_text_obj.lock());
-			ClearAll();
-			effect_obj.reset();
-			effect_text_obj.reset();
-		}
-		void CreateEffect() {
-			regist_available = false;
-			auto effect_scene = SceneManager::GetCurrentScene();
-			if (!effect_obj) {
-				effect_obj = SceneManager::Object::Create<UIObject>(effect_scene);
-				auto img = effect_obj->AddComponent<ImageRenderer>();
-				effect_obj->transform->position = { -SCREEN_W * 0.25f,0,0 };
-				effect_obj->transform->scale = { SCREEN_W * 0.75f,SCREEN_H * 0.75f,1 };
-				effect_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_MIDDLE;
-				effect_obj->AnchorType() = UIObject::ANCHOR_TYPE::CENTER;
-				auto mat = MaterialManager::GetMaterial("hunt_eff_mat");
-
-				img->SetMaterial(mat);
-				effect_duration_timer = EFFECT_DURATION;
-			}
-			if (!effect_text_obj) {
-				effect_text_obj = SceneManager::Object::Create<UIObject>(effect_scene);
-				auto text = effect_text_obj->AddComponent<Text>();
-				effect_text_obj->transform->position = { SCREEN_W * 0.2f,-50,0 };
-				effect_text_obj->transform->scale = { 700,170,1 };
-				effect_text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
-				effect_text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_TOP;
-				text->TextColor() = Color::RED;
-				text->SetText(u8"逮捕完了!!");
-				text->SetFontSize(80);
-				text->SetAlignment(Text::ALIGNMENT::AUTO);
-				text->text_speed = 4.0f;
-			}
-			hunt_se->PlayOneShot();
-		}
-	};
-}
+#include "Game/Objects/DevelopTools/LightEditor.h"
 
 
 
@@ -123,12 +23,11 @@ namespace NeonFade {
 		Vector3(100.0f,0.0f,130.0f),
 		Vector3(100.0f,0.0f,290.0f),
 	};
-	std::unique_ptr<HuntedEffectCreater> hunted_effect_creater = nullptr;
+	SafeSharedPtr<LightEditor> light_editor = nullptr; //!< ライトエディタオブジェクト
 
-	void SceneGame::Load()
+	void SceneGame::LoadResources()
 	{
 
-		loading_status = LOADING_STATUS::LOADING;
 		ModelManager::LoadAsModel(u8"data/player/model.mv1", "player_model");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_stand.mv1", "idle");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_walk.mv1", "walk");
@@ -152,8 +51,22 @@ namespace NeonFade {
 
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/Ground.mv1", "stage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/building-01_UV.mv1", "building");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower1.mv1", "sky_tower1");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower2.mv1", "sky_tower2");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower3.mv1", "sky_tower3");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower4.mv1", "sky_tower4");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower5.mv1", "sky_tower5");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower6.mv1", "sky_tower6");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower7.mv1", "sky_tower7");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower8.mv1", "sky_tower8");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower9.mv1", "sky_tower9");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower10.mv1", "sky_tower10");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower11.mv1", "sky_tower11");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower12.mv1", "sky_tower12");
+		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower13.mv1", "sky_tower13");
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road.mv1", "high-way");
-
+		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road_straight_lod.mv1", "sky_highway");
+		ModelManager::LoadAsModel(u8"data/Stage/light/street_light.mv1", "street_light");
 
 		ModelManager::LoadAsModel(u8"data/enemy/X Bot.mv1", "enemy_model");
 		ModelManager::LoadAsModel(u8"data/enemy/X Bot_LOD.mv1", "enemy_model_LOD");
@@ -185,10 +98,17 @@ namespace NeonFade {
 		AudioManager::Load(u8"data/sound/result_bgm.mp3", "result_bgm");
 		AudioManager::Load(u8"data/sound/score_se.mp3", "score_se");
 		AudioManager::Load(u8"data/sound/welter_se.mp3", "welter_se");
+	}
 
 
+	void SceneGame::Load()
+	{
 
-		{
+		loading_status = LOADING_STATUS::LOADING;
+		LoadResources();
+
+		//ロード中のメッセージテキストを作成
+		if (ui_texts.empty()) {
 			std::array<std::string, 2> ui_name_table = { "txt_message","txt_time" };
 			std::array<std::string, 2> ui_txt_table = { u8"",u8"" };
 			for (u32 i = 0; i < ui_name_table.size(); i++) {
@@ -208,7 +128,7 @@ namespace NeonFade {
 			ui_texts["txt_time"]->AnchorType() = UIObject::ANCHOR_TYPE::CENTER_TOP;
 			ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80);
 		}
-		CheckForLoading();
+		CheckForLoading(false);
 	}
 
 	int SceneGame::Init()
@@ -217,6 +137,7 @@ namespace NeonFade {
 			DxLib::SetTextureAddressMode(DX_TEXADDRESS_WRAP, i);
 		if (!camera) {
 			camera = SceneManager::Object::Create<CameraObject>();
+
 			auto rec_cam = SceneManager::Object::Create<CameraObject>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_cam->camera->render_type = Camera::RenderType::Deferred;
 			rec_cam->camera->clear_type = Camera::ClearType::Color;
@@ -231,35 +152,48 @@ namespace NeonFade {
 		if (!shadowmap) {
 			shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
 			shadowmap->SetCascadeCount(4);
-			shadowmap->SetShadowMapSize(1024);
-			shadowmap->SetLightDirection({ 0, -8, 5 });
+			shadowmap->SetShadowMapSize(2048);
+			shadowmap->SetLightDirection({ 5, -10, -8 });
 			auto rec_shadowmap = SceneManager::Object::Create<ShadowMapObject>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_shadowmap->SetCascadeCount(2);
 			rec_shadowmap->SetShadowMapSize(1024);
-			rec_shadowmap->SetLightDirection({ 0, -8, 5 });
+			rec_shadowmap->SetLightDirection({ -5, -8, 5 });
 		}
 
 		if (!light_manager) {
 
 			light_manager = SceneManager::Object::Create<LightManager>(u8"ライトマネージャー");
-			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 15,8,10 }, 0, 0, { 0,-8,5 });
+			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 15,8,10 }, 0, 0, { 5,-10,-8 });
 			auto rec_light_manager = SceneManager::Object::Create<LightManager>(SceneManager::GetDontDestoryOnLoadScene());
-			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { 0,-8,5 });
+			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { -5,-8,5 });
+			for (u32 i = 0; i < buildings.size(); ++i)
+				for (u32 j = 0; j < 20; ++j) {
+					Vector3 rand_start = Vector3(-5, 20, -5);
+					Vector3 rand_end = Vector3(5, 100, 5);
+					Vector3 rand_pos = Random::Position(rand_start, rand_end);
+					Vector3 offset = Vector3(rand_pos.x, 0, rand_pos.z);
+					rand_pos += offset.getNormalized() * 60;
+					rand_pos += buildings[i];
+					light_manager->AddLight(LightType::Point, rand_pos, Random::Color({ 100,100,500 }, { 1000,1000,1000 }), Random::Range(10.0f, 50.0f), Random::Range(0.01f, 10.0f));
 
+				}
 
-			{
-
-			}
 			{
 
 				auto mat = MaterialManager::CreateMaterial("hunt_eff_mat");
 				auto tex = SceneManager::GetDontDestoryOnLoadScene()->GetCurrentCamera()->hdr;
+				auto depth = SceneManager::GetDontDestoryOnLoadScene()->GetCurrentCamera()->depth;
 				mat->SetTexture(tex, Material::TextureType::Diffuse);
+				mat->SetTexture(depth, Material::TextureType::Normal);
 				auto movie = TextureManager::Get("cutin_eff");
 				mat->SetTexture(movie, Material::TextureType::Emission);
 				mat->SetShaderPs(MaterialManager::LoadPixelShader(u8"data/shader/ps_hunted_effect.fx", u8"ps_hunted_effect"));
 				mat->SetShaderVs(MaterialManager::GetDefaultMat2D()->GetVertexShader());
 			}
+		}
+		if (!light_editor) {
+			light_editor = SceneManager::Object::Create<LightEditor>();
+			light_editor->file_path = "data/SceneGame_LightData.txt";
 		}
 
 		if (!CheckForLoading())
@@ -273,17 +207,7 @@ namespace NeonFade {
 			auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
 
 			player_->transform->position = { 0,20,100 };
-			for (u32 i = 0; i < buildings.size(); ++i)
-				for (u32 j = 0; j < 20; ++j) {
-					Vector3 rand_start = Vector3(-5, 20, -5);
-					Vector3 rand_end = Vector3(5, 100, 5);
-					Vector3 rand_pos = Random::Position(rand_start, rand_end);
-					Vector3 offset = Vector3(rand_pos.x, 0, rand_pos.z);
-					rand_pos += offset.getNormalized() * 60;
-					rand_pos += buildings[i];
-					light_manager->AddLight(LightType::Point, rand_pos, Random::Color({ 0,0,100 }, { 100,100,100 }), 50.0f, 4.0f);
 
-				}
 
 
 			{
@@ -292,7 +216,7 @@ namespace NeonFade {
 				ground_mdl->SetModel("stage");
 				ground->AddComponent<RigidBody>();
 				ground->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
-				ground->transform->scale = { 5,5,5 };
+				ground->transform->scale = { 10,10,10 };
 				ground->transform->position = { 0,0,200 };
 
 			}
@@ -300,7 +224,7 @@ namespace NeonFade {
 				camera->transform->position = { 0,10,10 };
 				camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
 				camera->camera->render_type = Camera::RenderType::Deferred;
-				camera->camera->camera_far = 1000.0f;
+				camera->camera->camera_far = 3000.0f;
 				camera->AddComponent<AudioListener>();
 				auto machine = camera->AddComponent<PlayerCameraMachine>();
 
@@ -324,7 +248,113 @@ namespace NeonFade {
 			collision->position = { 0,100.0f,0 };
 			collision->SetLayer(Collider::Layer::Terrain);
 		}
+		{
+			static constexpr int SKY_TOWER_COUNT = 12;
+			std::array<std::string, SKY_TOWER_COUNT> sky_tower_model_names = {
+				"sky_tower1",
+				"sky_tower2",
+				"sky_tower3",
+				"sky_tower4",
+				"sky_tower5",
+				"sky_tower6",
+				"sky_tower7",
+				"sky_tower8",
+				"sky_tower9",
+				"sky_tower12",
+				"sky_tower13",
+				"sky_tower13",
+			};
+			std::array<Vector3, SKY_TOWER_COUNT> sky_tower_positions = {
+				Vector3(-1070,0,-480),
+				Vector3(0,0,-940),
+				Vector3(0,0,1910),
+				Vector3(1020,0,870),
+				Vector3(-1010,0,1110),
+				Vector3(-1800,0,230),
+				Vector3(1140,0,-730),
+				Vector3(680,0,1600),
+				Vector3(-1310,0,-1020),
+				Vector3(1620,0,-20),
+				Vector3(-340,0,1430),
+				Vector3(650,0,-707)
+			};
+			std::array<Quaternion, SKY_TOWER_COUNT> sky_tower_rotations = {
+				Quaternion(0.898f, { 0,1,0 }),
+				Quaternion(0.0f, { 0,1,0 }),
+				Quaternion(0.0f, { 0,1,0 }),
+				Quaternion(1.436f, { 0,1,0 }),
+				Quaternion(5.745f, { 0,1,0 }),
+				Quaternion(1.571f, { 0,1,0 }),
+				Quaternion(1.661f, { 0,1,0 }),
+				Quaternion(0.0f, { 0,1,0 }),
+				Quaternion(0.0f, { 0,1,0 }),
+				Quaternion(4.712f, { 0,1,0 }),
+				Quaternion(5.61f, { 0,1,0 }),
+				Quaternion(6.104f, { 0,1,0 })
+			};
+			std::array<Vector3, SKY_TOWER_COUNT> sky_tower_scales = {
+				Vector3(1.8f,1.8f,1.8f),
+				Vector3(2.7f,2.7f,2.7f),
+				Vector3(2.5f,2.5f,2.5f),
+				Vector3(3.5f,3.5f,3.5f),
+				Vector3(2.0f,2.0f,2.0f),
+				Vector3(1.5f,1.5f,1.5f),
+				Vector3(2.8f,2.8f,2.8f),
+				Vector3(2.6f,2.6f,2.6f),
+				Vector3(3.4f,9.9f,3.4f),
+				Vector3(3.1f,3.1f,3.1f),
+				Vector3(1.2f,1.2f,1.2f),
+				Vector3(1.2f,1.2f,1.2f)
+			};
+			for (int i = 0; i < SKY_TOWER_COUNT; ++i)
+			{
+				auto sky_tower = SceneManager::Object::Create<GameObject>("SkyTower" + std::to_string(i + 1));
+				auto mod = sky_tower->AddComponent<ModelRenderer>();
+				mod->SetModel(sky_tower_model_names[i]);
+				sky_tower->transform->position = sky_tower_positions[i];
+				sky_tower->transform->rotation = sky_tower_rotations[i];
+				sky_tower->transform->scale = sky_tower_scales[i];
+			}
+		}
+		{
+			static constexpr int SKY_HIGHWAY_COUNT = 10;
+			std::array<Vector3, SKY_HIGHWAY_COUNT> sky_highway_positions = {
+			Vector3(-381,563,1474),
+			Vector3(-199,563,1245),
+			Vector3(-25,563,1017),
+			Vector3(130,563,777),
+			Vector3(271,563,521),
+			Vector3(377,563,254),
+			Vector3(461,563,-25),
+			Vector3(540,563,-310),
+			Vector3(612,563,-593),
+			Vector3(678,563,-881),
 
+			};
+			std::array<Quaternion, SKY_HIGHWAY_COUNT> sky_highway_rotations = {
+			Quaternion(0.898f, { 0,1,0 }),
+			Quaternion(0.898f, { 0,1,0 }),
+			Quaternion(0.942f, { 0,1,0 }),
+			Quaternion(1.032f, { 0,1,0 }),
+			Quaternion(1.122f, { 0,1,0 }),
+			Quaternion(1.257f, { 0,1,0 }),
+			Quaternion(1.302f, { 0,1,0 }),
+			Quaternion(1.302f, { 0,1,0 }),
+			Quaternion(1.346f, { 0,1,0 }),
+			Quaternion(1.346f, { 0,1,0 }),
+
+			};
+			Vector3 sky_highway_scale = { 0.1f,0.1f,0.1f };
+
+			for (int i = 0; i < SKY_HIGHWAY_COUNT; ++i) {
+				auto sky_highway = SceneManager::Object::Create<GameObject>("SkyHighway" + std::to_string(i + 1));
+				auto mod = sky_highway->AddComponent<ModelRenderer>();
+				mod->SetModel("sky_highway");
+				sky_highway->transform->position = sky_highway_positions[i];
+				sky_highway->transform->rotation = sky_highway_rotations[i];
+				sky_highway->transform->scale = sky_highway_scale;
+			}
+		}
 		{
 			auto high_way = SceneManager::Object::Create<GameObject>("HighWay");
 			auto mod = high_way->AddComponent<ModelRenderer>();
@@ -333,6 +363,14 @@ namespace NeonFade {
 			high_way->transform->scale = { 3.0f,3.0f,3.0f };
 			high_way->AddComponent<RigidBody>();
 			high_way->AddComponent<MeshCollider>()->SetLayer(Collider::Layer::Terrain);
+
+		}
+		for (int i = 0; i < 5; ++i) {
+			auto street_light_prototype = SceneManager::Object::Create<GameObject>("StreetLightPrototype");
+			auto mod = street_light_prototype->AddComponent<ModelRenderer>();
+			mod->SetModel("street_light");
+			street_light_prototype->transform->scale = { 0.05f,0.05f,0.05f };
+			street_light_prototype->transform->position = { 50 - i * 10.0f,0,200 };
 
 		}
 		constexpr float gravity_factor = -9.81f * 6;
@@ -400,8 +438,6 @@ namespace NeonFade {
 
 
 		}
-		if (!hunted_effect_creater)
-			hunted_effect_creater = std::make_unique<HuntedEffectCreater>();
 		return Super::Init();
 
 	}
@@ -410,7 +446,7 @@ namespace NeonFade {
 	{
 		if (!CheckForLoading())
 			return;
-		hunted_effect_creater->Update();
+
 		scene_state_machine->Update(Time::DeltaTime());
 		if (Input::GetPadButtonDown(0, PadButton::Start) || Input::GetKeyDown(KeyCode::Minus)) {
 			hud_obj->GetComponent<Text>()->Sleep();
@@ -460,7 +496,6 @@ namespace NeonFade {
 
 		printfDx("%.2f fps\n", Time::GetDrawFPS());
 		printfDx("%.2f update_fps\n", Time::GetFPS());
-		//DrawBoxAA(0, 50, sample_count_timer * 50.0f, 80, Color::RED, true);
 		if (!CheckForLoading())
 		{
 			float cnt = Time::GetTimeFromStart();
@@ -473,16 +508,14 @@ namespace NeonFade {
 	}
 
 	void SceneGame::Exit()
-	{
-		hunted_effect_creater.reset();
-	}
+	{}
 
-	bool SceneGame::CheckForLoading()
+	bool SceneGame::CheckForLoading(bool init)
 	{
 		if (loading_status == LOADING_STATUS::LOADED)
 			return true;
 		loading_status = (ModelManager::GetLoadingCount() + TextureManager::GetLoadingCount() + AudioManager::GetLoadingCount()) == 0 ? LOADING_STATUS::LOADED : LOADING_STATUS::LOADING;
-		if (loading_status == LOADING_STATUS::LOADED)
+		if (loading_status == LOADING_STATUS::LOADED && init)
 			Init();
 		return loading_status == LOADING_STATUS::LOADED;
 	}
@@ -490,8 +523,6 @@ namespace NeonFade {
 	void SceneGame::SubtractEnemyCount(u32 cnt)
 	{
 		enemy_count -= min(cnt, enemy_count);
-		if (hunted_effect_creater)
-			hunted_effect_creater->RegistEnemy();
 	}
 
 	void SceneGame::ClearAllEnemy()
@@ -501,17 +532,8 @@ namespace NeonFade {
 		for (auto& enem : enems)
 			SceneManager::Object::Destroy(enem);
 
-		if (hunted_effect_creater)
-			hunted_effect_creater->ResetEffect();
 	}
 
-	bool SceneGame::IsEffectExsist() const
-	{
-		return hunted_effect_creater && hunted_effect_creater->IsEffectActive();
-	}
-	bool SceneGame::IsEffectPreparing() const
-	{
-		return hunted_effect_creater && hunted_effect_creater->IsEffectPreparing();
-	}
+
 
 }

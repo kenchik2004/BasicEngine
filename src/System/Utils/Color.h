@@ -47,6 +47,12 @@ public:
 	Color(const Color& other) { r = other.r; g = other.g; b = other.b; a = other.a; }
 
 	//----------------------------------------------------
+	// @brief Vector3 から色を初期化するコンストラクタ。
+	// @param other Vector3 (x=r, y=g, z=b)。アルファは 1.0f に固定。
+	//----------------------------------------------------
+	Color(const Vector3& other) { r = other.x; g = other.y; b = other.z; a = 1.0f; }
+
+	//----------------------------------------------------
 	// @brief Vector4 から色を初期化するコンストラクタ。
 	// @param other Vector4 (x=r, y=g, z=b, w=a)。
 	//----------------------------------------------------
@@ -62,6 +68,12 @@ public:
 	Color(float red, float green, float blue, float alpha = 1.0f) { r = red; g = green; b = blue; a = alpha; }
 
 	//----------------------------------------------------
+	// @brief Vector3 への変換演算子。
+	// @return Vector3 (x=r, y=g, z=b)。アルファ成分は無視される。
+	//----------------------------------------------------
+	operator Vector3() const { return Vector3(r, g, b); }
+
+	//----------------------------------------------------
 	// @brief Vector4 への変換演算子。
 	// @return Vector4 (x=r, y=g, z=b, w=a)。
 	//----------------------------------------------------
@@ -71,7 +83,7 @@ public:
 	// @brief DXLib の COLOR_F への変換演算子。
 	// @return DXLib の COLOR_F 構造体。
 	//----------------------------------------------------
-	operator COLOR_F() const { COLOR_F dx_color; dx_color.r = r; dx_color.g = g; dx_color.b = b; dx_color.a = a; return dx_color; }
+	operator COLOR_F() const { COLOR_F dx_color = { .r = r, .g = g, .b = b, .a = a }; return dx_color; }
 
 	//----------------------------------------------------
 	// @brief unsigned int への変換演算子。
@@ -85,26 +97,47 @@ public:
 		return color;
 	}
 
+
+
+	//----------------------------------------------------
+	// @brief Color 加算演算子。
+	// @param bias 加算する Color。
+	// @return 各成分を対応する成分で加算した新しい Color。
+	//----------------------------------------------------
+	Color operator+ (const Color& bias) { return { r + bias.r,g + bias.g,b + bias.b,a + bias.a }; }
+	Color& operator+= (const Color& bias) { *this = *this + bias; return *this; }
+
+	//----------------------------------------------------
+	// @brief Color 減算演算子。
+	// @param bias 減算する Color。
+	// @return 各成分を対応する成分で減算した新しい Color。
+	//----------------------------------------------------
+	Color operator- (const Color& bias) { return { r - bias.r,g - bias.g,b - bias.b,a - bias.a }; }
+	Color& operator-= (const Color& bias) { *this = *this - bias; return *this; }
+
 	//----------------------------------------------------
 	// @brief スカラー乗算演算子。
 	// @param bias 乗算するスカラー値。
 	// @return 各成分に bias を乗算した新しい Color。
 	//----------------------------------------------------
 	Color operator* (float bias) { return { r * bias,g * bias,b * bias,a * bias }; }
+	Color& operator*= (float bias) { *this = *this * bias; return *this; }
 
 	//----------------------------------------------------
 	// @brief Color 乗算演算子。
 	// @param bias 乗算する Color。
 	// @return 各成分を対応する成分で乗算した新しい Color。
 	//----------------------------------------------------
-	Color operator* (Color bias) { return { r * bias.r,g * bias.g,b * bias.b,a * bias.a }; }
+	Color operator* (const Color& bias) { return { r * bias.r,g * bias.g,b * bias.b,a * bias.a }; }
+	Color& operator*= (const Color& bias) { *this = *this * bias; return *this; }
 
 	//----------------------------------------------------
 	// @brief Vector4 乗算演算子。
 	// @param bias 乗算する Vector4 (x=r, y=g, z=b, w=a)。
 	// @return 各成分を対応する成分で乗算した新しい Color。
 	//----------------------------------------------------
-	Color operator* (Vector4 bias) { return { r * bias.x,g * bias.y,b * bias.z,a * bias.w }; }
+	Color operator* (const Vector4& bias) { return { r * bias.x,g * bias.y,b * bias.z,a * bias.w }; }
+	Color& operator*= (const Vector4& bias) { *this = *this * bias; return *this; }
 
 	//各色のGetColorやGetColorFを使用せずに扱うための定数
 	static const Color BLACK;		//< @brief 黒色定数。 

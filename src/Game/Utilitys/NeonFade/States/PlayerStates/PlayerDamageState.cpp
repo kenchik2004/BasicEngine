@@ -25,7 +25,7 @@ namespace NeonFade
 		RegisterChangeRequest("idle", default_change, 1);
 	}
 	//! @brief ダメージ状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerDamageState::OnEnter(IStateMachine* machine)
 	{
 		// アニメーション速度を 2 倍にしてダメージリアクションを短く見せる。
@@ -37,7 +37,7 @@ namespace NeonFade
 		//rb->velocity = { 0, 0, 0 };
 	}
 	//! @brief ダメージ状態を抜ける際にアニメーション速度を通常に戻す終了処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerDamageState::OnExit(IStateMachine* machine)
 	{
 		//animator->Stop();
@@ -45,7 +45,7 @@ namespace NeonFade
 		animator->anim_speed = 1.0f;
 	}
 	//! @brief 退場タイマを加算する更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerDamageState::Update(IStateMachine* machine, float dt)
 	{

@@ -22,7 +22,7 @@ NeonFade::EnemyIdleState::EnemyIdleState(Enemy* owner_) :
 }
 
 //! @brief 待機状態へ入った瞬間の初期化処理。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 void NeonFade::EnemyIdleState::OnEnter(IStateMachine* machine)
 {
 	// 待機モーションをループ再生して停止演出を開始する。
@@ -30,13 +30,13 @@ void NeonFade::EnemyIdleState::OnEnter(IStateMachine* machine)
 }
 
 //! @brief 待機状態を抜ける際の終了処理（現在は空実装）。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 void NeonFade::EnemyIdleState::OnExit(IStateMachine* machine)
 {
 }
 
 //! @brief 毎フレーム実行する待機状態の更新処理（現在は空実装）。
-//! @param machine 状態機械本体。
+//! @param machine ステートマシン本体。
 //! @param dt 前フレームからの経過時間。
 void NeonFade::EnemyIdleState::Update(IStateMachine* machine, float dt)
 {

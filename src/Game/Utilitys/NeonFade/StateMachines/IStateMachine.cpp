@@ -51,6 +51,7 @@ namespace NeonFade
 		if (current_state)
 		{
 			printfDx("%s Current State: %s\n", owner->name.c_str(), current_state->GetName().c_str());
+			current_state->DebugDraw();
 		}
 	}
 

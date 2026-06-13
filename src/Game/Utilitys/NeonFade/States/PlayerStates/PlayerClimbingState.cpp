@@ -27,7 +27,7 @@ namespace NeonFade
 		RegisterChangeRequest("idle", exit_request, 0);
 	}
 	//! @brief よじ登り状態へ入った瞬間の初期化処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerClimbingState::OnEnter(IStateMachine* machine)
 	{
 		// よじ登り残り時間を初期化する。
@@ -40,13 +40,13 @@ namespace NeonFade
 		rb->is_kinematic = true;
 		// よじ登りアニメーションをブレンド付きで再生する。
 		animator->Play("climb", false, 0.0f, 0.2f, true);
-		// 状態機械からよじ登り開始・終了位置を取得して補間に備える。
+		// ステートマシンからよじ登り開始・終了位置を取得して補間に備える。
 		auto pl_machine = static_cast<PlayerStateMachine*>(machine);
 		climb_start_pos = pl_machine->climb_start_pos;
 		climb_end_pos = pl_machine->climb_end_pos;
 	}
 	//! @brief よじ登り状態を抜ける際に重力と物理シミュレーションを復元する終了処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	void PlayerClimbingState::OnExit(IStateMachine* machine)
 	{
 		// 重力を有効に戻してよじ登り完了後の落下を許可する。
@@ -55,7 +55,7 @@ namespace NeonFade
 		rb->is_kinematic = false;
 	}
 	//! @brief よじ登りの進行と位置補間を行う更新処理。
-	//! @param machine 状態機械本体。
+	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。
 	void PlayerClimbingState::Update(IStateMachine* machine, float dt)
 	{

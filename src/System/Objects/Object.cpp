@@ -254,6 +254,7 @@ void UIObject::LateDraw()
 {
 	Vector3 scale = transform->scale;
 	if (use_back_color) {
+		SetUseTextureToShader(0, -1);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (back_ground_color.a * 255));
 		DrawBoxAA(draw_pos.x, draw_pos.y, draw_pos.x + scale.x, draw_pos.y + scale.y, back_ground_color, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

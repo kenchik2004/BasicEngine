@@ -180,7 +180,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 
 		Vector3 center = info.bounding_sphere_.getXYZ();
 		float  radius = info.bounding_sphere_.w;
-		float lite_y = 700;
+		float lite_y = 5000;
 
 		Vector3 position = center - light_dir * lite_y;
 		Vector3 lookat = position + light_dir;
@@ -194,7 +194,7 @@ void ShadowMapObject::ShadowMapDrawBegin()
 		float top = +radius;					//      +--bottom-+
 
 		float near_z = 0.05f * radius;		// シャドウマップの近くのクリッピング面
-		float far_z = 2000;		// シャドウマップの遠くのクリッピング面
+		float far_z = 7000;		// シャドウマップの遠くのクリッピング面
 
 
 		shadowmap_proj = CreateMatrix::orthographicOffCenterLH(left, right, bottom, top, near_z, far_z);
