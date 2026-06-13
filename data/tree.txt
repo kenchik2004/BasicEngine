@@ -48,10 +48,10 @@ root
 |        |-----EffectPlayer
 |        |-----ImageRenderer
 |        |-----Text3D
+|        |-----AudioPlayer
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
 |        |-----Text
-|        |-----AudioPlayer
 |        |-----Collider
 |        |        |-----ConvexMeshCollider
 |        |        |-----SphereCollider

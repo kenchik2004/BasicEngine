@@ -92,7 +92,7 @@ namespace NeonFade
 		// 接触相手の所有オブジェクトが存在する場合のみ処理を進める。
 		if (auto player = hit_info.hit_collision->owner.lock()) {
 			// 接触相手をプレイヤー型として扱えるか安全に判定する。
-			auto player_neonfade = SafeStaticCast<NeonFade::Player>(player);
+			auto player_neonfade = SafeDynamicCast<NeonFade::Player>(player);
 			// プレイヤーであれば固定ダメージを適用する。
 			if (player_neonfade) {
 				player_neonfade->Damage(10);

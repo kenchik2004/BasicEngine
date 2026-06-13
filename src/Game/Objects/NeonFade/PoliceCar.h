@@ -4,6 +4,8 @@
 //---------------------------------------------------------------------------
 #pragma once
 
+#include "Game/Utilitys/NeonFade/CatmullRomPath.h"
+
 class PointLight;
 namespace NeonFade
 {
@@ -29,13 +31,21 @@ namespace NeonFade
 		//! @brief パス上の位置を設定する
 		void SetPointOnpath(const float& t_) { t = t_; }
 
+		void DebugDraw() override;
+
+		//! @brief パスの制御点を設定する
+		void SetPathPoints(const std::vector<Vector3>& points) {
+			if (path)
+				path->SetPoints(points, true);
+		}
+
 	private:
 		static inline bool player_rideon = false; //!< プレイヤー乗車フラグ
 		float t = 0.0f; //!< パス上のパラメーター
 		RigidBodyWP rb = nullptr; //!< 物理ボディ
-		AudioPlayerWP audio_player = nullptr; //!< オーディオプレイヤー
 		SafeSharedPtr<PointLight> moving_light_red = nullptr; //!< 赤色回転灯ライト
 		SafeSharedPtr<PointLight> moving_light_blue = nullptr; //!< 青色回転灯ライト
 		std::vector<SafeWeakPtr<Object>> rideon_objs; //!< 乗車中のオブジェクトリスト
+		SafeUniquePtr<CatmullRomPath> path;			//!< パトカーの移動パス
 	};
 }
