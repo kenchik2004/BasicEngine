@@ -8,8 +8,8 @@ namespace NeonFade {
 	//! @brief タイトルシーンクラス
 	//---------------------------------------------------------------------
 	class SceneTitle :
-		public DebugCameraScene
-		//public Scene
+		//public DebugCameraScene
+		public Scene
 	{
 	public:
 		USING_SUPER(SceneTitle);

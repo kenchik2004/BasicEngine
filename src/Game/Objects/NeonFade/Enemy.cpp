@@ -19,14 +19,17 @@ namespace NeonFade {
 
 
 		{
-
-			rb = AddComponent<RigidBody>();
-			rb->GetBody()->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0f);
+			//モデルオブジェクトの作成とコンポーネントの追加
+			//敵モデルの原点は足元にあるため、敵オブジェクトの原点を中心にするために、
+			//モデルオブジェクトを子オブジェクトとして作成し、位置を調整する
 			auto model_obj = SceneManager::Object::Create<GameObject>("enem_model");
 			model_obj->transform->SetParent(transform);
 			model_obj->transform->scale = { 0.05f,0.05f,0.05f };
 			model_obj->transform->local_position = { 0,-4.5f,0 };
+			//モデルの向きがデフォルトで背面を向いているため、180度回転させる
 			model_obj->transform->local_rotation = Quaternion(DEG2RAD(180), { 0,1,0 });
+
+			//モデルレンダラーとアニメーターの追加と設定
 			model = model_obj->AddComponent<ModelRenderer>();
 			animator = model_obj->AddComponent<Animator>();
 			model->SetModel("enemy_model_LOD");
@@ -45,17 +48,26 @@ namespace NeonFade {
 
 
 
-
+			//物理ボディとコライダーの追加と設定
+			rb = AddComponent<RigidBody>();
+			rb->GetBody()->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0f);
+			//敵の物理挙動を安定させるため、回転を完全に固定する
 			rb->freeze_rotation = { 1,1,1 };
+
+
+			//コライダーはカプセル型で、敵の大まかな形状に合わせて高さと半径を設定する
 			auto col_ = AddComponent<CapsuleCollider>();
 			col_->height = 5.7f;
 			col_->radius = 1.5f;
 			col_->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
 			col_->SetLayer(Collider::Layer::Enemy);
-			enem_controller = AddComponent<EnemyController>();
 			col = col_;
+
+
+			enem_controller = AddComponent<EnemyController>();
 		}
 
+		//死亡時マテリアルの作成
 		if (!death_material) {
 
 			auto death_shader = MaterialManager::LoadPixelShader("data/shader/enemy_death_ps.fx", "neonfade_enemy_death_ps");

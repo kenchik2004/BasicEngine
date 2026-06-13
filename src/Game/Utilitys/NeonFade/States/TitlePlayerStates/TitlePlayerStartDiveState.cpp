@@ -19,15 +19,15 @@ namespace NeonFade {
 		path = std::make_unique<CatmullRomPath>();
 		std::vector<Vector3> control_points = {
 			Vector3(0, 0, 0),
-			Vector3(-12, -8, 12),
-			Vector3(-24, -15, 24),
-			Vector3(-36, -40, 36),
-			Vector3(-48, -80, 48),
-			Vector3(-60, -200, 60),
-			Vector3(-72, -400, 72),
-			Vector3(-84, -800, 84),
-			Vector3(-96, -1500, 96),
-			Vector3(-108, -3000, 108),
+			Vector3(-20, -8,	12),
+			Vector3(-40, -15,	24),
+			Vector3(-60, -30,	36),
+			Vector3(-80, -60,	48),
+			Vector3(-100, -120,	60),
+			Vector3(-110, -240,	72),
+			Vector3(-120, -480,	84),
+			Vector3(-130, -960,	96),
+			Vector3(-140, -1400,108),
 		};
 		path->SetPoints(control_points, false);
 
