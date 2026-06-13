@@ -267,13 +267,14 @@ void LightManager::LateDraw()
 	SetTexture(21, diffuse_accumulation_texture.get());
 	SetTexture(22, specular_accumulation_texture.get());
 	FillRenderTarget(*light_blend_shader);
+
 	if constexpr (true) {
 		// ブルーム処理
 
 		CopyToRenderTarget(bloom_work_texture.get(), current_rt.color_targets_[0], *nd_filter);
 		float inv_w = 1.0f / bloom_work_texture->Width();	//1ピクセル当たりのU幅
 		float inv_h = 1.0f / bloom_work_texture->Height();	//1ピクセル当たりのV高さ
-		int offset_radius = 1.0f; //ガウシアンフィルタのオフセット半径
+		int offset_radius = 2.0f; //ガウシアンフィルタのオフセット半径
 		Texture* upper_mip_tex = bloom_work_texture.get();
 		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
 			//1段上の階層テクスチャから縮小コピー
@@ -292,12 +293,12 @@ void LightManager::LateDraw()
 			upper_mip_tex = work.first.get();
 		}
 		//ブルーム合成
-		SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+		DxLib::SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
 		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
 			SetTexture(30 + i, bloom_reduction_textures[i].first.get());
 		}
 		CopyToRenderTarget(current_rt.color_targets_[0], bloom_work_texture.get(), *bloom_combine);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+		DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		for (u32 i = 0; i < REDUCTION_COUNT_MAX; i++) {
 			SetTexture(30 + i, nullptr);
 		}

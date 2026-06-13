@@ -26,6 +26,7 @@ std::vector<physx::PxScene*> PhysicsManager::scenes(0);
 
 // マテリアルのインスタンス
 physx::PxMaterial* PhysicMaterial::Default = nullptr;
+physx::PxMaterial* PhysicMaterial::HighFriction = nullptr;
 physx::PxMaterial* PhysicMaterial::ZeroFriction = nullptr;
 physx::PxMaterial* PhysicMaterial::Metal = nullptr;
 physx::PxMaterial* PhysicMaterial::Rubber = nullptr;
@@ -113,6 +114,7 @@ void PhysicsManager::Init()
 	scene_desc.simulationEventCallback = &hit_callback;
 
 	PhysicMaterial::Default = m_pPhysics->createMaterial(0.6f, 0.6f, 0.0f);
+	PhysicMaterial::HighFriction = m_pPhysics->createMaterial(10.0f, 10.0f, 0.0f);
 	PhysicMaterial::ZeroFriction = m_pPhysics->createMaterial(0.0f, 0.0f, 0.0f);
 	PhysicMaterial::Metal = m_pPhysics->createMaterial(0.6f, 0.5f, 0.2f);
 	PhysicMaterial::Rubber = m_pPhysics->createMaterial(1.1f, 0.8f, 0.7f);
@@ -135,6 +137,7 @@ void PhysicsManager::Exit()
 	}
 
 	PhysicMaterial::Default->release();
+	PhysicMaterial::HighFriction->release();
 	PhysicMaterial::ZeroFriction->release();
 	PhysicMaterial::Metal->release();
 	PhysicMaterial::Rubber->release();

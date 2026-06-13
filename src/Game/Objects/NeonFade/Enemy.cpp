@@ -61,6 +61,7 @@ namespace NeonFade {
 			col_->radius = 1.5f;
 			col_->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
 			col_->SetLayer(Collider::Layer::Enemy);
+			col_->SetMaterial(PhysicMaterial::HighFriction);
 			col = col_;
 
 

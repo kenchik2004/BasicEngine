@@ -368,23 +368,9 @@ void CopyToRenderTarget(Texture* dest_render_target, Texture* source_texture, in
 	SetDrawMode(DX_DRAWMODE_BILINEAR);             // テクスチャをバイリニア補間
 	SetTextureAddressMode(DX_TEXADDRESS_CLAMP);    // テクスチャを繰り返しなし
 
-#if 0
-	// 使用するテクスチャを設定 (slot=0)
-	SetUseTextureToShader(0, *source_texture);
-	for (int i = 1; i < 16; ++i) {
-		// 他のスロットは解除しておく
-		SetUseTextureToShader(i, -1);
-	}
-	FillRenderTarget(shader_ps_handle);
-	// 使い終わったらテクスチャ設定を解除
-	// 解除しておかないとモデル描画に影響あり。
-	SetUseTextureToShader(0, -1);
-	SetUsePixelShader(-1);
-#else
 	SetTexture(0, source_texture);
 	FillRenderTarget(shader_ps_handle);
 	SetTexture(0, nullptr);
-#endif
 
 	// 描画先を元に戻す
 

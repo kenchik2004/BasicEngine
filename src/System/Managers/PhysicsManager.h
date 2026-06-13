@@ -130,6 +130,7 @@ public:
 //---------------------------------------------------------------------
 struct PhysicMaterial {
 	static physx::PxMaterial* Default;		//!< デフォルトマテリアル
+	static physx::PxMaterial* HighFriction;	//!< 摩擦係数が大きいマテリアル
 	static physx::PxMaterial* ZeroFriction;	//!< 摩擦係数ゼロのマテリアル
 	static physx::PxMaterial* Metal;		//!< 金属マテリアル
 	static physx::PxMaterial* Rubber;		//!< ゴムマテリアル
