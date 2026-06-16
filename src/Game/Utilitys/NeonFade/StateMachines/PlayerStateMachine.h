@@ -24,7 +24,7 @@ namespace NeonFade
 		bool is_landed = false;
 		bool is_attacking = false;
 		u32 attack_index_prev = 0;
-		std::array<SafeUniquePtr<IState>, 5> attack_states_vec;
+		std::array<SafeUniquePtr<IState>, 4> attack_states_vec;
 		bool is_dodging = false;
 		bool is_damaged = false;
 		Vector3 move_input = { 0,0,0 };

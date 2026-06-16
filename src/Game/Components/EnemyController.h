@@ -54,9 +54,7 @@ namespace NeonFade {
 		//! @brief プレイヤーをセットする
 		void SetPlayer(PlayerWP player_) { player = player_; }
 		//! @brief 脳（AI）をセットする
-		void SetBrain(AbstractEnemyBrainUP new_brain) {
-			brain = std::move(new_brain); brain->Think();
-		}
+		void SetBrain(AbstractEnemyBrainUP new_brain);
 	private:
 		EnemyStateMachineUP state_machine; //!< 敵のステートマシン
 		AbstractEnemyBrainUP brain = nullptr; //!< 敵のAI脳

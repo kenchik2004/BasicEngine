@@ -13,6 +13,8 @@
 #include "Game/Components/PlayerCameraMachine.h"
 #include "Game/Objects/DevelopTools/LightEditor.h"
 
+#include "Game/Objects/NeonFade/CountDownTextObject.h"
+
 
 
 namespace NeonFade {
@@ -25,10 +27,12 @@ namespace NeonFade {
 	};
 	SafeSharedPtr<LightEditor> light_editor = nullptr; //!< ライトエディタオブジェクト
 
+	static HANDLE h7seg_font = nullptr;	//!< 7セグメントフォントハンドル(Windowsのハンドル。DxLibのハンドルは別物なので注意)
+
 	void SceneGame::LoadResources()
 	{
 
-		ModelManager::LoadAsModel(u8"data/player/model.mv1", "player_model");
+		ModelManager::LoadAsModel(u8"data/player/model_v2.mv1", "player_model");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_stand.mv1", "idle");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_walk.mv1", "walk");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_run.mv1", "run");
@@ -68,17 +72,18 @@ namespace NeonFade {
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road_straight_lod.mv1", "sky_highway");
 		ModelManager::LoadAsModel(u8"data/Stage/light/street_light.mv1", "street_light");
 
-		ModelManager::LoadAsModel(u8"data/enemy/X Bot.mv1", "enemy_model");
-		ModelManager::LoadAsModel(u8"data/enemy/X Bot_LOD.mv1", "enemy_model_LOD");
+		ModelManager::LoadAsModel(u8"data/enemy/leader_model.mv1", "enemy_model");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_fighting_idle.mv1", "enemy_idle");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_damage.mv1", "enemy_damage");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down.mv1", "enemy_down");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down_forward.mv1", "enemy_down_forward");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_standup_back.mv1", "enemy_standup_back");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_standup_forward.mv1", "enemy_standup_forward");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_t_pose.mv1", "enemy_die");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_charge.mv1", "enemy_attack_charge");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_main.mv1", "enemy_attack_main");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_walk.mv1", "enemy_walk");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_escaping.mv1", "enemy_escape");
-		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down.mv1", "enemy_down");
-		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down_forward.mv1", "enemy_down_forward");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_instructing.mv1", "enemy_instruct");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_stepback.mv1", "enemy_stepback");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_hunted.mv1", "enemy_hunted");
@@ -98,6 +103,7 @@ namespace NeonFade {
 		AudioManager::Load(u8"data/sound/result_bgm.mp3", "result_bgm");
 		AudioManager::Load(u8"data/sound/score_se.mp3", "score_se");
 		AudioManager::Load(u8"data/sound/welter_se.mp3", "welter_se");
+		h7seg_font = AddFontFile(u8"data/DSEG7Modern-Regular.ttf");
 	}
 
 
@@ -109,24 +115,19 @@ namespace NeonFade {
 
 		//ロード中のメッセージテキストを作成
 		if (ui_texts.empty()) {
-			std::array<std::string, 2> ui_name_table = { "txt_message","txt_time" };
-			std::array<std::string, 2> ui_txt_table = { u8"",u8"" };
-			for (u32 i = 0; i < ui_name_table.size(); i++) {
-				auto txt_obj = SceneManager::Object::Create<UIObject>(shared_from_this());
-				txt_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
-				txt_obj->AnchorType() = UIObject::ANCHOR_TYPE::CENTER;
-				txt_obj->transform->scale = { 300,170,1 };
-				auto txt_comp = txt_obj->AddComponent<Text>();
-				txt_comp->SetFontSize(170);
-				txt_comp->TextColor() = Color::YELLOW;
-				txt_comp->SetAlignment(Text::ALIGNMENT::MIDDLE);
-				txt_comp->SetText(ui_txt_table[i]);
-				ui_texts[ui_name_table[i]] = txt_obj;
+			auto txt_obj = SceneManager::Object::Create<UIObject>(shared_from_this());
+			txt_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+			txt_obj->AnchorType() = UIObject::ANCHOR_TYPE::CENTER;
+			txt_obj->transform->scale = { 700,170,1 };
+			auto txt_comp = txt_obj->AddComponent<Text>();
+			txt_comp->SetFontSize(170);
+			txt_comp->TextColor() = Color::YELLOW;
+			txt_comp->SetAlignment(Text::ALIGNMENT::MIDDLE);
+			txt_comp->SetText(u8"");
+			ui_texts["txt_message"] = txt_obj;
+			ui_texts["txt_time"] = SceneManager::Object::Create<CountDownTextObject>(shared_from_this());
 
-			}
-			ui_texts["txt_time"]->CanvasAnchorType() = UIObject::ANCHOR_TYPE::CENTER_TOP;
-			ui_texts["txt_time"]->AnchorType() = UIObject::ANCHOR_TYPE::CENTER_TOP;
-			ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80);
+
 		}
 		CheckForLoading(false);
 	}
@@ -399,7 +400,7 @@ namespace NeonFade {
 			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
 			hud_text->TextColor() = Color::RED;
 			static std::string hud_text_str =
-				u8"NeonFade  HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):ABXYどれか+ZRトリガー\n回避:左スティック+ZLトリガー\nスタートボタンを押してこのHUDを閉じる";
+				u8"NeonFade  HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):AXYどれか\n回避:左スティック+ZLトリガー\nスタートボタンを押してこのHUDを閉じる";
 			hud_text->SetText(hud_text_str);
 			hud_obj = hud_prototype;
 			ui_texts["txt_message"]->GetComponent<Text>()->SetText(u8"全員捕まえろ!");
@@ -454,25 +455,8 @@ namespace NeonFade {
 		}
 		if (is_game_timer_started)
 			game_timer += Time::UnscaledDeltaTime();
-		int min_ = static_cast<int>(max(0.0f, GAME_TIMER_MAX - game_timer)) / 60;
-		float sec_ = max(0.0f, GAME_TIMER_MAX - game_timer) - min_ * 60;
-		std::string count_down_txt;
-		count_down_txt += u8"残り時間 ";
-		count_down_txt += std::format("{:02d}", min_);
-		count_down_txt += u8":";
-		count_down_txt += std::format("{:05.2f}", sec_);
 
-		ui_texts["txt_time"]->GetComponent<Text>()->SetText(count_down_txt);
-		if (min_ < 1 && sec_ < 10.0f) {
-			ui_texts["txt_time"]->GetComponent<Text>()->TextColor() = Color::RED;
-			if (sec_ < 5.0f) {
-				ui_texts["txt_time"]->GetComponent<Text>()->TextColor().a = sinf(Time::GetTimeFromStart() * 5) * 0.5f + 1.0f;
-				ui_texts["txt_time"]->GetComponent<Text>()->SetFontSize(80 + static_cast<int>(10 * sinf(Time::GetTimeFromStart() * 5)));
-			}
-		}
-		else {
-			ui_texts["txt_time"]->GetComponent<Text>()->TextColor() = Color::YELLOW;
-		}
+
 
 
 	}
@@ -508,7 +492,10 @@ namespace NeonFade {
 	}
 
 	void SceneGame::Exit()
-	{}
+	{
+		RemoveFontFile(h7seg_font);
+		Super::Exit();
+	}
 
 	bool SceneGame::CheckForLoading(bool init)
 	{

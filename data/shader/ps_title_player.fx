@@ -41,7 +41,7 @@ float CalcEmissionLevel(float fade_level)
     static const float border_size = 0.5; // フェードの境界の幅
     static const float max_fade_level = 1.0; // フェードレベルの最大値
     float emission = smoothstep(0.0, border_size, fade_level);
-    return fade_level > max_fade_level ? 0.0001 : emission; // フェードレベルが最大値を超えたら発光を少し残して抑える
+    return fade_level > max_fade_level ? 0.000 : emission; // fade_levelが0以上border_size以下の範囲で0から1に変化するようにする
 }
 
 //----------------------------------------------------------------------------
@@ -92,9 +92,10 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 
     float ao = 1.0f;
 	
-    static const float3 base_emissive_color = float3(0.0, 5000.0, 5000.0); // ベースの発光色
-    float3 emissive = lerp(float3(0, 0, 0), base_emissive_color, CalcEmissionLevel(fade_level)); // フェードレベルに応じて発光色を変化させる
-	
+    static const float3 base_emissive_color = float3(0.0, 10000.0, 10000.0); // ベースの発光色
+    float3 emissive = EmissionTexture.Sample(DiffuseSampler, uv).rgb * 200;
+    emissive += DxLib_Common.Material.Ambient_Emissive.rgb * 2000;
+    emissive = lerp(emissive, base_emissive_color, CalcEmissionLevel(fade_level)); // フェードレベルに応じて発光色を変化させる
 	
 	//----------------------------------------------------------
 	// 出力

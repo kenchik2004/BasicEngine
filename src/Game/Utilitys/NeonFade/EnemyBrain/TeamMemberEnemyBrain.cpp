@@ -29,12 +29,17 @@ namespace NeonFade {
 		}
 	}
 
-	void TeamMemberEnemyBrain::Think()
+	std::string TeamMemberEnemyBrain::Think()
 	{
 
 		if (i_frame_timer > 0.0f) {
 			i_frame_timer -= Time::DeltaTime();
 		}
+		if(is_damaged)
+			return "damage";
+		if (knock_back)
+			return "knockback";
+		return "";
 	}
 
 	void TeamMemberEnemyBrain::AddLeader(LeaderEnemyBrain* new_leader)
@@ -56,7 +61,6 @@ namespace NeonFade {
 	void TeamMemberEnemyBrain::KnockBack(Vector3 knock_back_vec)
 	{
 		knock_back = true;
-		machine->move_vec = knock_back_vec;
 	}
 	void TeamMemberEnemyBrain::DebugDraw()
 	{

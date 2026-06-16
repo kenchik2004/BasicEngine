@@ -269,14 +269,18 @@ namespace Input {
 	{
 		if (pad_index >= dead_zones.size())
 			return;
-		dead_zones[pad_index].x = dead_zone;
+		// スティックの入力は2次元ベクトルなので、デッドゾーンの半径を正確に表すために、1次元のデッドゾーン値を2次元に変換する際に√2を掛ける
+		static constexpr float sqrt_2 = 1.41421356237f;
+		dead_zones[pad_index].x = dead_zone * sqrt_2;
 	}
 
 	void SetPadRightDeadZone(u64 pad_index, float dead_zone)
 	{
 		if (pad_index >= dead_zones.size())
 			return;
-		dead_zones[pad_index].y = dead_zone;
+		// スティックの入力は2次元ベクトルなので、デッドゾーンの半径を正確に表すために、1次元のデッドゾーン値を2次元に変換する際に√2を掛ける
+		static constexpr float sqrt_2 = 1.41421356237f;
+		dead_zones[pad_index].y = dead_zone * sqrt_2;
 	}
 
 	//----------------------------------------------------

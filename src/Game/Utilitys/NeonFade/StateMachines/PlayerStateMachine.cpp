@@ -41,7 +41,6 @@ namespace NeonFade
 			return move_input.magnitudeSquared() < 0.01f;
 			};
 		std::function <bool()> move_to_fall = [this]() {
-			//return  player->rb->velocity.y < -5.0f;
 			return is_falling;
 			};
 		std::function <bool()> move_to_climb = [this]() {
@@ -150,16 +149,12 @@ namespace NeonFade
 		auto attack1_state = make_safe_unique<PlayerAttack1State>(player);
 		attack1_state->SetName("attack1");
 		//AddState("attack", std::move(attack1_state));
-		attack_states_vec[4] = std::move(attack1_state);
-
-		auto attack2_state = make_safe_unique<PlayerAttack2State>(player);
-		attack2_state->SetName("attack2");
+		attack_states_vec[3] = std::move(attack1_state);
 		//AddState("attack", std::move(attack2_state));
-		attack_states_vec[2] = std::move(attack2_state);
 		auto attack3_state = make_safe_unique<PlayerAttack3State>(player);
 		attack3_state->SetName("attack3");
 		//AddState("attack", std::move(attack3_state));
-		attack_states_vec[3] = std::move(attack3_state);
+		attack_states_vec[2] = std::move(attack3_state);
 
 
 		auto smash_charge_state = make_safe_unique<PlayerSmashChargeState>(player);
@@ -245,23 +240,23 @@ namespace NeonFade
 			u32 attack_index = 0;
 			// ボタン入力に応じてattack_indexを設定
 
-			if (Input::GetPadButtonRepeat(0, PadButton::Button1))
+			if (Input::GetPadButtonDown(0, PadButton::Button1))
 			{
 
 				attack_index = 1;
 			}
 
-			if (Input::GetPadButtonRepeat(0, PadButton::Button2))
+			if (Input::GetPadButtonDown(0, PadButton::Button2))
+			{
+				attack_index = 0;
+			}
+			if (Input::GetPadButtonDown(0, PadButton::Button3))
 			{
 				attack_index = 2;
 			}
-			if (Input::GetPadButtonRepeat(0, PadButton::Button3))
+			if (Input::GetPadButtonDown(0, PadButton::Button4))
 			{
 				attack_index = 3;
-			}
-			if (Input::GetPadButtonRepeat(0, PadButton::Button4))
-			{
-				attack_index = 4;
 			}
 			if (GetCurrentStateName() == "jump" || GetCurrentStateName() == "fall") {
 				attack_index = 1; //空中攻撃はsmash_chargeに固定

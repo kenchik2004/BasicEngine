@@ -6,6 +6,7 @@
 #include "IStateMachine.h"
 namespace NeonFade {
 	class Enemy;
+	class AbstractEnemyBrain;
 	class EnemyStateMachine :
 		public IStateMachine
 	{
@@ -14,17 +15,13 @@ namespace NeonFade {
 		void DebugDraw() override;
 		void OnTriggerEnter(const HitInfo& hit_info) override;
 		virtual ~EnemyStateMachine();
+
+		void SetBrain(AbstractEnemyBrain* new_brain) { brain = new_brain; }
+		AbstractEnemyBrain* GetBrain() { return brain; }
+
 		Enemy* enemy = nullptr;
-		trigger_bool is_damaged = false;
-		trigger_bool knock_back = false;
-		bool is_dead = false;
-		trigger_bool is_attacking = false;
-		trigger_bool is_instructing = false;
-		bool is_confused = false;
-		bool is_escaping = false;
-		trigger_bool is_step_back = false;
-		Vector3 move_vec = { 0,0,0 };
 	private:
+		AbstractEnemyBrain* brain = nullptr;
 	};
 }
 

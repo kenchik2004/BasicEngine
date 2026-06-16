@@ -14,7 +14,7 @@ namespace NeonFade {
 		AbstractEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_);
 
 		virtual ~AbstractEnemyBrain();
-		virtual void Think() = 0;
+		virtual std::string Think() = 0;
 		virtual void Damage(u32 damage = 0, bool ignore_i_frame = false) = 0;
 		virtual void KnockBack(Vector3 knock_back_vec) = 0;
 		virtual void DebugDraw() = 0;
@@ -22,14 +22,21 @@ namespace NeonFade {
 		bool IsDead() { return hp == 0; }
 		EnemyStateMachine* GetMachine() { return state_machine; }
 		Enemy* GetOwnerBody() { return body; }
+
+		bool IsKnockBack() { return is_knock_back; }
+		bool IsDamaged() { return is_damaged; }
+		const Vector3& GetKnockBackVec() { return knock_back_vec; }
 	protected:
 		EnemyStateMachine* state_machine;
 		PlayerWP player;
 		Enemy* body;
 		u32 hp = 100;
-		void DrawHPDebug();
-		static inline SafeSharedPtr<Texture> hp_bar = nullptr;
-		static inline u32 instance_count = 0;
+
+		float i_frame_timer = 0.0f;
+		bool is_damaged = false;
+		bool is_knock_back = false;
+		Vector3 knock_back_vec = { 0,0,0 };
+		static constexpr float I_FRAME = 0.1f;
 
 	};
 }

@@ -15,7 +15,7 @@ namespace NeonFade {
 	public:
 		TeamMemberEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_, EnemyTeam* team);
 		~TeamMemberEnemyBrain();
-		void Think() override;
+		std::string Think() override;
 		void AddLeader(LeaderEnemyBrain* new_leader);
 		void Damage(u32 damage = 0, bool ignore_i_frame = false) override;
 		void Die();

@@ -92,7 +92,10 @@ namespace NeonFade
 			fall_detect_time = 0.0f;
 		}
 		is_falling = (fall_detect_time >= FALL_DETECT_THRESHOLD);
-		is_attacking = Input::GetKeyDown(KeyCode::L) || Input::GetPadButtonDown(0, PadButton::RTrigger);
+		is_attacking = Input::GetKeyDown(KeyCode::P) 
+			|| Input::GetPadButtonDown(0, PadButton::Button2)
+			|| Input::GetPadButtonDown(0, PadButton::Button3)
+			|| Input::GetPadButtonDown(0, PadButton::Button4);
 		state_machine->is_attacking = is_attacking;
 		state_machine->move_input = move_input;
 		state_machine->is_jumping = is_jumping;

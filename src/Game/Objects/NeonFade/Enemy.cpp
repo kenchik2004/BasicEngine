@@ -32,19 +32,20 @@ namespace NeonFade {
 			//モデルレンダラーとアニメーターの追加と設定
 			model = model_obj->AddComponent<ModelRenderer>();
 			animator = model_obj->AddComponent<Animator>();
-			model->SetModel("enemy_model_LOD");
+			model->SetModel("enemy_model");
 			animator->SetAnimation("enemy_idle", 0);
 			animator->SetAnimation("enemy_damage", 0);
 			animator->SetAnimation("enemy_down", 0);
 			animator->SetAnimation("enemy_down_forward", 0);
-			animator->SetAnimation("enemy_walk", 0);
+			animator->SetAnimation("enemy_standup_back", 0);
+			animator->SetAnimation("enemy_standup_forward", 0);
 			animator->SetAnimation("enemy_die", 0);
+			animator->SetAnimation("enemy_walk", 0);
 			animator->SetAnimation("enemy_attack_charge", 0);
 			animator->SetAnimation("enemy_attack_main", 0);
 			animator->SetAnimation("enemy_escape", 0);
 			animator->SetAnimation("enemy_instruct", 0);
 			animator->SetAnimation("enemy_stepback", 0);
-
 
 
 
@@ -61,6 +62,7 @@ namespace NeonFade {
 			col_->radius = 1.5f;
 			col_->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
 			col_->SetLayer(Collider::Layer::Enemy);
+			col_->SetHitGroup(Collider::Layer::All ^ Collider::Layer::Enemy);
 			col_->SetMaterial(PhysicMaterial::HighFriction);
 			col = col_;
 
@@ -159,6 +161,7 @@ namespace NeonFade {
 		return static_cast<LeaderEnemyBrain*>(controller->GetBrain());
 	}
 	std::vector<EnemyTeamUP> EnemyFactory::MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player) {
+
 		auto teams = std::vector<SafeUniquePtr<EnemyTeam>>();
 		for (u32 i = 0; i < team_count; i++) {
 			auto enemy_team = make_safe_unique<EnemyTeam>();

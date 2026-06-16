@@ -16,18 +16,24 @@ namespace NeonFade {
 		void OnEnter(IStateMachine* machine) override;
 		void OnExit(IStateMachine* machine) override;
 		void Update(IStateMachine* machine, float dt) override;
+		void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info) override;
+		void DebugDraw() override;
 	private:
 		SafeSharedPtr<Texture> charge_emi_tex = nullptr;
 		SafeSharedPtr<Texture> def_emi_tex = nullptr;
 		Player* owner_player;
 		RigidBody* rb;
 		Animator* animator;
+		SafeSharedPtr<Collider> enem_finder_col = nullptr;
+		SafeWeakPtr<Object> lock_on_target = nullptr;
 		float charge_timer = 0.0f;
 		SafeWeakPtr<GameObject> charge_effect = nullptr;
 		LightManager* light_manager = nullptr;
 		std::vector<SafeSharedPtr<PointLight>> smash_lights;
 		static constexpr float MAX_CHARGE_TIME = 1.5f;
 		SafeSharedPtr<AudioClip> charge_se;
+		static constexpr int LIGHT_BIND_INDEX = 37;
+		bool camera_cinema_mode = false;
 	};
 }
 

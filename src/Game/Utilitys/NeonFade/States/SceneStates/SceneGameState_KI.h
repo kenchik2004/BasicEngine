@@ -31,7 +31,7 @@ namespace NeonFade {
 
 		SafeUniquePtr<CatmullRomPath> camera_path = nullptr;
 		TextWP message_text = nullptr;
-		TextWP timer_text = nullptr;
+		UIObjectWP timer_text = nullptr;
 	};
 }
 

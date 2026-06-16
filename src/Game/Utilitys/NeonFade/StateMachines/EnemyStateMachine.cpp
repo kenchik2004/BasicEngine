@@ -12,6 +12,7 @@ namespace NeonFade {
 	{
 		enemy = owner_;
 	}
+
 	void EnemyStateMachine::DebugDraw()
 	{
 		if (!current_state)

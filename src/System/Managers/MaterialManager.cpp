@@ -12,7 +12,7 @@ class ShaderInstance {
 public:
 };
 
-Material* MaterialManager::CreateMaterial(std::string_view name)
+Material* MaterialManager::CreateMaterial(std::string_view name, Material* base_material)
 {
 	std::string name_key(name);
 	if (materials.count(name_key))
@@ -31,6 +31,16 @@ Material* MaterialManager::CreateMaterial(std::string_view name)
 	new_mat->SetTexture(null_black, Material::TextureType::Emission);
 	auto ret = new_mat.get();
 	materials[name_key] = std::move(new_mat);
+	if (base_material) {
+		ret->SetShaderPs(base_material->GetPixelShader());
+		ret->SetShaderPs(base_material->GetGbufferPixelShader(), true);
+		ret->SetShaderVs(base_material->GetVertexShader());
+		for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
+			auto tex = base_material->GetTexture(static_cast<Material::TextureType>(i));
+			if (tex)
+				ret->SetTexture(tex, static_cast<Material::TextureType>(i));
+		}
+	}
 	return ret;
 
 }

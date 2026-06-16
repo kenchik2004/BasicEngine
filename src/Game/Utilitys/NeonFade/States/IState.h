@@ -27,6 +27,8 @@ namespace NeonFade
 		virtual void DebugDraw() {};
 		std::string GetChangeRequest();
 		void RegisterChangeRequest(const std::string& state_name, std::function<bool()> func, u8 priority = 0);
+
+		virtual bool CanTransitTo(const std::string& state_name) { return true; }
 	private:
 		GameObject* owner = nullptr;
 		std::string name;

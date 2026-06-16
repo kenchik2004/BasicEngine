@@ -31,7 +31,7 @@ namespace NeonFade {
 		camera_path->SetPoints(points, false);
 		scene_camera = owner_scene_game->camera;
 		message_text = owner_scene_game->ui_texts["txt_message"]->GetComponent<Text>();
-		timer_text = owner_scene_game->ui_texts["txt_time"]->GetComponent<Text>();
+		timer_text = owner_scene_game->ui_texts["txt_time"];
 
 	}
 	void SceneGameState_KI::OnEnter(ISceneStateMachine* machine)

@@ -17,7 +17,7 @@ public:
 	static inline std::unordered_map<std::string, SafeUniquePtr<ShaderVs>> vertex_shaders;		//!< 登録済み頂点シェーダーのマップ
 
 	//! @brief マテリアルを新規作成する
-	static Material* CreateMaterial(std::string_view name);
+	static Material* CreateMaterial(std::string_view name,Material* base_material = nullptr);
 	//! @brief 名前を指定してマテリアルを取得する
 	static Material* GetMaterial(std::string_view name);
 	//! @brief ピクセルシェーダーをロードする

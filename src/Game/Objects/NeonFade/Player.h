@@ -61,7 +61,9 @@ namespace NeonFade
 		CameraObjectWP player_camera; //!< カメラオブジェクト
 		PlayerCameraMachineWP player_camera_machine; //!< カメラマシンコンポーネント
 	private:
-		SafeSharedPtr<Texture> mov_tex = nullptr; //!< 移動用テクスチャ
+		SafeSharedPtr<Texture> mov_tex = nullptr; //!< 電撃エフェクト用のテクスチャ
+		Material* electro_mat = nullptr; //!< 電撃エフェクト用のマテリアル
+		Material* default_mat = nullptr; //!< デフォルトマテリアル
 
 	};
 

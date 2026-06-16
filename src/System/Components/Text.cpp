@@ -203,7 +203,7 @@ int Text::SetFontSize(u32 font_size_)
 {
 	if (font_size_ != font_size) {
 		DeleteFontToHandle(font_handle);
-		font_handle = DxLib::CreateFontToHandle(nullptr, font_size_, -1, DX_FONTTYPE_NORMAL);
+		font_handle = DxLib::CreateFontToHandle(font.empty() ? nullptr : font.c_str(), font_size_, -1, DX_FONTTYPE_ANTIALIASING);
 		font_size = font_size_;
 	}
 	return font_size;

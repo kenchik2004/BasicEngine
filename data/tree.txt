@@ -23,18 +23,19 @@ root
 |        |        |        end_of_node
 |        |        |        
 |        |        |-----NeonFade::DamageUIObject
+|        |        |-----NeonFade::CountDownTextObject
 |        |        end_of_node
 |        |        
 |        |-----LightManager
 |        |-----ShadowMapObject
 |        |-----GameObject
+|        |        |-----NeonFade::TitlePlayer
+|        |        |-----GameObject
+|        |        |-----GameObjectWithLifeTime
 |        |        |-----CameraObject
 |        |        |        |-----DebugCameraObject
 |        |        |        end_of_node
 |        |        |        
-|        |        |-----NeonFade::TitlePlayer
-|        |        |-----GameObject
-|        |        |-----GameObjectWithLifeTime
 |        |        |-----LightObject
 |        |        |-----LightEditor
 |        |        |-----GameObject
@@ -50,7 +51,6 @@ root
 |        |-----Text3D
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
-|        |-----Text
 |        |-----AudioPlayer
 |        |-----Collider
 |        |        |-----ConvexMeshCollider
@@ -63,6 +63,7 @@ root
 |        |-----RigidBody
 |        |-----Animator
 |        |-----ModelRenderer
+|        |-----Text
 |        |-----Transform
 |        |-----Component
 |        |-----NeonFade::EnemyController

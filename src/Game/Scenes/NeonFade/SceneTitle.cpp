@@ -66,7 +66,7 @@ namespace NeonFade {
 	void SceneTitle::Load() {
 
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower5.mv1", "sky_tower5");
-		ModelManager::LoadAsModel(u8"data/player/model.mv1", "player_model");
+		ModelManager::LoadAsModel(u8"data/player/model_v2.mv1", "player_model");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_sitting_idle.mv1", "player_sitting");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_dive.mv1", "player_dive");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_twist_flip.mv1", "player_twist_flip");

@@ -39,7 +39,7 @@ namespace NeonFade {
 		AnimatorWP animator; //!< アニメーター
 		RigidBodyWP rb; //!< 物理ボディ
 		EnemyControllerWP enem_controller; //!< 敵コントローラー
-		ColliderWP col; //!< コライダー
+		CapsuleColliderWP col; //!< コライダー
 		static inline Material* death_material = nullptr; //!< 死亡時マテリアル
 	};
 	class BasicEnemyBrain;

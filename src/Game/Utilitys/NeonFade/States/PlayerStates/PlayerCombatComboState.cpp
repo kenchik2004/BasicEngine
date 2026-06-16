@@ -120,7 +120,7 @@ namespace NeonFade {
 			input_limit = true;
 			rb->SetVelocity(Vector3(0, rb->velocity.y, 0));
 		}
-		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::RTrigger) || Input::GetKeyDown(KeyCode::L)))
+		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::Button2) || Input::GetKeyDown(KeyCode::L)))
 			next_avalable = true;
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;

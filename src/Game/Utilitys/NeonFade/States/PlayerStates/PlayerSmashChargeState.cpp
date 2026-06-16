@@ -21,6 +21,8 @@ namespace NeonFade {
 		RegisterChangeRequest("smash_attack", to_smash, 0);
 		if (!charge_se)
 			charge_se = AudioManager::CloneByName(u8"smash_charge_se");
+
+
 	}
 	void PlayerSmashChargeState::OnEnter(IStateMachine* machine)
 	{
@@ -55,7 +57,7 @@ namespace NeonFade {
 		}
 
 		auto& camera_machine = owner_player->player_camera_machine;
-		if (Random::Int(0, 5) == 0) {
+		if (camera_cinema_mode = (Random::Int(0, 5) == 0) && camera_machine) {
 			camera_machine->SetTransitionTime(1.0f);
 			camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::CINEMATIC);
 			Vector3 cinematic_offset = -owner_player->transform->AxisX();
@@ -64,6 +66,16 @@ namespace NeonFade {
 			camera_machine->SetCinematicOffset(cinematic_offset.getNormalized());
 			camera_machine->camera_distance_max = 17.0f;
 		}
+
+		auto enem_finder_col_ = owner_player->AddComponent<SphereCollider>(
+			Vector3(0, 0, 0),
+			Quaternion(0, 0, 0, 1),
+			30.0f,
+			true,
+			Collider::Layer::Wepon,
+			Collider::Layer::Enemy);
+		enem_finder_col = enem_finder_col_;
+
 	}
 	void PlayerSmashChargeState::OnExit(IStateMachine* machine)
 	{
@@ -73,6 +85,9 @@ namespace NeonFade {
 		for (auto& light : smash_lights) {
 			light_manager->RemoveLight(light);
 		}
+		if (enem_finder_col)
+			enem_finder_col->RemoveThisComponent();
+		lock_on_target.reset();
 
 	}
 	void PlayerSmashChargeState::Update(IStateMachine* machine, float dt)
@@ -82,7 +97,7 @@ namespace NeonFade {
 		move_dir += owner_player->transform->AxisZ() * -3.0f;
 		move_dir += owner_player->transform->AxisY() * 3.0f;
 		rb->velocity = move_dir;
-		auto mat = owner_player->model->GetFrameWorldMat(81);
+		auto mat = owner_player->model->GetFrameWorldMat(LIGHT_BIND_INDEX);
 		if (charge_effect)
 			charge_effect->transform->position = cast(mat.getPosition());
 		for (auto& light : smash_lights) {
@@ -92,5 +107,43 @@ namespace NeonFade {
 			light_color = light_color * 10000.0f;
 			light->color = light_color;
 		}
+		if (lock_on_target) {
+			Vector3 to_target = lock_on_target.lock()->transform->position - owner_player->transform->position;
+			Vector3 cur_forward = owner_player->transform->AxisZ();
+			to_target = Lerp(cur_forward, to_target.getNormalized(), 0.1f);
+			owner_player->transform->SetAxisZ(to_target);
+		}
+		auto& camera_machine = owner_player->player_camera_machine;
+		if (camera_cinema_mode && camera_machine) {
+			Vector3 cinematic_offset = -owner_player->transform->AxisX();
+			cinematic_offset += owner_player->transform->AxisY() * 0.5f;
+			cinematic_offset += owner_player->transform->AxisZ() * -1.7f;
+			camera_machine->SetCinematicOffset(cinematic_offset.getNormalized());
+		}
+	}
+	void PlayerSmashChargeState::OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info)
+	{
+		if (hit_info.collision == enem_finder_col) {
+			if (!lock_on_target) {
+				lock_on_target = hit_info.hit_collision->owner;
+				return;
+			}
+			Vector3 to_target = lock_on_target.lock()->transform->position - owner_player->transform->position;
+			Vector3 to_hit_obj = hit_info.hit_collision->owner->transform->position - owner_player->transform->position;
+			if (to_target.magnitudeSquared() > to_hit_obj.magnitudeSquared()) {
+				lock_on_target = hit_info.hit_collision->owner;
+			}
+		}
+
+	}
+	void PlayerSmashChargeState::DebugDraw()
+	{
+
+		if (lock_on_target) {
+			Vector3 to_target = lock_on_target.lock()->transform->position - owner_player->transform->position;
+			Vector3 pos = owner_player->transform->position;
+			DrawLine3D(cast(pos), cast(pos + to_target * 50), Color::RED);
+		}
+
 	}
 }

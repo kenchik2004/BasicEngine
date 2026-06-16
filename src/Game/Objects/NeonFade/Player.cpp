@@ -57,13 +57,11 @@ namespace NeonFade
 		col->rotation = Quaternion(DEG2RAD(90), { 0,0,-1 });
 		col->SetLayer(Collider::Layer::Player);
 		pl_controller = AddComponent<PlayerController>();
-		//auto foot_col = AddComponent<BoxCollider>();
-		//foot_col->extension = { 1.4f,0.5f,1.4f };
-		//foot_col->position = { 0,0.0f,0 };
-		//foot_col->SetLayer(Collider::Layer::Player);
-		//foot_col->SetHitGroup(Collider::Layer::Terrain);
-		//foot = foot_col;
-		//AddComponent<AudioListener>();
+
+		default_mat = model->GetMaterial(0);
+		electro_mat = MaterialManager::CreateMaterial("electro_effect_mat", default_mat);
+		electro_mat->SetTexture(mov_tex, Material::TextureType::Emission);
+
 
 		return 0;
 	}
@@ -78,18 +76,6 @@ namespace NeonFade
 	{
 		UpdateMovieToGraph(*mov_tex);
 
-#if 0
-		auto cur_rt = GetRenderTarget();
-		auto mat = model->GetMaterial(0);
-		auto tex = mat->GetTexture(Material::TextureType::Emission);
-		SetRenderTarget(tex.get());
-		SetDrawScreen(*tex);
-		ClearColor({ 0,0,0,0 });
-		PlayMovieToGraph(movie, DX_PLAYTYPE_LOOP);
-		DrawExtendGraph(0, 0, tex->Width(), tex->Height(), movie, TRUE);
-		SetDrawScreen(DX_SCREEN_BACK);
-		SetRenderTarget(cur_rt);
-#endif
 	}
 	void Player::LateDebugDraw()
 	{
@@ -131,18 +117,10 @@ namespace NeonFade
 	void Player::SetElectroEffectTextureToMaterials()
 	{
 
-		int mv1_handle = model->GetModelHandle();
-		auto mat = model->GetMaterial(2);
-		auto mat2 = model->GetMaterial(4);
-		mat->SetTexture(mov_tex, Material::TextureType::Emission);
-		mat2->SetTexture(mov_tex, Material::TextureType::Emission);
+		model->SetMaterial(electro_mat, 0);
 	}
 	void Player::ResetMaterialsToDefault()
 	{
-		auto mat = model->GetMaterial(2);
-		auto mat2 = model->GetMaterial(4);
-		mat->SetTexture(nullptr, Material::TextureType::Emission);
-		mat2->SetTexture(nullptr, Material::TextureType::Emission);
-
+		model->SetMaterial(default_mat, 0);
 	}
 } // namespace NeonFade

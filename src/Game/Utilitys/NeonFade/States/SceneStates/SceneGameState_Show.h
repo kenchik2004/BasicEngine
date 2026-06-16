@@ -23,7 +23,7 @@ namespace NeonFade {
 	private:
 		SceneGame* owner_scene_game = nullptr;
 		std::vector<SafeUniquePtr<EnemyTeam>> enemy_teams;
-		TextWP timer_text = nullptr;
+		UIObjectWP timer_text = nullptr;
 	};
 }
 

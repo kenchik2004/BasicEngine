@@ -48,6 +48,7 @@ namespace NeonFade {
 		{
 			owner_player->ResetMaterialsToDefault();
 		}
+		owner_player->transform->SetAxisY({ 0,1,0 }, owner_player->transform->AxisX());
 	}
 	void PlayerSmashMainState::Update(IStateMachine* machine, float dt)
 	{

@@ -45,6 +45,7 @@ namespace NeonFade {
 	}
 
 	void OptionManager::OnSleep() {
+		options[cursor_index].lock()->Deselect();
 		for (auto& opt : options) {
 			if (auto o = opt.lock()) {
 				o->Sleep();
@@ -53,6 +54,7 @@ namespace NeonFade {
 	}
 
 	void OptionManager::OnWakeUp() {
+		options[cursor_index].lock()->Select();
 		for (auto& opt : options) {
 			if (auto o = opt.lock()) {
 				o->WakeUp();

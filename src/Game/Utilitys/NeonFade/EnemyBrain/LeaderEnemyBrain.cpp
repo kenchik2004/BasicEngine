@@ -25,9 +25,11 @@ namespace NeonFade
 	{
 		RemoveFromTeam();
 	}
-	void LeaderEnemyBrain::Think()
+	std::string LeaderEnemyBrain::Think()
 	{
 		i_frame_timer -= Time::DeltaTime();
+		return "";
+
 	}
 	void LeaderEnemyBrain::Damage(u32 damage, bool ignore_i_frame)
 	{
@@ -49,7 +51,6 @@ namespace NeonFade
 	void LeaderEnemyBrain::KnockBack(Vector3 knock_back_vec)
 	{
 		knock_back = true;
-		machine->move_vec = knock_back_vec;
 	}
 	void LeaderEnemyBrain::RemoveFromTeam()
 	{
