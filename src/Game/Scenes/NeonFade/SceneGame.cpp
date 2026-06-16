@@ -71,6 +71,7 @@ namespace NeonFade {
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road.mv1", "high-way");
 		ModelManager::LoadAsModel(u8"data/Stage/megapolis/road_straight_lod.mv1", "sky_highway");
 		ModelManager::LoadAsModel(u8"data/Stage/light/street_light.mv1", "street_light");
+		ModelManager::LoadAsModel(u8"data/car/police.mv1", "police_car");
 
 		ModelManager::LoadAsModel(u8"data/enemy/leader_model.mv1", "enemy_model");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_fighting_idle.mv1", "enemy_idle");
@@ -439,6 +440,10 @@ namespace NeonFade {
 
 
 		}
+
+		{
+			auto police_car = SceneManager::Object::Create<PoliceCar>(u8"パトカー");
+		}
 		return Super::Init();
 
 	}
@@ -447,6 +452,7 @@ namespace NeonFade {
 	{
 		if (!CheckForLoading())
 			return;
+		
 
 		scene_state_machine->Update(Time::DeltaTime());
 		if (Input::GetPadButtonDown(0, PadButton::Start) || Input::GetKeyDown(KeyCode::Minus)) {

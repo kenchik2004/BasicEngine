@@ -7,37 +7,26 @@
 #include "Game/Utilitys/NeonFade/CatmullRomPath.h"
 #include "Game/Managers/LightManager.h"
 #include "Game/Objects/NeonFade/Player.h"
+#include "Game/Objects/NeonFade/Enemy.h"
 namespace NeonFade
 {
-	static SafeUniquePtr<CatmullRomPath> path;
 	SafeSharedPtr<AudioClip> siren_sound = nullptr;
 	int PoliceCar::Init()
 	{
-		if (!path) {
-
-			std::vector<Vector3> pts = {
-				{ -152, 37, -29  },
-				{ -107, 37, -24  },
-				{ -38 , 37, -24  },
-				{ 117 , 37, -24  },
-				{ 163 , 37, -29  },
-				{ 205 , 37, -67  },
-				{ 205 , 37, -130 },
-				{ 163 , 37, -168 },
-				{ 117 , 37, -173 },
-				{ -38 , 37, -173 },
-				{ -107, 37, -173 },
-				{ -152, 37, -168 },
-				{ -194, 37, -130 },
-				{ -194, 37, -67  },
-			};
-			path = make_safe_unique<CatmullRomPath>();
-			path->SetPoints(pts, true);
+		std::vector<Vector3> pts = {
+			{ 0,	10, 530  },
+			{ -100, 25, 530  },
+			{ -200, 50, 480  },
+			{ -100, 25, 430  },
+			{ 0,	10, 430  },
+			{ 100,	25, 430  },
+			{ 200,	50, 480  },
+			{ 100,	25, 530  },
+		};
+		path = make_safe_unique<CatmullRomPath>();
+		path->SetPoints(pts, true);
 
 
-
-
-		}
 		name = u8"police_car";
 		transform->scale = { 3.0f,3.0f,3.0f };
 
@@ -66,33 +55,19 @@ namespace NeonFade
 			trigger->SetLayer(Collider::Layer::Vehicle);
 		}
 		{
-			auto model = SceneManager::Object::Create<GameObject>(u8"police_model");
+			auto model = SceneManager::Object::Create<GameObject>(u8"police_car");
 			model->transform->rotation = Quaternion(90 * RADIAN, { 0,1,0 });
 			model->transform->SetParent(transform);
 			model->transform->scale = { 5,5,5 };
-			model->AddComponent<ModelRenderer>()->SetModel("police");
-		}
-		{
-			audio_player = AddComponent<AudioPlayer>();
-			static int cnt = 0;
-			if (true) {
-				siren_sound = AudioManager::CloneByName("siren");
-				audio_player->SetAudio(siren_sound);
-				siren_sound.reset();
-				audio_player->loop = true;
-				audio_player->radius = 500;
-				audio_player->Play(Random::Range(0, 3));
-			}
-			cnt++;
-
+			model->AddComponent<ModelRenderer>()->SetModel("police_car");
 		}
 		{
 			auto light_manager = SceneManager::Object::Get<LightManager>(GetScene());
 
-			static const Color light_color_red = { 100,0,0,0 };
-			static const Color light_color_blue = { 0,0,100,0 };
+			static const Color light_color_red = { 1000,0,0,0 };
+			static const Color light_color_blue = { 0,0,1000,0 };
 			static const Vector3 light_pos = { 0,0,90 };
-			static const float light_intensity = 1.0f;
+			static const float light_intensity = 0.02f;
 			static const float light_range = 50.0f;
 
 			{
@@ -113,8 +88,8 @@ namespace NeonFade
 
 		t += Time::DeltaTime() * 100;
 
-		moving_light_red->range = Random::Range(20, 30);
-		moving_light_blue->range = Random::Range(20, 30);
+		moving_light_red->range = Random::Range(0.01f, 50);
+		moving_light_blue->range = Random::Range(0.01f, 50);
 
 		{
 			Vector3 pos_;
@@ -133,6 +108,7 @@ namespace NeonFade
 				rb->velocity = pos_delta;
 
 			for (auto& rideon : rideon_objs) {
+				if(rideon)
 				rideon->transform->position += pos_delta;
 
 			}
@@ -152,21 +128,42 @@ namespace NeonFade
 	void PoliceCar::OnTriggerEnter(const HitInfo& hit_info)
 	{
 		//もしプレイヤーが乗ってきたら、乗せる(自分の子供にする)
-		auto player = hit_info.hit_collision->owner;
-		if (player->GetComponent<Collider>()->GetLayer() == Collider::Layer::Player) {
+		auto other = hit_info.hit_collision->owner;
+		if (other->GetComponent<Collider>()->GetLayer() == Collider::Layer::Player) {
 			player_rideon = true;
 		}
-		rideon_objs.push_back(player);
+		if (other->GetComponent<Collider>()->GetLayer() == Collider::Layer::Enemy) {
+			Vector3 vec = other->transform->position - transform->position;
+			vec.normalize();
+			vec += Vector3(0, 0.5f, 0);
+			SafeDynamicCast<NeonFade::Enemy>(other.lock())->Down(vec*100);
+		}
+		rideon_objs.push_back(other);
 
 	}
 
 	void PoliceCar::OnTriggerExit(const HitInfo& hit_info)
 	{
 		//もしプレイヤーが降りたら、親をリセットする
-		auto player = hit_info.hit_collision->owner;
-		if (player->GetComponent<Collider>()->GetLayer() == Collider::Layer::Player) {
+		auto other = hit_info.hit_collision->owner;
+		if (other->GetComponent<Collider>()->GetLayer() == Collider::Layer::Player) {
 			player_rideon = false;
 		}
-		rideon_objs.erase(std::find(rideon_objs.begin(), rideon_objs.end(), player));
+		rideon_objs.erase(std::find(rideon_objs.begin(), rideon_objs.end(), other));
+	}
+	void PoliceCar::DebugDraw()
+	{
+		if (path) {
+			std::array<Vector3, 256> path_points;
+			for (int i = 0; i < path_points.size(); ++i) {
+				Vector3 pos;
+				Quaternion rot;
+				path->Evaluate(i / static_cast<float>(path_points.size() - 1) * path->GetTotalLength(), pos, rot);
+				path_points[i] = pos;
+			}
+			for (u32 i = 0; i < path_points.size() - 2; ++i) {
+				DxLib::DrawLine3D(cast(path_points[i]), cast(path_points[i + 1]), Color::RED);
+			}
+		}
 	}
 }
