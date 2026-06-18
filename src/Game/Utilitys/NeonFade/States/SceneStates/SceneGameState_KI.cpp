@@ -46,9 +46,10 @@ namespace NeonFade {
 		timer_text->Sleep();
 		owner_scene_game->text_comp->SetText(u8"KI State");
 		owner_scene_game->player->transform->position = { 0,20,100 };
-		owner_scene_game->player->transform->rotation = Quaternion(PxIdentity);
+		owner_scene_game->player->transform->rotation = Quaternion(physx::PxIdentity);
 		owner_scene_game->player->player_camera->transform->position = { 0,10,10 };
 		owner_scene_game->player->player_camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
+		owner_scene_game->player->player_camera_machine->ResetCameraRot();
 		owner_scene_game->player->pl_controller->GetStateMachine()->ChangeState("idle");
 		owner_scene_game->player->rb->velocity = Vector3(physx::PxZero);
 		exit_timer = 0;
@@ -56,7 +57,7 @@ namespace NeonFade {
 		movie_camera->camera->render_type = Camera::RenderType::Deferred;
 		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"bgm");
 		owner_scene_game->audio_player->loop = true;
-		owner_scene_game->audio_player->volume = 0.6f;
+		owner_scene_game->audio_player->volume = 0.6f * SceneGame::GetBGMVolume();
 		owner_scene_game->audio_player->Play();
 	}
 	void SceneGameState_KI::OnExit(ISceneStateMachine* machine)

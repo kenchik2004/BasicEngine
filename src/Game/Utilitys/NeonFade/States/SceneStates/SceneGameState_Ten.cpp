@@ -26,7 +26,7 @@ namespace NeonFade {
 		message_text->SetFontSize(70);
 		message_text->TextColor() = Color::YELLOW;
 		message_text->SetText(u8"まだ逃げ手がいるぞ!!");
-		assert_se->PlayOneShot();
+		assert_se->PlayOneShot(SceneGame::GetSEVolume());
 		{
 			auto panel = SceneManager::Object::Create<UIObject>(u8"fullscreen_panel");
 			panel->SetPriority(1999U);

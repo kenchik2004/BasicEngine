@@ -2,8 +2,10 @@ root
 |-----NeonFade::FinishEffectObject
 |-----Scene
 |        |-----NeonFade::SceneTitle
-|        |-----NeonFade::SceneGame
 |        |-----NeonFade::DebugCameraScene
+|        |        |-----NeonFade::SceneGame
+|        |        end_of_node
+|        |        
 |        end_of_node
 |        
 |-----Object
@@ -49,9 +51,9 @@ root
 |        |-----EffectPlayer
 |        |-----ImageRenderer
 |        |-----Text3D
+|        |-----AudioPlayer
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
-|        |-----AudioPlayer
 |        |-----Collider
 |        |        |-----ConvexMeshCollider
 |        |        |-----SphereCollider

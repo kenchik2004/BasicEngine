@@ -106,7 +106,7 @@ namespace NeonFade {
 				text_comp->TextColor() = Color::RED;
 				text_comp->SetFontSize(70);
 				txt_rank = rank_text_obj;
-				score_se->PlayOneShot();
+				score_se->PlayOneShot(SceneGame::GetSEVolume());
 			}
 		}
 		~FinishEffectObject() {
@@ -142,9 +142,9 @@ namespace NeonFade {
 
 		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"result_bgm");
 		owner_scene_game->audio_player->loop = true;
-		owner_scene_game->audio_player->volume = 0.8f;
+		owner_scene_game->audio_player->volume = 0.8f*SceneGame::GetBGMVolume();
 		owner_scene_game->audio_player->Play();
-		fin_se->PlayOneShot();
+		fin_se->PlayOneShot(SceneGame::GetSEVolume());
 
 
 		finish_effect = std::make_unique<FinishEffectObject>(owner_scene_game);

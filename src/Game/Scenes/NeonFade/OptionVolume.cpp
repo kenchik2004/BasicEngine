@@ -18,7 +18,17 @@ namespace NeonFade {
 			if (vol > 100) vol = 100;
 			SetText(u8"音量: " + std::to_string(vol) + "%");
 			};
+		on_deselect = [this]() {
+			ApplyVolume();
+			};
+		ApplyVolume();
 		return ret;
+	}
+
+	void OptionVolume::ApplyVolume()
+	{
+		FileSystem::IniFileManager::SetFloat("Audio", "BGMVolume", static_cast<float>(vol) / 100.0f, "data/config.ini");
+		FileSystem::IniFileManager::SetFloat("Audio", "SEVolume", static_cast<float>(vol) / 100.0f, "data/config.ini");
 	}
 
 }

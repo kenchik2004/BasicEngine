@@ -13,6 +13,7 @@ namespace NeonFade
 		void Update(IStateMachine* machine, float dt) override;
 		void OnExit(IStateMachine* machine) override;
 		bool CanTransitTo(const std::string& state_name) override;
+		void DebugDraw() override;
 
 	private:
 		Vector3 next_destination;						//<! 次の目的地
@@ -24,6 +25,14 @@ namespace NeonFade
 		Enemy* owner_enemy = nullptr;						//<! オーナーのEnemyオブジェクトへのポインタ
 		Animator* animator = nullptr;						//<! オーナーのAnimatorコンポーネントへのポインタ
 		RigidBody* rb = nullptr;							//<! オーナーのRigidBodyコンポーネントへのポインタ
+
+		GameObjectWPVec another_enemies;						//<! 他の敵オブジェクトへの弱参照リスト
+
+		//! @brief 基礎の移動方向を計算する関数
+		void CalculateBaseMovement(Vector3& out_mov_dir);	
+		//! @brief 近くの敵に引き寄せられる方向を計算する関数
+		void CalculateCohesion(Vector3& out_mov_dir);
+
 
 	};
 }

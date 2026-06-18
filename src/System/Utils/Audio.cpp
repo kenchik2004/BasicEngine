@@ -9,11 +9,11 @@
 //----------------------------------------------------
 // @brief AudioClip::PlayOneShot の実装。
 // オーディオクリップを一度だけ再生する関数。
-// 音量を最大に設定し、バックグラウンド再生を行う。
+// 音量を設定し、バックグラウンド再生を行う。
 //----------------------------------------------------
-void AudioClip::PlayOneShot() {
-	// 音量を最大値（255）に設定する。これにより音が最大音量で再生される。
-	ChangeVolumeSoundMem(255, handle);
+void AudioClip::PlayOneShot(float volume) {
+	// 音量を指定された値に設定する。
+	ChangeVolumeSoundMem(static_cast<int>(volume * 255), handle);
 	// サウンドをバックグラウンドで再生する。DX_PLAYTYPE_BACK はバックグラウンド再生を指定。
 	PlaySoundMem(handle, DX_PLAYTYPE_BACK);
 }

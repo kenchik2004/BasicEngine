@@ -13,13 +13,6 @@ namespace NeonFade {
 		enemy = owner_;
 	}
 
-	void EnemyStateMachine::DebugDraw()
-	{
-		if (!current_state)
-			return;
-		auto& cur_state = current_state->GetName();
-		printfDx("%s : %s\n", enemy->name.c_str(), cur_state.c_str());
-	}
 	void EnemyStateMachine::OnTriggerEnter(const HitInfo& hit_info)
 	{
 		if (current_state)

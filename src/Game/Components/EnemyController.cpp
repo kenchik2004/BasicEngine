@@ -40,6 +40,12 @@ namespace NeonFade {
 	void EnemyController::Exit()
 	{}
 
+	void EnemyController::DebugDraw()
+	{
+		if (state_machine)
+			state_machine->DebugDraw();
+	}
+
 	void EnemyController::LateDebugDraw()
 	{
 		if (!brain || !state_machine)

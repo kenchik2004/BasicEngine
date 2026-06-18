@@ -27,7 +27,7 @@ namespace NeonFade {
 	};
 	SafeSharedPtr<LightEditor> light_editor = nullptr; //!< ライトエディタオブジェクト
 
-	static HANDLE h7seg_font = nullptr;	//!< 7セグメントフォントハンドル(Windowsのハンドル。DxLibのハンドルは別物なので注意)
+	static HANDLE h7seg_font = nullptr;	//!< 7セグのフォントハンドル(Windowsのハンドル。DxLibのハンドルは別物なので注意)
 
 	void SceneGame::LoadResources()
 	{
@@ -73,7 +73,7 @@ namespace NeonFade {
 		ModelManager::LoadAsModel(u8"data/Stage/light/street_light.mv1", "street_light");
 		ModelManager::LoadAsModel(u8"data/car/police.mv1", "police_car");
 
-		ModelManager::LoadAsModel(u8"data/enemy/leader_model.mv1", "enemy_model");
+		ModelManager::LoadAsModel(u8"data/enemy/model.mv1", "enemy_model");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_fighting_idle.mv1", "enemy_idle");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_damage.mv1", "enemy_damage");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down.mv1", "enemy_down");
@@ -104,6 +104,7 @@ namespace NeonFade {
 		AudioManager::Load(u8"data/sound/result_bgm.mp3", "result_bgm");
 		AudioManager::Load(u8"data/sound/score_se.mp3", "score_se");
 		AudioManager::Load(u8"data/sound/welter_se.mp3", "welter_se");
+		AudioManager::Load(u8"data/sound/enem_crash.mp3", "enem_crash");
 		h7seg_font = AddFontFile(u8"data/DSEG7Modern-Regular.ttf");
 	}
 
@@ -168,18 +169,7 @@ namespace NeonFade {
 			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 15,8,10 }, 0, 0, { 5,-10,-8 });
 			auto rec_light_manager = SceneManager::Object::Create<LightManager>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { -5,-8,5 });
-			for (u32 i = 0; i < buildings.size(); ++i)
-				for (u32 j = 0; j < 20; ++j) {
-					Vector3 rand_start = Vector3(-5, 20, -5);
-					Vector3 rand_end = Vector3(5, 100, 5);
-					Vector3 rand_pos = Random::Position(rand_start, rand_end);
-					Vector3 offset = Vector3(rand_pos.x, 0, rand_pos.z);
-					rand_pos += offset.getNormalized() * 60;
-					rand_pos += buildings[i];
-					light_manager->AddLight(LightType::Point, rand_pos, Random::Color({ 100,100,500 }, { 1000,1000,1000 }), Random::Range(10.0f, 50.0f), Random::Range(0.01f, 10.0f));
-
-				}
-
+			
 			{
 
 				auto mat = MaterialManager::CreateMaterial("hunt_eff_mat");
@@ -196,6 +186,7 @@ namespace NeonFade {
 		if (!light_editor) {
 			light_editor = SceneManager::Object::Create<LightEditor>();
 			light_editor->file_path = "data/SceneGame_LightData.txt";
+			light_editor->Load(light_editor->file_path);
 		}
 
 		if (!CheckForLoading())
@@ -204,6 +195,11 @@ namespace NeonFade {
 			auto audio_player_obj = SceneManager::Object::Create<GameObject>();
 			audio_player = audio_player_obj->AddComponent<AudioPlayer>();
 			audio_player->is_3d = false;
+			float volume = FileSystem::IniFileManager::Getfloat("Audio", "BGMVolume", 1.0f, "data/config.ini");
+			bgm_volume = volume;
+			audio_player->volume = volume;
+			volume = FileSystem::IniFileManager::Getfloat("Audio", "SEVolume", 1.0f, "data/config.ini");
+			se_volume = volume;
 		}
 		if (!player) {
 			auto player_ = SceneManager::Object::Create<Player>(u8"プレイヤー");
@@ -442,7 +438,7 @@ namespace NeonFade {
 		}
 
 		{
-			auto police_car = SceneManager::Object::Create<PoliceCar>(u8"パトカー");
+			//auto police_car = SceneManager::Object::Create<PoliceCar>(u8"パトカー");
 		}
 		return Super::Init();
 
@@ -452,7 +448,7 @@ namespace NeonFade {
 	{
 		if (!CheckForLoading())
 			return;
-		
+
 
 		scene_state_machine->Update(Time::DeltaTime());
 		if (Input::GetPadButtonDown(0, PadButton::Start) || Input::GetKeyDown(KeyCode::Minus)) {

@@ -10,5 +10,7 @@ namespace NeonFade {
 		USING_SUPER(OptionVolume);
 		int vol = 100;
 		int Init() override;
+	private:
+		void ApplyVolume();
 	};
 }

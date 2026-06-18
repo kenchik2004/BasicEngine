@@ -170,6 +170,7 @@ void LightEditor::Update()
 
 void LightEditor::DebugDraw()
 {
+	return;
 	if (light_objects.empty())
 		return;
 

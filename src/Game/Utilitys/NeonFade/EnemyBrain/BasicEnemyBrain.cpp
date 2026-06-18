@@ -56,7 +56,7 @@ namespace NeonFade {
 			result = "knock_front";
 		if (Input::GetKeyDown(KeyCode::Alpha5))
 			result = "die";
-
+#else
 		// ここにAIの思考ロジックを実装する
 
 		//本来なら死亡判定が最優先だが、HPが0になっても殴り続けるのが面白いと思うので、ダメージとノックバックの判定を先にする
@@ -92,7 +92,7 @@ namespace NeonFade {
 		}
 
 #endif
-			return result;
+		return result;
 	}
 	void BasicEnemyBrain::Damage(u32 damage, bool ignore_i_frame) {
 		if (!ignore_i_frame && i_frame_timer > 0.0f)

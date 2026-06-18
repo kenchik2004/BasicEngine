@@ -7,6 +7,7 @@
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 #include "Game/Managers/LightManager.h"
 #include "Game/Components/PlayerCameraMachine.h"
+#include "Game/Scenes/NeonFade/SceneGame.h"
 
 namespace NeonFade {
 	PlayerSmashChargeState::PlayerSmashChargeState(Player* player_)
@@ -37,7 +38,7 @@ namespace NeonFade {
 			charge_effect = eff;
 		}
 
-		charge_se->PlayOneShot();
+		charge_se->PlayOneShot(SceneGame::GetSEVolume());
 
 		//ビリビリしてそうな感じの動画テクスチャをマテリアルにセット
 		{

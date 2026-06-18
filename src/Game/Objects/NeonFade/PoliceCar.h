@@ -24,6 +24,8 @@ namespace NeonFade
 		void Update() override;
 		//! @brief 終了処理
 		void Exit() override;
+		//! @brief 衝突開始イベント
+		void OnCollisionEnter(const HitInfo& hit_info) override;
 		//! @brief トリガー開始イベント
 		void OnTriggerEnter(const HitInfo& hit_info)override;
 		//! @brief トリガー終了イベント
@@ -40,6 +42,8 @@ namespace NeonFade
 		}
 
 	private:
+
+		void PlayCrashSound();
 		static inline bool player_rideon = false; //!< プレイヤー乗車フラグ
 		float t = 0.0f; //!< パス上のパラメーター
 		RigidBodyWP rb = nullptr; //!< 物理ボディ
@@ -47,5 +51,8 @@ namespace NeonFade
 		SafeSharedPtr<PointLight> moving_light_blue = nullptr; //!< 青色回転灯ライト
 		std::vector<SafeWeakPtr<Object>> rideon_objs; //!< 乗車中のオブジェクトリスト
 		SafeUniquePtr<CatmullRomPath> path;			//!< パトカーの移動パス
+		static constexpr float SOUND_COOLTIME = 1.0f; //!< 音のクールタイム
+		float sound_cooltimer = 0.0f; //!< 音のクールタイマー
+		SafeSharedPtr<AudioClip> enem_crash_sound = nullptr; //!< 敵衝突音
 	};
 }

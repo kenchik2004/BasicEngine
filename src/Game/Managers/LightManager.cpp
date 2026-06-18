@@ -315,6 +315,7 @@ void LightManager::LateDraw()
 
 void LightManager::LateDebugDraw()
 {
+	return;
 	int canceled_light_num = 0;
 	for (auto& light : lights) {
 		if (!light)

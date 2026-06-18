@@ -23,6 +23,8 @@ namespace NeonFade {
 		void Update() override;
 		//! @brief 終了処理
 		void Exit() override;
+		//! @brief デバッグ描画
+		void DebugDraw() override;
 		//! @brief デバッグ描画（遅延）
 		void LateDebugDraw() override;
 

@@ -7,6 +7,7 @@
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 #include "Game/Components/PlayerCameraMachine.h"
+#include "Game/Scenes/NeonFade/SceneGame.h"
 
 namespace NeonFade {
 	PlayerSmashMainState::PlayerSmashMainState(Player* player_)
@@ -28,7 +29,7 @@ namespace NeonFade {
 		smash_timer = 0.0f;
 		animator->PlayIfNoSame("smash_attack", true, 0.0f, 0.1f, false);
 		anim_after_smash = false;
-		smash_se->PlayOneShot();
+		smash_se->PlayOneShot(SceneGame::GetSEVolume());
 		{
 
 			Vector3 smash_velocity = owner_player->transform->AxisZ() * 70.0f;

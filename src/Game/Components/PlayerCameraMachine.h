@@ -37,6 +37,8 @@ namespace NeonFade {
 		void SetCinematicOffset(const Vector3& offset_) { cinematic_offset = offset_; }
 		//! @brief トランジション時間を設定する
 		void SetTransitionTime(float time_) { transition_time_max = time_; }
+		//! @brief カメラの回転角度を初期状態にリセットする
+		void ResetCameraRot() { camera_rot = { 0,0 }; }
 		float camera_distance_max = 30.0f; //!< カメラ最大距離
 	private:
 		CAMERA_MODE mode; //!< 現在のカメラモード

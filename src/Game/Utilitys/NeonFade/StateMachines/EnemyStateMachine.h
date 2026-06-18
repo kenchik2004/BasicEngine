@@ -12,7 +12,6 @@ namespace NeonFade {
 	{
 	public:
 		EnemyStateMachine(Enemy* owner_);
-		void DebugDraw() override;
 		void OnTriggerEnter(const HitInfo& hit_info) override;
 		virtual ~EnemyStateMachine();
 

@@ -17,8 +17,8 @@ namespace NeonFade {
 	//! @brief メインゲームシーンクラス
 	//---------------------------------------------------------------------
 	class SceneGame :
-		public Scene
-		//public DebugCameraScene
+		//public Scene
+		public DebugCameraScene
 	{
 	public:
 		USING_SUPER(SceneGame);
@@ -67,18 +67,24 @@ namespace NeonFade {
 		//! @brief ゲームタイマーを開始する
 		void StartGameTimer() { is_game_timer_started = true; }
 		//! @brief ゲームタイマーをリセットする
-		void ResetGameTimer() { game_timer = 0.0f;}
+		void ResetGameTimer() { game_timer = 0.0f; }
 		//! @brief ゲームタイマーを停止する
 		void StopGameTimer() { is_game_timer_started = false; }
 		//! @brief ゲームタイマーの値を取得する
 		float GetGameTimer() const { return game_timer; }
+
+		static float GetSEVolume() { return se_volume; }
+		static float GetBGMVolume() { return bgm_volume; }
+
 		AudioPlayerP audio_player; //!< オーディオプレイヤー
 
 		//! シーンで使用するリソースをまとめて読み込む静的関数
-		static void LoadResources(); 
+		static void LoadResources();
 	private:
 		float game_timer = 0.0f; //!< ゲームタイマー
 		bool is_game_timer_started = false; //!< タイマー動作中フラグ
 		u32 enemy_count = 0; //!< 現在の敵の数
+		static inline float bgm_volume = 1.0f; //!< BGM音量
+		static inline float se_volume = 1.0f; //!< SE音量
 	};
 }
