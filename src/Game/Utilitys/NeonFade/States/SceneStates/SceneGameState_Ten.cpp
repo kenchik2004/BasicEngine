@@ -46,6 +46,9 @@ namespace NeonFade {
 	}
 	void SceneGameState_Ten::Update(ISceneStateMachine* machine, float dt)
 	{
+		if (owner_scene_game->IsGamePaused())
+			return;
+
 		exit_timer += dt;
 		if (exit_timer > EXIT_TIME - 1.0f) {
 			message_text->TextColor().a = 1.0f - (exit_timer - (EXIT_TIME - 1.0f));

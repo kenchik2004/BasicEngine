@@ -14,6 +14,41 @@
 
 namespace NeonFade {
 
+	class MovieCamera : public CameraObject {
+	public:
+		USING_SUPER(CameraObject);
+		int Init() override {
+			int ret = Super::Init();
+			camera->render_type = Camera::RenderType::Deferred;
+			return ret;
+		}
+		void PreDraw() override {
+			if (!path || !target)
+				return;
+
+			Vector3 pos;
+			Quaternion rot;
+			path->Evaluate(path_timer * path->GetTotalLength(), pos, rot);
+			transform->position = pos;
+			Vector3 look_dir = target->transform->position - pos;
+			look_dir.normalize();
+			transform->SetAxisZ(look_dir);
+		}
+		void SetPath(CatmullRomPath* path_) {
+			path = path_;
+		}
+		void SetTarget(GameObjectWP target_) {
+			target = target_;
+		}
+		void SetPathTimer(float timer) {
+			path_timer = timer;
+		}
+	private:
+		GameObjectWP target = nullptr;
+		CatmullRomPath* path = nullptr;
+		float path_timer = 0.0f;
+	};
+
 	SceneGameState_KI::SceneGameState_KI(SceneGame* owner_scene_)
 		:ISceneState(static_cast<Scene*>(owner_scene_))
 	{
@@ -38,23 +73,24 @@ namespace NeonFade {
 	{
 		auto controller = owner_scene_game->player->pl_controller.lock();
 		auto cam_machine = owner_scene_game->player->player_camera_machine.lock();
-		controller->Sleep();
+		controller->SetIgnoreInput(true);
 		cam_machine->Sleep();
 		message_text->SetText(u8"全員捕まえろ!");
 		message_text->SetFontSize(170);
 		message_text->WakeUp();
 		timer_text->Sleep();
 		owner_scene_game->text_comp->SetText(u8"KI State");
-		owner_scene_game->player->transform->position = { 0,20,100 };
+		owner_scene_game->player->transform->position = { 0,220,100 };
 		owner_scene_game->player->transform->rotation = Quaternion(physx::PxIdentity);
 		owner_scene_game->player->player_camera->transform->position = { 0,10,10 };
 		owner_scene_game->player->player_camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
 		owner_scene_game->player->player_camera_machine->ResetCameraRot();
-		owner_scene_game->player->pl_controller->GetStateMachine()->ChangeState("idle");
+		owner_scene_game->player->pl_controller->GetStateMachine()->ChangeState("spawn");
 		owner_scene_game->player->rb->velocity = Vector3(physx::PxZero);
 		exit_timer = 0;
-		movie_camera = SceneManager::Object::Create<CameraObject>(u8"movie_camera_KI");
-		movie_camera->camera->render_type = Camera::RenderType::Deferred;
+		movie_camera = SceneManager::Object::Create<MovieCamera>(u8"movie_camera_KI");
+		movie_camera->SetTarget(owner_scene_game->player);
+		movie_camera->SetPath(camera_path.get());
 		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"bgm");
 		owner_scene_game->audio_player->loop = true;
 		owner_scene_game->audio_player->volume = 0.6f * SceneGame::GetBGMVolume();
@@ -64,7 +100,7 @@ namespace NeonFade {
 	{
 		scene_camera->camera->SetCurrentCamera();
 		SceneManager::Object::Destroy(movie_camera.lock());
-		owner_scene_game->player->pl_controller->WakeUp();
+		owner_scene_game->player->pl_controller->SetIgnoreInput(false);
 		owner_scene_game->player->player_camera_machine->WakeUp();
 		message_text->Sleep();
 	}
@@ -72,13 +108,8 @@ namespace NeonFade {
 	{
 		exit_timer += dt;
 
-		Vector3 pos;
-		Quaternion rot;
-		camera_path->Evaluate((exit_timer / EXIT_TIME) * camera_path->GetTotalLength(), pos, rot);
-		movie_camera->transform->position = pos;
-		Vector3 look_dir = owner_scene_game->player->transform->position - pos;
-		look_dir.normalize();
-		movie_camera->transform->SetAxisZ(look_dir);
+		movie_camera->SetPathTimer(exit_timer / EXIT_TIME);
+
 		message_text->TextColor().a = sinf(Time::GetTimeFromStart() * 3.0f) * 0.5f + 0.5f;
 
 		if (exit_timer > EXIT_TIME) {

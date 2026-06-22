@@ -120,7 +120,7 @@ namespace NeonFade {
 			input_limit = true;
 			rb->SetVelocity(Vector3(0, rb->velocity.y, 0));
 		}
-		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::Button2) || Input::GetKeyDown(KeyCode::L)))
+		if (!input_limit && (Input::GetPadButtonDown(0, PadButton::Button2) || Input::GetKeyDown(KeyCode::P)))
 			next_avalable = true;
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;
@@ -144,15 +144,15 @@ namespace NeonFade {
 			player->GetScene()->physics_timescale = 0.0f;
 			if (hit_stop_timer <= 0.0f) {
 				hit_stop_timer = HIT_STOP_TIME;
-				player->player_camera_machine->ShakeCamera(0.2f, CAMERA_SHAKE_TIME);
+				player->player_camera_machine->ShakeCamera(CAMERA_SHAKE_POWER, CAMERA_SHAKE_TIME);
 			}
 
 			if (knock_back) {
-				enem->Damage(3);
+				enem->Damage(DAMAGE);
 				enem->Down(Vector3(ProjectOnPlane(enem->transform->position - player->transform->position, { 0,1,0 })).getNormalized());
 			}
 			else {
-				enem->Damage(3);
+				enem->Damage(DAMAGE);
 				if (!target)
 					target = enem;
 

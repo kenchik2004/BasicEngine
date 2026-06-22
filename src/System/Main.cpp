@@ -10,6 +10,12 @@ int SCREEN_W = 1920;
 //! @brief ウィンドウの高さ(初期値:1080)
 int SCREEN_H = 1080;
 
+#define SHOW_FPS
+#ifdef SHOW_FPS
+std::array<float, 60> fps_array = {};
+size_t fps_index = 0;
+#endif
+
 
 //! @brief Windowsのウィンドウプロシージャ
 //! @param windowのハンドル
@@ -202,8 +208,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				ClearDrawScreen();
 				SceneManager::Draw();
 				//GameRender();
-
-				ScreenFlip();
+#ifdef SHOW_FPS
+				float fps = Time::GetDrawFPS();
+				fps_array[fps_index] = fps;
+				fps_index = (fps_index + 1) % fps_array.size();
+				float average_fps = 0.0f;
+				for (u32 i = 0; i < fps_array.size(); i++)
+					average_fps += fps_array[i];
+				average_fps /= fps_array.size();
+				printfDx("%.2f fps_avg\n", average_fps);
+				printfDx("%.2f fps\n", fps);
+			
+#endif
+					ScreenFlip();
 				//描画FPSを計測し、描画delta_timeをリセットする
 				Time::FixDrawFPS();
 				//============//

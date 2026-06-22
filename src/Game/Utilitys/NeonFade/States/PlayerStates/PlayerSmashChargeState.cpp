@@ -112,7 +112,13 @@ namespace NeonFade {
 			Vector3 to_target = lock_on_target.lock()->transform->position - owner_player->transform->position;
 			Vector3 cur_forward = owner_player->transform->AxisZ();
 			to_target = Lerp(cur_forward, to_target.getNormalized(), 0.1f);
-			owner_player->transform->SetAxisZ(to_target);
+			static constexpr float ANGLE_THRESHOLD = 15.0f;
+			static const float COS_ANGLE_THRESHOLD = cosf(DEG2RAD(ANGLE_THRESHOLD));
+			//ターゲットの方向とワールドの上方向のなす角がある程度以上なら、ターゲットの方向に向くようにする
+			//(ターゲットが真上か真下にいる場合は回転させない。そうしないと不自然な回転になる)
+			if (fabsf(to_target.dot(Vector3(0, 1, 0))) < COS_ANGLE_THRESHOLD) {
+				owner_player->transform->SetAxisZ(to_target);
+			}
 		}
 		auto& camera_machine = owner_player->player_camera_machine;
 		if (camera_cinema_mode && camera_machine) {

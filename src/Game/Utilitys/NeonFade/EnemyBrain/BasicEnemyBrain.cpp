@@ -15,6 +15,9 @@
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyStandUpFrontState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyStandUpBackState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyRandomWalkState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyCoverApproachState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyCoverState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyCrowlingState.h"
 
 namespace NeonFade {
 	BasicEnemyBrain::BasicEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_)
@@ -36,6 +39,12 @@ namespace NeonFade {
 		state_machine->AddState("stand_up_back", std::move(stand_up_back_state));
 		auto random_walk_state = make_safe_unique<EnemyRandomWalkState>(state_machine->enemy);
 		state_machine->AddState("random_walk", std::move(random_walk_state));
+		auto cover_approach_state = make_safe_unique<EnemyCoverApproachState>(state_machine->enemy);
+		state_machine->AddState("cover_approach", std::move(cover_approach_state));
+		auto cover_state = make_safe_unique<EnemyCoverState>(state_machine->enemy);
+		state_machine->AddState("cover", std::move(cover_state));
+		auto crowling_state = make_safe_unique<EnemyCrowlingState>(state_machine->enemy);
+		state_machine->AddState("crowling", std::move(crowling_state));
 		state_machine->ChangeState("idle");
 
 
@@ -56,10 +65,10 @@ namespace NeonFade {
 			result = "knock_front";
 		if (Input::GetKeyDown(KeyCode::Alpha5))
 			result = "die";
-#else
-		// ここにAIの思考ロジックを実装する
+		//#else
+				// ここにAIの思考ロジックを実装する
 
-		//本来なら死亡判定が最優先だが、HPが0になっても殴り続けるのが面白いと思うので、ダメージとノックバックの判定を先にする
+				//本来なら死亡判定が最優先だが、HPが0になっても殴り続けるのが面白いと思うので、ダメージとノックバックの判定を先にする
 		if (is_knock_back) {
 			// ノックバックの方向を敵の正面ベクトルとの内積で判定して、前方ノックバックか後方ノックバックかを決定する
 			float dot = state_machine->enemy->transform->AxisZ().dot(knock_back_vec);
@@ -67,13 +76,13 @@ namespace NeonFade {
 				result = "knock_front";
 			else
 				result = "knock_back";
-			ResetParameters();
+			ResetFrameParameters();
 
 			return result;
 		}
 		if (is_damaged) {
 			result = "damage";
-			ResetParameters();
+			ResetFrameParameters();
 			return result;
 		}
 
@@ -81,13 +90,24 @@ namespace NeonFade {
 		//HPが0になる or 地面を貫通したら死ぬ
 		if (hp == 0 || state_machine->enemy->transform->position.y < -50.0f) {
 			result = "die";
-			ResetParameters();
+			ResetFrameParameters();
+			return result;
+		}
+
+		if (IsHaveToCoverOtherEnemy()) {
+			result = "cover_approach";
+			ResetFrameParameters();
+			return result;
+		}
+		if (is_weakened) {
+			result = "idle";
+			ResetFrameParameters();
 			return result;
 		}
 
 		if (!IsFoundPlayer()) {
 			result = "random_walk";
-			ResetParameters();
+			ResetFrameParameters();
 			return result;
 		}
 
@@ -103,12 +123,18 @@ namespace NeonFade {
 			return;
 		}
 		hp -= damage;
+		if (hp <= WEAKED_HP_THRESHOLD) {
+
+			Enemy::RegisterWeakenedEnemy(state_machine->enemy);
+			is_weakened = true;
+		}
 		i_frame_timer = I_FRAME;
 		is_damaged = true;
 	}
 	void BasicEnemyBrain::Die()
 	{
 		hp = 0;
+		is_weakened = false;
 	}
 	void BasicEnemyBrain::KnockBack(Vector3 knock_back_vec)
 	{
@@ -119,7 +145,7 @@ namespace NeonFade {
 	{
 
 	}
-	void BasicEnemyBrain::ResetParameters()
+	void BasicEnemyBrain::ResetFrameParameters()
 	{
 		is_knock_back = false;
 		is_damaged = false;
@@ -130,7 +156,26 @@ namespace NeonFade {
 			return false;
 
 		Vector3 to_player = player.lock()->transform->position - state_machine->enemy->transform->position;
-		return to_player.magnitudeSquared() < 50.0f * 50.0f; // プレイヤーが50ユニット以内にいるかどうか
+		static constexpr float DETECT_RADIUS = 50.0f; // プレイヤーを検知する半径
+		static constexpr float DETECT_RADIUS_SQUARED = DETECT_RADIUS * DETECT_RADIUS; // プレイヤーを検知する半径の二乗
 
+		return to_player.magnitudeSquared() < DETECT_RADIUS_SQUARED; // プレイヤーが50ユニット以内にいるかどうか
+
+	}
+	bool BasicEnemyBrain::IsHaveToCoverOtherEnemy()
+	{
+		if (hp <= WEAKED_HP_THRESHOLD)
+			return false;
+
+		static constexpr float DETECT_RADIUS = 50.0f; // 弱った仲間を検知する半径
+		static constexpr float DETECT_RADIUS_SQUARED = DETECT_RADIUS * DETECT_RADIUS; // 弱った仲間を検知する半径の二乗
+		const std::vector<Enemy*>& weakened_enemies = Enemy::GetWeakenedEnemies();
+		for (auto& weakened_enemy : weakened_enemies) {
+			Vector3 to_weakened_enemy = weakened_enemy->transform->position - state_machine->enemy->transform->position;
+			if (to_weakened_enemy.magnitudeSquared() < DETECT_RADIUS_SQUARED) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

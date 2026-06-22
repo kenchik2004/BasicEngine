@@ -5,6 +5,39 @@
 #include "RigidBody.h"
 
 using namespace physx;
+
+void RigidBody::OnSleep()
+{
+	if (!owner->GetScene()->IsInSimulation()) {
+		if (auto rig_body = body->is<PxRigidDynamic>())
+			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, true);
+		return;
+	}
+	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this()))]() {
+		if (!wp)
+			return;
+		if (auto rig_body = wp->body->is<PxRigidDynamic>())
+			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, true);
+		};
+	owner->GetScene()->AddFunctionAfterSimulation(lambda);
+}
+
+void RigidBody::OnWakeUp()
+{
+	if (!owner->GetScene()->IsInSimulation()) {
+		if (auto rig_body = body->is<PxRigidDynamic>())
+			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, false);
+		return;
+	}
+	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this()))]() {
+		if (!wp)
+			return;
+		if (auto rig_body = wp->body->is<PxRigidDynamic>())
+			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, false);
+		};
+	owner->GetScene()->AddFunctionAfterSimulation(lambda);
+}
+
 void RigidBody::Construct()
 {
 	status.status_bit.on(CompStat::STATUS::SINGLE);
@@ -90,8 +123,7 @@ void RigidBody::PostPhysics()
 }
 
 void RigidBody::Update()
-{
-}
+{}
 
 void RigidBody::DebugDraw()
 {

@@ -14,6 +14,8 @@
 #include "Game/Utilitys/NeonFade/EnemyTeam.h"
 
 namespace NeonFade {
+	std::vector<Enemy*> Enemy::all_enemies = {};
+	std::vector<Enemy*> Enemy::weakened_enemies = {};
 	int Enemy::Init()
 	{
 
@@ -44,8 +46,8 @@ namespace NeonFade {
 			animator->SetAnimation("enemy_attack_charge", 0);
 			animator->SetAnimation("enemy_attack_main", 0);
 			animator->SetAnimation("enemy_escape", 0);
-			animator->SetAnimation("enemy_instruct", 0);
-			animator->SetAnimation("enemy_stepback", 0);
+			animator->SetAnimation("enemy_cover", 0);
+			animator->SetAnimation("enemy_crowling", 0);
 
 
 
@@ -82,10 +84,18 @@ namespace NeonFade {
 			auto default_diffuse = model->GetMaterial(0)->GetTexture(Material::TextureType::Diffuse);
 			death_material->SetTexture(default_diffuse, Material::TextureType::Diffuse);
 		}
+		//敵オブジェクトの作成時に、全ての敵オブジェクトへのポインタを保持する静的変数に自身を追加する
+		all_enemies.push_back(this);
 		return 0;
 	}
 	void Enemy::Update()
 	{}
+	void Enemy::Exit()
+	{
+		//敵オブジェクトの削除時に、全ての敵オブジェクトへのポインタを保持する静的変数から自身を削除する
+		all_enemies.erase(std::remove(all_enemies.begin(), all_enemies.end(), this), all_enemies.end());
+		UnregisterWeakenedEnemy(this);
+	}
 	void Enemy::Damage(int damage, bool ignore_i_frame)
 	{
 		enem_controller->Damage(damage, ignore_i_frame);

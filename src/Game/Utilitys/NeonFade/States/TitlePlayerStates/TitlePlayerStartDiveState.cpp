@@ -48,14 +48,15 @@ namespace NeonFade {
 	void TitlePlayerStartDiveState::Update(IStateMachine* machine, float dt)
 	{
 		dive_timer += dt * 0.5f;
-		owner_player->transform->rotation = Slerp(initial_rotation, diving_rotation, min(dive_timer, dive_duration));
+		owner_player->transform->rotation = Slerp(initial_rotation, diving_rotation, min(dive_timer, DIVE_DURATION));
 		next = (ModelManager::GetLoadingCount() + TextureManager::GetLoadingCount() + AudioManager::GetLoadingCount()) == 0;
-		if (next)
+		// ダイブ中の最小時間を経過しており、かつリソースのロードが完了している場合、ゲームシーンに遷移する
+		if (next && dive_timer >= MINIMUM_DIVE_TIME)
 			SceneManager::Load<SceneGame>();
 		Vector3 next_player_pos = { 0.0f,0.0f,0.0f };
 		Quaternion dummy_rot = { 0.0f,0.0f,0.0f,1.0f };
 		Vector3 up = { -1.0f, 0.0f, 1.0f };
-		path->Evaluate(dive_timer * path->GetTotalLength() * dive_speed, next_player_pos, dummy_rot, true, up);
+		path->Evaluate(dive_timer * path->GetTotalLength() * DIVE_SPEED, next_player_pos, dummy_rot, true, up);
 		next_player_pos += initial_position;
 		owner_player->transform->position = next_player_pos;
 		if (camera_obj) {

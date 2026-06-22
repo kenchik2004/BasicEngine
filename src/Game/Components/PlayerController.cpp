@@ -15,7 +15,6 @@ namespace NeonFade
 		owner_player = SafeStaticCast<Player>(owner.lock());
 		state_machine = make_safe_unique<PlayerStateMachine>(owner_player.get());
 
-		state_machine->ChangeState("idle");
 		return Super::Init();
 	}
 
@@ -92,23 +91,28 @@ namespace NeonFade
 			fall_detect_time = 0.0f;
 		}
 		is_falling = (fall_detect_time >= FALL_DETECT_THRESHOLD);
-		is_attacking = Input::GetKeyDown(KeyCode::P) 
+		is_attacking = Input::GetKeyDown(KeyCode::P)
 			|| Input::GetPadButtonDown(0, PadButton::Button2)
 			|| Input::GetPadButtonDown(0, PadButton::Button3)
 			|| Input::GetPadButtonDown(0, PadButton::Button4);
-		state_machine->is_attacking = is_attacking;
-		state_machine->move_input = move_input;
-		state_machine->is_jumping = is_jumping;
+
+		// ステートマシンに入力を渡す
+		// 入力を無視する場合はステートマシンの状態を維持する
+		if (!ignore_input)
+		{
+			state_machine->is_attacking = is_attacking;
+			state_machine->move_input = move_input;
+			state_machine->is_jumping = is_jumping;
+			state_machine->is_dodging = is_dodging;
+			state_machine->can_climb = can_climb;
+		}
 		state_machine->is_landed = is_landed;
 		state_machine->is_falling = is_falling;
-		state_machine->can_climb = can_climb;
-		state_machine->is_dodging = is_dodging;
 		state_machine->Update(Time::UnscaledDeltaTime());
 	}
 
 	void PlayerController::Exit()
-	{
-	}
+	{}
 	void PlayerController::LateDebugDraw()
 	{
 		DrawLine3D(cast(climb_ray_start), cast(climb_ray_start + Vector3(0, -5.0f, 0)), 0xff00ff);

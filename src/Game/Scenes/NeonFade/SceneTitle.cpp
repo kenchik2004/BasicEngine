@@ -15,6 +15,7 @@
 #include "OptionSetting.h"
 
 #include "Game/Objects/NeonFade/TitlePlayer.h"
+#include "Game/Utilitys/NeonFade/StateMachines/TitlePlayerStateMachine.h"
 
 namespace NeonFade {
 
@@ -45,9 +46,6 @@ namespace NeonFade {
 
 
 
-	TitleLogoWP logo;
-	OptionManagerWP opt_manager;
-	SettingsManagerWP settings_manager;
 
 	std::array<Vector3, 4> title_buildings = {
 	Vector3(-400.193f,0.0f,191.397f),
@@ -72,9 +70,11 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/player/anim_twist_flip.mv1", "player_twist_flip");
 	}
 	int SceneTitle::Init() {
+
+
 		{
 			Vector3 title_camera_pos = { 384.22f, 1539.66f, 113.73f };
-			Quaternion title_camera_rot = Quaternion(5.341f, { 0,1,0 })* Quaternion(0.224f, { 1,0,0, });
+			Quaternion title_camera_rot = Quaternion(5.341f, { 0,1,0 }) * Quaternion(0.224f, { 1,0,0, });
 			auto cam = SceneManager::Object::Create<CameraObject>();
 			cam->transform->position = title_camera_pos;
 			cam->transform->rotation = title_camera_rot;
@@ -82,7 +82,7 @@ namespace NeonFade {
 			cam->camera->camera_far = 2000.0f;
 			cam->camera->render_type = Camera::RenderType::Deferred;
 		}
-		if (true) {
+		{
 			auto shadowmap = SceneManager::Object::Create<ShadowMapObject>("ShadowMap");
 			shadowmap->SetCascadeCount(4);
 			shadowmap->SetShadowMapSize(1024);
@@ -96,29 +96,33 @@ namespace NeonFade {
 		}
 
 
-
-		logo = SceneManager::Object::Create<TitleLogo>();
+		if (!logo)
+			logo = SceneManager::Object::Create<TitleLogo>();
 
 		// オプションマネージャーと検証用オプションの作成
-		opt_manager = SceneManager::Object::Create<OptionManager>("OptionManager");
-		settings_manager = SceneManager::Object::Create<SettingsManager>("SettingsManager");
-		if (auto sm = settings_manager.lock()) {
-			sm->main_opts = opt_manager;
+		if (!opt_manager && !settings_manager) {
+			opt_manager = SceneManager::Object::Create<OptionManager>("OptionManager");
+
+			settings_manager = SceneManager::Object::Create<SettingsManager>("SettingsManager");
+
+			if (auto sm = settings_manager.lock()) {
+				sm->main_opts = opt_manager;
+			}
+
+			auto opt_start = SceneManager::Object::Create<OptionStart>("OptionStart");
+			opt_start->transform->position = { 450, -250, 1 };
+
+			auto opt_setting = SceneManager::Object::Create<OptionSetting>("OptionSetting");
+			opt_setting->settings_manager = settings_manager;
+			opt_setting->transform->position = { 450, -320, 1 };
+
+			auto opt_exit = SceneManager::Object::Create<OptionExit>("OptionExit");
+			opt_exit->transform->position = { 450, -390, 1 };
+
+			opt_manager->AddOption(SafeStaticCast<OptionData>(opt_start));
+			opt_manager->AddOption(SafeStaticCast<OptionData>(opt_setting));
+			opt_manager->AddOption(SafeStaticCast<OptionData>(opt_exit));
 		}
-
-		auto opt_start = SceneManager::Object::Create<OptionStart>("OptionStart");
-		opt_start->transform->position = { 450, -250, 1 };
-
-		auto opt_setting = SceneManager::Object::Create<OptionSetting>("OptionSetting");
-		opt_setting->settings_manager = settings_manager;
-		opt_setting->transform->position = { 450, -320, 1 };
-
-		auto opt_exit = SceneManager::Object::Create<OptionExit>("OptionExit");
-		opt_exit->transform->position = { 450, -390, 1 };
-
-		opt_manager->AddOption(SafeStaticCast<OptionData>(opt_start));
-		opt_manager->AddOption(SafeStaticCast<OptionData>(opt_setting));
-		opt_manager->AddOption(SafeStaticCast<OptionData>(opt_exit));
 
 		{
 			auto pl = SceneManager::Object::Create<TitlePlayer>("Player");
@@ -137,27 +141,5 @@ namespace NeonFade {
 			}
 		}
 		return Super::Init();
-	}
-	void SceneTitle::Update() {
-	}
-	void SceneTitle::Exit() {
-		if (logo)
-			SceneManager::Object::Destroy(logo.lock());
-
-		if (opt_manager) {
-			auto opt_mgr = opt_manager.lock();
-			for (auto& opt : opt_mgr->GetOptions()) {
-				if (auto o = opt.lock()) {
-					SceneManager::Object::Destroy(o);
-				}
-			}
-			SceneManager::Object::Destroy(opt_mgr);
-		}
-
-		if (settings_manager) {
-			SceneManager::Object::Destroy(settings_manager.lock());
-		}
-
-		Super::Exit();
 	}
 }

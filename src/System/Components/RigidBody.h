@@ -28,6 +28,11 @@ class RigidBody :public Component
 {
 public:
 	USING_SUPER(RigidBody);
+
+	//! @brief コンポーネントを非アクティブにしたときの処理
+	void OnSleep() override;
+	//! @brief コンポーネントをアクティブにしたときの処理
+	void OnWakeUp() override;
 	//! @brief コンストラクト処理
 	void Construct() override;
 	//! @brief 初期化処理

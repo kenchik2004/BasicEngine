@@ -6,6 +6,7 @@
 #include "PlayerStateMachine.h"
 #include "Game/Objects/NeonFade/Player.h"
 
+#include "Game/Utilitys/NeonFade/States/PlayerStates/PlayerSpawnState.h"
 #include "Game/Utilitys/NeonFade/States/PlayerStates/PlayerMoveState.h"
 #include "Game/Utilitys/NeonFade/States/PlayerStates/PlayerIdleState.h"
 #include "Game/Utilitys/NeonFade/States/PlayerStates/PlayerJumpState.h"
@@ -223,6 +224,10 @@ namespace NeonFade
 
 		auto damage_state = make_safe_unique<PlayerDamageState>(player);
 		AddState("damage", std::move(damage_state));
+
+		auto spawn_state = make_safe_unique<PlayerSpawnState>(player);
+		AddState("spawn", std::move(spawn_state));
+		ChangeState("spawn");
 	}
 	PlayerStateMachine::~PlayerStateMachine()
 	{}

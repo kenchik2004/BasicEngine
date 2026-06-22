@@ -43,9 +43,10 @@ namespace NeonFade
 		animator->SetAnimation("spin_kick", 0);
 		animator->SetAnimation("clouch_inv", 0);
 		animator->SetAnimation("leg_sweep", 0);
+		animator->SetAnimation("player_dive", 0);
 #if 1
 		mov_tex = TextureManager::Get("electro_movie");
-		PlayMovieToGraph(*mov_tex, DX_PLAYTYPE_LOOP);
+		//PlayMovieToGraph(*mov_tex, DX_PLAYTYPE_LOOP);
 #endif
 
 

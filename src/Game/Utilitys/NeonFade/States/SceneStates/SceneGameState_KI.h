@@ -13,6 +13,7 @@ namespace NeonFade {
 	// 起承転結の「起」
 	// ほかの名前が思いつかなかった。許せ。
 	//----------------------------------------
+	class MovieCamera;
 	class SceneGame;
 	class SceneGameState_KI :
 		public ISceneState
@@ -26,7 +27,7 @@ namespace NeonFade {
 		SceneGame* owner_scene_game = nullptr;
 		float exit_timer = 0;
 		static constexpr float EXIT_TIME = 10.0f;
-		SafeWeakPtr<CameraObject> movie_camera = nullptr;
+		SafeWeakPtr<MovieCamera> movie_camera = nullptr;
 		SafeWeakPtr<CameraObject> scene_camera = nullptr;
 
 		SafeUniquePtr<CatmullRomPath> camera_path = nullptr;

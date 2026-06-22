@@ -8,13 +8,15 @@
 
 
 // コンポーネントを非アクティブ化する（既に非アクティブなら何もしない）
-void Component::Sleep()
+void Component::Sleep(bool sleep_draw)
 {
 	if (!status.status_bit.is(CompStat::STATUS::ACTIVE) && !status.status_bit.is(CompStat::STATUS::DRAW))
 		return;
 	OnSleep();
 	status.status_bit.set(CompStat::STATUS::ACTIVE, false);
-	status.status_bit.set(CompStat::STATUS::DRAW, false);
+
+	if (sleep_draw)
+		status.status_bit.set(CompStat::STATUS::DRAW, false);
 }
 
 // コンポーネントをアクティブ化する（既にアクティブなら何もしない）

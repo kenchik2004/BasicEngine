@@ -50,6 +50,13 @@ namespace NeonFade
 		//スポーンエフェクト用のマテリアルをセットして、スポーンアニメーションを再生する
 		for (u32 i = 0; i < spawn_mats.size(); i++)
 			model->SetMaterial(spawn_mats[i], i);
+
+		anim->Play("player_sitting", true);
+
+		Vector3 title_player_pos = { 363.218f,1526.004f,148.985f };
+		Quaternion title_player_rot = Quaternion(2.02f, { 0,1,0 });
+		owner_player->transform->position = title_player_pos;
+		owner_player->transform->rotation = title_player_rot;
 		anim->Play(u8"player_sitting", false);
 		spawn_timer = 0.0f;
 

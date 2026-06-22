@@ -8,6 +8,8 @@
 #include "EnemyKnockFrontState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/AbstractEnemyBrain.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/BasicEnemyBrain.h"
+#include "Game/Components/EnemyController.h"
 
 
 namespace NeonFade
@@ -35,6 +37,20 @@ namespace NeonFade
 				};
 			RegisterChangeRequest("die", die_request, 0); // 死亡状態への遷移は、死亡判定が真になったときに優先的に行う
 		}
+
+		//ノックダウンした際に弱っていたら、這いずり状態への遷移条件も登録しておく
+		{
+			std::function<bool()> crawl_request = [this]()
+				{
+					auto brain = owner_enemy->enem_controller->GetBrain();
+					bool is_weakened = false;
+					if (dynamic_cast<BasicEnemyBrain*>(brain))
+						is_weakened = dynamic_cast<BasicEnemyBrain*>(brain)->IsWeakened();
+					return elapsed_time >= KNOCK_FRONT_DURATION && is_weakened;
+				};
+			RegisterChangeRequest("crowling", crawl_request, 1); // 這いずり状態への遷移は、死亡状態への遷移の次に優先的に行う
+		}
+
 		// ノックバック状態の継続時間が経過した後に自動で立ち上がるように、状態遷移の条件を登録する
 		{
 			// ダウン状態からの復帰条件を登録
@@ -44,7 +60,7 @@ namespace NeonFade
 				};
 
 			// ダウン状態からの復帰は、ダウン時間が経過した後に自動で行う
-			RegisterChangeRequest("stand_up_front", default_exit, 1);
+			RegisterChangeRequest("stand_up_front", default_exit, 2);
 		}
 	}
 
@@ -115,8 +131,7 @@ namespace NeonFade
 	//! @brief EnemyKnockFrontStateから出るときの処理
 	//! @param machine この状態を管理する状態マシンへのポインタ
 	void EnemyKnockFrontState::OnExit(IStateMachine* machine)
-	{
-	}
+	{}
 
 	//! @brief EnemyKnockFrontStateから遷移可能な状態を制限する関数
 	//! @param state_name 遷移先の状態名

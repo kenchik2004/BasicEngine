@@ -1,6 +1,8 @@
 #include "EnemyKnockBackState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/AbstractEnemyBrain.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/BasicEnemyBrain.h"
+#include "Game/Components/EnemyController.h"
 
 
 namespace NeonFade {
@@ -16,6 +18,9 @@ namespace NeonFade {
 			return elapsed_time >= KNOCK_BACK_DURATION && owner_enemy->IsDead();
 			};
 		RegisterChangeRequest("die", die_exit, 0);
+
+		
+
 
 		std::function<bool()> default_exit = [this]() {
 			return elapsed_time >= KNOCK_BACK_DURATION;

@@ -20,11 +20,11 @@ public:
 		UI,		//!< UIオブジェクト
 	};
 	enum struct STATUS :u32 {
-		CONSTRUCTED = 0,	//!< 構築済み
-		INITIALIZED = 1,	//!< 初期化済み
-		ACTIVE = 1 << 1,	//!< アクティブ状態
-		DRAW = 1 << 2,		//!< 描画有効状態
-		REMOVED = 1 << 3,	//!< 削除済み
+		CONSTRUCTED = 1,	//!< 構築済み
+		INITIALIZED = 2,	//!< 初期化済み
+		ACTIVE = 3,	//!< アクティブ状態
+		DRAW = 4,		//!< 描画有効状態
+		REMOVED = 5,	//!< 削除済み
 	};
 
 	SBit <STATUS> status_bit;		//!< 状態フラグビット
@@ -100,19 +100,20 @@ public:
 	virtual void OnSleep() {}
 	virtual void OnWakeUp() {}
 
-	void Sleep() {
+	void Sleep(bool sleep_draw = true) {
 		status.status_bit.off(ObjStat::STATUS::ACTIVE);
-		status.status_bit.off(ObjStat::STATUS::DRAW);
+		if (sleep_draw)
+			status.status_bit.off(ObjStat::STATUS::DRAW);
 		for (auto& comp : components) {
 			if (!comp->status.status_bit.is(CompStat::STATUS::REMOVED))
-				comp->Sleep();
+				comp->Sleep(sleep_draw);
 		}
 		OnSleep();
 		for (auto& child : transform->GetChildren())
 		{
 			if (auto child_obj = child->owner)
 			{
-				child_obj->Sleep();
+				child_obj->Sleep(sleep_draw);
 			}
 		}
 	}

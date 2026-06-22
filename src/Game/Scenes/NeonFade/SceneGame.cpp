@@ -52,6 +52,7 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/player/anim_spin_kick.mv1", "spin_kick");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_leg_sweep.mv1", "leg_sweep");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_jump_cool.mv1", "jump_cool");
+		ModelManager::LoadAsAnimation(u8"data/player/anim_dive.mv1", "player_dive");
 
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/Ground.mv1", "stage");
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/building-01_UV.mv1", "building");
@@ -85,8 +86,8 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_attack_main.mv1", "enemy_attack_main");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_walk.mv1", "enemy_walk");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_escaping.mv1", "enemy_escape");
-		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_instructing.mv1", "enemy_instruct");
-		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_stepback.mv1", "enemy_stepback");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_cover.mv1", "enemy_cover");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_crowling.mv1", "enemy_crowling");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_hunted.mv1", "enemy_hunted");
 
 		TextureManager::Load(u8"data/FX.png", "fx_texture");
@@ -169,7 +170,7 @@ namespace NeonFade {
 			light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 15,8,10 }, 0, 0, { 5,-10,-8 });
 			auto rec_light_manager = SceneManager::Object::Create<LightManager>(SceneManager::GetDontDestoryOnLoadScene());
 			rec_light_manager->AddLight(LightType::Directional, { 0,0,0 }, { 20,20,20 }, 0, 0, { -5,-8,5 });
-			
+
 			{
 
 				auto mat = MaterialManager::CreateMaterial("hunt_eff_mat");
@@ -449,11 +450,12 @@ namespace NeonFade {
 		if (!CheckForLoading())
 			return;
 
-
 		scene_state_machine->Update(Time::DeltaTime());
-		if (Input::GetPadButtonDown(0, PadButton::Start) || Input::GetKeyDown(KeyCode::Minus)) {
-			hud_obj->GetComponent<Text>()->Sleep();
 
+		if ((Input::GetPadButtonDown(0, PadButton::Start) || Input::GetKeyDown(KeyCode::Minus))
+			&& is_pause_available) {
+			//hud_obj->GetComponent<Text>()->Sleep();
+			PauseGame(!is_game_paused);
 		}
 		if (is_game_timer_started)
 			game_timer += Time::UnscaledDeltaTime();
@@ -480,8 +482,6 @@ namespace NeonFade {
 	void SceneGame::OnLateDrawFinish()
 	{
 
-		printfDx("%.2f fps\n", Time::GetDrawFPS());
-		printfDx("%.2f update_fps\n", Time::GetFPS());
 		if (!CheckForLoading())
 		{
 			float cnt = Time::GetTimeFromStart();
@@ -507,6 +507,31 @@ namespace NeonFade {
 		if (loading_status == LOADING_STATUS::LOADED && init)
 			Init();
 		return loading_status == LOADING_STATUS::LOADED;
+	}
+
+	void SceneGame::PauseGame(bool pause)
+	{
+		is_game_paused = pause;
+		if (pause) {
+			StopGameTimer();
+			//プレイヤーと敵を一時停止
+			//描画は有効
+			player->Sleep(false);
+			auto enemies = Enemy::GetAllEnemies();
+			for (auto& enem : enemies)
+				enem->Sleep(false);
+		}
+		else {
+			StartGameTimer();
+			player->WakeUp();
+			auto enemies = Enemy::GetAllEnemies();
+			for (auto& enem : enemies)
+				enem->WakeUp();
+			return;
+		}
+
+
+
 	}
 
 	void SceneGame::SubtractEnemyCount(u32 cnt)

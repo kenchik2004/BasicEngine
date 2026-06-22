@@ -39,6 +39,7 @@ namespace NeonFade {
 			}
 			UpdateTextsAlpha();
 
+
 		}
 	private:
 		UIObjectWP back_ground_img_obj;
@@ -125,6 +126,9 @@ namespace NeonFade {
 		owner_scene_game->text_comp->SetText(u8"Over State");
 		game_over_effect = make_safe_unique<GameOverEffect>();
 		owner_scene_game->ClearAllEnemy();
+		owner_scene_game->PauseGame(true);
+		//手動でのポーズを無効化する(ゲームオーバー時はポーズできないようにする)
+		owner_scene_game->SetPauseAvailable(false);
 	}
 	void SceneGameState_Over::OnExit(ISceneStateMachine* machine)
 	{

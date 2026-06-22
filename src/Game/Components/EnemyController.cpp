@@ -81,6 +81,11 @@ namespace NeonFade {
 		return brain->GetHp();
 	}
 
+	GameObjectWP EnemyController::GetPlayer()
+	{
+		return player;
+	}
+
 	//! @brief 脳（AI）をセットする
 	void EnemyController::SetBrain(AbstractEnemyBrainUP new_brain) {
 		brain = std::move(new_brain); brain->Think();

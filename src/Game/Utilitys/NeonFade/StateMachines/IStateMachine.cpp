@@ -28,6 +28,16 @@ namespace NeonFade
 		}
 	}
 
+	IState* IStateMachine::GetState(std::string_view name) const
+	{
+		auto it = states.find(name.data());
+		if (it != states.end())
+		{
+			return it->second.get();
+		}
+		return nullptr;
+	}
+
 	void IStateMachine::Update(float dt)
 	{
 		if (current_state)

@@ -23,6 +23,8 @@ namespace NeonFade {
 		int Init() override;
 		//! @brief 更新処理
 		void Update() override;
+		//! @brief 終了処理
+		void Exit() override;
 		//! @brief ダメージを与える
 		void Damage(int damage, bool ignore_i_frame = false);
 		//! @brief ダウン処理
@@ -31,6 +33,17 @@ namespace NeonFade {
 		bool IsDead();
 		//! @brief 現在のHPを返す
 		u32 GetHp();
+
+		//! @brief 全ての敵オブジェクトへのポインタを返す
+		static const std::vector<Enemy*>& GetAllEnemies() { return all_enemies; }
+		//! @brief 弱っている状態の敵オブジェクトを登録する
+		static void RegisterWeakenedEnemy(Enemy* enemy) { weakened_enemies.push_back(enemy); }
+		//! @brief 弱っている状態の敵オブジェクトを登録解除する
+		static void UnregisterWeakenedEnemy(Enemy* enemy) {
+			weakened_enemies.erase(std::remove(weakened_enemies.begin(), weakened_enemies.end(), enemy), weakened_enemies.end());
+		}
+		//! @brief 弱った状態の敵オブジェクトへのポインタを返す
+		static const std::vector<Enemy*>& GetWeakenedEnemies() { return weakened_enemies; }
 
 		//! @brief トリガー開始イベント
 		void OnTriggerEnter(const HitInfo& hit_info);
@@ -41,6 +54,11 @@ namespace NeonFade {
 		EnemyControllerWP enem_controller; //!< 敵コントローラー
 		CapsuleColliderWP col; //!< コライダー
 		static inline Material* death_material = nullptr; //!< 死亡時マテリアル
+	private:
+		//! 主にAIの処理用に、全ての敵オブジェクトへのポインタを保持する静的変数
+		//! 毎回オブジェクトをGetしたり、weak_ptrをlockすると非常にコストがかかるため、全ての敵オブジェクトへのポインタを保持する静的変数を用意する
+		static std::vector<Enemy*> all_enemies; //!< 全ての敵オブジェクトへのポインタを保持する静的変数
+		static std::vector<Enemy*> weakened_enemies; //!< 弱った状態の敵オブジェクトへのポインタを保持する静的変数
 	};
 	class BasicEnemyBrain;
 	class TeamMemberEnemyBrain;

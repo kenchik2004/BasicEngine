@@ -55,7 +55,18 @@ void EffectPlayer::Play(bool loop)
 		Stop();
 	is_loop = loop;
 	playing_handle = PlayEffekseer3DEffect(effect_handle);
-
+	Vector3& pos = owner.lock()->transform->position;
+	Quaternion& rot = owner.lock()->transform->rotation;
+	Vector3& scale = owner.lock()->transform->scale;
+	Vector3 unit_axis = { 0,1,0 };
+	float radian = 0;
+	rot.toRadiansAndUnitAxis(radian, unit_axis);
+	Effekseer::Vector3D basis = { unit_axis.x,unit_axis.y,unit_axis.z };
+	SetPosPlayingEffekseer3DEffect(playing_handle, pos.x, pos.y, pos.z);
+	GetEffekseer3DManager().Get()->SetRotation(playing_handle, basis, radian);
+	SetScalePlayingEffekseer3DEffect(playing_handle, scale.x, scale.y, scale.z);
+	SetSpeedPlayingEffekseer3DEffect(playing_handle, speed);
+	DrawEffekseer3D_Draw(playing_handle);
 	is_playing = true;
 }
 void EffectPlayer::Stop()

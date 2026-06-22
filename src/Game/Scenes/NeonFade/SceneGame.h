@@ -17,8 +17,8 @@ namespace NeonFade {
 	//! @brief メインゲームシーンクラス
 	//---------------------------------------------------------------------
 	class SceneGame :
-		//public Scene
-		public DebugCameraScene
+		public Scene
+		//public DebugCameraScene
 	{
 	public:
 		USING_SUPER(SceneGame);
@@ -43,6 +43,15 @@ namespace NeonFade {
 		//! @param init 初期化フラグ(確認したときに初期化処理も行うかどうか)
 		//! @return ロード完了ならtrue、まだロード中ならfalse
 		bool CheckForLoading(bool init = true);
+
+		//! @brief ゲームの一時停止状態を設定する
+		void PauseGame(bool pause = true);
+		//! @brief ゲームの一時停止状態を取得する
+		bool IsGamePaused() const { return is_game_paused; }
+		//! @brief ゲームの一時停止可能状態を設定する
+		void SetPauseAvailable(bool available) { is_pause_available = available; }
+		//! @brief ゲームの一時停止可能状態を取得する
+		bool IsPauseAvailable() const { return is_pause_available; }
 
 
 		//! @brief 敵カウントを加算する
@@ -83,6 +92,8 @@ namespace NeonFade {
 	private:
 		float game_timer = 0.0f; //!< ゲームタイマー
 		bool is_game_timer_started = false; //!< タイマー動作中フラグ
+		bool is_game_paused = false; //!< ゲーム一時停止フラグ
+		bool is_pause_available = false; //!< ゲーム一時停止可能フラグ
 		u32 enemy_count = 0; //!< 現在の敵の数
 		static inline float bgm_volume = 1.0f; //!< BGM音量
 		static inline float se_volume = 1.0f; //!< SE音量

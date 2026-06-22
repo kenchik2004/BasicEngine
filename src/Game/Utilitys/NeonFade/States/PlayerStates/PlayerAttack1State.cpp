@@ -42,11 +42,12 @@ namespace NeonFade {
 		hit_stop_timer = 0.0f;
 		{
 			eff = SceneManager::Object::Create<GameObject>(u8"effect_attack1");
-			auto eff_player = eff->AddComponent<EffectPlayer>(u8"data/FX/Simple_Trail.efkefc");
-			eff_player->Play(true);
 			auto pos = MV1GetFramePosition(owner_player->model->GetModelHandle(), 111);
 			eff->transform->position = cast(pos);
 			eff->transform->scale = Vector3(3, 3, 3);
+
+			auto eff_player = eff->AddComponent<EffectPlayer>(u8"data/FX/Simple_Trail.efkefc");
+			eff_player->Play(true);
 		}
 
 	}

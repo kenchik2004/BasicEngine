@@ -30,6 +30,10 @@ namespace NeonFade
 		//! @brief ダメージを受ける
 		void Damage(int damage);
 
+		//! @brief 入力を無視するか設定する
+		void SetIgnoreInput(bool ignore) { ignore_input = ignore; }
+
+
 		//! @brief 衝突開始イベント
 		void OnCollisionEnter(const HitInfo& hit_info);
 		//! @brief 衝突継続イベント
@@ -63,5 +67,8 @@ namespace NeonFade
 		Vector3 climb_ray_start = { 0,0,0 }; //!< 登攀レイ開始位置
 		bool is_climbing = false; //!< 登攀中フラグ
 		Vector3 move_input = { 0,0,0 }; //!< 移動入力ベクトル
+
+		bool ignore_input = false; //!< 入力を無視するか
+
 	};
 }

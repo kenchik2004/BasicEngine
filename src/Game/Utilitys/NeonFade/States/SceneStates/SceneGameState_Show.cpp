@@ -22,7 +22,7 @@ namespace NeonFade
 		EnemyFactory factory;
 		factory.SetSpawnPosition({ 0,5,200 });
 		factory.SetSpawnRadius(20);
-		u32 teams = 3, enem_per_tems = 4;
+		u32 teams = 2, enem_per_tems = 5;
 #if 0
 		enemy_teams = factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
 #else
@@ -35,13 +35,12 @@ namespace NeonFade
 		owner_scene_game->text_comp->SetText(u8"Show State");
 		owner_scene_game->ResetGameTimer();
 		owner_scene_game->StartGameTimer();
+		owner_scene_game->SetPauseAvailable(true);
 		timer_text->WakeUp();
 	}
 	void SceneGameState_Show::OnExit(ISceneStateMachine* machine)
-	{
-	}
+	{}
 	void SceneGameState_Show::Update(ISceneStateMachine* machine, float dt)
-	{
-	}
+	{}
 
 }

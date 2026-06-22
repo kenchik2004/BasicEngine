@@ -55,6 +55,9 @@ namespace NeonFade {
 		AbstractEnemyBrain* GetBrain() { return brain.get(); }
 		//! @brief プレイヤーをセットする
 		void SetPlayer(PlayerWP player_) { player = player_; }
+
+		//! @breif プレイヤーへの弱参照を取得する
+		GameObjectWP GetPlayer();
 		//! @brief 脳（AI）をセットする
 		void SetBrain(AbstractEnemyBrainUP new_brain);
 	private:

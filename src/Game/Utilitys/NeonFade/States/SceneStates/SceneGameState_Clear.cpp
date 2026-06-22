@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include "Game/Utilitys/NeonFade/States/SceneStates/SceneGameState_Clear.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
+#include "Game/Scenes/NeonFade/SceneTitle.h"
 
 namespace NeonFade {
 
@@ -128,7 +129,7 @@ namespace NeonFade {
 	{
 		owner_scene_game = owner_scene_;
 		std::function<bool()> fin_to_restart = [this]() {
-			return Input::GetKeyDown(KeyCode::Return) || Input::GetPadButtonDown(0, PadButton::Button1);
+			return Input::GetKeyDown(KeyCode::Return) || Input::GetPadButtonDown(0, PadButton::Button2);
 			};
 		RegisterChangeRequest("KI", fin_to_restart, 0);
 		if (!fin_se)
@@ -142,19 +143,25 @@ namespace NeonFade {
 
 		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"result_bgm");
 		owner_scene_game->audio_player->loop = true;
-		owner_scene_game->audio_player->volume = 0.8f*SceneGame::GetBGMVolume();
+		owner_scene_game->audio_player->volume = 0.8f * SceneGame::GetBGMVolume();
 		owner_scene_game->audio_player->Play();
 		fin_se->PlayOneShot(SceneGame::GetSEVolume());
 
 
 		finish_effect = std::make_unique<FinishEffectObject>(owner_scene_game);
 
+		owner_scene_game->PauseGame(true);
+		//ゲームクリア時は一時停止可能状態を無効化する
+		owner_scene_game->SetPauseAvailable(false);
+
 
 	}
 	void SceneGameState_Clear::OnExit(ISceneStateMachine* machine)
 	{
 		finish_effect.reset();
-		//SceneManager::CloseApplication();
+		owner_scene_game->PauseGame(false);
+		SceneManager::Destroy(SceneManager::GetScene<SceneTitle>());
+		SceneManager::Load<SceneTitle>();
 	}
 	void SceneGameState_Clear::Update(ISceneStateMachine* machine, float dt)
 	{

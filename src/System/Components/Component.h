@@ -59,7 +59,7 @@ public:
 		Construct();
 	}
 	//! コンポーネントを非アクティブにする（Update/Drawが停止）
-	void Sleep();
+	void Sleep(bool sleep_draw = true);
 	virtual void OnSleep() {}
 	//! コンポーネントをアクティブに戻す
 	void WakeUp();

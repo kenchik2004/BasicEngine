@@ -131,15 +131,15 @@ namespace NeonFade {
 			player->GetScene()->physics_timescale = 0.0f;
 			if (hit_stop_timer <= 0.0f) {
 				hit_stop_timer = HIT_STOP_TIME;
-				player->player_camera_machine->ShakeCamera(0.4f, CAMERA_SHAKE_TIME);
+				player->player_camera_machine->ShakeCamera(CAMERA_SHAKE_POWER, CAMERA_SHAKE_TIME);
 			}
 
 			if (knock_back) {
-				enem->Damage(100);
+				enem->Damage(DAMAGE);
 				enem->Down(Vector3(ProjectOnPlane(enem->transform->position - player->transform->position, { 0,1,0 })).getNormalized() * 10);
 			}
 			else {
-				enem->Damage(100);
+				enem->Damage(DAMAGE);
 
 			}
 			if (!target) {
