@@ -101,8 +101,8 @@ namespace NeonFade {
 
 
 		// 敵関連のモデルとアニメーションを読み込む
-		ModelManager::LoadAsModel(u8"data/enemy/model.mv1", "enemy_model");
-		ModelManager::LoadAsModel(u8"data/enemy/leader_model.mv1", "enemy_leader_model");
+		ModelManager::LoadAsModel(u8"data/enemy/model LOD.mv1", "enemy_model");
+		ModelManager::LoadAsModel(u8"data/enemy/leader_model LOD.mv1", "enemy_leader_model");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_fighting_idle.mv1", "enemy_idle");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_damage.mv1", "enemy_damage");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_down.mv1", "enemy_down");
@@ -121,6 +121,8 @@ namespace NeonFade {
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_dropkick.mv1", "enemy_dropkick");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_damage_crowling.mv1", "enemy_damage_crowling");
 		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_instruct.mv1", "enemy_instruct");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_pistol_idle.mv1", "enemy_pistol_idle");
+		ModelManager::LoadAsAnimation(u8"data/enemy/bl_anim_pistol_grab.mv1", "enemy_pistol_grab");
 
 		// エフェクト用のテクスチャとムービーを読み込む
 		TextureManager::Load(u8"data/Textures/FX.png", "fx_texture");
@@ -181,6 +183,9 @@ namespace NeonFade {
 	/// @return 初期化の成否を示す整数値
 	int SceneGame::Init()
 	{
+		
+
+
 		//DontDestroyOnLoadSceneに、カメラ・ライトマネージャー・シャドウマップを作成する
 		{
 			{
@@ -297,6 +302,7 @@ namespace NeonFade {
 				camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
 				camera->camera->render_type = Camera::RenderType::Deferred;
 				camera->camera->camera_far = 3000.0f;
+				camera->camera->perspective = 50.0f;
 				camera->AddComponent<AudioListener>();
 				auto machine = camera->AddComponent<PlayerCameraMachine>();
 
@@ -565,7 +571,8 @@ namespace NeonFade {
 
 	/// @brief 描画前の準備処理を行う
 	void SceneGame::PreDraw()
-	{}
+	{
+	}
 
 	/// @brief 遅延デバッグ描画処理を行う
 	void SceneGame::LateDebugDraw()

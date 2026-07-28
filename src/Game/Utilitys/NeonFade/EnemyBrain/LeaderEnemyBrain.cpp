@@ -48,7 +48,7 @@ namespace NeonFade
 
 		// 初期状態はidleに設定する
 		state_machine->ChangeState("idle");
-		
+
 
 		//リーダーは専用モデルを使用する
 		{
@@ -57,7 +57,7 @@ namespace NeonFade
 				model->SetModel("enemy_leader_model");
 		}
 
-		
+
 
 
 	}
@@ -75,8 +75,9 @@ namespace NeonFade
 		std::string result = __super::Think();
 
 		// もし親クラスのThinkで遷移先が決まっていれば、その遷移先を返す
-		if (result != "")
+		if (result != "") {
 			return result;
+		}
 
 		{
 			Vector3 player_pos = player->transform->position;
@@ -104,7 +105,7 @@ namespace NeonFade
 				result = "instruct";
 			}
 #endif
-			if(!my_team)
+			if (!my_team)
 				result = "become_basic";
 		}
 
@@ -117,8 +118,8 @@ namespace NeonFade
 	void LeaderEnemyBrain::Die()
 	{
 		__super::Die();
-		if (my_team)
-			my_team->SetLeader(nullptr);
+		// チームを解散するか、新しいリーダーを選出する
+		ReleaseTeamOrSelectNewLeader();
 	}
 
 	void LeaderEnemyBrain::ResetTeamRef()
@@ -129,6 +130,30 @@ namespace NeonFade
 	void LeaderEnemyBrain::SetTeamRef(EnemyTeam* team)
 	{
 		my_team = team;
+	}
+
+	void LeaderEnemyBrain::ReleaseTeamOrSelectNewLeader()
+	{
+		//既に解散済みなら何もしない
+		if (!my_team)
+			return;
+
+
+		//壊滅状態(メンバーが一定数以下)の場合は、チームを解散する
+		if (my_team->GetMemberNum() <= TEAM_RELEASE_MEMBER_NUM) {
+			my_team->ClearTeam();
+		}
+		//チームがまだ成立しうる(=メンバーがまだ残っている)場合は、ランダムで新しいリーダーを選出する
+		else {
+			//ランダムなインデックスを生成して、メンバーの中から新しいリーダーを選出する
+			auto members = my_team->GetMembers();
+			u32 rand_idx = Random::Int(0, static_cast<int>(members.size() - 1));
+
+			//次は君だ
+			members[rand_idx]->BecomeLeader();
+			my_team->SetLeader(nullptr); //チームから自分を削除する
+		}
+
 	}
 
 }

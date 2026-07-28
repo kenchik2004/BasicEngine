@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 namespace NeonFade
@@ -16,5 +16,6 @@ namespace NeonFade
 	private:
 		Enemy* owner_enemy = nullptr;
 		Animator* animator = nullptr;
+		RigidBody* rb = nullptr;
 	};
 }

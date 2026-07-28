@@ -42,7 +42,7 @@ namespace NeonFade
 				//軽量な距離比較用に2乗して使用する
 				static constexpr float ATTACK_RANGE_SQUARED = ATTACK_TRANSIT_RANGE * ATTACK_TRANSIT_RANGE;
 
-				return to_target.magnitudeSquared() < ATTACK_RANGE_SQUARED && attack_timer >= MINIMUM_ENTRY_DURATION;
+				return to_target.magnitudeSquared() < ATTACK_RANGE_SQUARED;
 				};
 
 			//遷移条件としてコールバックの登録を行う
@@ -85,7 +85,7 @@ namespace NeonFade
 		to_target = to_player;
 
 		// RVOシステムを使用して、敵同士が衝突しないように移動方向を補正する
-		EnemyRVOSystem::CalculateCohesion(to_player, owner_enemy->transform.get(), owner_enemy);
+		EnemyRVOSystem::CalculateCohesion(to_player, owner_enemy->transform.get(), owner_enemy, 3.0f);
 
 		// 最終的な移動方向を正規化し、速度と回転を適用する
 		EnemyRVOSystem::ApplyMovementAndRotation(to_player, owner_enemy->transform.get(), rb, ROTATION_SPEED, RUN_SPEED);
@@ -208,7 +208,7 @@ namespace NeonFade
 			//無敵時間外(蹴り終わって立ち上がる時)には、敵同士が衝突しないように移動方向を補正する
 			Vector3 cohesion_velocity = { 0.0f,0.0f,0.0f };
 			EnemyRVOSystem::CalculateCohesion(cohesion_velocity, owner_enemy->transform.get(), owner_enemy);
-			EnemyRVOSystem::ApplyMovement(cohesion_velocity, rb,1.0f);
+			EnemyRVOSystem::ApplyMovement(cohesion_velocity, rb, 1.0f);
 		}
 
 		// 攻撃中は必要に応じてコリジョンの高さを変更する

@@ -36,7 +36,6 @@ namespace NeonFade
 		static constexpr float ROTATION_SPEED = 20.0f; // 攻撃状態の回転速度
 
 		static constexpr float ENTRY_DURATION = 7.0f; // 攻撃状態の持続時間（秒）
-		static constexpr float MINIMUM_ENTRY_DURATION = 1.0f; // 攻撃状態の持続時間（秒）
 		static constexpr float ATTACK_TRANSIT_RANGE = 20.0f; // 攻撃を開始できるプレイヤーとの距離、射程範囲(m)
 
 	};

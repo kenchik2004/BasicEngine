@@ -3,6 +3,7 @@
 namespace NeonFade {
 
 	class Enemy;
+	class LeaderEnemyBrain;
 	USING_PTR(Player);
 
 	//! @brief 敵の脳を単独行動用のものに切り替えるステート
@@ -54,7 +55,8 @@ namespace NeonFade {
 		ModelRenderer* model; //!< モデルレンダラー
 		Animator* animator; //!< アニメーター
 		float timer = 0.0f;
-		static constexpr float BECOME_TO_LEADER_TIME = 1.0f; // 脳を切り替えるまでの時間
+		static constexpr float BECOME_TO_LEADER_TIME = 1.0f; // 脳を切り替え終わるまでの時間
+		SafeUniquePtr<LeaderEnemyBrain> leader_brain; //!< リーダー用の脳へのスマートポインタ
 
 	};
 }

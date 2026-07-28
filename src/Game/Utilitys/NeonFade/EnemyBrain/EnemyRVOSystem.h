@@ -14,7 +14,7 @@ namespace NeonFade {
 		//! @param out_mov_dir 計算結果の移動方向を格納するVector3参照
 		//! @param transform 自身のTransformポインタ
 		//! @param owner_enemy 自身のEnemyポインタ
-		static void CalculateCohesion(Vector3& out_mov_dir, const Transform* transform, const Enemy* owner_enemy);
+		static void CalculateCohesion(Vector3& out_mov_dir, const Transform* transform, const Enemy* owner_enemy, float cohesion_weight = 1.0f);
 
 		//! @brief 最終的な移動方向を正規化し、速度を適用する関数
 		//! @param mov_dir 計算された移動方向を格納するVector3参照

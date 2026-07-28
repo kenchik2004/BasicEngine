@@ -37,6 +37,9 @@ namespace NeonFade {
 
 		//! @brief 攻撃に向かうフラグを立てる(主にリーダーからの指示で呼ばれる)
 		void GoToAttack() { go_to_attack = true; } // 攻撃に向かうフラグを立てる
+		
+		//! @brief リーダーになるフラグを立てる(主にリーダーからの指示で呼ばれる)
+		void BecomeLeader() { become_leader = true; } // リーダーになるフラグを立てる
 
 		//! @brief チームへの参照を削除する
 		//! @brief チームへの参照を削除するだけで、チーム側の情報は変更されないので注意すること
@@ -51,12 +54,21 @@ namespace NeonFade {
 		//! @return 所属するチームのポインタ
 		EnemyTeam* GetTeam() const { return my_team; }
 
+		//! @brief 死亡時の処理
+		//! @brief 死亡時には追加の処理が発生するので、親クラスのDie関数をオーバーライドする
+		void Die() override;
+
+
 	private:
 		EnemyStateMachine* machine = nullptr;
 		EnemyTeam* my_team = nullptr;
 		static constexpr u32 MAX_HP = 100;
 
 		bool go_to_attack = false; // 攻撃に向かうかどうかのフラグ
+		bool become_leader = false; // リーダーになるかどうかのフラグ
+
+		//! @brief チームを解散するか新しいリーダーを立てる
+		void ReleaseTeamOrSelectNewLeader();
 	};
 }
 

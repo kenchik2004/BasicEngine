@@ -52,13 +52,17 @@ namespace NeonFade {
 		//! @return 所属するチームのポインタ
 		const EnemyTeam* GetTeam() const { return my_team; }
 
+		static constexpr u32 TEAM_RELEASE_MEMBER_NUM = 3;	//<! チームを解散する際に、メンバーがこの人数以下であれば解散する
 
 	private:
 		EnemyTeam* my_team = nullptr;		//<! 所属するチームのポインタ
-		static constexpr u32 MAX_HP = 300;	//<! リーダー敵の最大HP
+		static constexpr u32 MAX_HP = 30;	//<! リーダー敵の最大HP
 
 		float instruct_cooldown_timer = 0.0f;	//<! 指示を出すクールダウンタイマー
 		static constexpr float INSTRUCT_COOLDOWN = 10.0f;	//<! 指示を出せるクールダウン時間
+
+		//! @brief チームを解散するか新しいリーダーを立てる
+		void ReleaseTeamOrSelectNewLeader();
 
 	};
 }

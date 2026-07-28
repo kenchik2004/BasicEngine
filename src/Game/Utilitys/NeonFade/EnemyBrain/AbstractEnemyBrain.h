@@ -55,6 +55,11 @@ namespace NeonFade {
 		//! @return 現在のHP
 		u32 GetHp() { return hp; }
 
+		//! @brief HPを設定する
+		//! @brief 基本的に脳を入れ替える際のHPの引き継ぎに使用する
+		//! @param new_hp 新しいHPの値
+		void SetHp(u32 new_hp) { hp = new_hp; }
+
 		//! @brief 死亡しているか判定する
 		//! @return HPが0であればtrueを返す
 		bool IsDead() { return hp == 0; }

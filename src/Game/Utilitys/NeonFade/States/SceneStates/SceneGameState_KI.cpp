@@ -100,6 +100,8 @@ namespace NeonFade {
 		owner_scene_game->audio_player->Play();
 
 		owner_scene_game->PauseGame(false);
+		//ポーズを解除するとゲームタイマーが作動してしまうので、止めておく
+		owner_scene_game->StopGameTimer();
 	}
 	void SceneGameState_KI::OnExit(ISceneStateMachine* machine)
 	{

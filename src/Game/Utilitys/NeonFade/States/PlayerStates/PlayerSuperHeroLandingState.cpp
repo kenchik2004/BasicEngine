@@ -34,11 +34,12 @@ namespace NeonFade {
 
 
 		// カメラがCINEMATICモードの場合、MANIPULATEモードに切り替える
-		owner_player->player_camera_machine->SetTransitionTime(0.1f);
+		owner_player->player_camera_machine->SetTransitionTime(0.2f);
 		if (owner_player->player_camera_machine->GetCameraMode() == PlayerCameraMachine::CINEMATIC)
 		{
 			owner_player->player_camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::MANIPULATE);
 		}
+
 
 
 
@@ -61,7 +62,6 @@ namespace NeonFade {
 		// カメラモードがCINEMATICの場合、MANIPULATEに切り替える
 		if (owner_player->player_camera_machine->GetCameraMode() == PlayerCameraMachine::CINEMATIC)
 		{
-			owner_player->player_camera_machine->camera_distance_max = 30.0f; // カメラ距離を元に戻す
 			owner_player->player_camera_machine->SetTransitionTime(0.0f);
 			owner_player->player_camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::MANIPULATE);
 		}
@@ -71,17 +71,19 @@ namespace NeonFade {
 		landing_timer += dt;
 		float t = (LANDING_DURATION - landing_timer) / LANDING_DURATION;
 		t = 1.0f - std::clamp(t, 0.0f, 1.0f); // tを0から1の範囲に正規化
-		if (t < 0.5f) {
+		if (t < 0.2f) {
 
-			owner_player->player_camera_machine->camera_distance_max = std::lerp(17.0f, 50.0f, t * 2.0f);
+			owner_player->player_camera_machine->camera_distance_max = std::lerp(17.0f, 90.0f, t * 5.0f);
 
 		}
-		else {
-			owner_player->player_camera_machine->camera_distance_max = std::lerp(50.0f, 30.0f, t * 2.0f - 1.0f);
+		if (t > 0.8f)
+			owner_player->player_camera_machine->camera_distance_max = std::lerp( 30.0f, 90.0f, (1.0f - t) * 5.0f);
+
+		if (landing_timer > 0.25f) {
 
 			SummonCraterObject();
 		}
-		if (t >= 0.2f && !atk_hit_box) {
+		if (landing_timer > 0.1f && !atk_hit_box) {
 			atk_hit_box = owner_player->AddComponent<SphereCollider>(Vector3(0, 0, 0),
 				Quaternion(0, 0, 0, 1),
 				COLIDER_RADIUS,

@@ -80,6 +80,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDamageState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyFocusToPlayerState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyIdleState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockBackState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockFrontState.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyRandomWalkState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpBackState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpFrontState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyTeamSiegeState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\ISceneState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.cpp" />
@@ -221,6 +223,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDamageState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDieState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyEscapeState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyFocusToPlayerState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyIdleState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockBackState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockFrontState.h" />
@@ -229,6 +232,7 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyRandomWalkState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpBackState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpFrontState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyTeamSiegeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\ISceneState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\IStateMachine.h" />

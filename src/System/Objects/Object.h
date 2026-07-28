@@ -378,9 +378,9 @@ protected:
 	int          draw_priolity = 0;					//!< 描画優先度
 	bool         use_back_color = false;			//!< 背景色を使用するか
 	Color back_ground_color = Color::GRAY;			//!< 背景色
-	Vector3       anchor_point;						//!< アンカー基準点
-	Vector3       canvas_anchor_point;				//!< キャンバスアンカー基準点
-	Vector3       draw_pos;							//!< 実際の描画位置
+	Vector3       anchor_point = { 0.0f,0.0f,0.0f };						//!< アンカー基準点
+	Vector3       canvas_anchor_point = { 0.0f,0.0f,0.0f };				//!< キャンバスアンカー基準点
+	Vector3       draw_pos = { 0.0f,0.0f,0.0f };							//!< 実際の描画位置
 	ANCHOR_TYPE  anchor_type = CENTER;				//!< アンカータイプ
 	ANCHOR_TYPE  canvas_anchor_type = CENTER;		//!< キャンバスアンカータイプ
 };

@@ -48,9 +48,8 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	// Lambertと暗いほうを選択する
     shadow = min(shadow, saturate(dot(N, L)));
 
-
 	// 疑似的に影を薄くする
-	//shadow = shadow * 0.5 + 0.5;
+	shadow = shadow * 0.65 + 0.35;
 
 	//----------------------------------------------------------
 	// 光源計算
@@ -68,8 +67,8 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 		diffuse, specular);
 
 
-    diffuse *= shadow;
-    specular *= shadow;
+    diffuse *= saturate(shadow);
+    specular *= saturate(shadow);
 
 	//----------------------------------------------------------
 	// 出力

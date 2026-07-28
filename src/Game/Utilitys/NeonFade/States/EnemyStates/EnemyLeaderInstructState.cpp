@@ -1,5 +1,6 @@
 ﻿#include "EnemyLeaderInstructState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
+#include "Game/Objects/NeonFade/GameObjectWithLifeTime.h"
 #include "Game/Components/EnemyController.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/LeaderEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/EnemyTeam.h"
@@ -31,6 +32,16 @@ namespace NeonFade
 	{
 		elapsed_time = 0.0f;
 		animator->PlayIfNoSame("enemy_instruct");
+
+		//誰がリーダーなのか分かりづらいので、リーダーの頭上に注意マークのエフェクトを表示する
+		{
+			auto caution_effect_obj = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"caution_effect", 2.0f);
+			auto caution_effect = caution_effect_obj->AddComponent<EffectPlayer>("data/FX/CautionMark.efkefc");
+			//リーダーの頭上にエフェクトを表示する
+			Vector3 effect_offset = {0.0f, 8.0f, 0.0f};
+			caution_effect_obj->transform->position = owner_enemy->transform->position + effect_offset;
+			caution_effect->Play();
+		}
 	}
 	void EnemyLeaderInstructState::OnExit(IStateMachine* machine)
 	{}

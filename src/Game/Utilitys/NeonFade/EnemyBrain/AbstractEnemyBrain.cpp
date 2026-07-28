@@ -12,6 +12,7 @@
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyStandUpBackState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyCrowlingState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyEscapeState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyFocusToPlayerState.h"
 
 namespace NeonFade {
 
@@ -59,6 +60,10 @@ namespace NeonFade {
 		//離脱状態
 		auto escape_state = make_safe_unique<EnemyEscapeState>(state_machine->enemy);
 		state_machine->AddState("escape", std::move(escape_state));
+
+		//プレイヤーに注目する状態
+		auto focus_to_player_state = make_safe_unique<EnemyFocusToPlayerState>(state_machine->enemy);
+		state_machine->AddState("focus_to_player", std::move(focus_to_player_state));
 	}
 	/// @brief 敵AI基底クラスのデストラクタ
 	AbstractEnemyBrain::~AbstractEnemyBrain()
@@ -137,7 +142,7 @@ namespace NeonFade {
 		// ダメージを受けた瞬間のフラグを立てる
 		is_damaged = true;
 		// ダメージが現在のHPを超える場合は死亡処理を行う
-		if (damage > hp)
+		if (damage >= hp)
 		{
 			Die();
 			return;

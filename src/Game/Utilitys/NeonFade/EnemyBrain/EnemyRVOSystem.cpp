@@ -5,7 +5,8 @@ namespace NeonFade {
 	//! @param out_mov_dir 計算結果の移動方向を格納するVector3参照
 	//! @param transform 自身のTransformポインタ
 	//! @param owner_enemy 自身のEnemyポインタ
-	void EnemyRVOSystem::CalculateCohesion(Vector3& out_mov_dir, const Transform* transform, const Enemy* owner_enemy)
+	//! @param cohesion_weight 重力の強さ
+	void EnemyRVOSystem::CalculateCohesion(Vector3& out_mov_dir, const Transform* transform, const Enemy* owner_enemy, float cohesion_weight)
 	{
 
 		Vector3 cohesion = Vector3(0, 0, 0);
@@ -49,7 +50,7 @@ namespace NeonFade {
 
 		float dot = out_mov_dir.dot(cohesion);
 		float direction_factor = (dot >= 0) ? 1.0f : 0.5f; // 引き寄せる方向と同じならそのまま、逆なら半分の力にする
-		out_mov_dir += cohesion * direction_factor; // 引き寄せる力を加える
+		out_mov_dir += cohesion * direction_factor * cohesion_weight; // 引き寄せる力を加える
 	}
 
 	//! @brief 最終的な移動方向を正規化し、速度を適用する関数
