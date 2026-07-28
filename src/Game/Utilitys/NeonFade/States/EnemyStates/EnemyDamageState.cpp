@@ -1,4 +1,4 @@
-#include "precompile.h"
+﻿#include "precompile.h"
 #include "EnemyDamageState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 
@@ -14,7 +14,7 @@ namespace NeonFade
 		std::function<bool()> default_exit = [this]() {
 			return elapsed_time >= DAMAGE_DURATION;
 			};
-		RegisterChangeRequest("idle", default_exit);
+		RegisterChangeRequest("idle", default_exit, 1);
 	}
 
 	void EnemyDamageState::OnEnter(IStateMachine* machine)
@@ -33,7 +33,35 @@ namespace NeonFade
 
 	bool EnemyDamageState::CanTransitTo(const std::string& state_name)
 	{
-		if (state_name == "damage" || state_name == "knock_back")
+		if (state_name == "damage" || state_name == "knock_back" || state_name == "knock_front")
+			return true;
+		return false;
+	}
+
+	EnemyCrowlingDamageState::EnemyCrowlingDamageState(Enemy* owner_enemy_)
+		:EnemyDamageState(owner_enemy_)
+	{
+
+		rb = owner_enemy->rb.lock().get();
+		std::function<bool()> default_exit = [this]() {
+			return elapsed_time >= DAMAGE_DURATION;
+
+			};
+		RegisterChangeRequest("crowling", default_exit, 0);
+	}
+
+	void EnemyCrowlingDamageState::OnEnter(IStateMachine* machine)
+	{
+		elapsed_time = 0.0f;
+		if (animator)
+			animator->Play("enemy_damage_crowling");
+		rb->velocity.y = 8.0f;
+
+	}
+
+	bool EnemyCrowlingDamageState::CanTransitTo(const std::string& state_name)
+	{
+		if (state_name == "damage_crowling" || state_name == "knock_front" || state_name == "knock_back" || state_name == "die")
 			return true;
 		return false;
 	}

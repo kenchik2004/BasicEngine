@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   AudioPlayer.cpp
 //! @brief  AudioPlayerコンポーネントの実装。音声の再生・停止・ループを管理する
 //---------------------------------------------------------------------------
@@ -36,6 +36,11 @@ void AudioPlayer::Play(float start_pos, int sample_rate)
 		SetCurrentPositionSoundMem((long long)(start_pos * sample_rate), audio->handle);
 		PlaySoundMem(audio->handle, loop ? DX_PLAYTYPE_LOOP : DX_PLAYTYPE_BACK, false);
 		is_playing = true;
+		if (!is_3d) {
+			SetFrequencySoundMem((int)(default_frequency * pitch_rate), audio->handle);
+			ChangeVolumeSoundMem(volume * 255, audio->handle);
+		}
+
 	}
 }
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 
 namespace NeonFade
@@ -16,7 +16,7 @@ namespace NeonFade
 		void DebugDraw() override;
 
 	private:
-		static constexpr float ROTATION_SPEED = 0.01f; // 回転の補間速度
+		static constexpr float ROTATION_SPEED = 1.0f; // 回転の補間速度
 		static constexpr float RANDOM_WALK_RADIUS = 5.0f; // ランダムな目的地を生成する範囲の半径
 		static constexpr float DEST_THRESHOLD = 5.0f;  // 目的地に近いとみなす距離
 
@@ -33,10 +33,6 @@ namespace NeonFade
 
 		//! @brief 基礎の移動方向を計算する関数
 		void CalculateBaseMovement(Vector3& out_mov_dir);
-		//! @brief 近くの敵に引き寄せられる方向を計算する関数
-		void CalculateCohesion(Vector3& out_mov_dir);
-		//! @brief 最終的な移動方向を正規化し、速度と回転を適用する関数
-		void ApplyMovementAndRotation(Vector3& mov_dir);
 
 
 	};

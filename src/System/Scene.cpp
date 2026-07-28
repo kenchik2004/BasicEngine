@@ -106,7 +106,8 @@ void Scene::Destroy()
 		auto obj_lock = obj.lock();
 		DestroyGameObject(obj_lock);
 	}
-	objects.clear();
+	//objects.clear();
+	DestroyMarkedGameObjects();
 	for (auto& ite : leak_objects) {
 		try {
 			if (ite) {
@@ -287,9 +288,10 @@ void Scene::DestroyMarkedGameObjects()
 			}
 			obj_lock->Exit();
 			obj = objects.erase(obj);
+			ObjectWP obj_wp(obj_lock);
 			obj_lock.reset();
-			if (obj_lock)
-				leak_objects.push_back(obj_lock);
+			if (obj_wp)
+				leak_objects.push_back(obj_wp);
 		}
 		else {
 			obj++;

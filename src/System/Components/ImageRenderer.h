@@ -27,7 +27,7 @@ public:
 		material = mat;
 	}
 	//! @brief 画像のサイズを取得する
-	float2                  GetImageSize();
+	Vector2                  GetImageSize();
 	float                     alpha = 1.0f; //!< 透明度（0.0〜1.0）
 
 	//! @brief 終了処理
@@ -35,7 +35,6 @@ public:
 	//! @brief 描画方式の種別
 	enum DRAW_TYPE
 	{
-		DEFAULT, //!< デフォルト描画
 		CLAMP,   //!< クランプ描画
 		EXTEND,  //!< 拡張描画
 	};
@@ -43,8 +42,11 @@ public:
 	//! @brief 描画方式への参照を返す
 	inline DRAW_TYPE& DrawType() { return draw_type; }
 
+	inline Vector2& ImageOffset() { return image_offset; } //!< 画像のオフセット座標への参照を返す
+
 private:
-	UIObjectP ui_owner = nullptr;    //!< 所有するUIオブジェクトへのポインタ
-	DRAW_TYPE   draw_type = DEFAULT; //!< 描画方式
+	UIObjectWP ui_owner = nullptr;    //!< 所有するUIオブジェクトへのポインタ
+	DRAW_TYPE   draw_type = EXTEND; //!< 描画方式
 	Material* material = nullptr;    //!< 使用するマテリアル
+	Vector2 image_offset = { 0.0f, 0.0f }; //!< 画像のオフセット座標
 };

@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerSmashMainState.cpp
 //! @brief  PlayerSmashMainStateの実装。プレイヤーのスマッシュメイン状態の処理を行う
 //---------------------------------------------------------------------------
@@ -32,10 +32,10 @@ namespace NeonFade {
 		smash_se->PlayOneShot(SceneGame::GetSEVolume());
 		{
 
-			Vector3 smash_velocity = owner_player->transform->AxisZ() * 70.0f;
-			smash_velocity += owner_player->transform->AxisY() * -20.0f;
+			Vector3 smash_velocity = owner_player->transform->AxisZ() * SMASH_VELOCITY_FORWARD;
+			smash_velocity += owner_player->transform->AxisY() * -SMASH_VELOCITY_DOWN;
 			rb->velocity = smash_velocity;
-			owner_player->player_camera_machine->ShakeCamera(0.5f, CAMERA_SHAKE_TIME);
+			owner_player->player_camera_machine->ShakeCamera(CAMERA_SHAKE_POWER, CAMERA_SHAKE_TIME);
 		}
 	}
 	void PlayerSmashMainState::OnExit(IStateMachine* machine)
@@ -45,11 +45,14 @@ namespace NeonFade {
 			hit_box->RemoveThisComponent();
 			hit_box = nullptr;
 		}
-		//ずっとビリビリしてるのもアレなので、通常テクスチャに戻す
-		{
-			owner_player->ResetMaterialsToDefault();
-		}
 		owner_player->transform->SetAxisY({ 0,1,0 }, owner_player->transform->AxisX());
+		// カメラモードがCINEMATICの場合、MANIPULATEに切り替える
+		if (owner_player->player_camera_machine->GetCameraMode() == PlayerCameraMachine::CINEMATIC)
+		{
+		owner_player->player_camera_machine->camera_distance_max = 30.0f; // カメラ距離を元に戻す
+			owner_player->player_camera_machine->SetTransitionTime(0.0f);
+			owner_player->player_camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::MANIPULATE);
+		}
 	}
 	void PlayerSmashMainState::Update(IStateMachine* machine, float dt)
 	{
@@ -109,15 +112,15 @@ namespace NeonFade {
 			auto hit_obj = hit_info.hit_collision->owner.lock();
 			auto enemy = SafeStaticCast<Enemy>(hit_obj);
 			if (enemy) {
-				enemy->Damage(100);
+				enemy->Damage(SMASH_DAMAGE);
 				enemy->Down(owner_player->transform->AxisZ() * 30.0f + Vector3(0, 30, 0));
 			}
 		}
 	}
 	void PlayerSmashMainState::DebugDraw()
 	{
-		Vector3 smash_velocity = owner_player->transform->AxisZ() * 70.0f;
-		smash_velocity += owner_player->transform->AxisY() * -20.0f;
+		Vector3 smash_velocity = owner_player->transform->AxisZ() * SMASH_VELOCITY_FORWARD;
+		smash_velocity += owner_player->transform->AxisY() * -SMASH_VELOCITY_DOWN;
 		smash_velocity.normalize();
 		RayCastInfo ray_info;
 		Ray ray;

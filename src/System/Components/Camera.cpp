@@ -81,7 +81,7 @@ namespace CreateMatrix {
 		return mat4x4(m[0], m[1], m[2], m[3]);
 	}
 	//---------------------------------------------------------------------------
-	//! [左手座標系] 投影逆行列
+	//! [左手座標系] 透視投影逆行列
 	//---------------------------------------------------------------------------
 	mat4x4 InverseperspectiveFovLH(f32 fovy, f32 aspect_ratio, f32 near_z, f32 far_z)
 	{
@@ -103,6 +103,22 @@ namespace CreateMatrix {
 		return mat4x4(m[0], m[1], m[2], m[3]);
 	}
 
+	//---------------------------------------------------------------------------
+	//! [左手座標系] 平行投影逆行列
+	//---------------------------------------------------------------------------
+	mat4x4 InverseorthographicOffCenterLH(f32 left, f32 right, f32 bottom, f32 top, f32 near_z, f32 far_z)
+	{
+		float rcp_width = 1.0f / (right - left);
+		float rcp_height = 1.0f / (top - bottom);
+		float range = 1.0f / (far_z - near_z);
+		Vector4 m[4]{
+			{ 1.0f / (rcp_width * 2.0f),                         0.0f,            0.0f, 0.0f },
+			{ 0.0f,            1.0f / (rcp_height * 2.0f),            0.0f, 0.0f },
+			{ 0.0f,                         0.0f,           1.0f / range, 0.0f },
+			{ (left + right) * rcp_width, (top + bottom) * rcp_height, range * near_z, 1.0f }
+		};
+		return mat4x4(m[0], m[1], m[2], m[3]);
+	}
 }
 
 struct CBufferCameraInfo {
@@ -233,7 +249,13 @@ void Camera::PrepareCamera()
 		}
 		break;
 		}
-		SetupCamera_Perspective(DEG2RAD(perspective));
+		if (projection_type == ProjectionType::Perspective)
+		{
+			SetupCamera_Perspective(DEG2RAD(perspective));
+		}
+		else {
+			SetupCamera_Ortho(owner->transform->scale.x);
+		}
 		SetCameraPositionAndTargetAndUpVec(cast(owner_trns->position), cast(owner_trns->position + owner_trns->AxisZ()), cast(owner_trns->AxisY()));
 		SetCameraNearFar(camera_near, camera_far);
 	}
@@ -256,9 +278,29 @@ void Camera::SetCameraConstantBuffer()
 			Vector4(owner_trns->AxisY(), 0),
 			Vector4(owner_trns->AxisZ(), 0),
 			Vector4(owner_trns->position, 1)).inverseRT();
-		cb->proj = CreateMatrix::perspectiveFovLH(DEG2RAD(perspective), (float)hdr->Width() / (float)hdr->Height(), camera_near, camera_far);
+		if (projection_type == ProjectionType::Perspective)
+		{
+			cb->proj = CreateMatrix::perspectiveFovLH(DEG2RAD(perspective), (float)hdr->Width() / (float)hdr->Height(), camera_near, camera_far);
+			cb->proj_inv = CreateMatrix::InverseperspectiveFovLH(DEG2RAD(perspective), (float)hdr->Width() / (float)hdr->Height(), camera_near, camera_far);
+		}
+		else
+		{
+			// 平行投影の場合、オーナーのスケールを使って投影範囲を決定する
+			Vector4 bounds = { 
+				-owner->transform->scale.x * 0.5f, 
+				owner->transform->scale.x * 0.5f, 
+				-owner->transform->scale.y * 0.5f,
+				owner->transform->scale.y * 0.5f };
+			// オーナーの位置を加算して、ワールド座標系での投影範囲を計算する
+			bounds.x += owner->transform->position.x;
+			bounds.y += owner->transform->position.x;
+			bounds.z += owner->transform->position.y;
+			bounds.w += owner->transform->position.y;
+
+			cb->proj = CreateMatrix::orthographicOffCenterLH(bounds.x, bounds.y, bounds.z, bounds.w, camera_near, camera_far);
+			cb->proj_inv = CreateMatrix::InverseorthographicOffCenterLH(bounds.x, bounds.y, bounds.z, bounds.w, camera_near, camera_far);
+		}
 		cb->view_inv = cb->view.inverseRT();//CreateMatrix::lookAtLH(owner_trns->AxisZ(), owner_trns->position, Vector3(0, 1, 0));
-		cb->proj_inv = CreateMatrix::InverseperspectiveFovLH(DEG2RAD(perspective), (float)hdr->Width() / (float)hdr->Height(), camera_near, camera_far);
 		auto shadow_map = SceneManager::Object::Get<ShadowMapObject>(owner->GetScene());
 		if (shadow_map) {
 			auto light_view_projs = shadow_map->GetLightViewProjs();

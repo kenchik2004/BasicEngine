@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerDodgeState.h
 //! @brief  プレイヤーの回避状態クラスの定義
 //---------------------------------------------------------------------------
@@ -32,7 +32,7 @@ namespace NeonFade
 		//! @brief 無敵フレームの継続時間。
 		static constexpr float I_FRAME_TIME = 0.1f;
 		//! @brief 回避時に付与する速度の大きさ。
-		static constexpr float DODGE_SPEED = 50.0f;
+		static constexpr float DODGE_SPEED = 90.0f;
 	private:
 		//! @brief 所有者となるプレイヤーオブジェクト。
 		Player* player = nullptr;

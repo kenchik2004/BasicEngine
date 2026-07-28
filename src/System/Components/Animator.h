@@ -27,6 +27,8 @@ public:
 	void LateDebugDraw() override;
 	//! @brief 終了処理
 	void Exit() override;
+
+	void OnModelChanged();
 	//----------------------------------------------------------------------------------
 	//アニメーションコンポーネントが管理するべきもの
 	static inline float static_anim_speed = 1.0f; //!< 全体共有のアニメーション再生速度

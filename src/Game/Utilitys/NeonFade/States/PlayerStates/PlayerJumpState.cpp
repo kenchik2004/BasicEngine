@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerJumpState.cpp
 //! @brief  PlayerJumpStateの実装。プレイヤーのジャンプ状態の処理を行う
 //---------------------------------------------------------------------------
@@ -37,7 +37,8 @@ namespace NeonFade
 		// ジャンプアニメーションを 1 回再生する。
 		animator->Play("jump", false, 0.0f, 0.3f, true);
 		// 上方向速度を与えてジャンプを開始する。
-		rb->velocity.y = 30.0f;
+		rb->velocity = rb->velocity.getNormalized() * JUMP_FORCE;
+		rb->velocity.y = JUMP_FORCE;
 		// ジャンプタイマを初期化する。
 		jump_timer = 0.0f;
 	}
@@ -80,7 +81,7 @@ namespace NeonFade
 		pl_trns->SetAxisZ(Lerp(pl_trns->AxisZ(), input, rot_angle * Time::DeltaTime()));
 
 		// 水平速度を設定する（入力方向 × 一定速度）。
-		input = input * 30;
+		input = input * JUMP_FORCE;
 		input.y = rb->velocity.y;	// 重力成分を維持
 		// 垂直速度を保持したまま水平速度を上書きする。
 		rb->velocity = input;

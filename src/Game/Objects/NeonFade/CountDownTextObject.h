@@ -1,4 +1,6 @@
-#pragma once
+﻿#pragma once
+
+USING_PTR(ImageRenderer);
 namespace NeonFade {
 
 	class CountDownTextObject :
@@ -11,7 +13,8 @@ namespace NeonFade {
 
 	private:
 		TextWP text_comp; //!< テキストコンポーネント
-		TextWP sub_text_comp; //!< サブテキストコンポーネント
+		ImageRendererWP image_comp; //!< 画像コンポーネント
+		SafeSharedPtr<Texture> bg_tex = nullptr; //!< 背景画像用のテクスチャ
 	};
 
 }

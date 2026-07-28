@@ -218,9 +218,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				average_fps /= fps_array.size();
 				printfDx("%.2f fps_avg\n", average_fps);
 				printfDx("%.2f fps\n", fps);
-			
+
 #endif
-					ScreenFlip();
+				ScreenFlip();
 				//描画FPSを計測し、描画delta_timeをリセットする
 				Time::FixDrawFPS();
 				//============//
@@ -271,7 +271,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	}
 
 	timeEndPeriod(1);
-	DxLib::DxLib_End();
+
+	//Effekseerを導入したらDxLib_Endでアクセス違反が出るようになった
+	//現場じゃ絶対やっちゃいけないが、手元にソースもないので手の施しようがないため
+	//最悪の手段としてDxLib_End()を呼ばないことにする
+	//リソースの解放はOSに任せるしかない
+	//DxLib::DxLib_End();
+
 	//継承ツリーの構造をテキストファイルに出力する
 	std::ofstream f("data/tree.txt");
 	if (!f.fail()) {

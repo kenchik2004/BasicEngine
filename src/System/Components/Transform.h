@@ -15,9 +15,9 @@ private:
 	friend class Object;
 	friend class RigidBody;
 	TransformWPVec children; //!< 子TransformへのWeakPointerのリスト
-	Vector3 position_prev = Vector3(0, 0, 0);; //!< 前回の位置
-	Quaternion rotation_prev = Quaternion(physx::PxIdentity); //!< 前回の回転
-	Vector3 scale_prev = Vector3(1, 1, 1); //!< 前回のスケール
+	Vector3 position_prev; //!< 前回の位置
+	Quaternion rotation_prev; //!< 前回の回転
+	Vector3 scale_prev; //!< 前回のスケール
 
 	//! @brief トランスフォームを計算して子に伝播する
 	void CalculateTransform();
@@ -25,14 +25,17 @@ private:
 public:
 	USING_SUPER(Transform);
 
-	Vector3 position = Vector3(0, 0, 0);                          //!< ワールド座標
-	Vector3 local_position = Vector3(0, 0, 0); //!< 親Transformからの相対位置
+	Vector3 position;                          //!< ワールド座標
+	Vector3 local_position; //!< 親Transformからの相対位置
 
-	Quaternion rotation = Quaternion(physx::PxIdentity);          //!< ワールド回転
-	Quaternion local_rotation = Quaternion(physx::PxIdentity); //!< 親Transformからの相対回転
-	Vector3 scale = Vector3(1, 1, 1);                             //!< ワールドスケール
-	Vector3 local_scale = Vector3(1, 1, 1); //!< 親Transformからの相対スケール
+	Quaternion rotation;          //!< ワールド回転
+	Quaternion local_rotation; //!< 親Transformからの相対回転
+	Vector3 scale;                             //!< ワールドスケール
+	Vector3 local_scale; //!< 親Transformからの相対スケール
 	TransformWP parent; //!< 親TransformへのWeakPointer
+	//! @brief コンストラクタ
+	Transform();
+
 	//! @brief コンストラクト処理
 	void Construct() override;
 	//! @brief 描画前処理

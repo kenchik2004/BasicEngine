@@ -49,7 +49,7 @@ using mat4x4 = physx::PxMat44;
 
 //---------------------------------------------------------------------
 //! @class SafeUniquePtr
-//! @brief nullptr アクセス時に例外を投げる安全な unique_ptr ラッパー
+//! @brief nullptr アクセス時に例外を投げるnullセーフな unique_ptr ラッパー
 //---------------------------------------------------------------------
 template <class T>
 class SafeUniquePtr {
@@ -104,7 +104,7 @@ public:
 
 //---------------------------------------------------------------------
 //! @class SafeSharedPtr
-//! @brief nullptr アクセス時に例外を投げる安全な shared_ptr ラッパー
+//! @brief nullptr アクセス時に例外を投げるnullセーフな shared_ptr ラッパー
 //---------------------------------------------------------------------
 template <class T>
 class SafeSharedPtr {
@@ -173,7 +173,7 @@ public:
 
 //---------------------------------------------------------------------
 //! @class SafeWeakPtr
-//! @brief nullptr アクセス時に例外を投げる安全な weak_ptr ラッパー
+//! @brief nullptr アクセス時に例外を投げるnullセーフな weak_ptr ラッパー
 //---------------------------------------------------------------------
 template <class T, class... Args>
 class SafeWeakPtr {

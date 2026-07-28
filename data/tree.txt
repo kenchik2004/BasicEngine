@@ -1,5 +1,5 @@
 root
-|-----NeonFade::FinishEffectObject
+|-----NeonFade::FinishEffect
 |-----Scene
 |        |-----NeonFade::SceneTitle
 |        |-----NeonFade::SceneGame
@@ -22,6 +22,7 @@ root
 |        |        |        |-----NeonFade::OptionCamera
 |        |        |        end_of_node
 |        |        |        
+|        |        |-----NeonFade::MiniMapObject
 |        |        |-----NeonFade::DamageUIObject
 |        |        |-----NeonFade::CountDownTextObject
 |        |        end_of_node
@@ -29,11 +30,14 @@ root
 |        |-----LightManager
 |        |-----ShadowMapObject
 |        |-----GameObject
+|        |        |-----GameObject
 |        |        |-----NeonFade::TitlePlayer
 |        |        |-----GameObject
 |        |        |-----GameObjectWithLifeTime
+|        |        |        |-----GameObjectWithLifeTime
+|        |        |        end_of_node
+|        |        |        
 |        |        |-----CameraObject
-|        |        |        |-----CameraObject
 |        |        |        |-----DebugCameraObject
 |        |        |        end_of_node
 |        |        |        
@@ -47,12 +51,14 @@ root
 |        
 |-----Component
 |        |-----Button
-|        |-----EffectPlayer
-|        |-----ImageRenderer
 |        |-----Text3D
+|        |-----EffectPlayer
+|        |-----Transform
+|        |-----CameraObject
 |        |-----AudioPlayer
 |        |-----AudioListener
 |        |-----NeonFade::PlayerController
+|        |-----NeonFade::MiniMapPositionRenderer
 |        |-----Collider
 |        |        |-----ConvexMeshCollider
 |        |        |-----SphereCollider
@@ -65,7 +71,7 @@ root
 |        |-----Animator
 |        |-----ModelRenderer
 |        |-----Text
-|        |-----Transform
+|        |-----ImageRenderer
 |        |-----Component
 |        |-----NeonFade::EnemyController
 |        end_of_node

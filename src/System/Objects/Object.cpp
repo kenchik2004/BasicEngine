@@ -190,7 +190,8 @@ void UIObject::PreUpdate()
 		break;
 	}
 
-	draw_pos += div;
+	// アンカー基準点とキャンバスアンカー基準点を考慮して描画位置を計算
+	draw_pos += div - anchor_point + canvas_anchor_point;
 }
 
 void UIObject::Update()

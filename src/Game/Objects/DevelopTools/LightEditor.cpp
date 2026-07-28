@@ -1,4 +1,4 @@
-#include "LightEditor.h"
+﻿#include "LightEditor.h"
 #include "System/Objects/ShadowMapObject.h"
 
 Vector3 FromString(const std::string& str) {
@@ -170,7 +170,9 @@ void LightEditor::Update()
 
 void LightEditor::DebugDraw()
 {
+#ifndef NDEBUG
 	return;
+#endif
 	if (light_objects.empty())
 		return;
 

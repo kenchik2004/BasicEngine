@@ -1,4 +1,4 @@
-#include "TitlePlayerStartSpawnState.h"
+﻿#include "TitlePlayerStartSpawnState.h"
 #include "Game/Objects/NeonFade/TitlePlayer.h"
 #include "Game/Utilitys/NeonFade/StateMachines/TitlePlayerStateMachine.h"
 
@@ -8,9 +8,13 @@ namespace NeonFade
 	TitlePlayerStartSpawnState::TitlePlayerStartSpawnState(TitlePlayer* player_) :
 		IState(player_)
 	{
+		//自身を所有するプレイヤーのポインタを保存する
 		owner_player = player_;
+		//プレイヤーのモデルレンダラーとアニメーターのポインタを取得する
 		model = owner_player->GetComponent<ModelRenderer>().get();
 		anim = owner_player->GetComponent<Animator>().get();
+
+		//依存しているリソースが存在しない場合は、無効なステートとして扱う
 		if (!model || !anim) {
 			owner_player = nullptr;
 			model = nullptr;
@@ -44,6 +48,7 @@ namespace NeonFade
 	void TitlePlayerStartSpawnState::OnEnter(IStateMachine* machine)
 	{
 
+		//ステートに必要なリソースが揃っていない場合は、ステートの処理を行わない
 		if (!owner_player || !model || !anim || spawn_mats.empty() || !spawn_ps)
 			return;
 
@@ -53,11 +58,11 @@ namespace NeonFade
 
 		anim->Play("player_sitting", true);
 
+		//スポーン開始位置と回転を設定する
 		Vector3 title_player_pos = { 363.218f,1526.004f,148.985f };
 		Quaternion title_player_rot = Quaternion(2.02f, { 0,1,0 });
 		owner_player->transform->position = title_player_pos;
 		owner_player->transform->rotation = title_player_rot;
-		anim->Play(u8"player_sitting", false);
 		spawn_timer = 0.0f;
 
 		//スポーンエフェクト用のシェーダーに、スポーン開始位置とキャラクターの高さを渡す

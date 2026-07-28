@@ -55,12 +55,13 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	//----------------------------------------------------------
 	// 光源計算
 	//----------------------------------------------------------
-    float3 lightColor = light_info_[0].light_color_;
 
     float3 diffuse;
     float3 specular;
-
-    lighting(lightColor,
+    float3 light_color = light_info_[0].light_color_.rgb;
+    light_color = LinearSRGB2ACEScg(light_color);
+	
+    lighting(light_color,
 		N, L, V, H,
 		surfaceInfo.roughness_, surfaceInfo.metallic_,
 		surfaceInfo.albedo_,
@@ -75,7 +76,7 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	//----------------------------------------------------------
     PS_OUTPUT_LIGHTING output;
 
-    float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_*0.5;
+    float3 ambient = float3(1.0, 1.0, 1.0) * surfaceInfo.albedo_ * 0.5;
     output.diffuse_ = float4(diffuse + ambient, 1.0f);
     output.specular_ = float4(specular, 1.0f);
 

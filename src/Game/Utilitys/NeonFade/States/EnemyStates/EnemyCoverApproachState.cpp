@@ -1,7 +1,8 @@
-#include "EnemyCoverApproachState.h"
+﻿#include "EnemyCoverApproachState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Components/EnemyController.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/EnemyRVOSystem.h"
 
 namespace NeonFade {
 	EnemyCoverApproachState::EnemyCoverApproachState(Enemy* owner_enemy_)
@@ -31,7 +32,7 @@ namespace NeonFade {
 	void EnemyCoverApproachState::OnEnter(IStateMachine* machine)
 	{
 		elapsed_time = 0.0f;
-		animator->Play("enemy_escape", true);
+		animator->Play("enemy_cover_approach", true);
 		// カバー位置に近づくための目的地を計算する
 		CalculateApproachDestination();
 	}
@@ -45,9 +46,9 @@ namespace NeonFade {
 		elapsed_time += dt;
 		Vector3 mov_dir = Vector3(0, 0, 0);
 		CalculateBaseMovement(mov_dir);
-		CalculateCohesion(mov_dir);
 
-		ApplyMovementAndRotation(mov_dir);
+		EnemyRVOSystem::CalculateCohesion(mov_dir, owner_enemy->transform.get(), owner_enemy);
+		EnemyRVOSystem::ApplyMovementAndRotation(mov_dir, owner_enemy->transform.get(), owner_enemy->rb.lock().get(), ROTATION_SPEED, APPROACH_SPEED);
 
 	}
 	void EnemyCoverApproachState::OnExit(IStateMachine* machine)
@@ -65,7 +66,9 @@ namespace NeonFade {
 	void EnemyCoverApproachState::CalculateApproachDestination()
 	{
 		const Vector3& my_pos = owner_enemy->transform->position;
-		Vector3 other_pos = owner_enemy->transform->position;	// 自身の位置を初期値として設定(他の敵がいない場合は自身の位置を目的地とし、離脱条件を満たす)
+		// 自身の位置を初期値として設定(他の敵がいない場合は自身の位置を目的地とし、離脱条件を満たす)
+		Vector3 other_pos = owner_enemy->transform->position;
+		// 他の敵の中で最も近い敵の位置を記録するための変数
 		float min_distance_to_other = FLT_MAX;
 		const std::vector<Enemy*>& weakened_enemies = Enemy::GetWeakenedEnemies();
 		if (weakened_enemies.empty())
@@ -99,61 +102,5 @@ namespace NeonFade {
 		to_destination.normalize();
 		out_mov_dir += to_destination * APPROACH_SPEED;
 	}
-	void EnemyCoverApproachState::CalculateCohesion(Vector3& out_mov_dir)
-	{
 
-		Vector3 cohesion = Vector3(0, 0, 0);
-		// 近くの敵に少し引き寄せられるようにする
-		const std::vector<Enemy*>& all_enemies = Enemy::GetAllEnemies();
-		const u32 num_enemies = static_cast<u32>(all_enemies.size());
-		Vector3 owner_pos = owner_enemy->transform->position;
-		for (u32 i = 0; i < num_enemies; ++i) {
-			Enemy* enemy = all_enemies[i];
-			if (enemy != owner_enemy) {
-				Vector3 to_enemy = enemy->transform->position - owner_pos;
-				float distance_squared = to_enemy.magnitudeSquared();
-				distance_squared = max(distance_squared, 0.0001f); // ゼロ除算を防ぐために最小値を設定
-
-				static constexpr float APPROACH_DISTANCE_MAX = 50.0f; // 影響を与える最大距離
-				static constexpr float APPROACH_DISTANCE_MIN = 15.0f; // 影響を与える最小距離
-				static constexpr float LEAVE_DISTANCE_MIN = 10.0f; // あまりにも近い場合に離れる距離
-				static constexpr float APMAX_SQRD = APPROACH_DISTANCE_MAX * APPROACH_DISTANCE_MAX; // 影響を与える最大距離の二乗
-				static constexpr float APMIN_SQRD = APPROACH_DISTANCE_MIN * APPROACH_DISTANCE_MIN; // 影響を与える最小距離の二乗
-				static constexpr float LEAVE_SQRD = LEAVE_DISTANCE_MIN * LEAVE_DISTANCE_MIN; // あまりにも近い場合に離れる距離の二乗
-				static constexpr float APPROACH_FACTOR = 0.02f; // 近くの敵に引き寄せられる係数
-				static constexpr float LEAVE_FACTOR = 2.5f; // あまりにも近い場合に離れる係数
-
-				if (distance_squared < APMAX_SQRD && distance_squared > APMIN_SQRD) { // 近くの敵に対してのみ影響を与える
-					float sqrt_dist = sqrtf(distance_squared);
-					float x = (sqrt_dist - APPROACH_DISTANCE_MIN) / (APPROACH_DISTANCE_MAX - APPROACH_DISTANCE_MIN); // 影響の強さを距離に応じて変化させる
-					float smoothstep = x * x * (3 - 2 * x); // 影響の強さを距離に応じて変化させる
-
-					cohesion += to_enemy.getNormalized() * smoothstep * APPROACH_FACTOR; // 引き寄せる方向に力を加える
-				}
-				if (distance_squared < LEAVE_SQRD) { // あまりにも近い場合は少し離れるようにする
-					float sqrt_dist = sqrtf(distance_squared);
-					float x = (LEAVE_DISTANCE_MIN - sqrt_dist) / LEAVE_DISTANCE_MIN; // 影響の強さを距離に応じて変化させる
-					float smoothstep = x * x * (3 - 2 * x); // 影響の強さを距離に応じて変化させる
-
-					cohesion -= to_enemy.getNormalized() * smoothstep * LEAVE_FACTOR; // 離れる方向に力を加える
-				}
-			}
-		}
-
-		float dot = out_mov_dir.dot(cohesion);
-		float direction_factor = (dot >= 0) ? 1.0f : 0.5f; // 引き寄せる方向と同じならそのまま、逆なら半分の力にする
-		out_mov_dir += cohesion * direction_factor; // 引き寄せる力を加える
-	}
-	void EnemyCoverApproachState::ApplyMovementAndRotation(Vector3& mov_dir)
-	{
-		mov_dir.y = 0; // Y軸の回転を無効にする
-		mov_dir.normalize();
-		Vector3 forward = owner_enemy->transform->AxisZ();
-		mov_dir = Slerp(forward, mov_dir, ROTATION_SPEED);
-		owner_enemy->transform->SetAxisZ(mov_dir); // 目的地への方向を向く
-		mov_dir *= APPROACH_SPEED;
-
-		mov_dir.y = rb->velocity.y; // 現在のY軸の速度を保持
-		rb->velocity = mov_dir;
-	}
 }

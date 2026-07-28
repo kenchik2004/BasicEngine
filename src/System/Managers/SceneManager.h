@@ -114,7 +114,7 @@ public:
 	}
 
 	//特定のシーンを完全に破棄
-	template <class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0 > static inline void Destroy(SafeSharedPtr<T> destroy_scene) {
+	template <class T, std::enable_if_t<std::is_convertible_v<T*, Scene*>, int> = 0 > static inline void Destroy(SafeSharedPtr<T>& destroy_scene) {
 
 
 		//シーンを検索
@@ -138,10 +138,12 @@ public:
 					destroy_scene.reset();
 				break;
 			}
+			scene++;
 		}
 		//破棄シーンがカレントシーンなら、参照を破棄
 		if (destroy_scene == current_scene) {
 			current_scene.reset();
+			destroy_scene.reset();
 		}
 
 	}
@@ -349,7 +351,7 @@ public:
 private:
 	static inline bool is_application_closing = false;	//!<アプリケーション終了要求フラグ
 	static inline bool is_scene_changing = false;	//!<シーン変更中フラグ
-	 static SceneP next_scene;		//!<次のシーン(変更先シーン)へのポインタ
+	static SceneP next_scene;		//!<次のシーン(変更先シーン)へのポインタ
 
 	static ScenePVec scenes;			//!<作成済みシーンの配列
 	static ScenePVec another_scenes;	//!<裏シーンの配列

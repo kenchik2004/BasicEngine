@@ -52,8 +52,10 @@ PS_OUTPUT_LIGHTING main(PS_INPUT input)
 	
     float3 diffuse;
     float3 specular;
+    float3 light_color = light_info_[0].light_color_.rgb;
+    light_color = LinearSRGB2ACEScg(light_color);
 	
-    lighting(light_info_[0].light_color_.rgb,
+    lighting(light_color,
              N, L, V, H,
              surfaceInfo.roughness_, surfaceInfo.metallic_,
              surfaceInfo.albedo_,

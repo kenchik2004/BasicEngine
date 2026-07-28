@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Text.cpp
 //! @brief  Textコンポーネントの実装。UI文字列の描画処理を管理する
 //---------------------------------------------------------------------------
@@ -86,11 +86,11 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 				y += font_size;
 				continue;
 			}
-			if (x + font_size >= max_x) {
+			if (x + font_size > max_x) {
 				x = (int)draw_box_pos.x;
 				y += font_size;
 			}
-			if (y >= max_y)
+			if (y > max_y)
 				break;
 			int wid;
 
@@ -130,7 +130,7 @@ void Text::DrawAutoString(std::string str_, Vector3 draw_box_pos, Vector3 draw_b
 				DrawFormatString(x, y, color, "%c", str_[i]);
 				x += font_size * 0.5f;
 			}
-			if (x >= max_x || str_[i] == '\n' || (str_[i] == '\\' && str_[i + 1] == 'n')) {
+			if (x > max_x || str_[i] == '\n' || (str_[i] == '\\' && str_[i + 1] == 'n')) {
 				x = (int)draw_box_pos.x;
 				y += font_size;
 			}

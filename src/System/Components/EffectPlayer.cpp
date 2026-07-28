@@ -1,9 +1,10 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   EffectPlayer.cpp
 //! @brief  EffectPlayerコンポーネントの実装。エフェクトの再生・停止を管理する
 //---------------------------------------------------------------------------
 #include "EffectPlayer.h"
 #include "../Effekseer/EffekseerForDXLib.h"
+#include "System/Objects/EffectDrawerObject.h"
 
 std::unordered_map<std::string, int> EffectPlayer::effect_handle_map = {};
 
@@ -15,6 +16,11 @@ EffectPlayer::EffectPlayer(std::string_view name)
 
 int EffectPlayer::Init()
 {
+	//エフェクト描画用オブジェクトがシーンに存在しない場合は作成する
+	if (!SceneManager::Object::Get<EffectDrawerObject>(owner->GetScene())) {
+		auto effect_drawer = SceneManager::Object::Create<EffectDrawerObject>(owner->GetScene());
+	}
+
 	return 0;
 }
 

@@ -1,18 +1,18 @@
 //----------------------------------------------------------------------------
 //!	@file	lighting.h.fx
-//!	@brief	Æ–¾ŒvZŠÖ˜A
+//!	@brief	ç…§æ˜è¨ˆç®—é–¢é€£
 //----------------------------------------------------------------------------
 #ifndef LIGHTING_H_FX
 #define LIGHTING_H_FX
 #include "dxlib_ps.h.fx"
-// ’è”ƒoƒbƒtƒ@
+// å®šæ•°ãƒãƒƒãƒ•ã‚¡
 struct Light
 {
-    float3 light_position_; //!< ŒõŒ¹‚ÌˆÊ’uÀ•W
-    float light_range_; //!< ŒõŒ¹‚Ì‰e‹¿”ÍˆÍ
-    float3 direction_; //!< ŒõŒ¹‚ÌŒü‚«
+    float3 light_position_; //!< å…‰æºã®ä½ç½®åº§æ¨™
+    float light_range_; //!< å…‰æºã®å½±éŸ¿ç¯„å›²
+    float3 direction_; //!< å…‰æºã®å‘ã
     int type;
-    float3 light_color_; //!< ŒõŒ¹‚ÌF
+    float3 light_color_; //!< å…‰æºã®è‰²
     float intensity;
 };
 cbuffer LightInfo : register(b11)
@@ -23,18 +23,18 @@ cbuffer LightInfo : register(b11)
 }
 
 
-// GGX ƒXƒyƒLƒ…ƒ‰[ƒ‚ƒfƒ‹ (Trowbridge Reitz)
-// ƒGƒlƒ‹ƒM[•Û‘¶‘¥(Normalized distribution function) / ”÷×•\–Ê(microfacet)
-//!	@param	[in]	N			–@ü(Normal)
-//!	@param	[in]	H			ƒn[ƒtƒxƒNƒgƒ‹(Half)
-//!	@param	[in]	roughness	•\–Ê‚Ì‘e‚³ 0.0(‚Â‚é‚Â‚é)`1.0(‚´‚ç‚´‚ç)
-//!	@param	[in]	gamma		ƒXƒyƒLƒ…ƒ‰[‚ÌŒ¸Šƒe[ƒ‹‚ÌŒW”
+// GGX ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼ãƒ¢ãƒ‡ãƒ« (Trowbridge Reitz)
+// ã‚¨ãƒãƒ«ã‚®ãƒ¼ä¿å­˜å‰‡(Normalized distribution function) / å¾®ç´°è¡¨é¢(microfacet)
+//!	@param	[in]	N			æ³•ç·š(Normal)
+//!	@param	[in]	H			ãƒãƒ¼ãƒ•ãƒ™ã‚¯ãƒˆãƒ«(Half)
+//!	@param	[in]	roughness	è¡¨é¢ã®ç²—ã• 0.0(ã¤ã‚‹ã¤ã‚‹)ï½1.0(ã–ã‚‰ã–ã‚‰)
+//!	@param	[in]	gamma		ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼ã®æ¸›è¡°ãƒ†ãƒ¼ãƒ«ã®ä¿‚æ•°
 float D_GGX(float3 N, float3 H, float roughness)
 {
 	//                            a^2
 	//	D(N, H, a) = -------------------------------------
-	//                ƒÎ * [ (a^2 - 1)( dot(N, H)^2 + 1]^2
-	// ¦a ‚Í roughness ‚Ì2æ
+	//                Ï€ * [ (a^2 - 1)( dot(N, H)^2 + 1]^2
+	// â€»a ã¯ roughness ã®2ä¹—
 
     float a = roughness * roughness;
     float a2 = a * a;
@@ -46,16 +46,16 @@ float D_GGX(float3 N, float3 H, float roughness)
     return numerator / denominator;
 }
 
-//!	ƒtƒŒƒlƒ‹”½Ë (Schlick‹ß—)
-//!	[in]	f0		‰Šú‚Ì”½Ë—¦(fresnel bias)
-//!	[in]	NdotV	N‚ÆV‚Ì“àÏ’l
+//!	ãƒ•ãƒ¬ãƒãƒ«åå°„ (Schlickè¿‘ä¼¼)
+//!	[in]	f0		åˆæœŸã®åå°„ç‡(fresnel bias)
+//!	[in]	NdotV	Nã¨Vã®å†…ç©å€¤
 float3 F_Schlick(float3 f0, float NdotV)
 {
     float x = 1.0 - NdotV;
     return f0 + (1.0 - f0) * (x * x * x * x * x);
 }
 
-//! G€ Smith ©ŒÈÕ•Áƒ‚ƒfƒ‹
+//! Gé … Smith è‡ªå·±é®è”½ãƒ¢ãƒ‡ãƒ«
 float G_Smith_Schlick_GGX(float roughness, float NdotV, float NdotL)
 {
     float a = roughness * roughness;
@@ -91,32 +91,32 @@ void lighting(in float3 lightColor, //
     
     
 	//-------------------------------------------------------------
-	// diffuse (ƒfƒBƒtƒ…[ƒY) = ŠgU”½ËŒõ
+	// diffuse (ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º) = æ‹¡æ•£åå°„å…‰
 	//-------------------------------------------------------------
-	// Lambert ŠgU”½ËŒõƒ‚ƒfƒ‹
+	// Lambert æ‹¡æ•£åå°„å…‰ãƒ¢ãƒ‡ãƒ«
     // float diffuse = max(0, dot(N, L));
     const float Kd = 1.0 / PI;
     diffuse = lightColor * (NdotL * Kd) * albedo;
 
 	//-------------------------------------------------------------
-	// specular (ƒXƒyƒLƒ…ƒ‰[) = ‹¾–Ê”½ËŒõ
+	// specular (ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼) = é¡é¢åå°„å…‰
 	//-------------------------------------------------------------
 #if 0
-	// Blinn-phong ‹¾–Ê”½ËŒõƒ‚ƒfƒ‹
+	// Blinn-phong é¡é¢åå°„å…‰ãƒ¢ãƒ‡ãƒ«
     float shininess = 200.0;
     // float Ks = (shininess + 2.0) / (2.0 * PI);
     float Ks = shininess * (1.0 / (2.0 * PI)) + (2.0 / (2.0 * PI));
     float specular = pow(saturate(dot(N, H)), shininess) * Ks;
 	
-    specular *= 0.5;	// ‹­‚³’²®
+    specular *= 0.5;	// å¼·ã•èª¿æ•´
 #elif 0
 	
-	// Cook-Torrance BRDFƒ‚ƒfƒ‹
+	// Cook-Torrance BRDFãƒ¢ãƒ‡ãƒ«
 	//        D * F * G
 	// -----------------------
 	//  4 * (NdotL) * (NdotV)
 	//
-	// Æ–¾ŒvZ = (BRDF) * (Œõ‚ÌF,‹­‚³) * (NdotL)
+	// ç…§æ˜è¨ˆç®— = (BRDF) * (å…‰ã®è‰²,å¼·ã•) * (NdotL)
 	//       Cook-Torrance
     float3 brdf = (D_GGX(N, H, roughness) * F_Schlick(specularColor, NdotV) * G_Smith_Schlick_GGX(roughness, NdotV, NdotL))
 	              / //--------------------------------------------------------------------------------------------------------------------
@@ -124,9 +124,11 @@ void lighting(in float3 lightColor, //
 	
     float3 specular = brdf * lightColor /* * NdotL*/;
 #else
-	// Cook-Torrance BRDF ‹ß—‚‘¬‰» (Optimizing PBR SIGGRAPH2015)
+	// Cook-Torrance BRDF è¿‘ä¼¼é«˜é€ŸåŒ– (Optimizing PBR SIGGRAPH2015)
     float roughness4 = roughness * roughness * roughness * roughness;
-    float denominator = (NdotH * NdotH * (roughness4 - 1.0) + 1.0) * LdotH+0.00001;
+    float denominator = (NdotH * NdotH * (roughness4 - 1.0) + 1.0);
+    denominator *= LdotH;
+    denominator += 0.00001;
 	
     float3 brdf = roughness4 * rcp(4.0 * PI * denominator * denominator * (roughness + 0.5));
 	

@@ -75,6 +75,11 @@ public:
 		Forward,  //!< フォワードレンダリング
 		Deferred, //!< ディファードレンダリング
 	};
+	//! @brief 投影方式の種別
+	enum class ProjectionType {
+		Perspective, //!< 透視投影
+		Orthographic //!< 平行投影
+	};
 	//! @brief 画面クリア方式の種別
 	enum class ClearType {
 		SkyBox, //!< スカイボックスでクリア
@@ -82,6 +87,7 @@ public:
 	};
 	RenderType render_type = RenderType::Forward; //!< レンダリング方式
 	ClearType clear_type = ClearType::SkyBox;     //!< クリア方式
+	ProjectionType projection_type = ProjectionType::Perspective; //!< 投影方式
 	Color clear_color = { 0,0,0,0 };              //!< クリアカラー（ClearType::Color時に使用）
 	// ■【GBufferのレイアウト】■
 //            R         G         B         A

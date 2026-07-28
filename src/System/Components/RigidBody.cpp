@@ -9,15 +9,19 @@ using namespace physx;
 void RigidBody::OnSleep()
 {
 	if (!owner->GetScene()->IsInSimulation()) {
-		if (auto rig_body = body->is<PxRigidDynamic>())
+		if (auto rig_body = body->is<PxRigidDynamic>()) {
+			rig_body->putToSleep();
 			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, true);
+		}
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this()))]() {
 		if (!wp)
 			return;
-		if (auto rig_body = wp->body->is<PxRigidDynamic>())
+		if (auto rig_body = wp->body->is<PxRigidDynamic>()) {
+			rig_body->putToSleep();
 			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, true);
+		}
 		};
 	owner->GetScene()->AddFunctionAfterSimulation(lambda);
 }
@@ -25,15 +29,19 @@ void RigidBody::OnSleep()
 void RigidBody::OnWakeUp()
 {
 	if (!owner->GetScene()->IsInSimulation()) {
-		if (auto rig_body = body->is<PxRigidDynamic>())
+		if (auto rig_body = body->is<PxRigidDynamic>()) {
 			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, false);
+			rig_body->wakeUp();
+		}
 		return;
 	}
 	auto lambda = [wp = SafeWeakPtr<RigidBody>(std::static_pointer_cast<RigidBody>(shared_from_this()))]() {
 		if (!wp)
 			return;
-		if (auto rig_body = wp->body->is<PxRigidDynamic>())
+		if (auto rig_body = wp->body->is<PxRigidDynamic>()) {
 			rig_body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, false);
+			rig_body->wakeUp();
+		}
 		};
 	owner->GetScene()->AddFunctionAfterSimulation(lambda);
 }

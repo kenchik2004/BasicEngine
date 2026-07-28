@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerIdleState.cpp
 //! @brief  PlayerIdleStateクラスの実装
 //---------------------------------------------------------------------------
@@ -26,7 +26,7 @@ namespace NeonFade
 	void PlayerIdleState::OnEnter(IStateMachine* machine)
 	{
 		// アイドルアニメーションをループ再生して待機姿勢を表現する。
-		animator->Play("idle", true, 0.0f, 0.1f, false);
+		animator->Play("idle", true, 0.0f, 0.2f, false);
 	}
 	//! @brief 待機状態を抜ける際の終了処理（現在は空実装）。
 	//! @param machine ステートマシン本体。

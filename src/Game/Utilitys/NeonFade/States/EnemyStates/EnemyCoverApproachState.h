@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade {
 	//! @brief 敵がカバーしに近づく状態を管理するクラス
@@ -11,6 +11,8 @@ namespace NeonFade {
 		public IState
 	{
 	public:
+		//! @brief コンストラクタ
+		//! @param owner_enemy_ この状態を管理するEnemyオブジェクトへのポインタ
 		EnemyCoverApproachState(Enemy* owner_enemy_);
 		// IStateの純粋仮想関数のオーバーライド
 		void OnEnter(IStateMachine* machine) override;
@@ -19,12 +21,14 @@ namespace NeonFade {
 		void DebugDraw() override;
 
 		//! @brief この状態から遷移可能な状態を制限するための関数
+		//! @param state_name 遷移先のステート名
 		bool CanTransitTo(const std::string& state_name) override;
-		Enemy* GetCoverTarget() const { return cover_target; }	//<! カバーする対象のEnemyオブジェクトへのポインタを返す関数
+		//! @brief カバーする対象のEnemyオブジェクトへのポインタを返す関数
+		Enemy* GetCoverTarget() const { return cover_target; }
 
 	private:
-		static constexpr float APPROACH_SPEED = 12.0f;	//<! カバーに近づく速度
-		static constexpr float ROTATION_SPEED = 0.01f;	//<! カバーに近づく際の回転速度
+		static constexpr float APPROACH_SPEED = 20.0f;	//<! カバーに近づく速度
+		static constexpr float ROTATION_SPEED = 15.0f;	//<! カバーに近づく際の回転速度
 		static constexpr float APPROACH_POSITION_RATIO = 0.6f;	//<! カバー位置に近づく際、プレイヤーと敵の距離の割合(0.0f~1.0f)
 		static constexpr float APPROACH_DISTANCE_THRESHOLD = 5.0f;	//<! カバー位置に近づいたとみなす距離の閾値
 		static constexpr float APPROACH_DESTINATION_RADIUS = 5.0f;	//<! カバー位置の周囲でランダムに目的地を設定する半径
@@ -38,14 +42,14 @@ namespace NeonFade {
 		float elapsed_time = 0.0f;								//<! この状態に入ってからの経過時間
 		Vector3 approach_destination;							//<! カバー位置に近づくための目的地
 
-		//< @brief カバー位置に近づくための目的地を計算する関数
-		void CalculateApproachDestination();	
-		//< @brief カバー位置に近づくための移動方向を計算する関数
-		void CalculateBaseMovement(Vector3& out_mov_dir);	
-		//< @brief 近くの敵に引き寄せられる方向を計算する関数
-		void CalculateCohesion(Vector3& out_mov_dir);	
-		//< @brief 最終的な移動方向を正規化し、速度と回転を適用する関数
-		void ApplyMovementAndRotation(Vector3& mov_dir);	
+		//! @brief カバー位置に近づくための目的地を計算する関数
+		void CalculateApproachDestination();
+
+		//! @brief カバー位置に近づくための移動方向を計算する関数
+		//! @param out_mov_dir 計算結果の移動方向を格納するVector3参照
+		void CalculateBaseMovement(Vector3& out_mov_dir);
+
+
 	};
 }
 

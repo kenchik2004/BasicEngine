@@ -52,6 +52,7 @@ void Exception::Show()
 	printfDx(message.c_str());
 	printfDx("\n");
 #ifndef NDEBUG
+	message = UTF8ToShiftJIS(message); /**< @brief メッセージをShift_JISに変換。 */
 	std::wstring wstr = Str2Wstr(message); /**< @brief メッセージをワイド文字列に変換。 */
 	if (is_assert)
 		_wassert(wstr.c_str(), __FILEW__, __LINE__); /**< @brief アサートとして処理。 */

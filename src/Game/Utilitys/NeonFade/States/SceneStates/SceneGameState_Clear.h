@@ -10,6 +10,7 @@ namespace NeonFade {
 	//----------------------------------------
 	// 起承転結の後に来る、Exitシーン
 	//----------------------------------------
+	class FinishEffect;
 	class SceneGame;
 	class SceneGameState_Clear :
 		public ISceneState
@@ -19,12 +20,14 @@ namespace NeonFade {
 		virtual void OnEnter(ISceneStateMachine* machine) override;
 		virtual void OnExit(ISceneStateMachine* machine) override;
 		virtual void Update(ISceneStateMachine* machine, float dt) override;
+
 	private:
 		SceneGame* owner_scene_game = nullptr;
 		float exit_timer = 0;
 		static constexpr float EXIT_TIME = 5.0f;
 		UIObjectWP fin_text_obj;
 		SafeSharedPtr<AudioClip> fin_se;
+		SafeSharedPtr<FinishEffect> finish_effect;
 	};
 }
 

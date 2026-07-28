@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerCombatComboState3.cpp
 //! @brief  PlayerCombatComboState3の実装。プレイヤーの連続攻撃コンボ第3段の処理を行う
 //---------------------------------------------------------------------------
@@ -92,7 +92,6 @@ namespace NeonFade {
 	}
 	void PlayerCombatComboState3::OnExit(IStateMachine* machine)
 	{
-		animator->Stop();
 		if (hit_box)
 			hit_box->RemoveThisComponent();
 		hit_box.reset();

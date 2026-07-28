@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Animator.cpp
 //! @brief  Animatorコンポーネントの実装。モデルのアニメーション再生・ブレンドを管理する
 //---------------------------------------------------------------------------
@@ -174,6 +174,18 @@ void Animator::Exit()
 	current_anim.reset();
 	old_anims.fill(nullptr);
 	animation.clear();
+}
+
+void Animator::OnModelChanged()
+{
+	//モデルが変わったら、古いアニメーションを新しいモデルにアタッチし直す必要がある
+	if (current_anim)
+		current_anim->attached_index = MV1AttachAnim(model->GetModelHandle(), current_anim->index, current_anim->handle, false);
+	for (auto& old_anim : old_anims) {
+		if (old_anim) {
+			old_anim->attached_index = MV1AttachAnim(model->GetModelHandle(), old_anim->index, old_anim->handle, false);
+		}
+	}
 }
 
 

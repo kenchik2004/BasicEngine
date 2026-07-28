@@ -1,3 +1,4 @@
+﻿// PlayerController.h
 //---------------------------------------------------------------------------
 //! @file   PlayerController.h
 //! @brief  プレイヤーコントローラーコンポーネント（プレイヤー入力処理）
@@ -16,6 +17,11 @@ namespace NeonFade
 	{
 	public:
 		USING_SUPER(PlayerController);
+
+
+		void OnSleep() override;
+		void OnWakeUp() override;
+
 		//! @brief 初期化処理
 		int Init() override;
 		//! @brief 更新処理
@@ -51,7 +57,7 @@ namespace NeonFade
 
 	private:
 		PlayerStateMachineUP state_machine; //!< プレイヤーのステートマシン
-		SafeSharedPtr<Player> owner_player = nullptr; //!< オーナープレイヤー
+		SafeWeakPtr<Player> owner_player = nullptr; //!< オーナープレイヤー
 		bool is_jumping = false; //!< ジャンプ中フラグ
 		bool is_landed = false; //!< 着地フラグ
 		bool is_falling = false; //!< 落下中フラグ

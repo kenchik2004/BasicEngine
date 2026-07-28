@@ -14,12 +14,13 @@
 
 namespace NeonFade {
 
-	class MovieCamera : public CameraObject {
+	class MovieCameraMachine : public Component {
 	public:
 		USING_SUPER(CameraObject);
 		int Init() override {
 			int ret = Super::Init();
-			camera->render_type = Camera::RenderType::Deferred;
+			camera_object = SafeStaticCast<CameraObject>(owner.lock());
+			camera_object->camera->render_type = Camera::RenderType::Deferred;
 			return ret;
 		}
 		void PreDraw() override {
@@ -29,10 +30,10 @@ namespace NeonFade {
 			Vector3 pos;
 			Quaternion rot;
 			path->Evaluate(path_timer * path->GetTotalLength(), pos, rot);
-			transform->position = pos;
+			camera_object->transform->position = pos;
 			Vector3 look_dir = target->transform->position - pos;
 			look_dir.normalize();
-			transform->SetAxisZ(look_dir);
+			camera_object->transform->SetAxisZ(look_dir);
 		}
 		void SetPath(CatmullRomPath* path_) {
 			path = path_;
@@ -44,6 +45,7 @@ namespace NeonFade {
 			path_timer = timer;
 		}
 	private:
+		CameraObjectWP camera_object = nullptr;
 		GameObjectWP target = nullptr;
 		CatmullRomPath* path = nullptr;
 		float path_timer = 0.0f;
@@ -75,9 +77,10 @@ namespace NeonFade {
 		auto cam_machine = owner_scene_game->player->player_camera_machine.lock();
 		controller->SetIgnoreInput(true);
 		cam_machine->Sleep();
-		message_text->SetText(u8"全員捕まえろ!");
+		message_text->SetText(u8"全員倒せ!");
 		message_text->SetFontSize(170);
 		message_text->WakeUp();
+		message_text->ResetDrawChar();
 		timer_text->Sleep();
 		owner_scene_game->text_comp->SetText(u8"KI State");
 		owner_scene_game->player->transform->position = { 0,220,100 };
@@ -88,20 +91,24 @@ namespace NeonFade {
 		owner_scene_game->player->pl_controller->GetStateMachine()->ChangeState("spawn");
 		owner_scene_game->player->rb->velocity = Vector3(physx::PxZero);
 		exit_timer = 0;
-		movie_camera = SceneManager::Object::Create<MovieCamera>(u8"movie_camera_KI");
+		auto movie_camera_obj = SceneManager::Object::Get<CameraObject>(owner_scene_game->shared_from_this());
+		movie_camera = movie_camera_obj->AddComponent<MovieCameraMachine>();
 		movie_camera->SetTarget(owner_scene_game->player);
 		movie_camera->SetPath(camera_path.get());
 		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"bgm");
 		owner_scene_game->audio_player->loop = true;
-		owner_scene_game->audio_player->volume = 0.6f * SceneGame::GetBGMVolume();
 		owner_scene_game->audio_player->Play();
+
+		owner_scene_game->PauseGame(false);
 	}
 	void SceneGameState_KI::OnExit(ISceneStateMachine* machine)
 	{
 		scene_camera->camera->SetCurrentCamera();
-		SceneManager::Object::Destroy(movie_camera.lock());
+		if (movie_camera)
+			movie_camera->RemoveThisComponent();
 		owner_scene_game->player->pl_controller->SetIgnoreInput(false);
 		owner_scene_game->player->player_camera_machine->WakeUp();
+		owner_scene_game->player->player_camera_machine->Init();
 		message_text->Sleep();
 	}
 	void SceneGameState_KI::Update(ISceneStateMachine* machine, float dt)

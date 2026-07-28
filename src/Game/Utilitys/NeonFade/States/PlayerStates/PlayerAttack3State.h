@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerAttack3State.h
 //! @brief  プレイヤーの第3攻撃状態クラスの定義
 //---------------------------------------------------------------------------
@@ -20,6 +20,7 @@ namespace NeonFade {
 		float hit_stop_timer = 0.0f;
 		static constexpr float HIT_STOP_TIME = 0.1f;
 		static constexpr float CAMERA_SHAKE_TIME = 0.2f;
+		static inline const Vector3 CAMERA_SHAKE_INTENSITY = { 0.3f, 0.3f, 0.3f };
 
 		int stop_counter = 0;
 		static constexpr int MAX_STOP_COUNT = 3;

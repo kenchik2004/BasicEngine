@@ -29,7 +29,7 @@ namespace NeonFade {
 	void PlayerAttack2State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
-		animator->Play("clouch_inv", false, CUR_ANIMTIME_MAX, 0.1f);
+		animator->Play("crouch_inv", false, CUR_ANIMTIME_MAX, 0.1f);
 		//mixamoのアニメーションが酷いので、手動で逆再生
 		animator->anim_speed = -3.0f;
 		rb->velocity *= 0.3f;

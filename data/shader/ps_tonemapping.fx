@@ -1,9 +1,10 @@
-//----------------------------------------------------------------------------
+﻿//----------------------------------------------------------------------------
 //!	@file	ps_tonemapping.fx
-//!	@brief	HDR�g�[���}�b�s���O
+//!	@brief	HDRトーンマッピング
 //----------------------------------------------------------------------------
 #include "dxlib_ps.h.fx"
 
+// sRGBから入力する場合の変換行列
 // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
 static const float3x3 ACESInputMat =
 {
@@ -12,6 +13,17 @@ static const float3x3 ACESInputMat =
     { 0.02840, 0.13383, 0.83777 }
 };
 
+// AP1(ACES2065-1)から入力する場合の変換行列
+// AP1 => RRT_SAT
+static const float3x3 AP1_2_RRT_SAT_MAT =
+{
+    { 0.9708890, 0.0269633, 0.0021476 },
+    { 0.0108892, 0.9869630, 0.0021476 },
+    { 0.0108892, 0.0269633, 0.9621480 }
+};
+
+
+// 変換後の色空間からsRGBへの変換行列
 // ODT_SAT => XYZ => D60_2_D65 => sRGB
 static const float3x3 ACESOutputMat =
 {
@@ -20,6 +32,9 @@ static const float3x3 ACESOutputMat =
     { -0.00327, -0.07276, 1.07602 }
 };
 
+//----------------------------------------------------------------------------
+//!	@brief	RRTとODTを適用する関数
+//----------------------------------------------------------------------------
 float3 RRTAndODTFit(float3 v)
 {
     float3 a = v * (v + 0.0245786f) - 0.000090537f;
@@ -27,9 +42,13 @@ float3 RRTAndODTFit(float3 v)
     return a / b;
 }
 
+//----------------------------------------------------------------------------
+//!	@brief	ACESトーンマッピングを適用する関数
 float3 ACESFitted(float3 color)
 {
-    color = mul(ACESInputMat, color);
+    color = max(color, 0.0);
+
+    color = mul(AP1_2_RRT_SAT_MAT, color);
 
     // Apply RRT and ODT
     color = RRTAndODTFit(color);
@@ -42,23 +61,23 @@ float3 ACESFitted(float3 color)
     return color;
 }
 //----------------------------------------------------------------------------
-// ���C���֐�
+// メイン関数
 //----------------------------------------------------------------------------
 PS_OUTPUT main(PS_INPUT input)
 {
-	PS_OUTPUT	output;
+    PS_OUTPUT output;
 
-	// �e�N�X�`���J���[�̓ǂݍ���
-	float4	color = DiffuseTexture.Sample(DiffuseSampler, input.uv0_);
+	// テクスチャカラーの読み込み
+    float4 color = DiffuseTexture.Sample(DiffuseSampler, input.uv0_);
+    
+	// トーンマッピング適用
+    color.rgb = ACESFitted(color.rgb);
 
-	// �g�[���}�b�s���O�K�p
-	color.rgb = ACESFitted(color.rgb);
+	// sRGBへ変換
+    color.rgb = pow(abs(color.rgb), 1.0 / 2.2);
 
-	// sRGB�֕ϊ�
-	color.rgb = pow(color.rgb, 1.0 / 2.2);
+    output.color0_ = color;
 
-	output.color0_ = color;
-
-	// �o�̓p�����[�^��Ԃ�
-	return output;
+	// 出力パラメータを返す
+    return output;
 }

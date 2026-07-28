@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Game/Utilitys/NeonFade/States/IState.h"
 namespace NeonFade
 {
@@ -21,9 +21,10 @@ namespace NeonFade
 		bool CanTransitTo(const std::string& state_name) override;
 	private:
 		static constexpr float COVER_DURATION = 2.0f;				//<! カバー状態の持続時間（秒）
-		static constexpr float ROTATION_SPEED = 0.05f;					//<! カバー中の回転の補間速度
+		static constexpr float ROTATION_SPEED = 1.0f;					//<! カバー中の回転の補間速度
 		static constexpr float COHESION_WEIGHT = 0.5f;					//<! カバー中の仲間との凝集力の重み
 		static constexpr float COVER_CONTINUE_ANGLE_THRESHOLD = 40.0f;	//<! カバーを続けるための角度の閾値（度）
+		static constexpr float TARGET_DISTANCE_THRESHOLD = 50.0f;				//<! カバー対象が離脱完了したとみなす距離の閾値
 
 
 		float elapsed_time = 0.0f;							//<! ステート開始後の経過時間を追跡するための変数
@@ -33,8 +34,6 @@ namespace NeonFade
 		Animator* animator = nullptr;						//<! オーナーのAnimatorコンポーネントへのポインタ
 		RigidBody* rb = nullptr;							//<! オーナーのRigidBodyコンポーネントへのポインタ
 
-		void CalculateCohesion(Vector3& out_mov_dir);
-		void ApplyMovement(Vector3& mov_dir);
 	};
 }
 

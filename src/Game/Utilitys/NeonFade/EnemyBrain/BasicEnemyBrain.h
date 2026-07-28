@@ -1,3 +1,4 @@
+﻿// BasicEnemyBrain.h
 //---------------------------------------------------------------------------
 //! @file   BasicEnemyBrain.h
 //! @brief  基本的な敵AI思考クラスの定義
@@ -5,28 +6,37 @@
 #pragma once
 #include "Game/Utilitys/NeonFade/EnemyBrain/AbstractEnemyBrain.h"
 namespace NeonFade {
+
+	//! @brief 基本となる敵AIのステートを登録する関数
+	//! 待機、ダメージ、ノックバック、死亡などの、どの敵にも共通する基本的なステートを登録する
+	//! @param state_machine 登録対象のステートマシン
+
 	class EnemyStateMachine;
+	/// @brief 単体で行動する基本的な敵の思考を管理するクラス
 	class BasicEnemyBrain :
 		public AbstractEnemyBrain
 	{
 	public:
+		/// @brief 基本的な敵AIのコンストラクタ
+		/// @param state_machine_ 状態遷移を管理するステートマシン
+		/// @param player_ プレイヤーの情報を持つ弱参照ポインタ
 		BasicEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_);
+		/// @brief 思考処理を実行する
+		/// @return 次に遷移すべきステートの文字列
 		std::string Think() override;
-		void Damage(u32 damage = 0, bool ignore_i_frame = false) override;
-		void Die();
-		void KnockBack(Vector3 knock_back_vec) override;
-		void DebugDraw() override;
-		bool IsWeakened() const { return is_weakened; }
+
+		/// @brief デバッグ描画
+		/// @note 現在はデバッグ描画は行わないため、空実装のままにしておく
+		void DebugDraw() override {}
 
 	private:
-		static constexpr u32 WEAKED_HP_THRESHOLD = 30;	//<! HPがこの値以下のとき、弱っている状態とみなす
-		bool is_weakened = false;						//<! 敵が弱っている状態かどうかを示すフラグ
-		//! @briref Think関数内でのリターン前に呼び出して、ダメージやノックバックの状態(1フレーム単位で管理する物)をリセットするための関数
-		void ResetFrameParameters();
 
+		/// @brief プレイヤーを発見したかどうかを判定する
+		/// @return 発見していればtrueを返す
 		bool IsFoundPlayer();
+		/// @brief 弱っている他の仲間を援護すべきか判定する
+		/// @return 援護対象がいればtrueを返す
 		bool IsHaveToCoverOtherEnemy();
 
 	};
 }
-

@@ -1,5 +1,10 @@
-#include "EnemyStandUpFrontState.h"
+﻿#include "EnemyStandUpFrontState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
+
+#include "Game/Utilitys/NeonFade/EnemyBrain/AbstractEnemyBrain.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/BasicEnemyBrain.h"
+#include "Game/Components/EnemyController.h"
+
 
 namespace NeonFade {
 	EnemyStandUpFrontState::EnemyStandUpFrontState(Enemy* owner_enemy_)
@@ -39,7 +44,7 @@ namespace NeonFade {
 	}
 	bool EnemyStandUpFrontState::CanTransitTo(const std::string& state_name)
 	{
-		if (state_name == "knock_back" || state_name == "knock_front")
+		if (state_name == "knock_back" || state_name == "knock_front" || state_name == "die")
 			return true;
 		return false;
 	}
@@ -48,7 +53,7 @@ namespace NeonFade {
 		static constexpr float ROTATION_DURATION = 0.8f; // コライダーの回転にかける時間（秒）
 		static constexpr float ROTATION_START = 2.7f;		//<! 回転を開始するタイミング（秒）
 		//! コライダーの初期回転の定数クォータニオン
-		static const Quaternion initial_collider_rotation = Quaternion(DEG2RAD(90.0f), { 0, 0, -1 }) * Quaternion(DEG2RAD(90.0f), { 0, 1, 0 });	
+		static const Quaternion initial_collider_rotation = Quaternion(DEG2RAD(90.0f), { 0, 0, -1 }) * Quaternion(DEG2RAD(90.0f), { 0, 1, 0 });
 		Quaternion target_rotation = Quaternion(DEG2RAD(90.0f), { 0, 0, -1 }); // コライダーを90度回転させるクォータニオン
 
 		float t = std::clamp((elapsed_time - ROTATION_START) / ROTATION_DURATION, 0.0f, 1.0f);		// 経過時間に応じて回転を補間するためのパラメーター
@@ -64,5 +69,11 @@ namespace NeonFade {
 		static const Vector3 target_collider_position = Vector3(0, 0, 0); // コライダーの最終的な位置
 		float t = std::clamp((elapsed_time - TRANSLATE_START) / TRANSLATE_DURATION, 0.0f, 1.0f);		// 経過時間に応じて移動を補間するためのパラメーター
 		col->position = Lerp(initial_collider_position, target_collider_position, t); // コライダーの位置を補間して更新する
+		if (t >= 1.0f) {
+			auto brain = owner_enemy->enem_controller->GetBrain();
+			if (brain) {
+				brain->SetIsCrawling(false); // 這いずり状態を解除する
+			}
+		}
 	}
 }

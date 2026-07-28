@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Enemy.cpp
 //! @brief  Enemyオブジェクトの実装。敵キャラクターのゲームロジックを管理する
 //---------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 #include "Game/Utilitys/NeonFade/EnemyBrain/BasicEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/LeaderEnemyBrain.h"
 #include "Game/Utilitys/NeonFade/EnemyBrain/TeamMemberEnemyBrain.h"
-#include "Game/Utilitys/NeonFade/EnemyTeam.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/EnemyTeam.h"
 
 namespace NeonFade {
 	std::vector<Enemy*> Enemy::all_enemies = {};
@@ -37,6 +37,7 @@ namespace NeonFade {
 			model->SetModel("enemy_model");
 			animator->SetAnimation("enemy_idle", 0);
 			animator->SetAnimation("enemy_damage", 0);
+			animator->SetAnimation("enemy_damage_crowling", 0);
 			animator->SetAnimation("enemy_down", 0);
 			animator->SetAnimation("enemy_down_forward", 0);
 			animator->SetAnimation("enemy_standup_back", 0);
@@ -47,7 +48,12 @@ namespace NeonFade {
 			animator->SetAnimation("enemy_attack_main", 0);
 			animator->SetAnimation("enemy_escape", 0);
 			animator->SetAnimation("enemy_cover", 0);
+			animator->SetAnimation("enemy_cover_approach", 0);
 			animator->SetAnimation("enemy_crowling", 0);
+			animator->SetAnimation("enemy_die", 0);
+			animator->SetAnimation("enemy_fast_run", 0);
+			animator->SetAnimation("enemy_dropkick", 0);
+			animator->SetAnimation("enemy_instruct", 0);
 
 
 
@@ -152,7 +158,6 @@ namespace NeonFade {
 		auto [controller, machine] = MakeAbstractEnemy();
 		controller->SetPlayer(player);
 		auto brain = make_safe_unique<TeamMemberEnemyBrain>(machine, player, my_team);
-		brain->AddLeader(leader_ptr);
 		controller->SetBrain(std::move(brain));
 
 		//moveした後は、コントローラーからアクセスする

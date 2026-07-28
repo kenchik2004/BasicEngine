@@ -14,7 +14,7 @@ namespace NeonFade
 
 	void EnemyIdleState::OnEnter(IStateMachine* machine)
 	{
-		animator->Play("enemy_idle", true);
+		animator->PlayIfNoSame("enemy_idle", true);
 	}
 
 	void EnemyIdleState::OnExit(IStateMachine* machine)

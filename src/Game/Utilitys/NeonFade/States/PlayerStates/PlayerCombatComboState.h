@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerCombatComboState.h
 //! @brief  プレイヤーの連続攻撃コンボ状態クラスの定義
 //---------------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace NeonFade
 		float hit_stop_timer = 0.0f;
 		static constexpr float HIT_STOP_TIME = 0.1f;
 		static constexpr float CAMERA_SHAKE_TIME = 0.2f;
-		static constexpr float CAMERA_SHAKE_POWER = 0.2f;
+		static inline const Vector3 CAMERA_SHAKE_POWER = { 0.2f,0.2f,0.2f };
 		static constexpr u32 DAMAGE = 10;
 
 	};

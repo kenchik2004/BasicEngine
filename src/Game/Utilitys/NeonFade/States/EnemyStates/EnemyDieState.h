@@ -14,10 +14,13 @@ namespace NeonFade
 		bool CanTransitTo(const std::string& state_name) override;
 
 	private:
-		static constexpr float DIE_DURATION = 1.0f;
+		static constexpr float DIE_DURATION = 2.5f;
 		float elapsed_time = 0.0f;
 		Enemy* owner_enemy = nullptr;
 		ModelRenderer* model = nullptr;
+		Animator* animator = nullptr;
 		Material* death_material = nullptr;
+		Collider* collider = nullptr;
+		RigidBody* rb = nullptr;
 	};
 }

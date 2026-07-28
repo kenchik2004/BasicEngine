@@ -1,7 +1,9 @@
-#include "EnemyCrowlingState.h"
+﻿#include "EnemyCrowlingState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Components/EnemyController.h"
+
+#include "Game/Utilitys/NeonFade/EnemyBrain/EnemyRVOSystem.h"
 
 namespace NeonFade {
 	EnemyCrowlingState::EnemyCrowlingState(Enemy* owner_enemy_)
@@ -23,14 +25,14 @@ namespace NeonFade {
 		RegisterChangeRequest("stand_up_front", default_exit);
 
 		std::function<void()> apply_movement0 = [this]() {
-			ApplyMovement(movement_direction);
+			EnemyRVOSystem::ApplyMovement(movement_direction, rb, CROWLING_SPEED);
 			};
 
 		//! アニメーションコールバックをセットするとき、中でstd::moveが走っているので
 		//! std::functionを直接渡すと、1回目のコールバックが呼ばれた後にstd::functionの中身が空になってしまい、2回目のコールバックが呼ばれなくなってしまう
 		//! 先に内容が同じstd::functionを2つ用意して、それぞれをコールバックに渡すことで、両方のコールバックが正しく呼ばれるようにする
 		std::function<void()> apply_movement1 = [this]() {
-			ApplyMovement(movement_direction);
+			EnemyRVOSystem::ApplyMovement(movement_direction, rb, CROWLING_SPEED);
 			};
 
 		// 這いずりアニメーションの特定のフレームでApplyMovement関数を呼び出すコールバックを登録する
@@ -62,32 +64,14 @@ namespace NeonFade {
 
 
 		// ApplyMovementはアニメーションコールバックで呼び出されるため、ここでは呼び出さない
-		ApplyRotation(movement_direction); // 移動方向に基づいて回転を適用する
+		EnemyRVOSystem::ApplyRotation(movement_direction, owner_enemy->transform.get(), CROWLING_ROTATION_SPEED); // 移動方向に基づいて回転を適用する
+		
 
 	}
 	bool EnemyCrowlingState::CanTransitTo(const std::string& state_name)
 	{
-		if (state_name == "knock_back" || state_name == "knock_front")
+		if (state_name == "knock_back" || state_name == "knock_front" || state_name == "damage_crowling" || state_name == "die")
 			return true;
 		return false;
-	}
-	void EnemyCrowlingState::ApplyMovement(Vector3& mov_dir)
-	{
-		mov_dir.y = 0; // 水平方向の移動に限定する
-		mov_dir = mov_dir.getNormalized() * CROWLING_SPEED; // 移動方向を正規化してから這いずり速度を掛ける
-		mov_dir.y = rb->velocity.y; // 現在の垂直速度を保持する
-		rb->velocity = mov_dir; // 計算した移動ベクトルを剛体の速度に直接設定する	
-	}
-	void EnemyCrowlingState::ApplyRotation(const Vector3& mov_dir)
-	{
-		if (mov_dir.magnitudeSquared() > 0.001f) { // 移動方向がほとんどゼロでない場合にのみ回転を適用する
-			Vector3 target_dir = mov_dir; // 目標の回転方向は移動方向と同じ
-			const Vector3 forward = owner_enemy->transform->AxisZ(); // 敵の前方ベクトルを取得する
-			// 現在の前方ベクトルと移動方向から、目標の回転を計算する
-			target_dir.y = 0; // 水平方向の回転に限定する
-			target_dir.normalize(); // 目標方向を正規化する
-			target_dir = Slerp(forward, target_dir, CROWLING_ROTATION_SPEED); // 線形補間で回転を滑らかにする
-			owner_enemy->transform->SetAxisZ(target_dir); // 敵の前方ベクトルを目標の回転方向に設定する
-		}
 	}
 }

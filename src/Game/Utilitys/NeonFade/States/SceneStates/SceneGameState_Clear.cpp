@@ -8,7 +8,7 @@
 
 namespace NeonFade {
 
-	class FinishEffectObject
+	class FinishEffect
 	{
 	private:
 		UIObjectWP back_ground_img_obj;
@@ -21,10 +21,12 @@ namespace NeonFade {
 		static constexpr float txt_rank_delay = 3.0f;
 		SafeSharedPtr<AudioClip> score_se;
 
+		static constexpr float slidein_time = 0.1f;
+
 
 	public:
-		USING_SUPER(FinishEffectObject);
-		FinishEffectObject(SceneGame* owner_scene) {
+		USING_SUPER(FinishEffect);
+		FinishEffect(SceneGame* owner_scene) {
 			if (!score_se)
 				score_se = AudioManager::CloneByName(u8"score_se");
 
@@ -33,6 +35,7 @@ namespace NeonFade {
 
 			{
 				auto bg_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());
+				bg_obj->name = "FinishEffectBackground";
 				auto bg_img = bg_obj->AddComponent<ImageRenderer>();
 				auto mat = MaterialManager::GetMaterial("hunt_eff_mat");
 				bg_img->SetMaterial(mat);
@@ -57,11 +60,14 @@ namespace NeonFade {
 		}
 		void Update(SceneGame* owner_scene) {
 			effect_timer += Time::UnscaledDeltaTime();
+			float t = std::clamp(effect_timer / slidein_time, 0.0f, 1.0f);
+			if (auto bg_obj = back_ground_img_obj.lock())
+			{
+				bg_obj->transform->position.x = SCREEN_W * (1.0f - t);
+			}
 
 			if (effect_timer > txt_time_delay && !txt_time.lock())
 			{
-				float game_time = owner_scene->GetGameTimer();
-				std::string time_str = u8"かかった時間:\n " + std::format("{:.2f}", game_time) + u8"秒\n";
 				auto time_text_obj = SceneManager::Object::Create<UIObject>(owner_scene->shared_from_this());
 				time_text_obj->BackGroundColor() = Color(0.2f, 0.2f, 0.2f, 0.5f);
 				time_text_obj->UseBackGround() = true;
@@ -69,10 +75,21 @@ namespace NeonFade {
 				time_text_obj->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_MIDDLE;
 				time_text_obj->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_MIDDLE;
 				time_text_obj->transform->scale = { 500, 500, 1 };
-				auto text_comp = time_text_obj->AddComponent<Text>();
-				text_comp->SetText(time_str);
-				text_comp->TextColor() = Color::WHITE;
-				text_comp->SetFontSize(45);
+
+				{
+
+					float game_time = owner_scene->GetGameTimer();
+					int minutes = static_cast<int>(game_time) / 60;
+					float seconds = game_time - minutes * 60;
+
+
+					std::string time_str = u8"かかった時間:\n " + std::format("{:d}:{:.02f}\n", minutes, seconds);
+					auto text_comp = time_text_obj->AddComponent<Text>();
+					text_comp->SetText(time_str);
+					text_comp->TextColor() = Color::BLACK;
+					text_comp->SetFontSize(45);
+
+				}
 				txt_time = time_text_obj;
 			}
 			if (effect_timer > txt_rank_delay && !txt_rank.lock())
@@ -110,7 +127,7 @@ namespace NeonFade {
 				score_se->PlayOneShot(SceneGame::GetSEVolume());
 			}
 		}
-		~FinishEffectObject() {
+		~FinishEffect() {
 			if (back_ground_img_obj)
 				SceneManager::Object::Destroy(back_ground_img_obj.lock());
 			if (player_model_obj)
@@ -122,7 +139,6 @@ namespace NeonFade {
 		}
 	};
 
-	std::unique_ptr<FinishEffectObject> finish_effect;
 
 	SceneGameState_Clear::SceneGameState_Clear(SceneGame* owner_scene_)
 		:ISceneState(static_cast<Scene*>(owner_scene_))
@@ -143,12 +159,11 @@ namespace NeonFade {
 
 		owner_scene_game->audio_player->audio = AudioManager::CloneByName(u8"result_bgm");
 		owner_scene_game->audio_player->loop = true;
-		owner_scene_game->audio_player->volume = 0.8f * SceneGame::GetBGMVolume();
 		owner_scene_game->audio_player->Play();
 		fin_se->PlayOneShot(SceneGame::GetSEVolume());
 
-
-		finish_effect = std::make_unique<FinishEffectObject>(owner_scene_game);
+		if (!finish_effect)
+			finish_effect = std::make_shared<FinishEffect>(owner_scene_game);
 
 		owner_scene_game->PauseGame(true);
 		//ゲームクリア時は一時停止可能状態を無効化する
@@ -160,7 +175,11 @@ namespace NeonFade {
 	{
 		finish_effect.reset();
 		owner_scene_game->PauseGame(false);
-		SceneManager::Destroy(SceneManager::GetScene<SceneTitle>());
+		auto title_scene = SceneManager::GetScene<SceneTitle>();
+		if (title_scene)
+		{
+			SceneManager::Destroy(title_scene);
+		}
 		SceneManager::Load<SceneTitle>();
 	}
 	void SceneGameState_Clear::Update(ISceneStateMachine* machine, float dt)

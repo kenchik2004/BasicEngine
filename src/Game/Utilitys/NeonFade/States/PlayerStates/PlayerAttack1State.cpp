@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerAttack1State.cpp
 //! @brief  PlayerAttack1Stateの実装。プレイヤーの第1攻撃状態の処理を行う
 //---------------------------------------------------------------------------
@@ -22,7 +22,7 @@ namespace NeonFade {
 		// 既定では一定時間経過で idle へ遷移させる。
 		std::function<bool()> default_exit =
 			[this]() {
-			return exit_timer >= EXIT_TIME;
+			return exit_timer >= EXIT_TIME || (early_exit && exit_timer >= EARLY_EXIT_TIME);
 			};
 		RegisterChangeRequest("idle", default_exit, 0);
 
@@ -32,6 +32,7 @@ namespace NeonFade {
 	void PlayerAttack1State::OnEnter(IStateMachine* machine)
 	{
 		exit_timer = 0.0f;
+		early_exit = false;
 		animator->Play("spin", true, 0, 0);
 		Vector3 input = static_cast<PlayerStateMachine*>(machine)->move_input;
 		owner_player->transform->SetAxisZ(input.getNormalized());
@@ -56,8 +57,8 @@ namespace NeonFade {
 	//! @param dt 前フレームからの経過時間。
 	void PlayerAttack1State::Update(IStateMachine* machine, float dt)
 	{
-			// 経過時間を更新し、段階ごとに攻撃挙動を切り替える。
-			exit_timer += dt;
+		// 経過時間を更新し、段階ごとに攻撃挙動を切り替える。
+		exit_timer += dt;
 
 
 		static constexpr float smoothstep_rottime = 1.0f / SPIN_TIME;
@@ -78,6 +79,8 @@ namespace NeonFade {
 
 				hit_box = std::move(col);
 			}
+			if (static_cast<PlayerStateMachine*>(machine)->is_attacking)
+				early_exit = true;
 		}
 		if (hit_stop_timer > 0.0f) {
 			hit_stop_timer -= dt;
@@ -102,8 +105,11 @@ namespace NeonFade {
 		owner_player->transform->rotation = start_rot;
 		animator->anim_speed = 1.0f;
 		if (eff) {
-			SceneManager::Object::Destroy(eff);
-
+			SceneManager::Object::Destroy(eff.lock());
+		}
+		if (hit_box) {
+			hit_box->RemoveThisComponent();
+			hit_box.reset();
 		}
 	}
 	//! @brief 攻撃ヒット時にダメージ/吹き飛ばしとヒットストップ演出を適用する。
@@ -124,7 +130,7 @@ namespace NeonFade {
 			}
 
 			if (hit_stop_timer <= 0.0f) {
-				owner_player->player_camera_machine->ShakeCamera(1.5f, CAMERA_SHAKE_TIME);
+				owner_player->player_camera_machine->ShakeCamera(CAMERA_SHAKE_INTENSITY, CAMERA_SHAKE_TIME);
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.01f;
 				{

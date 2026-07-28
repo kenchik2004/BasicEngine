@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneManager.cpp
 //! @brief  SceneManagerクラスの実装
 //---------------------------------------------------------------------------
@@ -524,7 +524,6 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 					}
 				);
 			}
-			DrawEffekseer3D_End();
 			SetRenderTarget(GetRenderTarget());
 			scene->OnLateDrawFinish();
 			if (USE_DEBUG_DRAW) {

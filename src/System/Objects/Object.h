@@ -366,6 +366,12 @@ public:
 	//! @brief キャンバスアンカータイプを取得・設定する
 	inline ANCHOR_TYPE& CanvasAnchorType() { return canvas_anchor_type; }
 
+	//! @brief アンカー基準点を取得・設定する
+	inline Vector3& AnchorPoint() { return anchor_point; }
+
+	//! @brief キャンバスアンカー基準点を取得・設定する
+	inline Vector3& CanvasAnchorPoint() { return canvas_anchor_point; }
+
 
 
 protected:

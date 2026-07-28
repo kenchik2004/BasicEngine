@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Player.cpp
 //! @brief  Playerオブジェクトの実装。プレイヤーキャラクターのゲームロジックを管理する
 //---------------------------------------------------------------------------
@@ -41,11 +41,12 @@ namespace NeonFade
 		animator->SetAnimation("smash_finish", 0);
 		animator->SetAnimation("spin", 0);
 		animator->SetAnimation("spin_kick", 0);
-		animator->SetAnimation("clouch_inv", 0);
 		animator->SetAnimation("leg_sweep", 0);
 		animator->SetAnimation("player_dive", 0);
+		animator->SetAnimation("crouch_inv", 0, "player_superhero_landing");
 #if 1
 		mov_tex = TextureManager::Get("electro_movie");
+		auto metal_tex = TextureManager::CloneByName("player_metallic");
 		//PlayMovieToGraph(*mov_tex, DX_PLAYTYPE_LOOP);
 #endif
 
@@ -60,6 +61,7 @@ namespace NeonFade
 		pl_controller = AddComponent<PlayerController>();
 
 		default_mat = model->GetMaterial(0);
+		default_mat->SetTexture(metal_tex, Material::TextureType::Metalic);
 		electro_mat = MaterialManager::CreateMaterial("electro_effect_mat", default_mat);
 		electro_mat->SetTexture(mov_tex, Material::TextureType::Emission);
 

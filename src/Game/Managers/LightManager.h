@@ -1,3 +1,4 @@
+// LightManager.h
 //---------------------------------------------------------------------------
 //! @file   LightManager.h
 //! @brief  ライトマネージャー（ゲームのライト管理）
@@ -12,10 +13,14 @@
 //		コンポーネントの持っているLight構造体vectorを持つ
 //   ├ LightComponent(各オブジェクトに持たせるコンポーネント)
 //      ├Light構造体(ライトの情報を持つ構造体、LightBase継承)
+
+/// @brief 光源の種類を定義する列挙型
 enum class LightType :u32 {
-	Directional,
-	Point,
+	Directional, //!< 平行光源
+	Point,       //!< 点光源
 };
+
+/// @brief シェーダーに渡すためのライト情報をまとめた構造体
 struct LightInfo {
 	Vector3 position; //!< 光源の位置座標
 	float range; //!< 光源の影響範囲
@@ -119,16 +124,22 @@ public:
 	int Init() override;
 	//! @brief ライトをマネージャーに追加する（スマートポインタ版）
 	void AddLight(SafeSharedPtr<LightBase> light) {
+		// 無効なポインタであれば処理を中断する
 		if (!light)
 			return;
+		// 初期化されていなければ初期化処理を呼ぶ
 		if (!light->is_initialized)
 			light->Init();
+		// 自身をライトマネージャーとして登録する
 		light->my_manager = SafeStaticCast<LightManager>(SafeSharedPtr(shared_from_this()));
+		// 管理リストに追加する
 		lights.push_back(light);
 	}
 	//! @brief ライトを種別・パラメータで追加する
 	void AddLight(LightType type, const Vector3& position, const Color& color, float range = 0, float intensity = 1.0f, Vector3 direction = { 0,-1,0 }) {
+		// 追加するライトのスマートポインタを準備する
 		auto light = SafeSharedPtr<LightBase>(nullptr);
+		// 指定された種類に応じて適切なライトオブジェクトを生成する
 		switch (type) {
 		case LightType::Directional: {
 			auto dir_light = make_safe_shared<DirectionalLight>(position, color, direction);
@@ -141,21 +152,29 @@ public:
 			break;
 		}
 		}
+		// 生成に失敗した場合は処理を中断する
 		if (!light)
 			return;
+		// ライトの基本情報を設定する
 		light->type = type;
 		light->position = position;
 		light->color = color;
+		// 初期化されていなければ初期化処理を呼ぶ
 		if (!light->is_initialized)
 			light->Init();
+		// 自身をライトマネージャーとして登録する
 		light->my_manager = SafeStaticCast<LightManager>(SafeSharedPtr(shared_from_this()));
+		// 管理リストに追加する
 		lights.push_back(light);
 	}
 	//! @brief ライトをマネージャーから削除する
 	void RemoveLight(SafeSharedPtr<LightBase> light) {
+		// 無効なポインタであれば処理を中断する
 		if (!light)
 			return;
+		// リスト内から該当のライトを検索する
 		auto ite = std::find(lights.begin(), lights.end(), light);
+		// 見つかった場合はリストから除外する
 		if (ite != lights.end()) {
 			lights.erase(ite);
 		}
@@ -175,3 +194,4 @@ public:
 	//! @brief カメラのビュープロジェクション行列を取得する
 	const mat4x4& GetCameraViewProj() const { return camera_view_proj; }
 };
+

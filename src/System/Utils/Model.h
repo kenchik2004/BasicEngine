@@ -165,16 +165,9 @@ public:
 	//----------------------------------------------------
 	Animation() { instance++; }
 	//----------------------------------------------------
-	// @brief コピーコンストラクタ。
-	// @param other コピー元の Animation オブジェクト。
+	// @brief コピーコンストラクタは削除する。
 	//----------------------------------------------------
-	Animation(const Animation& other) {
-		name = other.name; // 名前をコピー
-		handle = other.handle; // ハンドルをコピー
-		index = other.index; // インデックスをコピー
-		total_time = other.total_time; // 総時間をコピー
-		instance++; // インスタンス数をインクリメント
-	}
+	Animation(const Animation& other) = delete;
 	//----------------------------------------------------
 	// @brief アニメーションを更新する。
 	// @param speed 再生速度。

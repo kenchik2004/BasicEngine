@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   GameObjectWithLifeTime.h
 //! @brief  ライフタイム付きゲームオブジェクト（一定時間後に自動消滅）
 //---------------------------------------------------------------------------
@@ -13,7 +13,7 @@ class GameObjectWithLifeTime :
 {
 public:
 	USING_SUPER(GameObjectWithLifeTime);
-	GameObjectWithLifeTime(const float lifetime_) :GameObject(5000), lifetime(lifetime_) {};
+	GameObjectWithLifeTime(const float lifetime_) :GameObject(1800), lifetime(lifetime_) {};
 	//! @brief 初期化処理
 	int Init() override;
 	//! @brief 更新処理

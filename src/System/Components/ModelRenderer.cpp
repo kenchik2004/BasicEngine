@@ -1,8 +1,10 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   ModelRenderer.cpp
 //! @brief  ModelRendererコンポーネントの実装。3Dモデルの描画処理を管理する
 //---------------------------------------------------------------------------
 #include "ModelRenderer.h"
+#include "Animator.h"
+
 
 void ModelRenderer::Construct()
 {
@@ -25,6 +27,8 @@ void ModelRenderer::SetModel(std::string_view name_, std::string_view new_name_)
 	new_name = new_name_;
 	auto data = ModelManager::CloneModelByName(name_, new_name);
 	model = data;
+	if (auto animator = owner->GetComponent<Animator>())
+		animator->OnModelChanged();
 }
 
 void ModelRenderer::SetModel(SafeSharedPtr<Model> model_, std::string_view new_name_)
@@ -32,6 +36,8 @@ void ModelRenderer::SetModel(SafeSharedPtr<Model> model_, std::string_view new_n
 	model_name = model_->name;
 	new_name = new_name_;
 	model = model_;
+	if (auto animator = owner->GetComponent<Animator>())
+		animator->OnModelChanged();
 
 }
 

@@ -1,3 +1,4 @@
+﻿// SceneGame.h
 //---------------------------------------------------------------------------
 //! @file   SceneGame.h
 //! @brief  メインゲームシーン
@@ -9,9 +10,12 @@
 USING_PTR(CameraObject);
 USING_PTR(ShadowMapObject);
 USING_PTR(LightManager);
+USING_PTR(LightEditor);
 namespace NeonFade {
 	USING_PTR(SceneGameStateMachine);
 	USING_PTR(Player);
+	USING_PTR(SettingsManager);
+
 	//---------------------------------------------------------------------
 	//! @class SceneGame
 	//! @brief メインゲームシーンクラス
@@ -45,20 +49,32 @@ namespace NeonFade {
 		bool CheckForLoading(bool init = true);
 
 		//! @brief ゲームの一時停止状態を設定する
+		//! @param pause ポーズする場合はtrue
 		void PauseGame(bool pause = true);
+
+		//! @brief ポーズメニューの有効化/無効化を設定する
+		//! @param enable 有効化する場合はtrue
+		void EnablePauseMenu(bool enable = true);
+
 		//! @brief ゲームの一時停止状態を取得する
+		//! @return ポーズ中であればtrue
 		bool IsGamePaused() const { return is_game_paused; }
 		//! @brief ゲームの一時停止可能状態を設定する
+		//! @param available ポーズ可能にする場合はtrue
 		void SetPauseAvailable(bool available) { is_pause_available = available; }
 		//! @brief ゲームの一時停止可能状態を取得する
+		//! @return ポーズ可能であればtrue
 		bool IsPauseAvailable() const { return is_pause_available; }
 
 
 		//! @brief 敵カウントを加算する
+		//! @param cnt 加算する数
 		void AddEnemyCount(u32 cnt = 1) { enemy_count += cnt; }
 		//! @brief 敵カウントを減算する
+		//! @param cnt 減算する数
 		void SubtractEnemyCount(u32 cnt = 1);
 		//! @brief 敵の総数を取得する
+		//! @return 現在の敵の数
 		int GetEnemyCount() const { return enemy_count; }
 		//! @brief 全ての敵を消去する
 		void ClearAllEnemy();
@@ -70,6 +86,7 @@ namespace NeonFade {
 		TextWP text_comp; //!< テキストコンポーネント
 		SceneGameStateMachineUP scene_state_machine = nullptr; //!< シーンのステートマシン
 		static constexpr float GAME_TIMER_MAX = 300.0f; //!< ゲームタイマー最大値（秒）
+		SettingsManagerWP pause_menu_obj = nullptr; //!< ポーズメニューオブジェクト
 
 		ShadowMapObjectWP shadowmap = nullptr; //!< シャドウマップオブジェクト
 		LightManagerWP light_manager = nullptr; //!< ライトマネージャー
@@ -80,13 +97,22 @@ namespace NeonFade {
 		//! @brief ゲームタイマーを停止する
 		void StopGameTimer() { is_game_timer_started = false; }
 		//! @brief ゲームタイマーの値を取得する
+		//! @return 現在のタイマー時間
 		float GetGameTimer() const { return game_timer; }
 
+		/// @brief SEの音量を取得する
+		/// @return 現在のSE音量
 		static float GetSEVolume() { return se_volume; }
+		/// @brief BGMの音量を取得する
+		/// @return 現在のBGM音量
 		static float GetBGMVolume() { return bgm_volume; }
 
-		AudioPlayerP audio_player; //!< オーディオプレイヤー
+		//! @brief 音量設定をロードする
+		void LoadVolumeSettings();
+		//! @brief カメラ設定をロードする
+		void LoadCameraSettings();
 
+		AudioPlayerWP audio_player; //!< オーディオプレイヤー
 		//! シーンで使用するリソースをまとめて読み込む静的関数
 		static void LoadResources();
 	private:
@@ -97,5 +123,7 @@ namespace NeonFade {
 		u32 enemy_count = 0; //!< 現在の敵の数
 		static inline float bgm_volume = 1.0f; //!< BGM音量
 		static inline float se_volume = 1.0f; //!< SE音量
+		LightEditorWP light_editor = nullptr; //!< ライトエディタオブジェクト
+
 	};
 }

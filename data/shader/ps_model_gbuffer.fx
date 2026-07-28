@@ -1,61 +1,70 @@
-//----------------------------------------------------------------------------
+ï»¿//----------------------------------------------------------------------------
 //!	@file	ps_model_gbuffer.fx
-//!	@brief	MV1ƒ‚ƒfƒ‹ƒsƒNƒZƒ‹ƒVƒF[ƒ_[ / GBuffero—Í
+//!	@brief	MV1ãƒ¢ãƒ‡ãƒ«ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ / GBufferå‡ºåŠ›
 //----------------------------------------------------------------------------
 #include "dxlib_ps.h.fx"
 #include "shadow.h.fx"
 #include "gbuffer.h.fx"
 //#define DEBUG_CASCADE
 
-// ’¸“_ƒVƒF[ƒ_[‚Ìo—Í
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å‡ºåŠ›
 struct VS_OUTPUT_MODEL
 {
-    float4 position_ : SV_Position; //!< À•W       (ƒXƒNƒŠ[ƒ“‹óŠÔ)
-    float4 curr_position_ : CURR_POSITION; //!< Œ»İ‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ)
-    float3 world_position_ : WORLD_POSITION; //!< ƒ[ƒ‹ƒhÀ•W
-    float3 normal_ : NORMAL0; //!< –@ü
-    float4 diffuse_ : COLOR0; //!< DiffuseƒJƒ‰[
-    float2 uv0_ : TEXCOORD0; //!< ƒeƒNƒXƒ`ƒƒÀ•W
-    float4 prev_position_ : PREV_POSITION; //!< 1ƒtƒŒ[ƒ€‘O‚ÌÀ•W (ƒXƒNƒŠ[ƒ“‹óŠÔ) ¦––”ö‚É’Ç‰Á‚³‚ê‚Ä‚¢‚é‚½‚ß’ˆÓ
+    float4 position_ : SV_Position; //!< åº§æ¨™       (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
+    float4 curr_position_ : CURR_POSITION; //!< ç¾åœ¨ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“)
+    float3 world_position_ : WORLD_POSITION; //!< ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
+    float3 normal_ : NORMAL0; //!< æ³•ç·š
+    float4 diffuse_ : COLOR0; //!< Diffuseã‚«ãƒ©ãƒ¼
+    float2 uv0_ : TEXCOORD0; //!< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+    float4 prev_position_ : PREV_POSITION; //!< 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®åº§æ¨™ (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“) â€»æœ«å°¾ã«è¿½åŠ ã•ã‚Œã¦ã„ã‚‹ãŸã‚æ³¨æ„
 };
 
 typedef VS_OUTPUT_MODEL PS_INPUT_MODEL;
 
 
 //----------------------------------------------------------------------------
-// ƒƒCƒ“ŠÖ”
+// ãƒ¡ã‚¤ãƒ³é–¢æ•°
 //----------------------------------------------------------------------------
 PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 {
     float2 uv = input.uv0_;
 
-    float3 N = normalize(input.normal_); // –@ü
+    float3 N = normalize(input.normal_); // æ³•ç·š
 
 	//------------------------------------------------------------
-	// –@üƒ}ƒbƒv
+	// æ³•ç·šãƒãƒƒãƒ—
 	//------------------------------------------------------------
     N = Normalmap(N, input.world_position_, uv);
 
 	//------------------------------------------------------------
-	// ƒeƒNƒXƒ`ƒƒƒJƒ‰[‚ğ“Ç‚İ‚İ
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚«ãƒ©ãƒ¼ã‚’èª­ã¿è¾¼ã¿
 	//------------------------------------------------------------
     float4 textureColor = DiffuseTexture.Sample(DiffuseSampler, uv);
     textureColor = saturate(textureColor);
-    textureColor.rgb = pow(textureColor.rgb, 2.2);
+    
 
-	// ƒAƒ‹ƒtƒ@ƒeƒXƒg
+	// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆ
     if (textureColor.a < 0.5)
         discard;
+    
+    // sRGBã‹ã‚‰ãƒªãƒ‹ã‚¢ã¸ã®å¤‰æ›
+    // ãƒ¢ãƒ‡ãƒ«ã®Diffuseãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯sRGBã§ä½œã‚‰ã‚Œã¦ã„ã‚‹ã“ã¨ãŒå¤šã„ãŸã‚ã€ãƒªãƒ‹ã‚¢ã«å¤‰æ›ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
+    // ãƒªãƒ‹ã‚¢ãƒ¯ãƒ¼ã‚¯ãƒ•ãƒ­ãƒ¼ã«ã¤ã„ã¦:
+    // https://ny-program.hatenablog.com/entry/2021/08/28/144529
+    
+    textureColor.rgb = pow(textureColor.rgb, 2.2);
+    
     float3 albedo = textureColor.rgb * input.diffuse_.rgb;
+    albedo = LinearSRGB2ACEScg(albedo);
 #ifdef DEBUG_CASCADE
     float shadow = GetShadowWithCascadeColor(input.position_, input.world_position_, albedo);
 #endif
 	
-    float roughness = 0.7; // ƒ‰ƒt“x 0.0:‚Â‚é‚Â‚é ` 1.0:‚´‚ç‚´‚ç (•Ê–¼:glossiness, shininess)
-    float metallic = 0.1; // ‹à‘®“x 0.0:”ñ‹à‘®   ` 1.0:‹à‘®     (•Ê–¼:metalness)
+    float roughness = 0.7; // ãƒ©ãƒ•åº¦ 0.0:ã¤ã‚‹ã¤ã‚‹ ï½ 1.0:ã–ã‚‰ã–ã‚‰ (åˆ¥å:glossiness, shininess)
+    float metallic = 0.1; // é‡‘å±åº¦ 0.0:éé‡‘å±   ï½ 1.0:é‡‘å±     (åˆ¥å:metalness)
 
-	//—pˆÓ‚µ‚Ä‚Í‚¢‚é‚ªADxLbib‚ªŸè‚ÉƒTƒ“ƒvƒ‰[‚ğ·‚µ‘Ö‚¦‚Ä‚­‚é‚½‚ßA
-	//d•û‚È‚­DiffuseƒTƒ“ƒvƒ‰[‚ğ—¬—p‚·‚éB
+	//ç”¨æ„ã—ã¦ã¯ã„ã‚‹ãŒã€DxLbibãŒå‹æ‰‹ã«ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚’å·®ã—æ›¿ãˆã¦ãã‚‹ãŸã‚ã€
+	//ä»•æ–¹ãªãDiffuseã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚’æµç”¨ã™ã‚‹ã€‚
     roughness = RoughnessTexture.Sample(DiffuseSampler, uv).r;
     metallic = MetallicTexture.Sample(DiffuseSampler, uv).r;
 
@@ -66,10 +75,10 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	
 	
 	//----------------------------------------------------------
-	// o—Í
+	// å‡ºåŠ›
 	//----------------------------------------------------------
     PS_OUTPUT_MRT output = PackSurfaceInfo(albedo, ao, N, roughness, metallic, input.world_position_.xyz, emissive);
 
-	// o—Íƒpƒ‰ƒ[ƒ^‚ğ•Ô‚·
+	// å‡ºåŠ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿”ã™
     return output;
 }

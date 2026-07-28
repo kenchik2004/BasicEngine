@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerDodgeState.cpp
 //! @brief  PlayerDodgeStateの実装。プレイヤーの回避状態の処理を行う
 //---------------------------------------------------------------------------
@@ -51,15 +51,14 @@ namespace NeonFade
 		player->transform->SetAxisZ(-dodge_dir.getNormalized(), { 0,1,0 });
 		// 回避速度を乗算して水平方向の速度を設定する。
 		dodge_dir *= DODGE_SPEED;
-		dodge_dir.y = 20; // 少しジャンプさせる
+		dodge_dir.y = DODGE_SPEED; //めっちゃジャンプさせる
 		// 算出した速度ベクトルを剛体に適用する。
 		rb->velocity = dodge_dir;
 	}
 	//! @brief 回避状態を抜ける際の終了処理（現在は空実装）。
 	//! @param machine ステートマシン本体。
 	void PlayerDodgeState::OnExit(IStateMachine* machine)
-	{
-	}
+	{}
 	//! @brief 回避タイマを加算する更新処理。
 	//! @param machine ステートマシン本体。
 	//! @param dt 前フレームからの経過時間。

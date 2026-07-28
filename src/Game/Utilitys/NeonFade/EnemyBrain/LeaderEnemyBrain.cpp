@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   LeaderEnemyBrain.cpp
 //! @brief  LeaderEnemyBrainの実装。リーダー敵のAI思考ロジックを実装する
 //---------------------------------------------------------------------------
@@ -8,55 +8,127 @@
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Utilitys/NeonFade/StateMachines/EnemyStateMachine.h"
 #include "Game/Components/EnemyController.h"
-#include "Game/Utilitys/NeonFade/EnemyTeam.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/EnemyTeam.h"
+
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyDropKickAttackEntryState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyLeaderInstructState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyRandomWalkState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyBecomeToBasicState.h"
 
 namespace NeonFade
 {
 	LeaderEnemyBrain::LeaderEnemyBrain(EnemyStateMachine* state_machine_, PlayerWP player_, EnemyTeam* team)
 		:AbstractEnemyBrain(state_machine_, player_)
 	{
-		my_team = team;
-		machine = state_machine_;
-		player = player_;
+		if (team && !my_team) {
+			team->SetLeader(this);
+		}
 		hp = MAX_HP;
+
+		if (!state_machine || !state_machine->enemy)
+			return;
+
+		//基礎的なステートは親クラスで登録するので、ここでは追加のステートのみを登録する
+
+		//ドロップキック攻撃ステート
+		auto atk_1_state = make_safe_unique<EnemyDropKickAttackEntryState>(state_machine->enemy);
+		state_machine->AddState("drop_kick", std::move(atk_1_state));
+
+		//攻撃指示ステート
+		auto instruct_state = make_safe_unique<EnemyLeaderInstructState>(state_machine->enemy, this);
+		state_machine->AddState("instruct", std::move(instruct_state));
+
+		//ランダムウォークステート
+		auto random_walk_state = make_safe_unique<EnemyRandomWalkState>(state_machine->enemy);
+		state_machine->AddState("random_walk", std::move(random_walk_state));
+
+		//リーダーがチームを失った場合に通常の敵AIに戻るステート
+		auto become_basic_state = make_safe_unique<EnemyBecomeToBasicState>(state_machine->enemy);
+		state_machine->AddState("become_basic", std::move(become_basic_state));
+
+		// 初期状態はidleに設定する
+		state_machine->ChangeState("idle");
 		
+
+		//リーダーは専用モデルを使用する
+		{
+			auto model = state_machine->enemy->model;
+			if (model->model_name != "enemy_leader_model")
+				model->SetModel("enemy_leader_model");
+		}
+
+		
+
+
 	}
 	LeaderEnemyBrain::~LeaderEnemyBrain()
 	{
-		RemoveFromTeam();
+
+		//自身をチームから削除する
+		if (my_team)
+			my_team->SetLeader(nullptr);
 	}
 	std::string LeaderEnemyBrain::Think()
 	{
 		i_frame_timer -= Time::DeltaTime();
-		return "";
+		instruct_cooldown_timer -= Time::DeltaTime();
+		std::string result = __super::Think();
+
+		// もし親クラスのThinkで遷移先が決まっていれば、その遷移先を返す
+		if (result != "")
+			return result;
+
+		{
+			Vector3 player_pos = player->transform->position;
+			Vector3 my_pos = body->transform->position;
+			Vector3 to_player = player_pos - my_pos;
+			if (to_player.magnitudeSquared() < 50.0f * 50.0f)
+			{
+				result = "atk_1";
+			}
+			else if (to_player.magnitudeSquared() < 100.0f * 100.0f)
+			{
+				if (instruct_cooldown_timer <= 0.0f)
+				{
+					result = "instruct";
+					instruct_cooldown_timer = INSTRUCT_COOLDOWN;
+				}
+			}
+			else
+			{
+				result = "random_walk";
+			}
+#if 1
+			if (Input::GetKeyDown(KeyCode::K))
+			{
+				result = "instruct";
+			}
+#endif
+			if(!my_team)
+				result = "become_basic";
+		}
+
+
+		ResetFrameParameters();
+		return result;
 
 	}
-	void LeaderEnemyBrain::Damage(u32 damage, bool ignore_i_frame)
+
+	void LeaderEnemyBrain::Die()
 	{
-		if (!ignore_i_frame && i_frame_timer > 0.0f)
-			return;
-		if (damage <= hp)
-			hp -= damage;
-		else
-			hp = 0;
-		i_frame_timer = I_FRAME;
-		is_damaged = true;
-	}
-	void LeaderEnemyBrain::Die() {
-		hp = 0;
-	}
-	void LeaderEnemyBrain::DebugDraw()
-	{
-	}
-	void LeaderEnemyBrain::KnockBack(Vector3 knock_back_vec)
-	{
-		knock_back = true;
-	}
-	void LeaderEnemyBrain::RemoveFromTeam()
-	{
-		if (my_team) {
+		__super::Die();
+		if (my_team)
 			my_team->SetLeader(nullptr);
-			my_team = nullptr;
-		}
 	}
+
+	void LeaderEnemyBrain::ResetTeamRef()
+	{
+		my_team = nullptr;
+	}
+
+	void LeaderEnemyBrain::SetTeamRef(EnemyTeam* team)
+	{
+		my_team = team;
+	}
+
 }

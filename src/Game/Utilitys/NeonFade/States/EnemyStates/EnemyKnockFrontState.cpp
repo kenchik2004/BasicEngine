@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------------
 //! @file   EnemyKnockFrontState.cpp
 //! @brief  EnemyKnockFrontStateの実装。前方にノックバックした状態を管理する
 //! @author 岩野 健太郎(E_Nock)
@@ -43,9 +43,7 @@ namespace NeonFade
 			std::function<bool()> crawl_request = [this]()
 				{
 					auto brain = owner_enemy->enem_controller->GetBrain();
-					bool is_weakened = false;
-					if (dynamic_cast<BasicEnemyBrain*>(brain))
-						is_weakened = dynamic_cast<BasicEnemyBrain*>(brain)->IsWeakened();
+					bool is_weakened = brain->IsWeakened();
 					return elapsed_time >= KNOCK_FRONT_DURATION && is_weakened;
 				};
 			RegisterChangeRequest("crowling", crawl_request, 1); // 這いずり状態への遷移は、死亡状態への遷移の次に優先的に行う
@@ -154,5 +152,11 @@ namespace NeonFade
 
 		float t = std::clamp((elapsed_time - ROTATION_START) / ROTATION_DURATION, 0.0f, 1.0f);		// 経過時間に応じて回転を補間するためのパラメーター
 		col->rotation = Slerp(initial_collider_rotation, target_rotation, t); // コライダーの回転を補間して更新する
+		if (t >= 1.0f) {
+			auto brain = owner_enemy->enem_controller->GetBrain();
+			if (brain) {
+				brain->SetIsCrawling(true); // 這いずり状態に設定する
+			}
+		}
 	}
 }

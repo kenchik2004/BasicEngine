@@ -1,11 +1,11 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneGameState_Ketsu.cpp
 //! @brief  SceneGameState_Ketsuの実装。ゲームの結（終盤）シーン状態処理を行う
 //---------------------------------------------------------------------------
 #include "SceneGameState_Ketsu.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/Enemy.h"
-#include "Game/Utilitys/NeonFade/EnemyTeam.h"
+#include "Game/Utilitys/NeonFade/EnemyBrain/EnemyTeam.h"
 
 namespace NeonFade {
 	SceneGameState_Ketsu::SceneGameState_Ketsu(SceneGame* owner_scene_)
@@ -21,19 +21,28 @@ namespace NeonFade {
 		EnemyFactory factory;
 		factory.SetSpawnPosition({ 0,5,200 });
 		factory.SetSpawnRadius(20);
-		u32 teams = 3, enem_per_tems = 5;
-#if 0
-		enemy_teams = factory.MakeEnemyTeam(teams, enem_per_tems, owner_scene_game->player);
-#else
-		for (u32 i = 0; i < teams * enem_per_tems; ++i)
+		u32 teams = FileSystem::IniFileManager::GetInt("Game", "team_counts", 1, "data/config.ini");
+		u32	enemys_per_team = FileSystem::IniFileManager::GetInt("Game", "members_per_team", 5, "data/config.ini");
+		bool is_team_mode = FileSystem::IniFileManager::GetBool("Game", "teamed_enemy", false, "data/config.ini");
 		{
-			factory.MakeBasicEnemy(owner_scene_game->player);
-		}	
-#endif
-		owner_scene_game->AddEnemyCount(teams * enem_per_tems);
+			if (is_team_mode) {
+
+				enemy_teams = factory.MakeEnemyTeam(teams, enemys_per_team, owner_scene_game->player);
+			}
+			else {
+
+				for (u32 i = 0; i < teams * enemys_per_team; ++i)
+				{
+					factory.MakeBasicEnemy(owner_scene_game->player);
+				}
+			}
+
+			Time::ResetTime();
+		}
+		owner_scene_game->AddEnemyCount(teams * enemys_per_team);
 
 		owner_scene_game->text_comp->SetText(u8"KETSU State");
-	}
+		}
 	void SceneGameState_Ketsu::OnExit(ISceneStateMachine* machine)
 	{
 		owner_scene_game->StopGameTimer();
@@ -53,4 +62,4 @@ namespace NeonFade {
 
 		}
 	}
-}
+	}

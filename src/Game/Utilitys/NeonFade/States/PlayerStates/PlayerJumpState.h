@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerJumpState.h
 //! @brief  プレイヤーのジャンプ状態クラスの定義
 //---------------------------------------------------------------------------
@@ -39,6 +39,7 @@ namespace NeonFade
 		float jump_timer = 0.0f;
 		//! @brief ジャンプ状態の最大維持時間。
 		static constexpr float JUMP_TIME = 0.4f;
+		static constexpr float JUMP_FORCE = 70.0f;
 	private:
 		//! @brief 所有者となるプレイヤーオブジェクト。
 		Player* player = nullptr;

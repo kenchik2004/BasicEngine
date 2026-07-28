@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerSmashChargeState.cpp
 //! @brief  PlayerSmashChargeStateの実装。プレイヤーのスマッシュチャージ状態の処理を行う
 //---------------------------------------------------------------------------
@@ -16,6 +16,11 @@ namespace NeonFade {
 		owner_player = player_;
 		rb = player_->rb.lock().get();
 		animator = player_->animator.lock().get();
+		std::function<bool()> to_superhero_landing = [this]() {
+			return charge_timer >= MAX_CHARGE_TIME && target_vec.dot({ 0, -1, 0 }) > COS_ANGLE_THRESHOLD;
+			};
+		RegisterChangeRequest("super_hero_landing", to_superhero_landing, 0);
+
 		std::function<bool()> to_smash = [this]() {
 			return charge_timer >= MAX_CHARGE_TIME;
 			};
@@ -28,7 +33,9 @@ namespace NeonFade {
 	void PlayerSmashChargeState::OnEnter(IStateMachine* machine)
 	{
 		charge_timer = 0.0f;
-		animator->PlayIfNoSame("smash_charge", true, 0.0f, 1.5f, false);
+		animator->PlayIfNoSame("smash_charge", true, 0.0f, MAX_CHARGE_TIME, false);
+
+		target_vec = owner_player->transform->AxisZ();
 		rb->use_gravity = false;
 		rb->velocity = { 0,0,0 };
 		{
@@ -40,10 +47,7 @@ namespace NeonFade {
 
 		charge_se->PlayOneShot(SceneGame::GetSEVolume());
 
-		//ビリビリしてそうな感じの動画テクスチャをマテリアルにセット
-		{
-			owner_player->SetElectroEffectTextureToMaterials();
-		}
+
 		{
 			if (!light_manager)
 				light_manager = SceneManager::Object::Get<LightManager>().get();
@@ -62,8 +66,8 @@ namespace NeonFade {
 			camera_machine->SetTransitionTime(1.0f);
 			camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::CINEMATIC);
 			Vector3 cinematic_offset = -owner_player->transform->AxisX();
-			cinematic_offset += owner_player->transform->AxisY() * 0.5f;
-			cinematic_offset += owner_player->transform->AxisZ() * -1.7f;
+			cinematic_offset += Vector3(0.0f, 1.0f, 0.0f) * 0.5f;
+			cinematic_offset += ProjectOnPlane(owner_player->transform->AxisZ(), Vector3(0.0f, 1.0f, 0.0f)) * -1.7f;
 			camera_machine->SetCinematicOffset(cinematic_offset.getNormalized());
 			camera_machine->camera_distance_max = 17.0f;
 		}
@@ -71,7 +75,7 @@ namespace NeonFade {
 		auto enem_finder_col_ = owner_player->AddComponent<SphereCollider>(
 			Vector3(0, 0, 0),
 			Quaternion(0, 0, 0, 1),
-			30.0f,
+			ENEMY_FIND_RANGE,
 			true,
 			Collider::Layer::Wepon,
 			Collider::Layer::Enemy);
@@ -95,8 +99,9 @@ namespace NeonFade {
 	{
 		charge_timer += dt;
 		Vector3 move_dir = Vector3(0, 0, 0);
-		move_dir += owner_player->transform->AxisZ() * -3.0f;
-		move_dir += owner_player->transform->AxisY() * 3.0f;
+		static constexpr float MOVE_SPEED = 10.0f;
+		move_dir += owner_player->transform->AxisZ() * -MOVE_SPEED;
+		move_dir += owner_player->transform->AxisY() * MOVE_SPEED;
 		rb->velocity = move_dir;
 		auto mat = owner_player->model->GetFrameWorldMat(LIGHT_BIND_INDEX);
 		if (charge_effect)
@@ -111,13 +116,12 @@ namespace NeonFade {
 		if (lock_on_target) {
 			Vector3 to_target = lock_on_target.lock()->transform->position - owner_player->transform->position;
 			Vector3 cur_forward = owner_player->transform->AxisZ();
-			to_target = Lerp(cur_forward, to_target.getNormalized(), 0.1f);
-			static constexpr float ANGLE_THRESHOLD = 15.0f;
-			static const float COS_ANGLE_THRESHOLD = cosf(DEG2RAD(ANGLE_THRESHOLD));
+			target_vec = Lerp(cur_forward, to_target.getNormalized(), 0.1f);
 			//ターゲットの方向とワールドの上方向のなす角がある程度以上なら、ターゲットの方向に向くようにする
 			//(ターゲットが真上か真下にいる場合は回転させない。そうしないと不自然な回転になる)
-			if (fabsf(to_target.dot(Vector3(0, 1, 0))) < COS_ANGLE_THRESHOLD) {
-				owner_player->transform->SetAxisZ(to_target);
+			printfDx("cosine: %f\n", target_vec.dot(Vector3(0.0f, 1.0f, 0.0f)));
+			if (fabsf(target_vec.dot(Vector3(0.0f, 1.0f, 0.0f))) < COS_ANGLE_THRESHOLD) {
+				owner_player->transform->SetAxisZ(target_vec);
 			}
 		}
 		auto& camera_machine = owner_player->player_camera_machine;

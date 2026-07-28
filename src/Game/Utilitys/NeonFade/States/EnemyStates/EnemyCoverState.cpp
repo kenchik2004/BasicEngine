@@ -1,8 +1,10 @@
-#include "EnemyCoverState.h"
+﻿#include "EnemyCoverState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Components/EnemyController.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyCoverApproachState.h"
+
+#include "Game/Utilitys/NeonFade/EnemyBrain/EnemyRVOSystem.h"
 
 namespace NeonFade {
 	EnemyCoverState::EnemyCoverState(Enemy* owner_enemy_)
@@ -38,6 +40,10 @@ namespace NeonFade {
 				// 自分がカバー対象よりもプレイヤーから遠い(プレイヤーの奥まで行ってしまった)場合はカバーを続行せずにidleに移る
 				if (to_me_dist_sqr > to_player_dist_sqr)
 					return false;
+				static const float TARGET_DISTANCE_THRESHOLD_SQR = TARGET_DISTANCE_THRESHOLD * TARGET_DISTANCE_THRESHOLD;
+				//カバー対象が離脱完了(一定距離逃げる時間稼ぎ)した場合はカバーを続行せずにidleに移る
+				if (to_me_dist_sqr > TARGET_DISTANCE_THRESHOLD_SQR)
+					return false;
 			}
 
 			cover_to_me.normalize();
@@ -49,9 +55,11 @@ namespace NeonFade {
 			//両者のなす角のcos値を計算する
 			static const float COVER_CONTINUE_COS_THRESHOLD = cosf(DEG2RAD(COVER_CONTINUE_ANGLE_THRESHOLD));
 			float cosine_angle = cover_to_me.dot(cover_to_player);
+			bool is_angle_within_threshold = cosine_angle >= COVER_CONTINUE_COS_THRESHOLD;
 
 			//なす角が規定以内で、かつカバー状態の持続時間が規定を越えてしまった場合はidleに移らずにカバーを続行する
-			return elapsed_time >= COVER_DURATION && cosine_angle >= COVER_CONTINUE_COS_THRESHOLD;
+			//
+			return elapsed_time >= COVER_DURATION && is_angle_within_threshold;
 			};
 		RegisterChangeRequest("cover", continue_cover, 0); // カバー状態を続行する条件を優先度高めで登録
 	}
@@ -94,67 +102,15 @@ namespace NeonFade {
 
 		// 仲間との群集行動の計算
 		Vector3 mov_dir = { 0, 0, 0 };
-		CalculateCohesion(mov_dir);
-		ApplyMovement(mov_dir);
+		EnemyRVOSystem::CalculateCohesion(mov_dir, owner_enemy->transform.get(), owner_enemy);
+		EnemyRVOSystem::ApplyMovement(mov_dir, rb, COHESION_WEIGHT);
 	}
 	bool EnemyCoverState::CanTransitTo(const std::string& state_name)
 	{
-		if (state_name == "knock_back" || state_name == "knock_front")
+		if (state_name == "knock_back" || state_name == "knock_front" || state_name == "damage")
 			return true;
 		return false;
 	}
 
-	void EnemyCoverState::CalculateCohesion(Vector3& out_mov_dir)
-	{
 
-		Vector3 cohesion = Vector3(0, 0, 0);
-		// 近くの敵に少し引き寄せられるようにする
-		const std::vector<Enemy*>& all_enemies = Enemy::GetAllEnemies();
-		const u32 num_enemies = static_cast<u32>(all_enemies.size());
-		Vector3 owner_pos = owner_enemy->transform->position;
-		for (u32 i = 0; i < num_enemies; ++i) {
-			Enemy* enemy = all_enemies[i];
-			if (enemy != owner_enemy) {
-				Vector3 to_enemy = enemy->transform->position - owner_pos;
-				float distance_squared = to_enemy.magnitudeSquared();
-				distance_squared = max(distance_squared, 0.0001f); // ゼロ除算を防ぐために最小値を設定
-
-				static constexpr float APPROACH_DISTANCE_MAX = 50.0f; // 影響を与える最大距離
-				static constexpr float APPROACH_DISTANCE_MIN = 15.0f; // 影響を与える最小距離
-				static constexpr float LEAVE_DISTANCE_MIN = 10.0f; // あまりにも近い場合に離れる距離
-				static constexpr float APMAX_SQRD = APPROACH_DISTANCE_MAX * APPROACH_DISTANCE_MAX; // 影響を与える最大距離の二乗
-				static constexpr float APMIN_SQRD = APPROACH_DISTANCE_MIN * APPROACH_DISTANCE_MIN; // 影響を与える最小距離の二乗
-				static constexpr float LEAVE_SQRD = LEAVE_DISTANCE_MIN * LEAVE_DISTANCE_MIN; // あまりにも近い場合に離れる距離の二乗
-				static constexpr float APPROACH_FACTOR = 0.02f; // 近くの敵に引き寄せられる係数
-				static constexpr float LEAVE_FACTOR = 2.5f; // あまりにも近い場合に離れる係数
-
-				if (distance_squared < APMAX_SQRD && distance_squared > APMIN_SQRD) { // 近くの敵に対してのみ影響を与える
-					float sqrt_dist = sqrtf(distance_squared);
-					float x = (sqrt_dist - APPROACH_DISTANCE_MIN) / (APPROACH_DISTANCE_MAX - APPROACH_DISTANCE_MIN); // 影響の強さを距離に応じて変化させる
-					float smoothstep = x * x * (3 - 2 * x); // 影響の強さを距離に応じて変化させる
-
-					cohesion += to_enemy.getNormalized() * smoothstep * APPROACH_FACTOR; // 引き寄せる方向に力を加える
-				}
-				if (distance_squared < LEAVE_SQRD) { // あまりにも近い場合は少し離れるようにする
-					float sqrt_dist = sqrtf(distance_squared);
-					float x = (LEAVE_DISTANCE_MIN - sqrt_dist) / LEAVE_DISTANCE_MIN; // 影響の強さを距離に応じて変化させる
-					float smoothstep = x * x * (3 - 2 * x); // 影響の強さを距離に応じて変化させる
-
-					cohesion -= to_enemy.getNormalized() * smoothstep * LEAVE_FACTOR; // 離れる方向に力を加える
-				}
-			}
-		}
-
-		float dot = out_mov_dir.dot(cohesion);
-		float direction_factor = (dot >= 0) ? 1.0f : 0.5f; // 引き寄せる方向と同じならそのまま、逆なら半分の力にする
-		out_mov_dir += cohesion * direction_factor; // 引き寄せる力を加える
-	}
-	void EnemyCoverState::ApplyMovement(Vector3& mov_dir)
-	{
-		mov_dir.y = 0; // Y軸の回転を無効にする
-		mov_dir.normalize();
-		mov_dir *= COHESION_WEIGHT; // 凝集力の重みを掛ける
-		mov_dir.y = rb->velocity.y; // 現在のY軸の速度を保持
-		rb->velocity = mov_dir;
-	}
 }

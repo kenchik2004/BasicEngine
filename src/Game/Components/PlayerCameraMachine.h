@@ -1,3 +1,4 @@
+﻿// PlayerCameraMachine.h
 //---------------------------------------------------------------------------
 //! @file   PlayerCameraMachine.h
 //! @brief  プレイヤーカメラコンポーネント（プレイヤー追従カメラ制御）
@@ -19,14 +20,18 @@ namespace NeonFade {
 			CINEMATIC,  //!< シネマティックモード
 		};
 		USING_SUPER(Component);
+
+		//カメラの設定をロードする
+		void LoadCameraSettings();
+
 		//! @brief 初期化処理
 		int Init() override;
-		//! @brief 描画前処理
-		void PreDraw() override;
 		//! @brief 更新処理
 		void Update() override;
+		//! @brief 描画前処理
+		void PreDraw() override;
 		//! @brief カメラシェイクを設定する
-		void ShakeCamera(float intensity_, float duration_);
+		void ShakeCamera(const Vector3& intensity_, float duration_);
 		//! @brief 追従対象を設定する
 		void SetTarget(SafeWeakPtr<Player> target_) { target = target_; }
 		//! @brief カメラモードを設定する
@@ -46,7 +51,7 @@ namespace NeonFade {
 		float transition_time_max = 0.5f; //!< トランジション最大時間
 		SafeWeakPtr<Player> target; //!< 追従対象プレイヤー
 		Vector3 shake_offset = { 0,0,0 }; //!< シェイクオフセット
-		float shake_intensity = 0.0f; //!< シェイク強度
+		Vector3 shake_intensity = { 0.0f, 0.0f, 0.0f }; //!< シェイク強度
 		float shake_duration = 0.0f; //!< シェイク持続時間
 		bool reverse_y = false; //!< Y軸反転フラグ
 		bool reverse_x = false; //!< X軸反転フラグ
@@ -54,6 +59,22 @@ namespace NeonFade {
 		Vector2 camera_rot = { 0,0 }; //!< カメラ回転角度
 		Vector3 cinematic_offset = { 0,0,-1 }; //!< シネマティックオフセット
 		float camera_distance = 20.0f; //!< カメラ距離
+
+
+		static constexpr float camera_rot_speed = 270.0f; //!< カメラ回転速度(度/秒)
+		static constexpr float camera_rot_limit_min = -45.0f; //!< カメラ回転制限角度(度)
+		static constexpr float camera_rot_limit_max = 30.0f; //!< カメラ回転制限角度(度)
+
+
+		//! @brief 入力を適用する
+		void ApplyInput(float dt);
+
+		//! @brief カメラのオフセットを計算する
+		Vector3 CreateCameraVector(const Vector3& target_pos, const Vector3& offset);
+		
+		//! @brief カメラ距離を調整する
+		void AdjustCameraDistance(Transform* target_transform, Vector3& cam_vector_z);
+
 
 	};
 }

@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Transform.cpp
 //! @brief  Transformコンポーネントの実装。ゲームオブジェクトの位置・回転・スケールを管理する
 //---------------------------------------------------------------------------
@@ -91,6 +91,24 @@ void Transform::CalculateTransform()
 
 }
 
+Transform::Transform()
+{
+	position_prev = { 0,0,0 };
+	rotation_prev = Quaternion(physx::PxIdentity);
+	scale_prev = { 1,1,1 };
+
+	position = { 0,0,0 };
+	rotation = Quaternion(physx::PxIdentity);
+	scale = { 1,1,1 };
+
+	local_position = { 0,0,0 };
+	local_rotation = Quaternion(physx::PxIdentity);
+	local_scale = { 1,1,1 };
+
+	parent = nullptr;
+	children.clear();
+}
+
 void Transform::Construct()
 {
 	status.status_bit.on(CompStat::STATUS::SINGLE);
@@ -113,12 +131,10 @@ void Transform::PreUpdate()
 }
 
 void Transform::Update()
-{
-}
+{}
 
 void Transform::LateUpdate()
-{
-}
+{}
 
 void Transform::PostUpdate()
 {

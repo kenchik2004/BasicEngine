@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerSmashMainState.h
 //! @brief  プレイヤーのスマッシュメイン状態クラスの定義
 //---------------------------------------------------------------------------
@@ -17,9 +17,14 @@ namespace NeonFade {
 		void OnTriggerEnter(IStateMachine* machine, const HitInfo& hit_info) override;
 		void DebugDraw() override;
 		float smash_timer = 0.0f;
+	private:
 		static constexpr float MAX_SMASH_TIME = 1.5f;
 		static constexpr float CAMERA_SHAKE_TIME = 0.5f;
-	private:
+		static constexpr float SMASH_VELOCITY_FORWARD = 120.0f;
+		static constexpr float SMASH_VELOCITY_DOWN = 20.0f;
+		static constexpr int SMASH_DAMAGE = 60;
+		static inline const Vector3 CAMERA_SHAKE_POWER = { 0.5f, 0.5f, 0.5f };
+
 		Player* owner_player = nullptr;
 		Animator* animator = nullptr;
 		RigidBody* rb = nullptr;

@@ -16,7 +16,11 @@ namespace NeonFade
 
 	private:
 		static constexpr float ESCAPE_DURATION = 10.0f;	//<! 逃走状態の継続時間（秒）
-
+		static constexpr float ESCAPE_SPEED = 5.0f;		//<! 逃走速度（m/s）
+		static constexpr float ESCAPE_ROTATION_SPEED = 10.0f;	//<! 逃走時の回転速度（度/秒）
+		Enemy* owner_enemy = nullptr;						//<! オーナーのEnemyオブジェクトへのポインタ
+		RigidBody* rb = nullptr;							//<! オーナーのRigidBodyコンポーネントへのポインタ
+		Animator* animator = nullptr;						//<! オーナーのAnimatorコンポーネントへのポインタ
 	};
 }
 

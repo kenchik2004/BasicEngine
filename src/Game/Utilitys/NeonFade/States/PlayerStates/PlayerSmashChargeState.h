@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerSmashChargeState.h
 //! @brief  プレイヤーのスマッシュチャージ状態クラスの定義
 //---------------------------------------------------------------------------
@@ -30,10 +30,18 @@ namespace NeonFade {
 		SafeWeakPtr<GameObject> charge_effect = nullptr;
 		LightManager* light_manager = nullptr;
 		std::vector<SafeSharedPtr<PointLight>> smash_lights;
-		static constexpr float MAX_CHARGE_TIME = 1.5f;
+		static constexpr float MAX_CHARGE_TIME = 1.0f;
 		SafeSharedPtr<AudioClip> charge_se;
 		static constexpr int LIGHT_BIND_INDEX = 37;
 		bool camera_cinema_mode = false;
+		Vector3 target_vec = { 0,0,1 };
+
+		//スマッシュ攻撃のチャージ中は、攻撃方向とカメラの向きがあまりに乖離していると不自然なので、ある程度カメラの向きに近づけるようにする。
+		//また、この値を越えている場合はスマッシュをスーパーチャクチみたいな攻撃に変える。
+		static constexpr float ANGLE_THRESHOLD = 45.0f;
+		static inline const float COS_ANGLE_THRESHOLD = cosf(DEG2RAD(ANGLE_THRESHOLD));
+
+		static constexpr float ENEMY_FIND_RANGE = 50.0f;
 	};
 }
 

@@ -32,7 +32,9 @@ PS_OUTPUT main(PS_INPUT input)
 
 	{
         float ao = surfaceInfo.ao_;
-        float3 colored_ao = surfaceInfo.albedo_ * ao * ao;
+        ao = ao * ao;
+        
+        float3 colored_ao = surfaceInfo.albedo_ * ao;
         diffuse.rgb = lerp(diffuse.rgb * colored_ao, diffuse.rgb, ao);
        // diffuse.rgb = colored_ao;
 
@@ -48,8 +50,7 @@ PS_OUTPUT main(PS_INPUT input)
 
     }
     float4 emissive = float4(surfaceInfo.albedo_.rgb * surfaceInfo.emissive_, 1);
-    output.color0_ = diffuse + specular + emissive;
-    
+    output.color0_ = diffuse + specular +emissive;
     output.color0_.a = 1.0f;
 
 	// 出力パラメータを返す

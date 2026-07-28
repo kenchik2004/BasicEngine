@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   PlayerAttack3State.cpp
 //! @brief  PlayerAttack3Stateの実装。プレイヤーの第3攻撃状態の処理を行う
 //---------------------------------------------------------------------------
@@ -93,7 +93,7 @@ namespace NeonFade {
 			}
 			if (hit_stop_timer <= 0.0f && stop_counter < MAX_STOP_COUNT) {
 				stop_counter++;
-				owner_player->player_camera_machine->ShakeCamera(0.3f, CAMERA_SHAKE_TIME);
+				owner_player->player_camera_machine->ShakeCamera(CAMERA_SHAKE_INTENSITY, CAMERA_SHAKE_TIME);
 				hit_stop_timer = HIT_STOP_TIME;
 				animator->anim_speed = 0.001f;
 

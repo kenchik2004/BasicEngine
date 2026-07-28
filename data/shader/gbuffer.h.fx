@@ -1,27 +1,44 @@
 //----------------------------------------------------------------------------
 //!	@file	gbuffer.h.fx
-//!	@brief	GBufferŠÖ˜A
+//!	@brief	GBufferé–¢é€£
 //----------------------------------------------------------------------------
 #ifndef GBUFFER_H_FX
 #define GBUFFER_H_FX
 #define FLT_MAX 3.402823466e+38F
 
 
-//À‚ÍAOctahedronNormalEnconding‚Ì‰ü—Ç‚É¬Œ÷‚µ‚½‚Ì‚¾‚ªA
-//•K—v‚ª‚ ‚ê‚ÎƒRƒƒ“ƒgƒAƒEƒg‚ğŠO‚·‚¾‚¯‚ÅØ‚è‘Ö‚¦‚ª‰Â”\‚É‚µ‚Ä‚ ‚éB
-//‚»‚ÌÛ‚ÍASystem/Components/Camera.cpp‚ÌƒRƒƒ“ƒgƒAƒEƒg‚àŠO‚·•K—v‚ª‚ ‚éB
+//å®Ÿã¯ã€OctahedronNormalEncondingã®æ”¹è‰¯ã«æˆåŠŸã—ãŸã®ã ãŒã€
+//å¿…è¦ãŒã‚ã‚Œã°ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã‚’å¤–ã™ã ã‘ã§åˆ‡ã‚Šæ›¿ãˆãŒå¯èƒ½ã«ã—ã¦ã‚ã‚‹ã€‚
+//ãã®éš›ã¯ã€System/Components/Camera.cppã®ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã‚‚å¤–ã™å¿…è¦ãŒã‚ã‚‹ã€‚
 #define SIGNED_OCTAHEDRON_NORMAL_VECTOR_ENCODING
+
+
+// ãƒªãƒ‹ã‚¢åŒ–ã•ã‚ŒãŸsRGBã‚’ACEScgç©ºé–“ã«å¤‰æ›ã™ã‚‹è¡Œåˆ—
+// Linear sRGB => XYZ => D65_2_D60 => ACEScg(AP1)
+static const float3x3 sRGB_2_ACEScg_MAT =
+{
+    { 0.613097, 0.339523, 0.047379 },
+    { 0.070194, 0.916354, 0.013452 },
+    { 0.020619, 0.109570, 0.869811 }
+};
+
+float3 LinearSRGB2ACEScg(float3 color)
+{
+    return mul(sRGB_2_ACEScg_MAT, color);
+}
+
+
 
 //--------------------------------------------------------------
 // Gbuffer
-// ƒtƒH[ƒ}ƒbƒg‚É‚Â‚¢‚Ä‚Í cpp‘¤‚Ì gbuffer.h ‚ğQÆ
+// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«ã¤ã„ã¦ã¯ cppå´ã® gbuffer.h ã‚’å‚ç…§
 //--------------------------------------------------------------
 Texture2D GBuffer0 : register(t7);
 Texture2D GBuffer1 : register(t8);
 Texture2D GBuffer2 : register(t9);
 Texture2D DepthBuffer : register(t10);
 
-// “Ç‚İ‚Ü‚ê‚½ƒT[ƒtƒFƒXî•ñ
+// èª­ã¿è¾¼ã¾ã‚ŒãŸã‚µãƒ¼ãƒ•ã‚§ã‚¹æƒ…å ±
 struct SurfaceInfo
 {
     float3 albedo_;
@@ -33,7 +50,7 @@ struct SurfaceInfo
     float3 world_position_;
     float depth_;
 };
-// ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚Ìo—Í\‘¢‘Ì (MRT—p)
+// ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å‡ºåŠ›æ§‹é€ ä½“ (MRTç”¨)
 struct PS_OUTPUT_MRT
 {
     float4 color0_ : SV_Target0;
@@ -42,23 +59,23 @@ struct PS_OUTPUT_MRT
 };
 
 // -----------------------------
-// Encode 0~1‚Ìfloat2‚ğfloat1‚ÉƒpƒbƒN
+// Encode 0~1ã®float2ã‚’float1ã«ãƒ‘ãƒƒã‚¯
 // -----------------------------
 float Float2Encode(float2 v)
 {
-	// 0~15‚ÉŠÛ‚ß‚é
+	// 0~15ã«ä¸¸ã‚ã‚‹
     uint x = (uint) (saturate(v.x) * 15.0 + 0.5);
     uint y = (uint) (saturate(v.y) * 15.0 + 0.5);
 
-	// ãˆÊ4bit‚É roughnessA‰ºˆÊ4bit‚É metallic
+	// ä¸Šä½4bitã« roughnessã€ä¸‹ä½4bitã« metallic
     uint packed = (x << 4) | (y & 0xF);
 
-	// UNORM‚ÉŠi”[‚·‚éê‡‚Í 0~255 ‚É•ÏŠ·
+	// UNORMã«æ ¼ç´ã™ã‚‹å ´åˆã¯ 0~255 ã«å¤‰æ›
     return (float) packed / 255.0;
 }
 
 // -----------------------------
-// Decode (‹t•ÏŠ·)
+// Decode (é€†å¤‰æ›)
 // -----------------------------
 float2 Float2Decode(float packed)
 {
@@ -67,7 +84,7 @@ float2 Float2Decode(float packed)
     uint x = (p >> 4) & 0xF;
     uint y = p & 0xF;
 
-	// 0~1 ‚É–ß‚·
+	// 0~1 ã«æˆ»ã™
     float f_x = x / 15.0;
     float f_y = y / 15.0;
 
@@ -120,7 +137,7 @@ PS_OUTPUT_MRT PackSurfaceInfo(float3 albedo_,float ao_,float3 normal_,float roug
 SurfaceInfo GetSurfaceInfo(int2 position)
 {
 	//----------------------------------------------------------
-	// GBuffer‚ğ“Ç‚İ‚Ş
+	// GBufferã‚’èª­ã¿è¾¼ã‚€
 	//----------------------------------------------------------
 	float4 gbuffer0 = GBuffer0.Load(int3(position, 0));
 	float4 gbuffer1 = GBuffer1.Load(int3(position, 0));
@@ -129,11 +146,11 @@ SurfaceInfo GetSurfaceInfo(int2 position)
 	float metal_emisive = gbuffer2.a;
 
 	//----------------------------------------------------------
-	// \‘¢‘Ì‚É’l‚ğ’Šo
+	// æ§‹é€ ä½“ã«å€¤ã‚’æŠ½å‡º
 	//----------------------------------------------------------
 	SurfaceInfo s;
 
-	s.albedo_ = pow(abs(gbuffer0.rgb), 2.2); // sRGB¨ƒŠƒjƒA‰»
+	s.albedo_ = pow(abs(gbuffer0.rgb), 2.2); // sRGBâ†’ãƒªãƒ‹ã‚¢åŒ–
 	s.ao_ = gbuffer0.a;
 	s.normal_ = NormalDecode(gbuffer1.rg);
 	s.roughness_ = gbuffer1.b;
@@ -146,10 +163,10 @@ SurfaceInfo GetSurfaceInfo(int2 position)
 }
 #else 
 
-//Octahedron Normal Vector Encoding‚Ì‰ü‘PˆÄ
+//Octahedron Normal Vector Encodingã®æ”¹å–„æ¡ˆ
 //
-//(r:unsigned x,g:unsigned y,b:0,a:•„†ƒrƒbƒg‚ª2‚Â“ü‚é)
-//Octwrap‚ğg‚í‚¸‚ÉA•„†ƒrƒbƒg‚ğƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚É“ü‚ê‚é‚±‚Æ‚ÅA‚æ‚è‚‘¬‚ÉA‚æ‚è‚¸×‚ÉƒGƒ“ƒR[ƒh‚Å‚«‚é‚æ‚¤‚É‚È‚éB	
+//(r:unsigned x,g:unsigned y,b:0,a:ç¬¦å·ãƒ“ãƒƒãƒˆãŒ2ã¤å…¥ã‚‹)
+//Octwrapã‚’ä½¿ã‚ãšã«ã€ç¬¦å·ãƒ“ãƒƒãƒˆã‚’ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã«å…¥ã‚Œã‚‹ã“ã¨ã§ã€ã‚ˆã‚Šé«˜é€Ÿã«ã€ã‚ˆã‚Šé«˜ç²¾ç´°ã«ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã§ãã‚‹ã‚ˆã†ã«ãªã‚‹ã€‚	
 float3 NormalEncode(float3 n)
 {
     float3 OutN;
@@ -194,7 +211,7 @@ PS_OUTPUT_MRT PackSurfaceInfo(float3 albedo_, float ao_, float3 normal_, float r
 SurfaceInfo GetSurfaceInfo(int2 position)
 {
 	//----------------------------------------------------------
-	// GBuffer‚ğ“Ç‚İ‚Ş
+	// GBufferã‚’èª­ã¿è¾¼ã‚€
 	//----------------------------------------------------------
     float4 gbuffer0 = GBuffer0.Load(int3(position, 0));
     float4 gbuffer1 = GBuffer1.Load(int3(position, 0));
@@ -203,11 +220,11 @@ SurfaceInfo GetSurfaceInfo(int2 position)
     float metal_emissive = gbuffer2.a;
 
 	//----------------------------------------------------------
-	// \‘¢‘Ì‚É’l‚ğ’Šo
+	// æ§‹é€ ä½“ã«å€¤ã‚’æŠ½å‡º
 	//----------------------------------------------------------
     SurfaceInfo s;
 
-    s.albedo_ = pow(abs(gbuffer0.rgb), 2.2); // sRGB¨ƒŠƒjƒA‰»
+    s.albedo_ = pow(abs(gbuffer0.rgb), 2.2); // sRGBâ†’ãƒªãƒ‹ã‚¢åŒ–
     s.ao_ = gbuffer0.a;
     s.normal_ = NormalDecode(gbuffer1.rga);
     s.roughness_ = gbuffer1.b;

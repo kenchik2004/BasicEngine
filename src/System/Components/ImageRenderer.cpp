@@ -25,7 +25,7 @@ void ImageRenderer::LateDraw()
 
 void ImageRenderer::DrawMain()
 {
-	RenderVertex();
+	DxLib::RenderVertex();
 	Vector3 draw_pos = ui_owner->GetDrawPos();
 	Vector3 scale = ui_owner->transform->scale;
 	VERTEX2DSHADER vert[4];
@@ -35,47 +35,68 @@ void ImageRenderer::DrawMain()
 	vert[0].pos.z = 0.0f;
 	vert[0].rhw = 1.0f;
 	vert[0].dif = { 255,255,255,alpha_u8 };
-	vert[0].u = 0.0f;
-	vert[0].v = 0.0f;
+
 	vert[1].pos.x = draw_pos.x + scale.x;
 	vert[1].pos.y = draw_pos.y;
 	vert[1].pos.z = 0.0f;
 	vert[1].rhw = 1.0f;
 	vert[1].dif = { 255,255,255,alpha_u8 };
-	vert[1].u = 1.0f;
-	vert[1].v = 0.0f;
+
 	vert[2].pos.x = draw_pos.x;
 	vert[2].pos.y = draw_pos.y + scale.y;
 	vert[2].pos.z = 0.0f;
 	vert[2].rhw = 1.0f;
 	vert[2].dif = { 255,255,255,alpha_u8 };
-	vert[2].u = 0.0f;
-	vert[2].v = 1.0f;
+
 	vert[3].pos.x = draw_pos.x + scale.x;
 	vert[3].pos.y = draw_pos.y + scale.y;
 	vert[3].pos.z = 0.0f;
 	vert[3].rhw = 1.0f;
 	vert[3].dif = { 255,255,255,alpha_u8 };
-	vert[3].u = 1.0f;
-	vert[3].v = 1.0f;
 
-	SetUsePixelShader(*material->GetPixelShader());
+	Vector2 image_size = GetImageSize();
+	Vector2 uv_scale = { scale.x / image_size.x, scale.y / image_size.y };
+	switch (draw_type) {
+
+	case ImageRenderer::CLAMP:
+		vert[0].u = 0.5f * (1.0f - uv_scale.x); vert[0].v = 0.5f * (1.0f - uv_scale.y);
+		vert[1].u = 0.5f * uv_scale.x + 0.5f; vert[1].v = 0.5f * (1.0f - uv_scale.y);
+		vert[2].u = 0.5f * (1.0f - uv_scale.x); vert[2].v = 0.5f * uv_scale.y + 0.5f;
+		vert[3].u = 0.5f * uv_scale.x + 0.5f; vert[3].v = 0.5f * uv_scale.y + 0.5f;
+		break;
+	case ImageRenderer::EXTEND:
+		vert[0].u = 0.0f; vert[0].v = 0.0f;
+		vert[1].u = 1.0f; vert[1].v = 0.0f;
+		vert[2].u = 0.0f; vert[2].v = 1.0f;
+		vert[3].u = 1.0f; vert[3].v = 1.0f;
+		break;
+	}
+	Vector2 uv_offset = { image_offset.x / image_size.x, image_offset.y / image_size.y };
+
+	for (auto& v : vert) {
+		v.u += uv_offset.x;
+		v.v += uv_offset.y;
+	}
+
+	DxLib::SetUsePixelShader(*material->GetPixelShader());
 
 	for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
 		auto texture = material->GetTexture(static_cast<Material::TextureType>(i));
 		SetTexture(i, texture.get());
-		SetUseTextureToShader(i, -1);
+		DxLib::SetUseTextureToShader(i, -1);
 	}
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	SetDrawMode(DX_DRAWMODE_BILINEAR);
+	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	DxLib::SetDrawMode(DX_DRAWMODE_BILINEAR);
 	material->GetPixelShader()->AplyConstantBuffers();
-	DrawPrimitive2DToShader(vert, 4, DX_PRIMTYPE_TRIANGLESTRIP);
-	SetUsePixelShader(-1);
+	DxLib::DrawPrimitive2DToShader(vert, 4, DX_PRIMTYPE_TRIANGLESTRIP);
+	DxLib::SetUsePixelShader(-1);
 	for (u32 i = 0; i < static_cast<u32>(Material::TextureType::Max); i++) {
 		SetTexture(i, nullptr);
+		DxLib::SetUseTextureToShader(i, -1);
 	}
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	SetDrawMode(DX_DRAWMODE_NEAREST);
+	DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	DxLib::SetDrawMode(DX_DRAWMODE_NEAREST);
+	DxLib::RenderVertex();
 
 #if 0
 	alpha = std::clamp<int>(alpha, 0, 255);
@@ -100,11 +121,11 @@ void ImageRenderer::DrawMain()
 #endif
 }
 
-float2 ImageRenderer::GetImageSize()
+Vector2 ImageRenderer::GetImageSize()
 {
-	float2 ret;
+	Vector2 ret;
 	if (material)
-		GetGraphSizeF(*material->GetTexture(Material::TextureType::Diffuse), (float*)&ret.x, (float*)&ret.y);
+		GetGraphSizeF(*material->GetTexture(Material::TextureType::Diffuse), &ret.x, &ret.y);
 	return ret;
 }
 
