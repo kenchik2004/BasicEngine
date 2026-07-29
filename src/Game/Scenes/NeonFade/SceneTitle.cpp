@@ -20,30 +20,6 @@
 
 namespace NeonFade {
 
-	//必要なのは、
-	//ロゴ(テクスチャまたはフォント)
-	//選択肢(フォント)
-	//ビル(モデル)
-	//プレイヤーキャラ(モデル、アニメーション)
-	//地面(モデル)->写す場合
-	//あとはBGMとSEも必要かもしれない<-ここら辺はプロトタイプができてからでもよき
-
-	//前やって没にした、後ろでパトカーを走らせるとかも面白そうではあるが、ゲーム中には出てこない要素なので、
-	//プロトタイプ完成後に様子を見て決める
-
-	//んで、必要なクラスは、
-	//SceneTitle(このシーン)
-	//TitleLogo(ロゴ)->テクスチャ(またはテキストコンポーネント)だけ持ってればおｋ
-	// 
-	//OptionManager(選択肢管理クラス)->選択肢クラスのリストを持つ
-	//Option(選択肢の実体)->テキストコンポーネントと、選択時・非選択時・待機・決定時の処理を持つ
-	//上2つは、タイトル画面だけでなくメニュー画面の設定項目管理にも流用できるとよいかも
-	// 
-	//TitlePlayer(プレイヤーキャラ)->モデルとアニメーションを持ち、待機・選択・決定のアニメーションを切り替える
-	//BackGroundModels(背景モデル)->モデルを置くだけでいいので、特に特殊なことはしない。
-
-
-
 
 
 
@@ -68,6 +44,7 @@ namespace NeonFade {
 		// 背景ビルとプレイヤーのモデルを読み込む
 		ModelManager::LoadAsModel(u8"data/Stage/Buildings/sky_tower5.mv1", "sky_tower5");
 		ModelManager::LoadAsModel(u8"data/player/model_v2.mv1", "player_model");
+		ModelManager::LoadAsModel(u8"data/FX/DiveEffect/DiveEffect.mv1", "dive_effect");
 		// プレイヤーの各種アニメーションを読み込む
 		ModelManager::LoadAsAnimation(u8"data/player/anim_sitting_idle.mv1", "player_sitting");
 		ModelManager::LoadAsAnimation(u8"data/player/anim_dive.mv1", "player_dive");
@@ -176,5 +153,9 @@ namespace NeonFade {
 		}
 		// 親クラスの初期化関数を呼び出す
 		return Super::Init();
+	}
+	UIObjectWP SceneTitle::GetOptionManager()
+	{
+		return opt_manager;
 	}
 }

@@ -601,7 +601,8 @@ void SceneManager::Draw()
 		void* cbuffer_p = GetBufferShaderConstantBuffer(be_default_cbuffer);
 		if (cbuffer_p) {
 			auto* p = reinterpret_cast<Vector4*>(cbuffer_p);
-			p->x = Time::SystemTime();
+			p->x = Time::SystemTimeFromStart();
+			p->x = Time::SystemTimeFromStart();
 			p->y = Time::DrawDeltaTime();
 			UpdateShaderConstantBuffer(be_default_cbuffer);
 			SetShaderConstantBuffer(be_default_cbuffer, DX_SHADERTYPE_PIXEL, 4);

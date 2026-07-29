@@ -1,4 +1,5 @@
 ﻿#include "OptionStart.h"
+#include "Game/Scenes/NeonFade/SceneTitle.h"
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/TitlePlayer.h"
 #include "Game/Utilitys/NeonFade/StateMachines/TitlePlayerStatemachine.h"
@@ -16,6 +17,9 @@ namespace NeonFade {
 			SceneGame::LoadResources(); // ゲームシーンのリソースを先読みする
 			disable = true;
 			enable_timer = -1.0f; // タイマーをリセットして、選択不可状態にする
+			auto scene_title = SafeStaticCast<SceneTitle>(GetScene());
+			auto option_manager = scene_title->GetOptionManager();
+			option_manager->Sleep();
 			};
 		disable = false;
 		enable_timer = 0.0f; // タイマーを初期化 

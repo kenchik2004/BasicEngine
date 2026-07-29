@@ -1,9 +1,41 @@
-#include "TitlePlayerStartDiveState.h"
+﻿#include "TitlePlayerStartDiveState.h"
 
 #include "Game/Scenes/NeonFade/SceneGame.h"
 #include "Game/Objects/NeonFade/TitlePlayer.h"
 
 namespace NeonFade {
+
+	class DiveEffectObj :public GameObject
+	{
+	public:
+		USING_SUPER(DiveEffectObj);
+		int Init() override
+		{
+			auto model = AddComponent<ModelRenderer>();
+			//モデルの設定
+			//カメラコンポーネントで使用しているスカイドームのモデルを使用する
+			model->SetModel("dive_effect");
+			transform->scale = { 0.001f,0.001f,0.001f };
+			auto material = model->GetMaterial(0);
+			uv_scroll_shader = MaterialManager::LoadPixelShader(u8"data/shader/ps_dive_effect.fx", u8"ps_uv_scroll");
+			material->SetShaderPs(uv_scroll_shader, true);
+			model->SetCastShadow(false);
+
+			return 0;
+		}
+		void Update() override {
+			float dt = Time::DeltaTime();
+			float scale_speed = 0.2f;
+			float scale_factor = scale_speed * dt;
+			if (transform->scale.x < 40.0f)
+				transform->scale += {scale_factor, scale_factor, scale_factor};
+		}
+	private:
+		ShaderPs* uv_scroll_shader;
+
+	};
+
+
 	TitlePlayerStartDiveState::TitlePlayerStartDiveState(TitlePlayer* owner) :
 		IState(owner)
 	{
@@ -42,6 +74,11 @@ namespace NeonFade {
 		//ダイブ後の回転は、X軸に90度回転させたもの
 		diving_rotation = initial_rotation * Quaternion(DEG2RAD(-90), Vector3(1, 0, 0));
 		camera_obj = SceneManager::Object::Get<CameraObject>();
+
+		auto  dive_effect = SceneManager::Object::Create<DiveEffectObj>(u8"DiveEffect");
+		dive_effect->transform->SetParent(camera_obj->transform);
+		dive_effect->transform->local_position = { 0.0f,0.0f,40.0f };
+		dive_effect->transform->local_rotation = Quaternion(DEG2RAD(-90), { 1,0,0 });
 	}
 	void TitlePlayerStartDiveState::OnExit(IStateMachine* machine)
 	{}

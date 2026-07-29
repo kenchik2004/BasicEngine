@@ -1,4 +1,4 @@
-// SceneTitle.h
+﻿// SceneTitle.h
 #pragma once
 #include "DebugCameraScene.h"
 
@@ -25,6 +25,10 @@ namespace NeonFade {
 		/// @brief シーンの初期化処理を行う
 		/// @return 初期化の成否を示す整数値
 		int Init() override;
+
+		// @brief オプションマネージャーへの弱参照を取得する
+		// @return オプションマネージャーへの弱参照
+		UIObjectWP GetOptionManager();
 	private:
 
 		TitleLogoWP logo; /// @brief タイトルロゴへの弱参照
