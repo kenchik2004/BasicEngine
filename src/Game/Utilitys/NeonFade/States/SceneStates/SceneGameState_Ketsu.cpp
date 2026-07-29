@@ -27,7 +27,7 @@ namespace NeonFade {
 		{
 			if (is_team_mode) {
 
-				enemy_teams = factory.MakeEnemyTeam(teams, enemys_per_team, owner_scene_game->player);
+				enemy_teams = factory.MakeEnemyTeams(teams, enemys_per_team, owner_scene_game->player);
 			}
 			else {
 

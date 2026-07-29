@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Enemy.h
 //! @brief  敵ゲームオブジェクト
 //---------------------------------------------------------------------------
@@ -87,19 +87,34 @@ namespace NeonFade {
 
 		//シンプルな単体行動を行う脳をセットされた敵を作成して、脳のポインタを返す
 		//! @brief 単体行動用の脳を持つ敵を生成する
+		//! @param player プレイヤーへの弱参照
 		BasicEnemyBrain* MakeBasicEnemy(SafeWeakPtr<Player> player);
 
 		//リーダーに従い行動する脳がセットされた敵を作成して脳のポインタを返す
 		//! @brief リーダー追従型の脳を持つ敵を生成する
+		//! @param leader_ptr リーダーの脳へのポインタ
+		//! @param player プレイヤーへの弱参照
+		//! @param my_team 所属するチームへのポインタ(デフォルトはnullptr)
 		TeamMemberEnemyBrain* MakeTeamMateEnemy(LeaderEnemyBrain* leader_ptr, SafeWeakPtr<Player> player, EnemyTeam* my_team = nullptr);
 
 		//チームの統率を取る脳をセットされた敵を作成して脳のポインタを返す
 		//! @brief チームリーダーの脳を持つ敵を生成する
+		//! @param player プレイヤーへの弱参照
+		//! @param my_team 所属するチームへのポインタ
 		LeaderEnemyBrain* MakeLeader(SafeWeakPtr<Player> player, EnemyTeam* my_team);
 
 		//敵のチームを、指定した人数*指定したグループ数だけ作成する
 		//! @brief 指定した人数・グループ数で敵チームを生成する
-		std::vector<EnemyTeamUP> MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player);
+		//! @param team_count チームの数
+		//! @param enem_per_team チームの人数
+		//! @param player プレイヤーへの弱参照
+		std::vector<EnemyTeamUP> MakeEnemyTeams(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player);
+
+		//敵のチームを1つ、指定した人数で作成する
+		//! @brief 指定した人数で敵チームを生成する
+		//! @param enem_per_team チームの人数
+		//! @param player プレイヤーへの弱参照
+		EnemyTeamUP MakeEnemyTeam(u32 enem_per_team, SafeWeakPtr<Player> player);
 
 	};
 }

@@ -177,19 +177,28 @@ namespace NeonFade {
 		//作成した敵の脳はリーダーのものなので、そのままキャストして返す
 		return static_cast<LeaderEnemyBrain*>(controller->GetBrain());
 	}
-	std::vector<EnemyTeamUP> EnemyFactory::MakeEnemyTeam(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player) {
+	std::vector<EnemyTeamUP> EnemyFactory::MakeEnemyTeams(u32 team_count, u32 enem_per_team, SafeWeakPtr<Player> player) {
 
 		auto teams = std::vector<SafeUniquePtr<EnemyTeam>>();
+		//チーム数分ループして、敵チームを作成する
 		for (u32 i = 0; i < team_count; i++) {
-			auto enemy_team = make_safe_unique<EnemyTeam>();
-			auto leader_brain = MakeLeader(player, enemy_team.get());
-			enemy_team->SetLeader(leader_brain);
-			for (u32 i = 1; i < enem_per_team; i++) {
-				auto member = MakeTeamMateEnemy(leader_brain, player, enemy_team.get());
-				enemy_team->AddMember(member);
-			}
+			//1チーム分の敵を作成する
+			auto enemy_team = MakeEnemyTeam(enem_per_team, player);
 			teams.push_back(std::move(enemy_team));
 		}
 		return teams;
+	}
+
+	EnemyTeamUP EnemyFactory::MakeEnemyTeam(u32 enem_per_team, SafeWeakPtr<Player> player) {
+
+		auto enemy_team = make_safe_unique<EnemyTeam>();
+		auto leader_brain = MakeLeader(player, enemy_team.get());
+		enemy_team->SetLeader(leader_brain);
+		for (u32 i = 1; i < enem_per_team; i++) {
+			auto member = MakeTeamMateEnemy(leader_brain, player, enemy_team.get());
+			enemy_team->AddMember(member);
+		}
+
+		return enemy_team;
 	}
 }
