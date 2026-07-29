@@ -98,6 +98,15 @@ namespace NeonFade
 		DrawSphere3D(cast(siege_position), 0.5f, 8, Color::MAGENTA, Color::MAGENTA, false);
 	}
 
+	bool EnemyTeamSiegeState::CanTransitTo(const std::string& state_name)
+	{
+		// ダメージ、ノックバック、死亡状態への遷移は常に許可する
+		if (state_name == "damage" || state_name == "knock_back" || state_name == "knock_front" || state_name == "die")
+			return true;
+
+		return false;
+	}
+
 	Vector3 EnemyTeamSiegeState::CalculateSiegePosition()
 	{
 

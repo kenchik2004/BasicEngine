@@ -6,26 +6,7 @@
 
 namespace NeonFade
 {
-	//--------------------------------------------------------------------------------------------------------------
-	// @brief アニメーション速度を移動速度に応じて調整する関数
-	// 移動速度とアニメーション速度が一致していないと、足の滑り(ムーンウォークのような気持ち悪さ)が発生するので、
-	// 再生速度の調整を行う。
-	// 物理的に1m歩く間にアニメーションデータ内で何m歩くかを調整するための係数を adjustment_ratio として渡す
-	// @param forward: 敵の前方向ベクトル
-	// @param anim: Animatorコンポーネントへのポインタ
-	// @param rb: RigidBodyコンポーネントへのポインタ
-	// @param adjustment_ratio: 物理的な1mの移動に対して、アニメーションデータ内で何m歩くかを調整する係数
-	//--------------------------------------------------------------------------------------------------------------
-	void AdjustAnimationSpeedByMovementSpeed(Vector3 forward, Animator* anim, RigidBody* rb, float adjustment_ratio)
-	{
-		if (!anim || !rb) return;
-		Vector3 velocity = rb->velocity;
-		velocity.y = 0; // Y軸の速度を無視する
-		//動こうとしている方向に対し、実際どれくらい進めているのかを計算する
-		float current_speed = forward.dot(velocity);
-		float speed_ratio = current_speed * adjustment_ratio;
-		anim->anim_speed = max(0.01f, speed_ratio);
-	}
+
 	EnemyRandomWalkState::EnemyRandomWalkState(Enemy* owner_enemy_)
 		:IState(static_cast<GameObject*>(owner_enemy_))
 	{
@@ -52,7 +33,6 @@ namespace NeonFade
 
 		next_destination.y = 0.0f; // Y軸の高さを固定
 		elapsed_time = 0.0f; // 経過時間をリセット
-		auto another_enemies_ = SceneManager::Object::GetArray<Enemy>(); // 同じシーン内の他の敵を取得
 
 	}
 	void EnemyRandomWalkState::Update(IStateMachine* machine, float dt)
@@ -65,11 +45,13 @@ namespace NeonFade
 
 		EnemyRVOSystem::CalculateCohesion(mov_dir, owner_enemy->transform.get(), owner_enemy);
 		mov_dir.y = 0;
-		//移動速度に応じてアニメーション速度を調整する
-		//物理的に1m歩くと、アニメーションを0.09倍の速度で再生するように調整すると、足の滑りがなくなる
+
+		Vector3 velocity = rb->velocity;
 		static constexpr float ANIMATION_SPEED_ADJUSTMENT_RATIO = 0.09f; // アニメーション速度の調整係数
-		AdjustAnimationSpeedByMovementSpeed(owner_enemy->transform->AxisZ(), animator, rb, ANIMATION_SPEED_ADJUSTMENT_RATIO);
+		// 移動と回転を同時に適用する
 		EnemyRVOSystem::ApplyMovementAndRotation(mov_dir, owner_enemy->transform.get(), rb, ROTATION_SPEED, WALK_SPEED);
+		//移動速度に応じてアニメーション速度を調整する
+		EnemyRVOSystem::AdjustAnimationSpeedByMovementSpeed(mov_dir, animator, velocity, ANIMATION_SPEED_ADJUSTMENT_RATIO);
 
 	}
 	void EnemyRandomWalkState::OnExit(IStateMachine* machine)

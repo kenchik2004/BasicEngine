@@ -53,6 +53,12 @@ namespace NeonFade {
 		out_mov_dir += cohesion * direction_factor * cohesion_weight; // 引き寄せる力を加える
 	}
 
+	void EnemyRVOSystem::SmoothMovement(Vector3& mov_dir, const Vector3& forward, float smoothing_factor, float dt)
+	{
+		// Slerpを使って回転を滑らかにする
+		mov_dir = Slerp(forward, mov_dir, smoothing_factor * dt);
+	}
+
 	//! @brief 最終的な移動方向を正規化し、速度を適用する関数
 	//! @param mov_dir 計算された移動方向を格納するVector3参照
 	//! @param rb 自身のRigidBodyポインタ
@@ -99,15 +105,58 @@ namespace NeonFade {
 		//ここでApplyRotationとApplyMovementを別々に呼び出すと、正規化が2回走ってしまうのでコストがかかる
 		//まとめて処理し、Y軸のみを編集することで正規化を1回に抑える
 		mov_dir.normalize();
-
 		// Slerpを使って回転を滑らかにする
-		Vector3 forward = transform->AxisZ();
-		mov_dir = Slerp(forward, mov_dir, rotation_factor * Time::DeltaTime());
+		SmoothMovement(mov_dir, transform->AxisZ(), rotation_factor, Time::DeltaTime());
 
 		transform->SetAxisZ(mov_dir); // 目的地への方向を向く
 
 		mov_dir *= movement_factor;
 		mov_dir.y = rb->velocity.y; // 現在のY軸の速度を保持
 		rb->velocity = mov_dir;
+	}
+
+
+	//--------------------------------------------------------------------------------------------------------------
+	// @brief アニメーション速度を移動速度に応じて調整する関数
+	// 移動速度とアニメーション速度が一致していないと、足の滑り(ムーンウォークのような気持ち悪さ)が発生するので、
+	// 再生速度の調整を行う。
+	// 物理的に1m歩く間にアニメーションデータ内で何m歩くかを調整するための係数を adjustment_ratio として渡す
+	// @param mov_vec 移動しようとする方向のベクトル(長さも含む)
+	// @param anim Animatorコンポーネントへのポインタ
+	// @param cur_velocity 現在の移動速度ベクトル
+	// @param adjustment_ratio アニメーションデータ内の移動速度
+	//--------------------------------------------------------------------------------------------------------------
+	void EnemyRVOSystem::AdjustAnimationSpeedByMovementSpeed(Vector3 mov_vec, Animator* anim, const Vector3& cur_velocity, float adjustment_ratio)
+	{
+		if (!anim) return;
+		Vector3 velocity = cur_velocity;
+
+		velocity.y = 0; // Y軸の速度を無視する
+		float mov_length_sqr = mov_vec.magnitudeSquared();
+		float velocity_length_sqr = velocity.magnitudeSquared();
+
+		//ゼロ割り防止
+		if (mov_length_sqr <= 1e-6f * 1e-6f || velocity_length_sqr <= 1e-6f * 1e-6f) {
+			anim->anim_speed = 0.01f; // 移動しない場合はアニメーション速度を最小値にする
+			return;
+		}
+
+		//動こうとしている方向に対し、実際どれくらい進めているのかを計算する
+		//正射影比 kを計算
+		float m_dot_v = max(0.0f, mov_vec.dot(velocity));
+		float k = m_dot_v / mov_length_sqr;
+
+		//実速度の大きさによって再生速度を調整するパラメータを計算
+		//lengthを使わない軽量版
+		//Quake3で有名な高速逆平方根を使って、速度の大きさの近似値を計算する
+		float inv_sqr_length = _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(velocity_length_sqr)));
+		//当たり前だが、x * 1/√x = x/√x = √x なので、速度の大きさの近似値を計算できる 
+		float length_approx = velocity_length_sqr * inv_sqr_length; // length = sqrt(length^2) の近似値
+
+
+		float speed_ratio = k * adjustment_ratio * length_approx;
+
+		//アニメーション速度を調整する
+		anim->anim_speed = max(0.0f, speed_ratio);
 	}
 }

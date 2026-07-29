@@ -14,6 +14,7 @@
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyDropKickAttackEntryState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyBecomeToBasicState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyTeamSiegeState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyTeamFollowLeaderState.h"
 
 namespace NeonFade {
 
@@ -47,6 +48,14 @@ namespace NeonFade {
 			// チームメンバー専用の包囲攻撃ステートを登録する
 			auto team_siege_state = make_safe_unique<EnemyTeamSiegeState>(state_machine->enemy);
 			state_machine->AddState("team_siege", std::move(team_siege_state));
+
+			// チームメンバー専用のリーダー追従ステートを登録する
+			auto team_follow_leader_state = make_safe_unique<EnemyTeamFollowLeaderWalkState>(state_machine->enemy);
+			state_machine->AddState("follow_leader", std::move(team_follow_leader_state));
+
+			// チームメンバー専用のリーダー追従ステート(走行)を登録する
+			auto team_follow_leader_run_state = make_safe_unique<EnemyTeamFollowLeaderRunState>(state_machine->enemy);
+			state_machine->AddState("follow_leader_run", std::move(team_follow_leader_run_state));
 		}
 
 		machine->ChangeState("idle");
@@ -95,6 +104,19 @@ namespace NeonFade {
 		if (go_to_attack) {
 			result = "drop_kick";
 			go_to_attack = false;
+			return result;
+		}
+
+		//特に指令がなく、リーダーから離れている場合、リーダーの近くに寄っていく
+		{
+			//チームが存在しない場合は、リーダーに従うことができないので、何もしない
+			if (!my_team->GetLeader())
+				return result;
+			Vector3  to_leader = my_team->GetLeader()->GetOwnerBody()->transform->position - GetOwnerBody()->transform->position;
+			if (to_leader.magnitudeSquared() > 20.0f * 20.0f) //リーダーから20m以上離れている場合は、リーダーに従う
+			{
+				result = "follow_leader";
+			}
 		}
 
 
@@ -113,7 +135,7 @@ namespace NeonFade {
 			DrawSphere3D(cast(pos), 3.0f, 8, Color::RED, Color::RED, true);
 			return;
 		}
-		Vector3 to_leader = leader->GetMachine()->enemy->transform->position - pos;
+		Vector3 to_leader = leader->GetOwnerBody()->transform->position - pos;
 		DrawLine3D(cast(pos), cast(pos + to_leader), Color::RED);
 
 	}

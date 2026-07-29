@@ -23,6 +23,8 @@ namespace NeonFade
 		void OnExit(IStateMachine* machine) override;
 		void DebugDraw() override;
 
+		bool CanTransitTo(const std::string& state_name) override;
+
 	private:
 		Enemy* owner_enemy;							// 所有者となるEnemyオブジェクトへのポインタ
 		GameObject* player = nullptr;						// プレイヤーへのポインタ
