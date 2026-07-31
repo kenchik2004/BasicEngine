@@ -7,14 +7,29 @@
 
 namespace NeonFade
 {
-
-
+	//! @brief チームを全てのチームのポインタを保持する静的変数に登録する
+	void EnemyTeam::RegisterTeam()
+	{
+		all_teams.push_back(this);
+	}
+	//! @brief チームを全てのチームのポインタを保持する静的変数から削除する
+	void EnemyTeam::UnregisterTeam()
+	{
+		all_teams.erase(std::remove(all_teams.begin(), all_teams.end(), this), all_teams.end());
+	}
+	EnemyTeam::EnemyTeam()
+	{
+		// チームを全てのチームのポインタを保持する静的変数に登録する
+		RegisterTeam();
+	}
 	EnemyTeam::~EnemyTeam()
 	{
 		//ここでポインタを直接nullptrにしないようにする
 		//直接削除してしまうと、リーダーやメンバー側にこのチームのポインタが残ってしまい、アクセス違反が発生する可能性がある
 		//ClearTeam()を呼び出して、リーダーやメンバー側からチームのポインタも同時に削除するようにする
 		ClearTeam();
+		// チームを全てのチームのポインタを保持する静的変数から削除する
+		UnregisterTeam();
 
 
 	}

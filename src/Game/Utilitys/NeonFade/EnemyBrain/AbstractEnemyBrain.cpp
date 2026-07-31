@@ -13,6 +13,7 @@
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyCrowlingState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyEscapeState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyFocusToPlayerState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyBecomeToBasicState.h"
 
 namespace NeonFade {
 
@@ -26,7 +27,7 @@ namespace NeonFade {
 		if (state_machine_)
 			body = state_machine_->enemy;
 
-		if (!state_machine||!body)
+		if (!state_machine || !body)
 			return;
 
 		//待機状態
@@ -64,6 +65,11 @@ namespace NeonFade {
 		//プレイヤーに注目する状態
 		auto focus_to_player_state = make_safe_unique<EnemyFocusToPlayerState>(state_machine->enemy);
 		state_machine->AddState("focus_to_player", std::move(focus_to_player_state));
+
+
+		//チームメンバーに昇格する状態
+		auto become_member_state = make_safe_unique<EnemyBecomeToMemberState>(state_machine->enemy);
+		state_machine->AddState("become_member", std::move(become_member_state));
 	}
 	/// @brief 敵AI基底クラスのデストラクタ
 	AbstractEnemyBrain::~AbstractEnemyBrain()
@@ -100,7 +106,7 @@ namespace NeonFade {
 		// ダメージを受けた場合はダメージ状態に遷移する
 		if (is_damaged) {
 			result = "damage";
-			if(is_crowling)
+			if (is_crowling)
 				result = "damage_crowling";
 			// ダメージ状態に遷移したら、フレーム依存パラメータをリセットする
 			ResetFrameParameters();
@@ -176,6 +182,22 @@ namespace NeonFade {
 		is_knock_back = true;
 		// ノックバックの方向と力のベクトルを保存する
 		this->knock_back_vec = knock_back_vec;
+	}
+
+	void AbstractEnemyBrain::SetHp(u32 new_hp)
+	{
+		hp = new_hp;
+		//もしHPが弱った状態の閾値以下になった場合は、弱った状態に遷移する
+		if (hp <= WEAKED_HP_THRESHOLD && !is_weakened) {
+			is_weakened = true;
+			Enemy::RegisterWeakenedEnemy(state_machine->enemy);
+			return;
+		}
+		// もしHPが弱った状態の閾値を超えた場合は、弱った状態から復帰する
+		if (hp > WEAKED_HP_THRESHOLD && is_weakened) {
+			is_weakened = false;
+			Enemy::UnregisterWeakenedEnemy(state_machine->enemy);
+		}
 	}
 
 }

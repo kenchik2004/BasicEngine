@@ -86,9 +86,9 @@ namespace NeonFade {
 			{
 				Vector3 knockback_dir = enemy->transform->position - owner_player->transform->position;
 				knockback_dir.normalize();
-				knockback_dir.y = 2;
-				knockback_dir *= 10;
-				enemy->Damage(5);
+				knockback_dir *= KNOCK_BACK_FORCE;
+				knockback_dir.y = KNOCK_BACK_UP_FORCE;
+				enemy->Damage(DAMAGE);
 				enemy->Down(knockback_dir);
 			}
 			if (hit_stop_timer <= 0.0f && stop_counter < MAX_STOP_COUNT) {
@@ -101,7 +101,7 @@ namespace NeonFade {
 					auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_attack1_hit", 1.0f);
 					eff->transform->position = hit_info.hit_collision->owner->transform->position;
 					eff->transform->position.y += 1.0f;
-					auto eff_comp = eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efk");
+					auto eff_comp = eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efkefc");
 					//eff_comp->SetSpeed(0.2f);
 					eff_comp->Play();
 				}

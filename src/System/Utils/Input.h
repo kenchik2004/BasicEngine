@@ -140,6 +140,7 @@ enum struct PadButton : u8 {
 	Button4 = 15,// Yボタン
 
 };
+static const u8 PAD_BUTTON_COUNT = static_cast<u8>(PadButton::Button4) + 1;	// ゲームパッドのボタン数
 //----------------------------------------------------
 // @brief 入力関連の関数を提供する名前空間。
 //----------------------------------------------------

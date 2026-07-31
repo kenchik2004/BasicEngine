@@ -56,10 +56,12 @@ namespace NeonFade {
 
 	private:
 		EnemyTeam* my_team = nullptr;		//<! 所属するチームのポインタ
-		static constexpr u32 MAX_HP = 30;	//<! リーダー敵の最大HP
+		static constexpr u32 MAX_HP = 300;	//<! リーダー敵の最大HP
 
 		float instruct_cooldown_timer = 0.0f;	//<! 指示を出すクールダウンタイマー
 		static constexpr float INSTRUCT_COOLDOWN = 10.0f;	//<! 指示を出せるクールダウン時間
+
+		bool found_player = false;	//<! プレイヤーを発見したかどうかのフラグ
 
 		//! @brief チームを解散するか新しいリーダーを立てる
 		void ReleaseTeamOrSelectNewLeader();

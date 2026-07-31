@@ -25,6 +25,8 @@ namespace NeonFade {
 		//ステートマシンとチームのポインタを保持する
 		machine = state_machine_;
 		my_team = team;
+		if (my_team)
+			my_team->AddMember(this);
 
 		// HPを最大値で初期化する
 		hp = MAX_HP;
@@ -80,13 +82,15 @@ namespace NeonFade {
 		// 基礎的なダメージ、死亡、ノックバックの判定は親クラスで行うので、ここでは親クラスのThinkを呼び出す
 		std::string result = __super::Think();
 
-		if (result != "")
+		if (result != "") {
+			ResetNotDoingTimer();
+			// もし親クラスのThinkで遷移先が決まっていれば、その遷移先を返す
 			return result;
+		}
 #if 1 
 		if (Input::GetKeyDown(KeyCode::J) && my_team)
 		{
-			result = "team_siege";
-			return result;
+			siege_player = true;
 		}
 #endif
 
@@ -94,14 +98,24 @@ namespace NeonFade {
 		// ここでそのままセットしてしまうと、スタックが巻き戻ってきたときに use after free が発生するので、
 		// 遷移先のステートを返すことで、ステートマシン側でBrainを切り替えるようにする
 		if (become_leader) {
+			ResetNotDoingTimer();
 			result = "become_leader";
 			return result;
 		}
 		if (!my_team) {
+			ResetNotDoingTimer();
 			result = "become_basic";
 			return result;
 		}
+		if (siege_player) {
+			ResetNotDoingTimer();
+			result = "team_siege";
+			siege_player = false;
+			return result;
+		}
+
 		if (go_to_attack) {
+			ResetNotDoingTimer();
 			result = "drop_kick";
 			go_to_attack = false;
 			return result;
@@ -109,11 +123,24 @@ namespace NeonFade {
 
 		//特に指令がなく、リーダーから離れている場合、リーダーの近くに寄っていく
 		{
-			//チームが存在しない場合は、リーダーに従うことができないので、何もしない
-			if (!my_team->GetLeader())
+			//特に指令がない場合は、タイマーを進める
+			not_doing_timer += Time::UnscaledDeltaTime();
+			//タイマーが一定時間未満の場合は、一旦待機する
+			if (not_doing_timer < NOT_DOING_WAIT_TIME)
 				return result;
+			//タイマーが一定時間以上経過している場合は、リーダーを追従するステートに遷移する
+			ResetNotDoingTimer();
+
+			//チームが存在しない場合は、リーダーが死んでしまっている可能性があるので、確率でリーダーになる
+			if (!my_team->GetLeader()) {
+				if (Random::Int(0, 100) < 25) //25%の確率でリーダーになる
+					become_leader = true;
+
+				return result;
+			}
+
 			Vector3  to_leader = my_team->GetLeader()->GetOwnerBody()->transform->position - GetOwnerBody()->transform->position;
-			if (to_leader.magnitudeSquared() > 20.0f * 20.0f) //リーダーから20m以上離れている場合は、リーダーに従う
+			if (to_leader.magnitudeSquared() > 20.0f * 20.0f) //リーダーから20m以上離れている場合は、リーダーを追従するステートに遷移する
 			{
 				result = "follow_leader";
 			}
@@ -158,6 +185,21 @@ namespace NeonFade {
 		ReleaseTeamOrSelectNewLeader();
 	}
 
+	void TeamMemberEnemyBrain::Damage(u32 damage, bool ignore_i_frame)
+	{
+		__super::Damage(damage, ignore_i_frame);
+
+		//ダメージを受けて弱った場合は、チームから外れる
+		if (is_weakened) {
+			//リーダーになる予定がある場合は、引継ぎを行う
+			ReleaseTeamOrSelectNewLeader();
+			//引継ぎをしない場合でも、チームからは外れる
+			if (my_team) {
+				my_team->SubMember(this); //弱った場合はチームから外れる
+			}
+		}
+	}
+
 	void TeamMemberEnemyBrain::ReleaseTeamOrSelectNewLeader()
 	{
 		//既に解散済みなら何もしない
@@ -168,7 +210,8 @@ namespace NeonFade {
 		//チームのポインタを取得する(自身を削除した後にmy_teamがnullptrになるので、先に取得しておく)
 		EnemyTeam* team = my_team;
 
-		my_team->SubMember(this); //チームから自分を削除する
+		//チームから自分を削除する
+		my_team->SubMember(this);
 
 		//壊滅状態(メンバーが一定数以下)の場合は、チームを解散する
 		if (team->GetMemberNum() <= LeaderEnemyBrain::TEAM_RELEASE_MEMBER_NUM) {
@@ -178,6 +221,7 @@ namespace NeonFade {
 		else {
 			//ランダムなインデックスを生成して、メンバーの中から新しいリーダーを選出する
 			auto members = team->GetMembers();
+
 			u32 rand_idx = Random::Int(0, static_cast<int>(members.size() - 1));
 
 			//次は君だ

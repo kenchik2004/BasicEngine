@@ -20,6 +20,11 @@ namespace NeonFade {
 		static constexpr float SPIN_TIME = 0.4f;
 		float exit_timer = 0.0f;
 		float hit_stop_timer = 0.0f;
+
+		static constexpr float KNOCK_BACK_FORCE = 70.0f;
+		static constexpr float KNOCK_BACK_DOWN_FORCE = -10.0f;
+		static constexpr u32 DAMAGE = 20;
+
 		static constexpr float HIT_STOP_TIME = 0.2f;
 		static constexpr float CAMERA_SHAKE_TIME = 0.2f;
 		static inline const Vector3 CAMERA_SHAKE_INTENSITY = { 1.5f, 1.5f, 1.5f };

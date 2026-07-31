@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   ISceneStateMachine.h
 //! @brief  シーンステートマシンの基底インタフェースの定義
 //---------------------------------------------------------------------------
@@ -16,6 +16,8 @@ namespace NeonFade {
 		std::string GetCurrentStateName() { return current_state ? current_state->GetName() : ""; }
 		virtual void Update(float dt);
 		void AddState(std::string_view name, SafeUniquePtr<ISceneState> state);
+
+		void DebugDraw();
 	private:
 		ISceneState* current_state = nullptr;
 		Scene* owner_scene = nullptr;

@@ -590,6 +590,12 @@ namespace NeonFade {
 		// ライティングを有効化する
 		SetUseLighting(true);
 	}
+	void SceneGame::DebugDraw()
+	{
+		scene_state_machine->DebugDraw();
+		
+	
+	}
 	/// @brief 遅延描画完了時のイベント処理を行う
 	/// @details ロード中であればアニメーションするテキストを表示する
 	void SceneGame::OnLateDrawFinish()

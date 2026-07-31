@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneGameState_KI.h
 //! @brief  ゲームの起（序盤）シーン状態クラスの定義
 //---------------------------------------------------------------------------
@@ -23,6 +23,8 @@ namespace NeonFade {
 		virtual void OnEnter(ISceneStateMachine* machine) override;
 		virtual void OnExit(ISceneStateMachine* machine) override;
 		virtual void Update(ISceneStateMachine* machine, float dt) override;
+
+		void DebugDraw() override;
 	private:
 		SceneGame* owner_scene_game = nullptr;
 		float exit_timer = 0;

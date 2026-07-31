@@ -28,9 +28,10 @@ typedef VS_OUTPUT_MODEL PS_INPUT_MODEL;
 PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 {
     float2 uv = input.uv0_;
+    float2 initial_uv = uv;
     
     // 時間でUVをスクロールさせる
-    uv.x += BE_Default.time*0.8;
+    uv.x += BE_Default.time * 0.8;
 
     float3 N = normalize(input.normal_); // 法線
 
@@ -75,6 +76,9 @@ PS_OUTPUT_MRT main(PS_INPUT_MODEL input)
 	
     float3 emissive = EmissionTexture.Sample(DiffuseSampler, uv).rgb * 200;
     emissive += DxLib_Common.Material.Ambient_Emissive.rgb * 2000;
+    emissive *= lerp(1.0, 0.0, saturate(initial_uv.x*initial_uv.x*initial_uv.x));
+    albedo.rgb *= smoothstep(1.0, 0.0, saturate(initial_uv.x *initial_uv.x));
+    
 	
 	
 	//----------------------------------------------------------

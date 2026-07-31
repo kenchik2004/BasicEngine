@@ -123,9 +123,9 @@ namespace NeonFade {
 				Vector3 knockback_dir = enem->transform->position - owner_player->transform->position;
 				knockback_dir.y = 0;
 				knockback_dir.normalize();
-				knockback_dir *= 40;
-				knockback_dir.y = -10;
-				enem->Damage(13);
+				knockback_dir *= KNOCK_BACK_FORCE;
+				knockback_dir.y = KNOCK_BACK_DOWN_FORCE;
+				enem->Damage(DAMAGE);
 				enem->Down(knockback_dir);
 			}
 
@@ -138,7 +138,7 @@ namespace NeonFade {
 					eff->transform->position = hit_info.hit_collision->owner->transform->position;
 					eff->transform->position.y += 4.0f;
 					eff->transform->scale = { 0.6f,0.6f,0.6f };
-					auto eff_comp = eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efk");
+					auto eff_comp = eff->AddComponent<EffectPlayer>(u8"data/FX/KOKUSEN.efkefc");
 					//eff_comp->SetSpeed(0.2f);
 					eff_comp->Play();
 				}

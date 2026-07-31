@@ -60,8 +60,7 @@ void TextureManager::Load(std::string_view path, std::string_view name)
 }
 
 void TextureManager::CacheLoaded(Texture* texture, std::string_view name)
-{
-}
+{}
 
 SafeSharedPtr<Texture> TextureManager::Create(std::string_view name, int width, int height, DXGI_FORMAT format)
 {
@@ -140,6 +139,7 @@ SafeSharedPtr<Texture> TextureManager::Get(std::string_view name, std::string_vi
 		texture->height = cache_tex.height;
 		texture->handle = cache_tex.handle;
 		texture->is_initialized = true;
+		texture->is_source = true;
 
 	}
 	return texture;

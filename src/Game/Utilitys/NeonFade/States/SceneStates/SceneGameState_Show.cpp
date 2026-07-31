@@ -21,16 +21,14 @@ namespace NeonFade
 	{
 		EnemyFactory factory;
 		factory.SetSpawnPosition({ 0,5,200 });
-		factory.SetSpawnRadius(20);
-		u32 teams = FileSystem::IniFileManager::GetInt("Game", "team_counts", 1, "data/config.ini");
-		u32	enemys_per_team = FileSystem::IniFileManager::GetInt("Game", "members_per_team", 5, "data/config.ini");
-		bool is_team_mode = FileSystem::IniFileManager::GetBool("Game", "teamed_enemy", false, "data/config.ini");
+		factory.SetSpawnRadius(50);
+		u32 teams = FileSystem::IniFileManager::GetInt("Game", "team_counts_1", 1, "data/config.ini");
+		u32	enemys_per_team = FileSystem::IniFileManager::GetInt("Game", "members_per_team_1", 5, "data/config.ini");
+		bool is_team_mode = FileSystem::IniFileManager::GetBool("Game", "teamed_enemy_1", false, "data/config.ini");
 		{
 			if (is_team_mode) {
 				for (u32 i = 0; i < teams; ++i) {
 
-					Vector3  spawn_pos = Random::Position({ -50,5,200 }, { 50,5,600 });
-					factory.SetSpawnPosition(spawn_pos);
 					auto enemy_team = factory.MakeEnemyTeam(enemys_per_team, owner_scene_game->player);
 					enemy_teams.push_back(std::move(enemy_team));
 				}
@@ -60,5 +58,15 @@ namespace NeonFade
 	{
 
 	}
+
+	//チュートリアルで説明すべき点:
+	//1.攻撃1について
+	//2.攻撃2について
+	//3.攻撃3について
+	//4.空中攻撃について
+	//5.敵の種類(リーダーとメンバーがいるよ)
+	//6.敵の挙動(集まってくるから大技を使うといいよ)
+	//7.敵ノックバック時の挙動(連鎖するよ)
+	//8.時間制限について
 
 }

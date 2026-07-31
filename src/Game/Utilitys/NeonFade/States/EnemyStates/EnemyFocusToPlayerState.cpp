@@ -34,10 +34,10 @@ namespace NeonFade {
 	void EnemyFocusToPlayerState::Update(IStateMachine* machine, float dt)
 	{
 		//ゆっくりとプレイヤーの方を向くだけ
-	
+
 		// 経過時間を更新
 		focus_timer += dt;
-		
+
 		// プレイヤーの方向を向く処理
 		Vector3 to_player = player->transform->position - owner_transform->position;
 		to_player.normalize();
@@ -50,12 +50,14 @@ namespace NeonFade {
 	}
 	void EnemyFocusToPlayerState::OnExit(IStateMachine* machine)
 	{
+		if constexpr (false) {
 
-		auto lifetime_obj = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"electro_effect", 2.0f);
-		lifetime_obj->transform->position = owner_transform->position + Vector3(0, 4.0f, 0);
-		lifetime_obj->transform->rotation = owner_transform->rotation;
-		auto effect_comp = lifetime_obj->AddComponent<EffectPlayer>("data/FX/ElectricSpark.efkefc");
-		effect_comp->Play();
+			auto lifetime_obj = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"electro_effect", 2.0f);
+			lifetime_obj->transform->position = owner_transform->position + Vector3(0, 4.0f, 0);
+			lifetime_obj->transform->rotation = owner_transform->rotation;
+			auto effect_comp = lifetime_obj->AddComponent<EffectPlayer>("data/FX/ElectricSpark.efkefc");
+			effect_comp->Play();
+		}
 	}
 	bool EnemyFocusToPlayerState::CanTransitTo(const std::string& state_name)
 	{
@@ -65,7 +67,7 @@ namespace NeonFade {
 		// プレイヤーの方向を向いたかどうかを判定する
 		//軽量化のため、内積を使って角度を計算する
 		static const float THRESHOLD_COSINE = std::cos(DEG2RAD(FOCUS_THRESHOLD_ANGLE));
-		if(cosine_to_player >= THRESHOLD_COSINE)
+		if (cosine_to_player >= THRESHOLD_COSINE)
 		{
 			return true;
 		}

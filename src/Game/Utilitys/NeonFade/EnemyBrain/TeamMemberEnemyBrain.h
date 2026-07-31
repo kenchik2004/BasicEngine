@@ -37,7 +37,10 @@ namespace NeonFade {
 
 		//! @brief 攻撃に向かうフラグを立てる(主にリーダーからの指示で呼ばれる)
 		void GoToAttack() { go_to_attack = true; } // 攻撃に向かうフラグを立てる
-		
+
+		//! @brief プレイヤーを包囲するフラグを立てる(主にリーダーからの指示で呼ばれる)
+		void SiegePlayer() { siege_player = true; } // プレイヤーを包囲するフラグを立てる
+
 		//! @brief リーダーになるフラグを立てる(主にリーダーからの指示で呼ばれる)
 		void BecomeLeader() { become_leader = true; } // リーダーになるフラグを立てる
 
@@ -58,6 +61,10 @@ namespace NeonFade {
 		//! @brief 死亡時には追加の処理が発生するので、親クラスのDie関数をオーバーライドする
 		void Die() override;
 
+		//! @brief ダメージ処理
+		//! @brief 弱ったときにチームから外れる処理を追加するため、親クラスのDamage関数をオーバーライドする
+		void Damage(u32 damage, bool ignore_i_frame) override;
+
 
 	private:
 		EnemyStateMachine* machine = nullptr;
@@ -66,6 +73,13 @@ namespace NeonFade {
 
 		bool go_to_attack = false; // 攻撃に向かうかどうかのフラグ
 		bool become_leader = false; // リーダーになるかどうかのフラグ
+		bool siege_player = false; // プレイヤーを包囲するかどうかのフラグ
+
+		static constexpr float NOT_DOING_WAIT_TIME = 5.0f; // 特に指示がない場合の待機時間の閾値
+		float not_doing_timer = 0.0f; // 特に指示がない場合の待機時間を計測するタイマー
+
+
+		void ResetNotDoingTimer() { not_doing_timer = 0.0f; } // 待機時間タイマーをリセットする
 
 		//! @brief チームを解散するか新しいリーダーを立てる
 		void ReleaseTeamOrSelectNewLeader();

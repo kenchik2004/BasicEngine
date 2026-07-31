@@ -58,7 +58,7 @@ namespace NeonFade {
 		//! @brief HPを設定する
 		//! @brief 基本的に脳を入れ替える際のHPの引き継ぎに使用する
 		//! @param new_hp 新しいHPの値
-		void SetHp(u32 new_hp) { hp = new_hp; }
+		void SetHp(u32 new_hp);
 
 		//! @brief 死亡しているか判定する
 		//! @return HPが0であればtrueを返す
@@ -96,6 +96,9 @@ namespace NeonFade {
 		//! @return プレイヤーのポインタ
 		Player* GetPlayer() { return player.lock().get(); }
 
+
+		static constexpr u32 WEAKED_HP_THRESHOLD = 30;	//<! HPがこの値以下のとき弱っている状態とみなす閾値
+
 	protected:
 		EnemyStateMachine* state_machine; // ステートマシンへのポインタ
 		PlayerWP player; // プレイヤーへの弱参照
@@ -109,7 +112,6 @@ namespace NeonFade {
 		Vector3 knock_back_vec = { 0,0,0 }; // 適用されるノックバックベクトル
 		static constexpr float I_FRAME = 0.1f; // ダメージ後の無敵時間
 
-		static constexpr u32 WEAKED_HP_THRESHOLD = 30;	//<! HPがこの値以下のとき弱っている状態とみなす閾値
 		bool is_weakened = false;						//<! 敵が弱っている状態かどうかを示すフラグ
 
 		bool is_crowling = false; //<! 敵が這いずり状態かどうかを示すフラグ

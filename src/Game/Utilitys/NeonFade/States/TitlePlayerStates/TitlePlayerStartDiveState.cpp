@@ -13,25 +13,46 @@ namespace NeonFade {
 		{
 			auto model = AddComponent<ModelRenderer>();
 			//モデルの設定
-			//カメラコンポーネントで使用しているスカイドームのモデルを使用する
 			model->SetModel("dive_effect");
-			transform->scale = { 0.001f,0.001f,0.001f };
+			//モデルのスケールを小さくする
+			transform->scale = { 0.001f,0.002f,0.001f };
 			auto material = model->GetMaterial(0);
+			//マテリアルのピクセルシェーダーをUVスクロール用のシェーダーに差し替える
 			uv_scroll_shader = MaterialManager::LoadPixelShader(u8"data/shader/ps_dive_effect.fx", u8"ps_uv_scroll");
 			material->SetShaderPs(uv_scroll_shader, true);
+			//影は無効化
 			model->SetCastShadow(false);
+
+			//子オブジェクトとして、少し大きめのモデルを追加する
+			//縁が悪い意味で目立っているようなので、フェードさせたいところ
+			//しかし、BEは完全Defferedレンダリングで駆動するようにしてしまった
+			//アルファブレンドが使えないので、逆に自己発光+Bloomで疑似ぼかしをかけることにする
+			if constexpr (true) {
+
+				auto child_obj = SceneManager::Object::Create<GameObject>(u8"dive_effect_child");
+				child_obj->transform->SetParent(transform);
+				child_obj->transform->local_scale = { 1.1f,1.1f,1.1f };
+				auto child_model = child_obj->AddComponent<ModelRenderer>();
+				child_model->SetModel("dive_effect");
+				MV1SetMaterialEmiColor(child_model->GetModelHandle(), 0, GetColorF(3, 3, 3, 3));
+				auto child_model_material = child_model->GetMaterial(0);
+				child_model_material->SetShaderPs(uv_scroll_shader, true);
+
+			}
 
 			return 0;
 		}
 		void Update() override {
 			float dt = Time::DeltaTime();
-			float scale_speed = 0.2f;
-			float scale_factor = scale_speed * dt;
-			if (transform->scale.x < 40.0f)
-				transform->scale += {scale_factor, scale_factor, scale_factor};
+			float scale_factor = SCALE_SPEED * dt;
+			//最大サイズに達していない場合はスケールを増加させる
+			if (transform->scale.x < MAX_SCALE)
+				transform->scale += {scale_factor, scale_factor * 2.0f, scale_factor};
 		}
 	private:
-		ShaderPs* uv_scroll_shader;
+		ShaderPs* uv_scroll_shader = nullptr;
+		static constexpr float MAX_SCALE = 0.5f;
+		static constexpr float SCALE_SPEED = 0.3f;
 
 	};
 
@@ -57,9 +78,7 @@ namespace NeonFade {
 			Vector3(-80, -60,	48),
 			Vector3(-100, -120,	60),
 			Vector3(-110, -240,	72),
-			Vector3(-120, -480,	84),
-			Vector3(-130, -960,	96),
-			Vector3(-140, -1400,108),
+			Vector3(-140, -480,	84),
 		};
 		path->SetPoints(control_points, false);
 
@@ -73,12 +92,8 @@ namespace NeonFade {
 		initial_rotation = owner_player->transform->rotation;
 		//ダイブ後の回転は、X軸に90度回転させたもの
 		diving_rotation = initial_rotation * Quaternion(DEG2RAD(-90), Vector3(1, 0, 0));
-		camera_obj = SceneManager::Object::Get<CameraObject>();
-
-		auto  dive_effect = SceneManager::Object::Create<DiveEffectObj>(u8"DiveEffect");
-		dive_effect->transform->SetParent(camera_obj->transform);
-		dive_effect->transform->local_position = { 0.0f,0.0f,40.0f };
-		dive_effect->transform->local_rotation = Quaternion(DEG2RAD(-90), { 1,0,0 });
+		auto camera_obj_ = SceneManager::Object::Get<CameraObject>();
+		camera_obj = camera_obj_;
 	}
 	void TitlePlayerStartDiveState::OnExit(IStateMachine* machine)
 	{}
@@ -90,6 +105,16 @@ namespace NeonFade {
 		// ダイブ中の最小時間を経過しており、かつリソースのロードが完了している場合、ゲームシーンに遷移する
 		if (next && dive_timer >= MINIMUM_DIVE_TIME)
 			SceneManager::Load<SceneGame>();
+
+		if (dive_timer > EFFECT_START_TIME && !effect_obj) {
+
+
+			auto  dive_effect = SceneManager::Object::Create<DiveEffectObj>(u8"DiveEffect");
+			dive_effect->transform->SetParent(camera_obj->transform);
+			dive_effect->transform->local_position = { 0.0f,0.0f,50.0f };
+			dive_effect->transform->local_rotation = Quaternion(DEG2RAD(-90), { 1,0,0 });
+			effect_obj = dive_effect;
+		}
 		Vector3 next_player_pos = { 0.0f,0.0f,0.0f };
 		Quaternion dummy_rot = { 0.0f,0.0f,0.0f,1.0f };
 		Vector3 up = { -1.0f, 0.0f, 1.0f };

@@ -1,4 +1,4 @@
-#include "EnemyEscapeState.h"
+﻿#include "EnemyEscapeState.h"
 #include "Game/Objects/NeonFade/Enemy.h"
 #include "Game/Objects/NeonFade/Player.h"
 #include "Game/Components/EnemyController.h"
@@ -12,6 +12,15 @@ namespace NeonFade
 		owner_enemy = owner_enemy_;
 		animator = owner_enemy->animator.lock().get();
 		rb = owner_enemy->rb.lock().get();
+
+		// 遷移要求を登録する
+		std::function<bool()> reteam_exit = [this]() {
+			static constexpr float RE_TEAM_DISTANCE_SQR = RETEAMING_DISTANCE_THRESHOLD * RETEAMING_DISTANCE_THRESHOLD; // チームに再合流する距離の二乗
+			// プレイヤーとの距離が一定以上離れた場合に状態遷移を要求する
+			return  distance_to_player_sqr >= RE_TEAM_DISTANCE_SQR;
+			};
+		RegisterChangeRequest("become_member", reteam_exit, 0);
+
 	}
 	void EnemyEscapeState::OnEnter(IStateMachine* machine)
 	{
@@ -44,6 +53,7 @@ namespace NeonFade
 		}
 		// Y軸方向の移動を無効化して水平に逃走する
 		mov_dir.y = 0.0f;
+		distance_to_player_sqr = mov_dir.magnitudeSquared();
 		// 逃走方向を正規化
 		mov_dir.normalize();
 

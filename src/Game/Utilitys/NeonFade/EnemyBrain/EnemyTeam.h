@@ -14,7 +14,16 @@ namespace NeonFade {
 	private:
 		LeaderEnemyBrain* leader_brain;				//<! チームのリーダーの思考クラスへのポインタ
 		std::vector<TeamMemberEnemyBrain*> members;	//<! チームメンバーの思考クラスへのポインタのvector
+
+		static inline std::vector<EnemyTeam*> all_teams = {};	//<! 全てのチームのポインタを保持する静的変数
+		//! @brief チームを全てのチームのポインタを保持する静的変数に登録する
+		void  RegisterTeam();
+		//! @brief チームを全てのチームのポインタを保持する静的変数から削除する
+		void  UnregisterTeam();
 	public:
+
+		//! @brief コンストラクタ
+		EnemyTeam();
 
 		//! @brief デストラクタ
 		virtual ~EnemyTeam();
@@ -55,6 +64,13 @@ namespace NeonFade {
 		//! @brief チームを解散する
 		//! @brief チームのリーダーとメンバーの参照をクリアし、チームを解散する
 		void ClearTeam();
+
+
+		//! @brief 全てのチームのポインタを取得する
+		//! @return 全てのチームのポインタを保持する静的変数への参照
+		static const std::vector<EnemyTeam*>& GetAllTeams() {
+			return all_teams;
+		}
 	};
 }
 

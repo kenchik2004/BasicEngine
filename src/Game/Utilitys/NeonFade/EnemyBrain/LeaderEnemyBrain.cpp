@@ -14,6 +14,7 @@
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyLeaderInstructState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyRandomWalkState.h"
 #include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyBecomeToBasicState.h"
+#include "Game/Utilitys/NeonFade/States/EnemyStates/EnemyLeaderApproachToPlayerState.h"
 
 namespace NeonFade
 {
@@ -45,6 +46,10 @@ namespace NeonFade
 		//リーダーがチームを失った場合に通常の敵AIに戻るステート
 		auto become_basic_state = make_safe_unique<EnemyBecomeToBasicState>(state_machine->enemy);
 		state_machine->AddState("become_basic", std::move(become_basic_state));
+
+		//プレイヤーに接近するステート
+		auto approach_player_state = make_safe_unique<EnemyLeaderApproachToPlayerState>(state_machine->enemy);
+		state_machine->AddState("approach_player", std::move(approach_player_state));
 
 		// 初期状態はidleに設定する
 		state_machine->ChangeState("idle");
@@ -78,16 +83,53 @@ namespace NeonFade
 		if (result != "") {
 			return result;
 		}
+		//チームのメンバーが一定数以下の場合は、チームを解散する
+		{
+			u32 member_num = 0;
+			if (my_team) {
+				member_num = my_team->GetMemberNum();
+				// メンバーが一定数以下の場合は、チームを解散する
+				if (member_num <= TEAM_RELEASE_MEMBER_NUM) {
+					my_team->ClearTeam();
+				}
+			}
+		}
 
 		{
 			Vector3 player_pos = player->transform->position;
 			Vector3 my_pos = body->transform->position;
 			Vector3 to_player = player_pos - my_pos;
-			if (to_player.magnitudeSquared() < 50.0f * 50.0f)
-			{
-				result = "atk_1";
+			found_player = to_player.magnitudeSquared() < 70.0f * 70.0f;
+			bool distance_is_close = to_player.magnitudeSquared() < 50.0f * 50.0f;
+
+			// プレイヤーを発見していなくとも、他のチームが発見した場合は自身も発見したことにする
+			if (my_team && !found_player) {
+
+				// 他のチームのリーダーがプレイヤーを発見しているかどうかを確認する
+				u32 found_count = 0;
+				//全チームを走査
+				const auto& another_teams = EnemyTeam::GetAllTeams();
+				for (const auto& team : another_teams) {
+					// 自分のチームは除外する
+					if (team == my_team)
+						continue;
+					//チームにリーダーがいて、かつそのリーダーがプレイヤーを発見している場合はカウントする
+					if (team->GetLeader() && team->GetLeader()->found_player)
+						found_count++;
+				}
+
+				// プレイヤーを発見しているチームが一定数以下であれば、自身も発見したことにする
+				//発見したチームが多すぎると敵が多く集まりすぎてしまうので、上限を設ける
+				static constexpr u32 MAX_FOUND_COUNT = 3;
+				// 発見したチームが1つ以上であれば、自身も発見したことにする
+				if (found_count < MAX_FOUND_COUNT && found_count > 0) {
+					//自身も発見したことにする
+					found_player = true;
+				}
 			}
-			else if (to_player.magnitudeSquared() < 100.0f * 100.0f)
+
+			// プレイヤーが近くにいる場合は、指示を出すステートに遷移する
+			if (distance_is_close)
 			{
 				if (instruct_cooldown_timer <= 0.0f)
 				{
@@ -95,18 +137,30 @@ namespace NeonFade
 					instruct_cooldown_timer = INSTRUCT_COOLDOWN;
 				}
 			}
+			// プレイヤーを発見している場合は、プレイヤーに接近するステートに遷移する
+			else if (found_player)
+			{
+				result = "approach_player";
+
+			}
+			// プレイヤーを発見していない場合は、ランダムウォークをする
 			else
 			{
 				result = "random_walk";
 			}
+
 #if 1
 			if (Input::GetKeyDown(KeyCode::K))
 			{
 				result = "instruct";
 			}
 #endif
-			if (!my_team)
+			// チームが解散されている場合は、通常の敵AIに戻る
+			if (!my_team) {
 				result = "become_basic";
+			}
+
+
 		}
 
 

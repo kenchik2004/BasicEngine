@@ -85,10 +85,12 @@
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockBackState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockFrontState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDropKickAttackEntryState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderApproachToPlayerState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderInstructState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyRandomWalkState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpBackState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpFrontState.cpp" />
+    <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyTeamFollowLeaderState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyTeamSiegeState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\States\ISceneState.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.cpp" />
@@ -228,10 +230,12 @@
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockBackState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyKnockFrontState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyDropKickAttackEntryState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderApproachToPlayerState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyLeaderInstructState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyRandomWalkState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpBackState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyStandUpFrontState.h" />
+    <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyTeamFollowLeaderState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\EnemyStates\EnemyTeamSiegeState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\States\ISceneState.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\StateMachines\ISceneStateMachine.h" />

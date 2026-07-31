@@ -58,6 +58,7 @@ class Texture {
 	std::string name;		// テクスチャ名
 	int handle = -1;		// テクスチャハンドル
 	bool is_initialized = false;
+	bool  is_source = false;	// テクスチャソースから作られたかどうか
 	u32 width = 0;			// テクスチャの幅
 	u32 height = 0;			// テクスチャの高さ
 	Microsoft::WRL::ComPtr<ID3D11Resource> texture = nullptr;		// DirectX11のテクスチャ
@@ -153,7 +154,9 @@ public:
 	// @brief 削除と同時にハンドルも開放。
 	//----------------------------------------------------
 	virtual ~Texture() {
-		if (handle >= 0) {
+		// D3Dリソースの解放
+		//ソースから作られたテクスチャは削除してはいけないので、ソースから作られたテクスチャは削除しない
+		if (handle >= 0 && !is_source) {
 			DeleteGraph(handle);			// 有効なら、テクスチャハンドルを削除
 			srv.Reset();					// DxLibはこちらで作ったSRVまでは解放してくれないので、自前で解放
 			return;

@@ -38,7 +38,7 @@ namespace NeonFade
 			auto caution_effect_obj = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"caution_effect", 2.0f);
 			auto caution_effect = caution_effect_obj->AddComponent<EffectPlayer>("data/FX/CautionMark.efkefc");
 			//リーダーの頭上にエフェクトを表示する
-			Vector3 effect_offset = {0.0f, 8.0f, 0.0f};
+			Vector3 effect_offset = { 0.0f, 8.0f, 0.0f };
 			caution_effect_obj->transform->position = owner_enemy->transform->position + effect_offset;
 			caution_effect->Play();
 		}
@@ -67,14 +67,36 @@ namespace NeonFade
 			return;
 		{
 			auto team = brain->GetTeam();
-			if (team) {
-				const auto& members = team->GetMembers();
-				for (const auto& member : members) {
-					if (member && !member->IsDead())
-						member->GoToAttack();
-				}
+			// チームが解散されている場合は、指示を出さない
+			if (!team)
+				return;
 
+			//確率で、取り囲むか攻撃するかを決定する
+			bool instruct_siege = Random::Int(1, 100) <= INSTRUCT_SIEGE_CHANCE; // 指示する行動をランダムに決定する
+
+			// チームのメンバーに指示を出す
+			//メンバーを取得
+			const auto& members = team->GetMembers();
+
+			//全メンバーに対し指示を出す
+			for (const auto& member : members) {
+				//nullチェックと死亡チェック
+				if (member && !member->IsDead()) {
+
+					// メンバーに指示を出す
+					//取り囲むor攻撃する
+					if (instruct_siege) {
+						//取り囲む指示を出す
+						member->SiegePlayer();
+					}
+					else {
+						//攻撃する指示を出す
+						member->GoToAttack();
+					}
+				}
 			}
+
+
 		}
 	}
 }

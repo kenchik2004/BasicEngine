@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   CatmullRomPath.cpp
 //! @brief  CatmullRomPathの実装。カットマルロムスプライン曲線によるパス補間を行う
 //---------------------------------------------------------------------------
@@ -17,13 +17,13 @@ void CatmullRomPath::Evaluate(float s, Vector3& outPos, PxQuat& outRot, bool uni
 	int segIdx = 0;
 	float segStartDist = 0.0f;
 	for (int i = 0; i < (int)segments.size(); i++) {
+		segIdx = i;
 		if (s < segStartDist + segments[i].length) {
-			segIdx = i;
 			break;
 		}
 		segStartDist += segments[i].length;
 	}
-	if (!loop && segIdx >= (int)segments.size()) {
+	if (!loop && segIdx >= (int)segments.size()-1) {
 		// 非ループで終端を超えた場合は最後のセグメントに固定
 		segIdx = (int)segments.size() - 1;
 		segStartDist = totalLength - segments.back().length;

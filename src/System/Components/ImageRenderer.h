@@ -26,6 +26,11 @@ public:
 	{
 		material = mat;
 	}
+	//! @brief 描画に使用するマテリアルを取得する
+	inline Material* GetMaterial() const
+	{
+		return material;
+	}
 	//! @brief 画像のサイズを取得する
 	Vector2                  GetImageSize();
 	float                     alpha = 1.0f; //!< 透明度（0.0〜1.0）

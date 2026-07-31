@@ -6,6 +6,7 @@
 #include "lighting.h.fx"
 #include "camera.h.fx"
 #include "shadow.h.fx"
+#include "gbuffer.h.fx"
 
 // 頂点シェーダーの出力
 struct VS_OUTPUT_MODEL
@@ -110,6 +111,9 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     float metallic = 0.5; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
     roughness = RoughnessTexture.Sample(RoughnessSampler, uv).r;
     metallic = MetallicTexture.Sample(MetallicSampler, uv).r;
+	
+    float3 emissive = EmissionTexture.Sample(EmissionSampler, uv).rgb * 200;
+    emissive += DxLib_Common.Material.Ambient_Emissive.rgb * albedo * 20;
 
 	
 	
@@ -189,6 +193,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
     output.color0_.rgb *= diffuse + ambient;
     output.color0_.rgb += specular;
+    output.color0_.rgb += emissive;
     
 	
 #endif
@@ -204,7 +209,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	// pow べき乗
 	// pow(n, x);	nのx乗
-    output.color0_.rgb = pow(saturate(output.color0_.rgb), 1.0 / 2.2);
+    output.color0_.rgb = LinearSRGB2ACEScg(output.color0_.rgb);
 	//-------------------------------------------------------------
 	// フォグ表現
 	//-------------------------------------------------------------

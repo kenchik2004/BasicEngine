@@ -1,4 +1,4 @@
-// LightManager.cpp
+﻿// LightManager.cpp
 //---------------------------------------------------------------------------
 //! @file   LightManager.cpp
 //! @brief  LightManagerの実装。ゲーム内ライト管理を行う
@@ -248,96 +248,96 @@ void LightManager::LateDraw()
 	// カメラが存在しなければ処理を中断する
 	if (!camera)
 		return;
-	// ディファードレンダリング対象でなければ処理を中断する
-	if (camera->render_type != Camera::RenderType::Deferred)
-		return;
 	// 現在のレンダーターゲット状態を保存する
 	auto current_rt = GetRenderTarget();
-	if constexpr (true) {
-		//--------------------------
-		//ここにSSAOを計算するコードを追加予定
-		// SSAOを書き込むバッファを取得する
-		auto& ao_buffer = camera->gbuffer_texture_[0];
-		//albedoとaoがセットされているテクスチャを引っぺがす
-		SetTexture(7, nullptr);
-		// レンダーターゲットをAOバッファに変更する
-		SetRenderTarget(ao_buffer.get());
-		//--------------------------
-		// AO計算をして、ao_bufferに書き込む
-		//--------------------------
-
-		//書き込む前に、albedoを書き換えないようにブレンドモードを変更
-		DxLib::SetDrawCustomBlendMode(
-			true,
-			DX_BLEND_ONE,
-			DX_BLEND_ONE,
-			DX_BLENDOP_MIX,		//MIXと書いてあるが、DxLibの誤字で、実際はMIN
-			DX_BLEND_ONE,
-			DX_BLEND_ONE,
-			DX_BLENDOP_MIX,		//MIXと書いてあるが、DxLibの誤字で、実際はMIN
-			255
-
-		);
-
-		// SSAOシェーダーを適用して描画する
-		FillRenderTarget(*shader_ssao);
-		// レンダーターゲットの設定を解除する
-		SetRenderTarget(nullptr);
-		//--------------------------
-		// 描画結果をテクスチャとして再設定する
-		SetTexture(7, ao_buffer.get());
-
-		//--------------------------
-		// ブレンドモードを通常に戻す
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-	}
-	// 蓄積バッファを黒でクリアする
-	ClearColor(diffuse_accumulation_texture.get(), Color::BLACK);
-	ClearColor(specular_accumulation_texture.get(), Color::BLACK);
-	// 2つの蓄積バッファを同時にレンダーターゲットとして設定する
-	std::array<Texture*, 2> rt_textures = { diffuse_accumulation_texture.get(), specular_accumulation_texture.get() };
-	SetRenderTarget(2, rt_textures.data(), nullptr);
-	// ライトの描画
-	// 光を加算合成するためにブレンドモードを変更する
-	DxLib::SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	// ライトごとに描画
-
+	// ディファードレンダリング対象のみ、ライト合成処理を行う
+	if (camera->render_type == Camera::RenderType::Deferred)
 	{
-		// カメラ情報の取得
-		auto camera = GetScene()->GetCurrentCamera();
-		auto camera_obj = camera.lock()->owner.lock();
-		if (camera) {
-			// ビュー行列を再計算する
-			mat4x4 view = CreateMatrix::lookAtLH(
-				camera_obj->transform->position,
-				camera_obj->transform->position + camera_obj->transform->AxisZ(),
-				camera_obj->transform->AxisY()
+		if constexpr (true) {
+			//--------------------------
+			//ここにSSAOを計算するコードを追加予定
+			// SSAOを書き込むバッファを取得する
+			auto& ao_buffer = camera->gbuffer_texture_[0];
+			//albedoとaoがセットされているテクスチャを引っぺがす
+			SetTexture(7, nullptr);
+			// レンダーターゲットをAOバッファに変更する
+			SetRenderTarget(ao_buffer.get());
+			//--------------------------
+			// AO計算をして、ao_bufferに書き込む
+			//--------------------------
+
+			//書き込む前に、albedoを書き換えないようにブレンドモードを変更
+			DxLib::SetDrawCustomBlendMode(
+				true,
+				DX_BLEND_ONE,
+				DX_BLEND_ONE,
+				DX_BLENDOP_MIX,		//MIXと書いてあるが、DxLibの誤字で、実際はMIN
+				DX_BLEND_ONE,
+				DX_BLEND_ONE,
+				DX_BLENDOP_MIX,		//MIXと書いてあるが、DxLibの誤字で、実際はMIN
+				255
+
 			);
-			// プロジェクション行列を再計算する
-			mat4x4 proj = CreateMatrix::perspectiveFovLH(DEG2RAD(camera->perspective), ((float)SCREEN_W) / SCREEN_H, camera->camera_near, camera->camera_far);
-			// ビュープロジェクション行列を更新する
-			camera_view_proj = proj * view;
+
+			// SSAOシェーダーを適用して描画する
+			FillRenderTarget(*shader_ssao);
+			// レンダーターゲットの設定を解除する
+			SetRenderTarget(nullptr);
+			//--------------------------
+			// 描画結果をテクスチャとして再設定する
+			SetTexture(7, ao_buffer.get());
+
+			//--------------------------
+			// ブレンドモードを通常に戻す
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 		}
+		// 蓄積バッファを黒でクリアする
+		ClearColor(diffuse_accumulation_texture.get(), Color::BLACK);
+		ClearColor(specular_accumulation_texture.get(), Color::BLACK);
+		// 2つの蓄積バッファを同時にレンダーターゲットとして設定する
+		std::array<Texture*, 2> rt_textures = { diffuse_accumulation_texture.get(), specular_accumulation_texture.get() };
+		SetRenderTarget(2, rt_textures.data(), nullptr);
+		// ライトの描画
+		// 光を加算合成するためにブレンドモードを変更する
+		DxLib::SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+		// ライトごとに描画
+
+		{
+			// カメラ情報の取得
+			auto camera = GetScene()->GetCurrentCamera();
+			auto camera_obj = camera.lock()->owner.lock();
+			if (camera) {
+				// ビュー行列を再計算する
+				mat4x4 view = CreateMatrix::lookAtLH(
+					camera_obj->transform->position,
+					camera_obj->transform->position + camera_obj->transform->AxisZ(),
+					camera_obj->transform->AxisY()
+				);
+				// プロジェクション行列を再計算する
+				mat4x4 proj = CreateMatrix::perspectiveFovLH(DEG2RAD(camera->perspective), ((float)SCREEN_W) / SCREEN_H, camera->camera_near, camera->camera_far);
+				// ビュープロジェクション行列を更新する
+				camera_view_proj = proj * view;
+			}
+		}
+		// 登録されている全てのライトについて蓄積バッファへの描画処理を呼ぶ
+		for (auto& light : lights) {
+			light->DrawToAccumulationBuffer();
+		}
+		// ブレンドモードを通常に戻す
+		DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+
+
+		// 元に戻す
+		// レンダーターゲットを保存していた状態に復元する
+		SetRenderTarget(current_rt);
+		// 合成してカメラのHDRバッファに書き込む
+		// 蓄積されたライティング結果をテクスチャとして設定する
+		SetTexture(21, diffuse_accumulation_texture.get());
+		SetTexture(22, specular_accumulation_texture.get());
+		// 合成用シェーダーを適用して最終的なライティング結果を描画する
+		FillRenderTarget(*light_blend_shader);
 	}
-	// 登録されている全てのライトについて蓄積バッファへの描画処理を呼ぶ
-	for (auto& light : lights) {
-		light->DrawToAccumulationBuffer();
-	}
-	// ブレンドモードを通常に戻す
-	DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-
-
-
-	// 元に戻す
-	// レンダーターゲットを保存していた状態に復元する
-	SetRenderTarget(current_rt);
-	// 合成してカメラのHDRバッファに書き込む
-	// 蓄積されたライティング結果をテクスチャとして設定する
-	SetTexture(21, diffuse_accumulation_texture.get());
-	SetTexture(22, specular_accumulation_texture.get());
-	// 合成用シェーダーを適用して最終的なライティング結果を描画する
-	FillRenderTarget(*light_blend_shader);
-
 	if constexpr (true) {
 		// ブルーム処理
 

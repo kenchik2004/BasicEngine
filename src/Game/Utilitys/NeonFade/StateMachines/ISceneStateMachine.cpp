@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   ISceneStateMachine.cpp
 //! @brief  ISceneStateMachineの実装。シーンステートマシンの基底処理を定義する
 //---------------------------------------------------------------------------
@@ -43,5 +43,10 @@ namespace NeonFade {
 	void ISceneStateMachine::AddState(std::string_view name, SafeUniquePtr<ISceneState> state) {
 		state->SetName(name);
 		states[name.data()] = std::move(state);
+	}
+	void ISceneStateMachine::DebugDraw()
+	{
+		if(current_state)
+			current_state->DebugDraw();
 	}
 }

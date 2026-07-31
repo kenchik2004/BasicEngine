@@ -14,6 +14,44 @@
 
 namespace NeonFade {
 
+	class SpawnDiveEffectObj :public GameObject
+	{
+	public:
+		USING_SUPER(SpawnDiveEffectObj);
+		int Init() override
+		{
+			auto model = AddComponent<ModelRenderer>();
+			//モデルの設定
+			model->SetModel("dive_effect");
+			//モデルのスケールを大きくする
+			transform->scale = { MAX_SCALE, MAX_SCALE, MAX_SCALE };
+			auto material = model->GetMaterial(0);
+			//マテリアルのピクセルシェーダーをUVスクロール用のシェーダーに差し替える
+			uv_scroll_shader = MaterialManager::LoadPixelShader(u8"data/shader/ps_dive_effect.fx", u8"ps_uv_scroll");
+			material->SetShaderPs(uv_scroll_shader, true);
+			//影は無効化
+			model->SetCastShadow(false);
+
+			return 0;
+		}
+		void Update() override {
+			float dt = Time::DeltaTime();
+			float scale_factor = SCALE_SPEED * dt;
+			//サイズを小さくしていく
+			if (transform->scale.x > 0.001f)
+				transform->scale -= {scale_factor, scale_factor, scale_factor};
+			//十分に小さくなったらオブジェクトを破棄する
+			else
+				SceneManager::Object::Destroy(shared_from_this());
+		}
+	private:
+		ShaderPs* uv_scroll_shader = nullptr;
+		static constexpr float MAX_SCALE = 0.5f;
+		static constexpr float SCALE_SPEED = 0.3f;
+
+	};
+
+
 	class MovieCameraMachine : public Component {
 	public:
 		USING_SUPER(CameraObject);
@@ -57,7 +95,10 @@ namespace NeonFade {
 		owner_scene_game = owner_scene_;
 		camera_path = make_safe_unique<CatmullRomPath>();
 		std::vector<Vector3> points = {
-			Vector3(0, 180, 150),
+			Vector3(0, 260, 70),
+			Vector3(0, 240, 80),
+			Vector3(50, 220, 100),
+			Vector3(0, 200, 150),
 			Vector3(-50, 150, 100),
 			Vector3(0, 120, 50),
 			Vector3(50, 90, 100),
@@ -83,13 +124,21 @@ namespace NeonFade {
 		message_text->ResetDrawChar();
 		timer_text->Sleep();
 		owner_scene_game->text_comp->SetText(u8"KI State");
-		owner_scene_game->player->transform->position = { 0,220,100 };
-		owner_scene_game->player->transform->rotation = Quaternion(physx::PxIdentity);
-		owner_scene_game->player->player_camera->transform->position = { 0,10,10 };
-		owner_scene_game->player->player_camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
-		owner_scene_game->player->player_camera_machine->ResetCameraRot();
-		owner_scene_game->player->pl_controller->GetStateMachine()->ChangeState("spawn");
-		owner_scene_game->player->rb->velocity = Vector3(physx::PxZero);
+		auto player = owner_scene_game->player.lock();
+		player->transform->position = { 0,220,100 };
+		player->transform->rotation = Quaternion(physx::PxIdentity);
+		player->player_camera->transform->position = { 0,10,10 };
+		player->player_camera->transform->SetAxisZ({ 0,-0.75f,-1.0f });
+		player->player_camera_machine->ResetCameraRot();
+		player->pl_controller->GetStateMachine()->ChangeState("spawn");
+		player->rb->velocity = Vector3(physx::PxZero);
+
+		auto dive_effect_obj = SceneManager::Object::Create<SpawnDiveEffectObj>(u8"dive_effect");
+		dive_effect_obj->transform->SetParent(player->transform);
+		dive_effect_obj->transform->local_position = { 0, 0, 3.0f };
+		//Y軸を下向き斜め45度くらいにする
+		dive_effect_obj->transform->SetAxisY({ 0.0f,1.0f,-1.0f });
+
 		exit_timer = 0;
 		auto movie_camera_obj = SceneManager::Object::Get<CameraObject>(owner_scene_game->shared_from_this());
 		movie_camera = movie_camera_obj->AddComponent<MovieCameraMachine>();
@@ -124,6 +173,21 @@ namespace NeonFade {
 		if (exit_timer > EXIT_TIME) {
 			machine->ChangeState("Show");
 			return;
+		}
+	}
+	void SceneGameState_KI::DebugDraw()
+	{
+		if (camera_path) {
+			std::array<Vector3, 256> path_points;
+			for (int i = 0; i < path_points.size(); ++i) {
+				Vector3 pos;
+				Quaternion rot;
+				camera_path->Evaluate(i / static_cast<float>(path_points.size() - 1) * camera_path->GetTotalLength(), pos, rot);
+				path_points[i] = pos;
+			}
+			for (u32 i = 0; i < path_points.size() - 2; ++i) {
+				DxLib::DrawLine3D(cast(path_points[i]), cast(path_points[i + 1]), Color::RED);
+			}
 		}
 	}
 }

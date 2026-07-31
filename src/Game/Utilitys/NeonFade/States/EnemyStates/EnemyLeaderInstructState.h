@@ -39,6 +39,8 @@ namespace NeonFade
 
 		static constexpr float ROTATION_SPEED = 3.0f;	//<! 指示中の回転の補間速度
 
+		static constexpr u32 INSTRUCT_SIEGE_CHANCE = 40;	//<! 指示中に取り囲みを行う確率（％）
+
 		void InstructMembers();	//<! メンバーに対して指示を出す関数
 	};
 }

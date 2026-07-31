@@ -21,13 +21,20 @@ namespace NeonFade {
 		EnemyFactory factory;
 		factory.SetSpawnPosition({ 0,5,200 });
 		factory.SetSpawnRadius(20);
-		u32 teams = FileSystem::IniFileManager::GetInt("Game", "team_counts", 1, "data/config.ini");
-		u32	enemys_per_team = FileSystem::IniFileManager::GetInt("Game", "members_per_team", 5, "data/config.ini");
-		bool is_team_mode = FileSystem::IniFileManager::GetBool("Game", "teamed_enemy", false, "data/config.ini");
+		factory.SetSpawnPosition({ 0,5,200 });
+		factory.SetSpawnRadius(20);
+		u32 teams = FileSystem::IniFileManager::GetInt("Game", "team_counts_2", 1, "data/config.ini");
+		u32	enemys_per_team = FileSystem::IniFileManager::GetInt("Game", "members_per_team_2", 5, "data/config.ini");
+		bool is_team_mode = FileSystem::IniFileManager::GetBool("Game", "teamed_enemy_2", false, "data/config.ini");
 		{
 			if (is_team_mode) {
+				for (u32 i = 0; i < teams; ++i) {
 
-				enemy_teams = factory.MakeEnemyTeams(teams, enemys_per_team, owner_scene_game->player);
+					Vector3  spawn_pos = Random::Position({ -50,5,200 }, { 50,5,400 });
+					factory.SetSpawnPosition(spawn_pos);
+					auto enemy_team = factory.MakeEnemyTeam(enemys_per_team, owner_scene_game->player);
+					enemy_teams.push_back(std::move(enemy_team));
+				}
 			}
 			else {
 

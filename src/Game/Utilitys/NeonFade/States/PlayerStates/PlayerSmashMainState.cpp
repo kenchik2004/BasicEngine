@@ -37,6 +37,16 @@ namespace NeonFade {
 			rb->velocity = smash_velocity;
 			owner_player->player_camera_machine->ShakeCamera(CAMERA_SHAKE_POWER, CAMERA_SHAKE_TIME);
 		}
+		{
+			auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_smash", 2.0f);
+			Vector3 offset = owner_player->transform->AxisZ() * 20.0f;
+			eff->move_dir = owner_player->transform->AxisZ() * 70.0f;
+			offset += owner_player->transform->AxisY() * 4.0f;
+			eff->transform->position = (owner_player->transform->position + offset);
+			eff->transform->SetAxisZ(owner_player->transform->AxisZ());
+			auto eff_player = eff->AddComponent<EffectPlayer>(u8"data/FX/SonicBoom.efkefc");
+			eff_player->Play();
+		}
 	}
 	void PlayerSmashMainState::OnExit(IStateMachine* machine)
 	{
@@ -78,14 +88,7 @@ namespace NeonFade {
 				owner_player->player_camera_machine->SetTransitionTime(0.2f);
 				owner_player->player_camera_machine->SetCameraMode(PlayerCameraMachine::CAMERA_MODE::MANIPULATE);
 			}
-			auto eff = SceneManager::Object::Create<GameObjectWithLifeTime>(u8"effect_smash", 2.0f);
-			Vector3 offset = owner_player->transform->AxisZ() * 20.0f;
-			eff->move_dir = owner_player->transform->AxisZ() * 70.0f;
-			offset += owner_player->transform->AxisY() * 4.0f;
-			eff->transform->position = (owner_player->transform->position + offset);
-			eff->transform->SetAxisZ(owner_player->transform->AxisZ());
-			auto eff_player = eff->AddComponent<EffectPlayer>(u8"data/FX/SonicBoom.efkefc");
-			eff_player->Play();
+
 			{
 				auto hit_box_ = owner_player->AddComponent<CapsuleCollider>();
 				hit_box_->position = { 20.0f,0,0 };

@@ -34,6 +34,7 @@ namespace NeonFade {
 		auto cover_state = make_safe_unique<EnemyCoverState>(state_machine->enemy);
 		state_machine->AddState("cover", std::move(cover_state));
 
+
 		// 初期状態を待機状態に設定する
 		state_machine->ChangeState("idle");
 
