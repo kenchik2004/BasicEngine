@@ -51,8 +51,9 @@ namespace NeonFade
 		auto approach_player_state = make_safe_unique<EnemyLeaderApproachToPlayerState>(state_machine->enemy);
 		state_machine->AddState("approach_player", std::move(approach_player_state));
 
-		// 初期状態はidleに設定する
-		state_machine->ChangeState("idle");
+		// カレントステートが存在しない場合は、初期状態をidleに設定する
+		if (!state_machine->GetCurrentState())
+			state_machine->ChangeState("idle");
 
 
 		//リーダーは専用モデルを使用する
@@ -86,7 +87,7 @@ namespace NeonFade
 		//チームのメンバーが一定数以下の場合は、チームを解散する
 		{
 			u32 member_num = 0;
-			if (my_team) {
+			if (false && my_team) {
 				member_num = my_team->GetMemberNum();
 				// メンバーが一定数以下の場合は、チームを解散する
 				if (member_num <= TEAM_RELEASE_MEMBER_NUM) {

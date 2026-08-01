@@ -8,6 +8,7 @@ namespace NeonFade
 	{
 	public:
 		EnemyCrowlingState(Enemy* owner_enemy_);
+		~EnemyCrowlingState();
 		void OnEnter(IStateMachine* machine) override;
 		void Update(IStateMachine* machine, float dt) override;
 		void OnExit(IStateMachine* machine) override;

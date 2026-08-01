@@ -59,8 +59,9 @@ namespace NeonFade {
 			auto team_follow_leader_run_state = make_safe_unique<EnemyTeamFollowLeaderRunState>(state_machine->enemy);
 			state_machine->AddState("follow_leader_run", std::move(team_follow_leader_run_state));
 		}
-
-		machine->ChangeState("idle");
+		//カレントステートが存在しない場合は、初期状態をidleに設定する
+		if (!machine->GetCurrentState())
+			machine->ChangeState("idle");
 
 	}
 

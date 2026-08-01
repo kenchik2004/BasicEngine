@@ -118,6 +118,15 @@ namespace NeonFade {
 		AudioPlayerWP audio_player; //!< オーディオプレイヤー
 		//! シーンで使用するリソースをまとめて読み込む静的関数
 		static void LoadResources();
+
+		//! @brief チュートリアルが有効かどうか取得
+		//! @return チュートリアルが有効かどうか
+		bool IsTutorialEnabled() { return tutorial_enabled; }
+
+		//! @brief チュートリアルを有効化もしくは無効化する
+		//! @param enable 有効化or無効化
+		void EnableTutorial(bool enable = true);
+		
 	private:
 		float game_timer = 0.0f; //!< ゲームタイマー
 		bool is_game_timer_started = false; //!< タイマー動作中フラグ
@@ -127,6 +136,9 @@ namespace NeonFade {
 		static inline float bgm_volume = 1.0f; //!< BGM音量
 		static inline float se_volume = 1.0f; //!< SE音量
 		LightEditorWP light_editor = nullptr; //!< ライトエディタオブジェクト
+
+
+		static inline bool tutorial_enabled = true;
 
 	};
 }

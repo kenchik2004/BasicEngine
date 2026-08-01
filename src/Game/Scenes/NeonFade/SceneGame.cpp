@@ -132,6 +132,27 @@ namespace NeonFade {
 		TextureManager::Load(u8"data/Textures/MiniMap.png", "mini_map");
 		TextureManager::Load(u8"data/Textures/CountDownTextBox.png", "count_down_bg");
 
+		// チュートリアルに使用する画像・ムービーを読み込む
+		static constexpr u32 tutorial_movies = 13;
+		for (u32 i = 1; i <= tutorial_movies; ++i) {
+			// チュートリアル用のムービーを読み込む
+			std::string path = "data/movie/tutorial_" + std::to_string(i) + ".mp4";
+			std::string name = "tutorial_" + std::to_string(i);
+			TextureManager::Load(path, name);
+		}
+		static constexpr u32 button_images = PAD_BUTTON_COUNT;
+		for (u32 i = 0; i < button_images; ++i) {
+			// ボタンの押下状態と非押下状態の画像を読み込む
+			//押下状態
+			std::string path = "data/Textures/PadButtons/switch_pushed_" + std::to_string(i) + ".png";
+			std::string name = "switch_button_pushed_" + std::to_string(i);
+			TextureManager::Load(path, name);
+			//非押下状態
+			path = "data/Textures/PadButtons/switch_released_" + std::to_string(i) + ".png";
+			name = "switch_button_released_" + std::to_string(i);
+			TextureManager::Load(path, name);
+		}
+
 		// サウンドとフォントリソースを読み込む
 		AudioManager::Load(u8"data/sound/bgm.mp3", "bgm");
 		AudioManager::Load(u8"data/sound/hit_se.mp3", "hit_se");
@@ -146,6 +167,15 @@ namespace NeonFade {
 		AudioManager::Load(u8"data/sound/welter_se.mp3", "welter_se");
 		AudioManager::Load(u8"data/sound/enem_crash.mp3", "enem_crash");
 		h7seg_font = AddFontFile(u8"data/DSEG7Modern-Regular.ttf");
+	}
+
+	void SceneGame::EnableTutorial(bool enable)
+	{
+		if (hud_obj && !enable)
+			SceneManager::Object::Destroy(hud_obj.lock());
+
+		tutorial_enabled = enable;
+
 	}
 
 	/// @brief シーンのロード処理を行う
@@ -183,7 +213,7 @@ namespace NeonFade {
 	/// @return 初期化の成否を示す整数値
 	int SceneGame::Init()
 	{
-		
+
 
 
 		//DontDestroyOnLoadSceneに、カメラ・ライトマネージャー・シャドウマップを作成する
@@ -477,17 +507,18 @@ namespace NeonFade {
 #endif
 		}
 		// HUDが存在しない場合は作成する
-		if (!hud_obj)
+		if (!hud_obj && tutorial_enabled)
 		{
 			auto hud_prototype = SceneManager::Object::Create<UIObject>(u8"HUD");
 			hud_prototype->CanvasAnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
 			hud_prototype->AnchorType() = UIObject::ANCHOR_TYPE::RIGHT_BOTTOM;
-			hud_prototype->transform->scale = { 500, 200, 1 };
+			hud_prototype->transform->scale = { 500, 70, 1 };
 			auto hud_text = hud_prototype->AddComponent<Text>();
 			hud_text->SetAlignment(Text::ALIGNMENT::RIGHT);
 			hud_text->TextColor() = Color::RED;
+			hud_text->SetFontSize(30);
 			static std::string hud_text_str =
-				u8"NeonFade  HUD\nカメラ操作:右スティック\n移動:左スティック\nダッシュ(切り替え):左スティック押し込み\nジャンプ:Bボタン\n攻撃(ジャンプ・落下中も可):AXYどれか\n回避:左スティック+ZLトリガー\nスタートボタンを押してポーズ";
+				u8"セレクトボタンでチュートリアルをスキップ";
 			hud_text->SetText(hud_text_str);
 			hud_obj = hud_prototype;
 
@@ -571,8 +602,7 @@ namespace NeonFade {
 
 	/// @brief 描画前の準備処理を行う
 	void SceneGame::PreDraw()
-	{
-	}
+	{}
 
 	/// @brief 遅延デバッグ描画処理を行う
 	void SceneGame::LateDebugDraw()
@@ -593,8 +623,8 @@ namespace NeonFade {
 	void SceneGame::DebugDraw()
 	{
 		scene_state_machine->DebugDraw();
-		
-	
+
+
 	}
 	/// @brief 遅延描画完了時のイベント処理を行う
 	/// @details ロード中であればアニメーションするテキストを表示する

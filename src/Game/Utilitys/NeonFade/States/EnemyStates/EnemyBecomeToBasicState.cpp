@@ -225,14 +225,17 @@ namespace NeonFade {
 			//元がTeamMemberEnemyBrainでない場合は、メンバーが少ないチームに参加させる		
 			if (!team) {
 				const  auto& teams = EnemyTeam::GetAllTeams();
+
+				// メンバーが最も少ないチームを見つける
+				EnemyTeam* least_member_team = nullptr;
 				for (auto& t : teams) {
-					// メンバーが最大数に達していないチームを見つけたら、そのチームに参加させる
-					if (t->GetMemberNum() < t->GetMembers().max_size()) {
-						team = t;
-						break;
+					//見つかっている中で最もメンバーが少ないチームを更新する
+					if (!least_member_team || t->GetMemberNum() < least_member_team->GetMemberNum()) {
+						least_member_team = t;
 					}
 				}
-
+				// メンバーが最も少ないチームに参加させる
+				team = least_member_team;
 			}
 
 			// 新しい脳（AI）を作成し、ステートマシンとプレイヤーへの弱参照、チーム情報を渡す

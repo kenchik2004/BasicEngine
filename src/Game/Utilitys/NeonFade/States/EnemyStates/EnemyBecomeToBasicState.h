@@ -56,7 +56,7 @@ namespace NeonFade {
 		Animator* animator; //!< アニメーター
 		float timer = 0.0f;
 		static constexpr float BECOME_TO_LEADER_TIME = 1.0f; // 脳を切り替え終わるまでの時間
-		SafeUniquePtr<LeaderEnemyBrain> leader_brain; //!< リーダー用の脳へのスマートポインタ
+		SafeUniquePtr<LeaderEnemyBrain> leader_brain = nullptr; //!< リーダー用の脳へのスマートポインタ
 
 	};
 
@@ -83,7 +83,7 @@ namespace NeonFade {
 		Animator* animator; //!< アニメーター
 		float timer = 0.0f;
 		static constexpr float BECOME_TO_MEMBER_TIME = 1.0f; // 脳を切り替え終わるまでの時間
-		SafeUniquePtr<TeamMemberEnemyBrain> member_brain; //!< チームメンバー用の脳へのスマートポインタ
+		SafeUniquePtr<TeamMemberEnemyBrain> member_brain = nullptr; //!< チームメンバー用の脳へのスマートポインタ
 
 	};
 }
