@@ -430,6 +430,14 @@ void Animation::ResetCallBack(std::string_view method_name)
 	auto ite = method_names.find(name); // メソッド名を検索
 	if (ite == method_names.end())
 		return; // 見つからない場合は何もしない
-	call_backs.erase(call_backs.begin() + ite->second - 1); // コールバックを削除
+	size_t delete_idx = ite->second-1;
+	call_backs.erase(call_backs.begin() + delete_idx); // コールバックを削除
 	method_names.erase(ite); // マップから削除
+		// マップのインデックスを更新
+	for (auto& method_name : method_names) { 
+		// 削除したインデックスより大きい場合、インデックスを1つ減らす
+		if (method_name.second > delete_idx + 1) {
+			method_name.second--; // インデックスを1つ減らす
+		}
+	}
 }

@@ -5,6 +5,7 @@
 #include "TextureManager.h"
 #include <d3d11.h>
 #include <dxgi.h>
+#include <filesystem>
 #pragma comment(lib, "d3d11.lib")
 
 std::vector<SafeUniquePtr<TextureSource>> TextureManager::cache = std::vector<SafeUniquePtr<TextureSource>>(0);
@@ -19,6 +20,11 @@ ID3D11DeviceContext* TextureManager::s_context = nullptr;
 //! @details	与えられたパスを基にテクスチャを非同期でロード・キャッシュする
 void TextureManager::Load(std::string_view path, std::string_view name)
 {
+	// パスが存在しない場合はロード処理を行わない
+	if(!std::filesystem::exists(path))
+	{
+		return;
+	}
 	std::string path_key(path);
 	std::string name_key(name);
 	if (paths.count(path_key) || names.count(name_key))
@@ -35,7 +41,7 @@ void TextureManager::Load(std::string_view path, std::string_view name)
 		ptr->cache->push_back(std::move(ptr->texture_source));
 		(*(ptr->name_map))[name].index = cache_index;
 		(*(ptr->path_map))[path].index = cache_index;
-		loading_count--;
+		loading_count.store(loading_count.load() - 1);
 		delete ptr;
 		};
 	PtrToCacheAndTextureData* data = new PtrToCacheAndTextureData;
@@ -51,7 +57,7 @@ void TextureManager::Load(std::string_view path, std::string_view name)
 		names[name_key].handle = data->texture_source->handle;
 		paths[path_key].handle = data->texture_source->handle;
 		SetASyncLoadFinishCallback(data->texture_source->handle, call_back, data);
-		loading_count++;
+		loading_count.store(loading_count.load() + 1);
 	}
 	else
 		data->texture_source.reset();

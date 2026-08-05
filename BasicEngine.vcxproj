@@ -46,6 +46,10 @@
     <ClCompile Include="src\Game\Objects\NeonFade\MiniMapObject.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\PoliceCar.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\TitlePlayer.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\TutorialUI.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\TutorialUIButtonImage.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\TutorialUIMovie.cpp" />
+    <ClCompile Include="src\Game\Objects\NeonFade\TutorialUIText.cpp" />
     <ClCompile Include="src\Game\Scenes\NeonFade\DebugCameraScene.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\TitleObjects\OptionCamera.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\TitleObjects\OptionData.cpp" />
@@ -58,6 +62,7 @@
     <ClCompile Include="src\Game\Scenes\NeonFade\SceneTitle.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\TitleObjects\SettingsManager.cpp" />
     <ClCompile Include="src\Game\Objects\NeonFade\TitleObjects\TitleLogo.cpp" />
+    <ClCompile Include="src\Game\Scenes\NeonFade\SceneUITest.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\CatmullRomPath.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.cpp" />
     <ClCompile Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.cpp" />
@@ -196,6 +201,10 @@
     <ClInclude Include="src\Game\Objects\NeonFade\Player.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\PoliceCar.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\TitlePlayer.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\TutorialUI.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\TutorialUIButtonImage.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\TutorialUIMovie.h" />
+    <ClInclude Include="src\Game\Objects\NeonFade\TutorialUIText.h" />
     <ClInclude Include="src\Game\Scenes\NeonFade\DebugCameraScene.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\TitleObjects\OptionCamera.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\TitleObjects\OptionData.h" />
@@ -209,6 +218,7 @@
     <ClInclude Include="src\Game\Scenes\NeonFade\SceneTitle.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\TitleObjects\SettingsManager.h" />
     <ClInclude Include="src\Game\Objects\NeonFade\TitleObjects\TitleLogo.h" />
+    <ClInclude Include="src\Game\Scenes\NeonFade\SceneUITest.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\CatmullRomPath.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\AbstractEnemyBrain.h" />
     <ClInclude Include="src\Game\Utilitys\NeonFade\EnemyBrain\BasicEnemyBrain.h" />

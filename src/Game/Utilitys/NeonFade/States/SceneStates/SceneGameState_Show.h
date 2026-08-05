@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   SceneGameState_Show.h
 //! @brief  ゲームの演出シーン状態クラスの定義
 //---------------------------------------------------------------------------
@@ -6,6 +6,9 @@
 #include "Game/Utilitys/NeonFade/States/ISceneState.h"
 
 namespace NeonFade {
+
+	
+
 	class SceneGame;
 	class EnemyTeam;
 	//----------------------------------------
@@ -24,6 +27,11 @@ namespace NeonFade {
 		SceneGame* owner_scene_game = nullptr;
 		std::vector<SafeUniquePtr<EnemyTeam>> enemy_teams;
 		UIObjectWP timer_text = nullptr;
+
+		float tutorial_timing_counter = 0.0f;
+		static constexpr float TUTORIAL_TIMING_ABOUT_ENEMY = 10.0f;	//敵の説明をするタイミング
+		static constexpr float TUTORIAL_TIMING_ABOUT_EXTRA = 30.0f;	//その他の説明をするタイミング
+		void CreateTutorial(u32 index);
 	};
 }
 

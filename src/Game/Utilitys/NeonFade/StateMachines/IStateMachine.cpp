@@ -80,7 +80,12 @@ namespace NeonFade
 		if (state)
 			state->SetName(name);
 		// 連想配列にステートを登録する
-		// もし同じ名前のステートが既に存在する場合は上書きされる
+		// もし同じ名前のステートが既に存在する場合は登録しない
+		if (states.find(name.data()) != states.end())
+		{
+			return;
+		}
+
 		states[name.data()] = std::move(state);
 	}
 

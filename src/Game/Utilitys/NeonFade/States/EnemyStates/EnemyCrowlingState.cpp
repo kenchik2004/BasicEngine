@@ -40,6 +40,13 @@ namespace NeonFade {
 		animator->SetAnimationCallBack("enemy_crowling", apply_movement1, APPLY_MOVEMENT_FRAME_INDICES[1], "apply_movement1");
 
 	}
+	EnemyCrowlingState::~EnemyCrowlingState()
+	{
+		if (animator) {
+			animator->ResetAnimationCallBack("enemy_crowling", "apply_movement0");
+			animator->ResetAnimationCallBack("enemy_crowling", "apply_movement1");
+		}
+	}
 	void EnemyCrowlingState::OnEnter(IStateMachine* machine)
 	{
 		elapsed_time = 0.0f;

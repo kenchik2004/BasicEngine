@@ -106,7 +106,7 @@ public:
 	static SafeSharedPtr<Texture> Get(std::string_view name, std::string_view new_name = "");
 
 	//! @brief		現在非同期ロード中のテクスチャ数を取得する
-	static inline const int GetLoadingCount() { return loading_count; }
+	static inline const int GetLoadingCount() { return loading_count.load(); }
 
 	static void Init();						//初期化
 	static void Exit();						//解放等の終了処理

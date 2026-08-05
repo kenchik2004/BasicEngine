@@ -70,6 +70,11 @@ namespace NeonFade {
 		//チームメンバーに昇格する状態
 		auto become_member_state = make_safe_unique<EnemyBecomeToMemberState>(state_machine->enemy);
 		state_machine->AddState("become_member", std::move(become_member_state));
+
+
+		// 基本的なステートを登録した後、カレントステートが存在しない場合は、初期状態をidleに設定する
+		if (!state_machine->GetCurrentState())
+			state_machine->ChangeState("idle");
 	}
 	/// @brief 敵AI基底クラスのデストラクタ
 	AbstractEnemyBrain::~AbstractEnemyBrain()
