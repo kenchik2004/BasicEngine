@@ -134,7 +134,7 @@ namespace NeonFade {
 
 		// チュートリアルに使用する画像・ムービーを読み込む
 		static constexpr u32 tutorial_movies = 13;
-		for (u32 i = 1; i <= tutorial_movies; ++i) {
+		for (u32 i = 0; i <= tutorial_movies; ++i) {
 			// チュートリアル用のムービーを読み込む
 			std::string path = "data/movie/tutorial_" + std::to_string(i) + ".mp4";
 			std::string name = "tutorial_" + std::to_string(i);

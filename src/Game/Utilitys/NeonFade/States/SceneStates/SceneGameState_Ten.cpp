@@ -25,7 +25,7 @@ namespace NeonFade {
 		message_text->WakeUp();
 		message_text->SetFontSize(70);
 		message_text->TextColor() = Color::YELLOW;
-		message_text->SetText(u8"まだ逃げ手がいるぞ!!");
+		message_text->SetText(u8"敵が多数発生!!");
 		message_text->ResetDrawChar();
 		assert_se->PlayOneShot(SceneGame::GetSEVolume());
 		{

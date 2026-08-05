@@ -1,6 +1,7 @@
 root
 |-----NeonFade::FinishEffect
 |-----Scene
+|        |-----NeonFade::SceneUITest
 |        |-----NeonFade::SceneTitle
 |        |-----NeonFade::SceneGame
 |        |-----NeonFade::DebugCameraScene
@@ -22,6 +23,8 @@ root
 |        |        |        |-----NeonFade::OptionCamera
 |        |        |        end_of_node
 |        |        |        
+|        |        |-----NeonFade::TutorialUIButtonImage
+|        |        |-----NeonFade::TutorialUI
 |        |        |-----NeonFade::MiniMapObject
 |        |        |-----NeonFade::DamageUIObject
 |        |        |-----NeonFade::CountDownTextObject
@@ -31,6 +34,9 @@ root
 |        |-----ShadowMapObject
 |        |-----GameObject
 |        |        |-----GameObject
+|        |        |-----NeonFade::DiveEffectObj
+|        |        |-----NeonFade::Tutorial
+|        |        |-----NeonFade::SpawnDiveEffectObj
 |        |        |-----NeonFade::TitlePlayer
 |        |        |-----GameObject
 |        |        |-----GameObjectWithLifeTime

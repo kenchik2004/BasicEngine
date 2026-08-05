@@ -149,12 +149,12 @@ namespace NeonFade
 
 	std::vector<std::vector<TutorialParam>> sequence = {
 		{
-
+			{ "tutorial_0", u8"Neon Fade へようこそ! ここは電脳世界です。\nこれからあなたには研究中に暴走したAIを倒し、始末してもらいます\nAボタンで次へ進みます",PadButton::Back},
 			{ "tutorial_1", u8"移動、ダッシュ：\n左スティックで移動ができます。\n移動中にスティックを押し込んでダッシュと歩きを切り替えられます", PadButton::LeftStick },
 			{ "tutorial_2", u8"攻撃1:\nAボタン連打で攻撃できます。\n3段目まで存在し、スティック入力で攻撃方向を変更できます", PadButton::Button1 },
-			{ "tutorial_3", u8"攻撃2:\nXボタンを押すと足払い攻撃で付近の敵を\n上方にノックバックさせます。", PadButton::Button3 },
-			{ "tutorial_4", u8"攻撃3:\nYボタンを押すと前方に移動しながらキックを行います。\nノックバックとダメージが少し大きめです", PadButton::Button4 },
-			{ "tutorial_5", u8"時間制限:\n5分間で全ての敵を倒してください。\n初めに出てくる敵を全員倒すと、一度だけ再出現します。\nそれらを倒すとクリアになります", PadButton::Back },
+			{ "tutorial_3", u8"攻撃2:\nXボタンを押すと前方に移動しながらキックを行います。\nノックバックとダメージが少し大きめです", PadButton::Button3 },
+			{ "tutorial_4", u8"攻撃3:\nYボタンを押すと足払い攻撃で付近の敵を\n上方にノックバックさせます。", PadButton::Button4 },
+			{ "tutorial_5", u8"時間制限:\nプレイヤーは活動できる時間に5分間の制限があります。\n初めに出てくる敵を全員倒すと、一度だけ再出現します。\nそれらを倒すとクリアになります", PadButton::Back },
 		},
 		{
 			{ "tutorial_6", u8"敵の種類:\n敵は団体行動を行うタイプと、単体で行動するタイプがいます。", PadButton::Back  },
@@ -170,7 +170,7 @@ namespace NeonFade
 		}
 	};
 
-	void SceneGameState_Show::CreateTutorial(u32 index) {
+	void SceneGameState_Show::CreateTutorial(u32 index, bool disable_tutorial_on_complete) {
 
 
 
@@ -186,11 +186,14 @@ namespace NeonFade
 			};
 
 		// チュートリアル全体の終了時（ポーズ解除）
-		auto on_complete = [this]() {
+		auto on_complete = [this, disable_tutorial_on_complete]() {
 			//プレイヤーが手動でポーズor解除できるようにする
 			owner_scene_game->SetPauseAvailable(true);
 			//強制的にポーズ状態を解除する
 			owner_scene_game->PauseGame(false);
+			//完了時にチュートリアルを無効化する = これが最後のチュートリアルなら、無効化する
+			if (disable_tutorial_on_complete)
+				owner_scene_game->EnableTutorial(false);
 			};
 
 		auto check_next = [this]() {
@@ -273,7 +276,6 @@ namespace NeonFade
 	}
 	void SceneGameState_Show::OnExit(ISceneStateMachine* machine)
 	{
-		owner_scene_game->EnableTutorial(false);
 		enemy_teams.clear();
 	}
 	void SceneGameState_Show::Update(ISceneStateMachine* machine, float dt)
@@ -297,8 +299,11 @@ namespace NeonFade
 				CreateTutorial(1);
 		}
 		if (tutorial_timing_counter > TUTORIAL_TIMING_ABOUT_EXTRA) {
-			if (tutorial_timing_counter_prev <= TUTORIAL_TIMING_ABOUT_EXTRA)
-				CreateTutorial(2);
+			if (tutorial_timing_counter_prev <= TUTORIAL_TIMING_ABOUT_EXTRA) {
+				//これが最後のチュートリアルなので、完了時にチュートリアルを無効化する
+				CreateTutorial(2, true);
+
+			}
 		}
 	}
 

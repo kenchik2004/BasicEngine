@@ -65,7 +65,7 @@ namespace NeonFade {
 			//ボタン画像のサイズを更新する
 			Vector2 image_size = image_renderer->GetImageSize();
 			//ボタン画像のサイズを小さくし、オブジェクトのスケールに反映する
-			image_size *= 0.3f;
+			image_size *= image_scale;
 			transform->scale = { image_size.x, image_size.y, 1 };
 		}
 		//ボタン画像のアニメーションを更新する
@@ -80,7 +80,7 @@ namespace NeonFade {
 			//ボタン画像のサイズを更新する
 			Vector2 image_size = image_renderer->GetImageSize();
 			//ボタン画像のサイズを小さくし、オブジェクトのスケールに反映する
-			image_size *= 0.3f;
+			image_size *= image_scale;
 			transform->scale = { image_size.x, image_size.y, 1 };
 		}
 	}
@@ -97,7 +97,7 @@ namespace NeonFade {
 		//ボタン画像のサイズを更新する
 		Vector2 image_size = image_renderer->GetImageSize();
 		//ボタン画像のサイズを小さくし、オブジェクトのスケールに反映する
-		image_size *= 0.3f;
+		image_size *= image_scale;
 		transform->scale = { image_size.x, image_size.y, 1 };
 
 	}

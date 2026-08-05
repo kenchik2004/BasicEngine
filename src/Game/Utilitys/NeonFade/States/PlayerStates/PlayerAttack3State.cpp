@@ -86,8 +86,8 @@ namespace NeonFade {
 			{
 				Vector3 knockback_dir = enemy->transform->position - owner_player->transform->position;
 				knockback_dir.normalize();
-				knockback_dir *= KNOCK_BACK_FORCE;
 				knockback_dir.y = KNOCK_BACK_UP_FORCE;
+				knockback_dir *= KNOCK_BACK_FORCE;
 				enemy->Damage(DAMAGE);
 				enemy->Down(knockback_dir);
 			}

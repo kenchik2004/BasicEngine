@@ -7,7 +7,7 @@
 
 namespace NeonFade {
 
-	
+
 
 	class SceneGame;
 	class EnemyTeam;
@@ -30,8 +30,8 @@ namespace NeonFade {
 
 		float tutorial_timing_counter = 0.0f;
 		static constexpr float TUTORIAL_TIMING_ABOUT_ENEMY = 10.0f;	//敵の説明をするタイミング
-		static constexpr float TUTORIAL_TIMING_ABOUT_EXTRA = 30.0f;	//その他の説明をするタイミング
-		void CreateTutorial(u32 index);
+		static constexpr float TUTORIAL_TIMING_ABOUT_EXTRA = 20.0f;	//その他の説明をするタイミング
+		void CreateTutorial(u32 index, bool disable_tutorial_on_complete = false);
 	};
 }
 

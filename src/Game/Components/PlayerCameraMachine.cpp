@@ -16,6 +16,7 @@ namespace NeonFade
 		reverse_x = FileSystem::IniFileManager::GetBool("Camera", "InvertX", false, "data/config.ini");
 		reverse_y = FileSystem::IniFileManager::GetBool("Camera", "InvertY", false, "data/config.ini");
 	}
+
 	int PlayerCameraMachine::Init()
 	{
 		// 初期状態を操作モードに設定する
@@ -23,6 +24,7 @@ namespace NeonFade
 
 		LoadCameraSettings();  // カメラ設定をロードする
 		ResetCameraRot();      // カメラの回転角度を初期化する
+
 		shake_duration = 0.0f;  // シェイクの持続時間を初期化する
 		transition_timer = 0.0f; // トランジションタイマーを初期化する
 
@@ -62,7 +64,9 @@ namespace NeonFade
 
 	void PlayerCameraMachine::Update()
 	{
+		// プレイヤーの入力に基づくカメラの回転処理を行う
 		if (mode == MANIPULATE) {
+			//入力を適用する
 			ApplyInput(Time::DeltaTime());
 		}
 	}
@@ -75,11 +79,18 @@ namespace NeonFade
 		shake_duration = duration;
 	}
 
+	void PlayerCameraMachine::SetCameraMode(CAMERA_MODE mode_, bool transition_enable)
+	{
+		mode = mode_;
+		if (transition_enable)transition_timer = transition_time_max;
+	}
+
 	void PlayerCameraMachine::ApplyInput(float dt)
 	{
 		// パッドの右スティックの入力値を取得する
 		Vector2 pad_input = Input::GetPadRightStick(0);
 
+		// 入力値に反転設定を適用する
 		pad_input.x *= reverse_x ? -1 : 1;
 		pad_input.y *= reverse_y ? -1 : 1;
 
@@ -103,6 +114,7 @@ namespace NeonFade
 			if (Input::GetKey(KeyCode::Down))
 				camera_rot.x -= dt * camera_rot_speed;
 		}
+		// 垂直方向の回転角を制限する
 		camera_rot.x = physx::PxClamp(camera_rot.x, camera_rot_limit_min, camera_rot_limit_max);
 	}
 
@@ -147,21 +159,27 @@ namespace NeonFade
 		camera_distance = camera_distance_max;
 		// 地形レイヤーのみを対象としたフィルタデータを構築する
 		physx::PxQueryFilterData filter_data;
+		//地形コリジョンにのみ当たる
 		filter_data.data.word0 = Collider::Layer::Terrain;
+		// 静的および動的オブジェクトの両方を対象とする
 		filter_data.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::ePREFILTER;
+
+		// 追従対象の位置に高さを加えた位置をカメラの注視点とする
+
 		Vector3 look_at = target_transform->position + Vector3(0, 2, 0);
 
-		// プレイヤーの少し上の位置からカメラ方向へレイを飛ばして障害物を検知する
+		// 追従対象の少し上の位置からカメラ方向へレイを飛ばして障害物を検知する
 		owner->GetScene()->RayCast(Ray{ look_at + shake_offset, -cam_vector_z, camera_distance }, info, filter_data);
 		// 障害物にヒットした場合はカメラの距離を障害物の手前までに短縮する
 		if (info.hasBlock) {
-			camera_distance = info.block.distance - 0.05f;
+			camera_distance = info.block.distance - 0.5f;
 		}
 		// 方向ベクトルに計算された距離を掛けて実際のオフセットベクトルを算出する
 		cam_vector_z = cam_vector_z * camera_distance;
-		// プレイヤーの位置に高さとシェイクを加味しそこからオフセットを引いて最終位置を決定する
+		// 追従対象の位置に高さとシェイクを加味しそこからオフセットを引いて最終位置を決定する
 		Vector3 finaly_position = look_at - cam_vector_z;
 		finaly_position += shake_offset;
+
 		// 計算された最終位置と向きをカメラのトランスフォームに適用する
 		auto cam_trns = owner->transform;
 		cam_trns->position = finaly_position;

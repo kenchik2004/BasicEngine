@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 //! @file   Object.cpp
 //! @brief  Objectクラスの実装。ゲームオブジェクトのライフサイクル・コンポーネント管理を行う
 //---------------------------------------------------------------------------
@@ -244,6 +244,7 @@ void UIObject::Update()
 void UIObject::PreDraw()
 {
 	Super::PreDraw();
+	PreUpdate();
 	//auto scale = transform->local_scale;
 	//transform->local_scale = { scale.x, scale.y, 0 };
 	//auto pos = transform->local_position;

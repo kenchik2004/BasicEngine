@@ -44,6 +44,7 @@ namespace NeonFade {
 		static const u8 PAD_BUTTON_COUNT = static_cast<u8>(PadButton::Button4) + 1;	//<! ゲームパッドのボタン数
 
 		float animation_timer = 0.0f;	//<! ボタン画像のアニメーションタイマー
+		float image_scale = 0.5f;	//<! ボタン画像のスケール
 
 		PadButton current_button = PadButton::Button1;	//<! 現在表示しているボタンの種類
 

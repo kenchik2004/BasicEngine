@@ -16,18 +16,19 @@ namespace NeonFade {
 			TextureManager::Load("data/Textures/PadButtons/switch_released_" + std::to_string(i) + ".png", "switch_button_released_" + std::to_string(i));
 			TextureManager::Load("data/Textures/PadButtons/switch_pushed_" + std::to_string(i) + ".png", "switch_button_pushed_" + std::to_string(i));
 		}
-		for (u8 i = 0; i < 10; ++i)
+		for (u8 i = 1; i < 10; ++i)
 		{
-			TextureManager::Load("data/movie/mov" + std::to_string(i) + ".mp4", "mov" + std::to_string(i));
+			TextureManager::Load("data/movie/tutorial_" + std::to_string(i) + ".mp4", "mov" + std::to_string(i));
 		}
 	}
 
 	bool initialized = false;
 	int SceneUITest::Init() {
 
+		SceneManager::Object::Create<CameraObject>();
+
 		if (TextureManager::GetLoadingCount() || initialized)
 			return -1;
-		SceneManager::Object::Create<CameraObject>();
 
 		if constexpr (true) {
 			TutorialUIButtonImage::LoadPadButtonImages();

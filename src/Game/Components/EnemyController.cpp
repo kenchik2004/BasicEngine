@@ -98,6 +98,7 @@ namespace NeonFade {
 		// 脳が存在しない場合はHPを0として返す
 		if (!brain)
 			return 0;
+
 		// 脳が管理している現在のHPを取得して返す
 		return brain->GetHp();
 	}
@@ -108,12 +109,12 @@ namespace NeonFade {
 		return player;
 	}
 
-	//! @brief 脳（AI）をセットする
 	void EnemyController::SetBrain(AbstractEnemyBrainUP new_brain) {
 		// 新しい脳の所有権を移動してセットする
 		brain = std::move(new_brain);
 		// セットした直後に一度思考処理を走らせる
 		brain->Think();
+
 		// ステートマシンが存在する場合は新しい脳のポインタを渡して連携させる
 		if (state_machine)
 			state_machine->SetBrain(brain.get());
